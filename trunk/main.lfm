@@ -81,8 +81,11 @@ object MainForm: TMainForm
     PopupMenu = pmTorrents
     ReadOnly = True
     RowSelect = True
+    SortType = stData
     TabOrder = 0
     ViewStyle = vsReport
+    OnColumnClick = lvTorrentsColumnClick
+    OnCompare = lvTorrentsCompare
     OnSelectItem = lvTorrentsSelectItem
   end
   object PageInfo: TPageControl

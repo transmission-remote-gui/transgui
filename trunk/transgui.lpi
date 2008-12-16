@@ -34,7 +34,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="6">
       <Unit0>
         <Filename Value="transgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -69,6 +69,11 @@
         <ResourceFilename Value="connoptions.lrs"/>
         <UnitName Value="ConnOptions"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="varlist.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="varlist"/>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

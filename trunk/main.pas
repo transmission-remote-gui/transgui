@@ -24,8 +24,8 @@ unit Main;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, Grids, ComCtrls, Menus, ActnList,
-  httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
+  httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -124,6 +124,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
+    procedure lvTorrentsCompare(Sender: TObject; Item1, Item2: TListItem; Data: Integer; var Compare: Integer);
     procedure lvTorrentsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     procedure miExitClick(Sender: TObject);
     procedure PageInfoChange(Sender: TObject);
@@ -133,6 +135,9 @@ type
   private
     FIni: TIniFile;
     FStarted: boolean;
+    FTorrents: TVarList;
+    FTorrentsSortColumn: integer;
+    FTorrentsSortDesc: boolean;
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -143,6 +148,7 @@ type
     procedure LoadColumns(LV: TListView; const AName: string);
   public
     procedure FillTorrentsList(list: TJSONArray);
+    procedure UpdateTorrentsList;
     procedure FillPeersList(list: TJSONArray);
     procedure FillFilesList(list, priorities, wanted: TJSONArray);
     procedure FillGeneralInfo(t: TJSONObject);
@@ -168,6 +174,13 @@ const
   idxUpSpeed = 7;
   idxETA = 8;
   idxRatio = 9;
+  idxTorrentId = 10;
+  idxTag = 11;
+  idxSeedsTotal = 12;
+  idxLeechers = 13;
+  idxPeersTotal = 14;
+
+  idxTorrentColCount = 15;
 
   // Peers list
   idxPeerIP = 0;
@@ -187,6 +200,13 @@ const
 implementation
 
 uses AddTorrent, synacode, ConnOptions;
+
+const
+  TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
+  TR_STATUS_CHECK        = ( 1 shl 1 ); // Checking files
+  TR_STATUS_DOWNLOAD     = ( 1 shl 2 ); // Downloading
+  TR_STATUS_SEED         = ( 1 shl 3 ); // Seeding
+  TR_STATUS_STOPPED      = ( 1 shl 4 ); // Torrent is stopped
 
 const
   SizeNames: array[1..5] of string = ('B', 'KB', 'MB', 'GB', 'TB');
@@ -217,6 +237,7 @@ begin
   Application.Title:=AppName;
   Caption:=Application.Title;
   RpcObj:=TRpc.Create;
+  FTorrents:=TVarList.Create(idxTorrentColCount, 0);
   s:=GetAppConfigDir(False);
   ForceDirectories(s);
   FIni:=TIniFile.Create(IncludeTrailingPathDelimiter(s)+ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
@@ -242,6 +263,9 @@ begin
   LoadColumns(lvTorrents, 'TorrentsList');
   LoadColumns(lvFiles, 'FilesList');
   LoadColumns(lvPeers, 'PeersList');
+
+  FTorrentsSortColumn:=FIni.ReadInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
+  FTorrentsSortDesc:=FIni.ReadBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -249,6 +273,7 @@ begin
   DoDisconnect;
   FIni.Free;
   RpcObj.Free;
+  FTorrents.Free;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -256,21 +281,38 @@ begin
   VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
 end;
 
+procedure TMainForm.lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
+begin
+  if FTorrentsSortColumn = Column.Index then
+    FTorrentsSortDesc:=not FTorrentsSortDesc
+  else begin
+    FTorrentsSortColumn:=Column.Index;
+    FTorrentsSortDesc:=False;
+  end;
+  UpdateTorrentsList;
+end;
+
+procedure TMainForm.lvTorrentsCompare(Sender: TObject; Item1, Item2: TListItem; Data: Integer; var Compare: Integer);
+begin
+end;
+
 procedure TMainForm.lvTorrentsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
 begin
+  if lvTorrents.Tag <> 0 then exit;
   RpcObj.Lock;
   try
-    if Item <> nil then
+    if (Item <> nil) and Selected then
       RpcObj.CurTorrentId:=ptruint(Item.Data)
     else
       RpcObj.CurTorrentId:=0;
-    ClearDetailsInfo;
-
-    DetailsTimer.Enabled:=False;
-    DetailsTimer.Enabled:=True;
   finally
     RpcObj.Unlock;
   end;
+
+  ClearDetailsInfo;
+
+  DetailsTimer.Enabled:=False;
+  DetailsTimer.Enabled:=True;
 end;
 
 procedure TMainForm.acConnectExecute(Sender: TObject);
@@ -494,6 +536,9 @@ begin
   SaveColumns(lvTorrents, 'TorrentsList');
   SaveColumns(lvFiles, 'FilesList');
   SaveColumns(lvPeers, 'PeersList');
+
+  FIni.WriteInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
+  FIni.WriteBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
 end;
 
 procedure TMainForm.miExitClick(Sender: TObject);
@@ -671,13 +716,74 @@ begin
 end;
 
 procedure TMainForm.FillTorrentsList(list: TJSONArray);
-const
-  TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
-  TR_STATUS_CHECK        = ( 1 shl 1 ); // Checking files
-  TR_STATUS_DOWNLOAD     = ( 1 shl 2 ); // Downloading
-  TR_STATUS_SEED         = ( 1 shl 3 ); // Seeding
-  TR_STATUS_STOPPED      = ( 1 shl 4 ); // Torrent is stopped
+var
+  i, j, row, id: integer;
+  t: TJSONObject;
+  f: double;
+begin
+  if list = nil then begin
+    FTorrents.Clear;
+    exit;
+  end;
 
+  for i:=0 to FTorrents.Count - 1 do
+    FTorrents[idxTag, i]:=0;
+
+  for i:=0 to list.Count - 1 do begin
+    t:=list[i] as TJSONObject;
+    id:=t.Integers['id'];
+    row:=FTorrents.Count;
+    for j:=0 to FTorrents.Count - 1 do
+      if FTorrents[idxTorrentId, j] = id then begin
+        row:=j;
+        break;
+      end;
+
+    FTorrents[idxTorrentId, row]:=t.Integers['id'];
+
+    if t.IndexOfName('name') >= 0 then
+      FTorrents[idxName, row]:=UTF8Encode(t.Strings['name']);
+
+    FTorrents[idxSize, row]:=t.Floats['totalSize'];
+    FTorrents[idxStatus, row]:=t.Integers['status'];
+
+    if FTorrents[idxStatus, row] = TR_STATUS_CHECK then
+      f:=t.Floats['recheckProgress']*100.0
+    else begin
+      f:=t.Floats['sizeWhenDone'];
+      if f <> 0 then
+        f:=(f - t.Floats['leftUntilDone'])*100.0/f;
+    end;
+    FTorrents[idxDone, row]:=f;
+
+    FTorrents[idxSeeds, row]:=t.Integers['peersSendingToUs'];
+    FTorrents[idxSeedsTotal, row]:=t.Integers['seeders'];
+    FTorrents[idxPeers, row]:=t.Integers['peersGettingFromUs'];
+    FTorrents[idxLeechers, row]:=t.Integers['leechers'];
+    FTorrents[idxPeersTotal, row]:=t.Integers['peersKnown'];
+    FTorrents[idxDownSpeed, row]:=t.Integers['rateDownload'];
+    FTorrents[idxUpSpeed, row]:=t.Integers['rateUpload'];
+    FTorrents[idxETA, row]:=t.Integers['eta'];
+
+    f:=t.Floats['uploadRatio'];
+    if f = -2 then
+      f:=MaxInt;
+    FTorrents[idxRatio, row]:=f;
+
+    FTorrents[idxTag, row]:=1;
+  end;
+
+  i:=0;
+  while i < FTorrents.Count do
+    if FTorrents[idxTag, i] = 0 then
+      FTorrents.Delete(i)
+    else
+      Inc(i);
+
+  UpdateTorrentsList;
+end;
+
+procedure TMainForm.UpdateTorrentsList;
 var
   it: TListItem;
 
@@ -694,140 +800,97 @@ var
 
 var
   i, j: integer;
-  id: ptruint;
-  d: TJSONData;
-  t: TJSONObject;
-  ids: array of pointer;
   s: string;
   f: double;
 begin
 //  lvTorrents.BeginUpdate;
+  lvTorrents.Tag:=1;
   try
     lvTorrents.Enabled:=True;
     lvTorrents.Color:=clWindow;
-    if list = nil then begin
-      lvTorrents.Clear;
-      exit;
-    end;
 
-    SetLength(ids, lvTorrents.Items.Count);
-    for i:=0 to lvTorrents.Items.Count - 1 do begin
-      ids[i]:=lvTorrents.Items[i].Data;
-      lvTorrents.Items[i].Data:=nil;
-    end;
+    FTorrents.Sort(FTorrentsSortColumn, FTorrentsSortDesc);
 
-    for i:=0 to list.Count - 1 do begin
-      d:=list[i];
-      if not (d is TJSONObject) then continue;
-      t:=d as TJSONObject;
-      id:=StrToIntDef(t.Strings['id'], 0);
-      if id = 0 then continue;
-      it:=nil;
-      for j:=0 to High(ids) do
-        if id = ptruint(ids[j]) then begin
-          it:=lvTorrents.Items[j];
-          break;
-        end;
-      if it = nil then
-        it:=lvTorrents.Items.Add;
+    for i:=0 to FTorrents.Count - 1 do begin
+      if i >= lvTorrents.Items.Count then
+        it:=lvTorrents.Items.Add
+      else
+        it:=lvTorrents.Items[i];
 
-      if t.IndexOfName('name') >= 0 then
-        it.Caption:=UTF8Encode(t.Strings['name']);
+      it.Caption:=FTorrents[idxName, i];
 
-      if t.IndexOfName('totalSize') >= 0 then
-        SetSubItem(idxSize, GetHumanSize(t.Floats['totalSize'], 0));
+      SetSubItem(idxSize, GetHumanSize(FTorrents[idxSize, i], 0));
 
-      if t.IndexOfName('status') >= 0 then begin
-        case t.Integers['status'] of
-          TR_STATUS_CHECK_WAIT: s:='Waiting';
-          TR_STATUS_CHECK:      s:='Verifying';
-          TR_STATUS_DOWNLOAD:   s:='Downloading';
-          TR_STATUS_SEED:       s:='Seeding';
-          TR_STATUS_STOPPED:    s:='Stopped';
-          else                  s:='Unknown';
-        end;
-        SetSubItem(idxStatus, s);
-
-        if (t.Integers['status'] = TR_STATUS_CHECK) and (t.IndexOfName('recheckProgress') >= 0) then begin
-          SetSubItem(idxDone, Format('%.1f%%', [t.Floats['recheckProgress']*100.0]));
-        end
-        else
-          if (t.IndexOfName('sizeWhenDone') >= 0) and (t.IndexOfName('leftUntilDone') >= 0) then begin
-            f:=t.Floats['sizeWhenDone'];
-            if f <> 0 then
-              f:=(f - t.Floats['leftUntilDone'])*100.0/f;
-            SetSubItem(idxDone, Format('%.1f%%', [f]));
-          end;
+      case integer(FTorrents[idxStatus, i]) of
+        TR_STATUS_CHECK_WAIT: s:='Waiting';
+        TR_STATUS_CHECK:      s:='Verifying';
+        TR_STATUS_DOWNLOAD:   s:='Downloading';
+        TR_STATUS_SEED:       s:='Seeding';
+        TR_STATUS_STOPPED:    s:='Stopped';
+        else                  s:='Unknown';
       end;
+      SetSubItem(idxStatus, s);
 
-      if (t.IndexOfName('seeders') >= 0) and (t.IndexOfName('peersSendingToUs') >= 0) then begin
-        j:=t.Integers['seeders'];
-        if j <> -1 then
-          SetSubItem(idxSeeds, Format('%d/%d', [t.Integers['peersSendingToUs'], j]))
+      SetSubItem(idxDone, Format('%.1f%%', [double(FTorrents[idxDone, i])]));
+
+      j:=FTorrents[idxSeedsTotal, i];
+      if j <> -1 then
+        SetSubItem(idxSeeds, Format('%d/%d', [integer(FTorrents[idxSeeds, i]), j]))
+      else
+        SetSubItem(idxSeeds, Format('%d', [integer(FTorrents[idxSeeds, i])]));
+
+      s:=Format('%d', [integer(FTorrents[idxPeers, i])]);
+      j:=FTorrents[idxLeechers, i];
+      if j <> -1 then
+        s:=Format('%s/%d', [s, j]);
+      j:=FTorrents[idxPeersTotal, i] - 1;
+      if j >= 0 then
+        s:=Format('%s (%d)', [s, j]);
+      SetSubItem(idxPeers, s);
+
+      j:=FTorrents[idxDownSpeed, i];
+      if j > 0 then
+        s:=GetHumanSize(j, 1) + '/s'
+      else
+        s:='';
+      SetSubItem(idxDownSpeed, s);
+
+      j:=FTorrents[idxUpSpeed, i];
+      if j > 0 then
+        s:=GetHumanSize(j, 1) + '/s'
+      else
+        s:='';
+      SetSubItem(idxUpSpeed, s);
+
+      j:=FTorrents[idxETA, i];
+      if j = -1 then
+        s:=''
+      else
+      if j = -2 then
+        s:=''
+      else begin
+        if j < 60 then
+          s:=Format('%ds', [j])
         else
-          SetSubItem(idxSeeds, Format('%d', [t.Integers['peersSendingToUs']]))
-      end;
-
-      if (t.IndexOfName('seeders') >= 0) and (t.IndexOfName('leechers') >= 0) and (t.IndexOfName('peersSendingToUs') >= 0) and
-         (t.IndexOfName('peersKnown') >= 0) and (t.IndexOfName('peersGettingFromUs') >= 0)
-      then begin
-        s:=Format('%d', [t.Integers['peersGettingFromUs']]);
-        j:=t.Integers['leechers'];
-        if j <> -1 then
-          s:=Format('%s/%d', [s, j]);
-        j:=t.Integers['peersKnown'] - 1;
-        if j >= 0 then
-          s:=Format('%s (%d)', [s, j]);
-        SetSubItem(idxPeers, s);
-      end;
-
-      if t.IndexOfName('rateDownload') >= 0 then begin
-        j:=t.Integers['rateDownload'];
-        if j > 0 then
-          s:=GetHumanSize(j, 1) + '/s'
-        else
-          s:='';
-        SetSubItem(idxDownSpeed, s);
-      end;
-
-      if t.IndexOfName('rateUpload') >= 0 then begin
-        j:=t.Integers['rateUpload'];
-        if j > 0 then
-          s:=GetHumanSize(j, 1) + '/s'
-        else
-          s:='';
-        SetSubItem(idxUpSpeed, s);
-      end;
-
-      if t.IndexOfName('eta') >= 0 then begin
-        j:=t.Integers['eta'];
-        if j = -1 then
-          s:=''
-        else
-        if j = -2 then
-          s:=''
+        if j < 60*60 then
+          s:=Format('%dm, %ds', [j div 60, j mod 60])
         else begin
-          if j < 60 then
-            s:=Format('%ds', [j])
-          else
-          if j < 60*60 then
-            s:=Format('%dm, %ds', [j div 60, j mod 60])
+          j:=(j + 30) div 60;
+          if j < 60*24 then
+            s:=Format('%dh, %dm', [j div 60, j mod 60])
           else begin
             j:=(j + 30) div 60;
-            if j < 60*24 then
-              s:=Format('%dh, %dm', [j div 60, j mod 60])
-            else begin
-              j:=(j + 30) div 60;
-              s:=Format('%dd, %dh', [j div 24, j mod 24])
-            end;
+            s:=Format('%dd, %dh', [j div 24, j mod 24])
           end;
         end;
-        SetSubItem(idxETA, s);
       end;
+      SetSubItem(idxETA, s);
 
-      f:=t.Floats['uploadRatio'];
-      if f = -2 then
-        s:=Utf8Encode(WideChar($221E))
+      f:=FTorrents[idxRatio, i];
+      if f = MaxInt then begin
+        s:=Utf8Encode(WideChar($221E));
+        f:=MaxInt;
+      end
       else
         if f = -1 then
           s:=''
@@ -835,17 +898,18 @@ begin
           s:=Format('%.3f', [f]);
       SetSubItem(idxRatio, s);
 
-      it.Data:=pointer(id);
+      j:=FTorrents[idxTorrentId, i];
+      if cardinal(j) = RpcObj.CurTorrentId then begin
+        it.Focused:=True;
+        it.Selected:=True;
+      end;
+      it.Data:=pointer(ptruint(j));
     end;
 
-    i:=0;
-    while i < lvTorrents.Items.Count do
-      if lvTorrents.Items[i].Data = nil then
-        lvTorrents.Items.Delete(i)
-      else
-        Inc(i);
-
+    while lvTorrents.Items.Count > FTorrents.Count do
+      lvTorrents.Items.Delete(lvTorrents.Items.Count - 1);
   finally
+    lvTorrents.Tag:=0;
 //    lvTorrents.EndUpdate;
   end;
 end;
