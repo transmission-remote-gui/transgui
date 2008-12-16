@@ -1,0 +1,136 @@
+object ConnOptionsForm: TConnOptionsForm
+  Left = 384
+  Height = 239
+  Top = 185
+  Width = 400
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Connection options'
+  ClientHeight = 239
+  ClientWidth = 400
+  ParentFont = False
+  Position = poMainFormCenter
+  LCLVersion = '0.9.26'
+  object GroupBox1: TGroupBox
+    Left = 8
+    Height = 196
+    Top = 4
+    Width = 385
+    ClientHeight = 178
+    ClientWidth = 381
+    TabOrder = 0
+    object txHost: TLabel
+      Left = 10
+      Height = 14
+      Top = 8
+      Width = 66
+      Caption = 'Remote host:'
+      ParentColor = False
+    end
+    object txPort: TLabel
+      Left = 10
+      Height = 14
+      Top = 40
+      Width = 25
+      Caption = 'Port:'
+      ParentColor = False
+    end
+    object txUserName: TLabel
+      Left = 10
+      Height = 14
+      Top = 72
+      Width = 56
+      Caption = 'User name:'
+      ParentColor = False
+    end
+    object txPassword: TLabel
+      Left = 10
+      Height = 14
+      Top = 104
+      Width = 51
+      Caption = 'Password:'
+      ParentColor = False
+    end
+    object txRefreshInterval: TLabel
+      Left = 10
+      Height = 14
+      Top = 148
+      Width = 82
+      Caption = 'Refresh interval:'
+      ParentColor = False
+    end
+    object txSeconds: TLabel
+      Left = 242
+      Height = 14
+      Top = 148
+      Width = 40
+      Caption = 'seconds'
+      ParentColor = False
+    end
+    object edHost: TEdit
+      Left = 134
+      Height = 23
+      Top = 4
+      Width = 236
+      TabOrder = 0
+    end
+    object edPort: TSpinEdit
+      Left = 134
+      Height = 23
+      Top = 36
+      Width = 98
+      MaxValue = 65535
+      MinValue = 1
+      TabOrder = 1
+      Value = 1
+    end
+    object edUserName: TEdit
+      Left = 134
+      Height = 23
+      Top = 68
+      Width = 236
+      TabOrder = 2
+    end
+    object edPassword: TEdit
+      Left = 134
+      Height = 23
+      Top = 100
+      Width = 236
+      EchoMode = emPassword
+      PasswordChar = '*'
+      TabOrder = 3
+    end
+    object edRefreshInterval: TSpinEdit
+      Left = 134
+      Height = 23
+      Top = 144
+      Width = 98
+      MaxValue = 999
+      MinValue = 1
+      TabOrder = 4
+      Value = 1
+    end
+  end
+  object btOK: TButton
+    Left = 238
+    Height = 23
+    Top = 210
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = 'OK'
+    Default = True
+    OnClick = btOKClick
+    TabOrder = 1
+  end
+  object btCancel: TButton
+    Left = 318
+    Height = 23
+    Top = 210
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Cancel = True
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 2
+  end
+end
