@@ -10,7 +10,7 @@ uses
   Windows
 {$endif}
 {$ifdef unix}
-  baseunix
+  baseunix, unix
 {$endif}
   ;
 
@@ -23,11 +23,21 @@ function GetTimeZoneDelta: TDateTime;
 var
   t: TIME_ZONE_INFORMATION;
 {$endif}
+{$ifdef unix}
+var
+   timeval: TTimeVal;
+   timezone: TTimeZone;
+{$endif}
 begin
   Result:=0;
 {$ifdef windows}
   if GetTimeZoneInformation(t) <> TIME_ZONE_ID_INVALID then
     Result:=-t.Bias/MinsPerDay;
+{$endif}
+{$ifdef unix}
+  timezone.tz_minuteswest:=0;
+  fpgettimeofday(@timeval, @timezone);
+  Result:=-timezone.tz_minuteswest/MinsPerDay;
 {$endif}
 end;
 
