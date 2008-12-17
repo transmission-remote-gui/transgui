@@ -330,6 +330,10 @@ end;
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
+  panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
+  panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
+  panTransfer.AutoSize:=True;
+  panGeneralInfo.AutoSize:=True;
 end;
 
 procedure TMainForm.lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
@@ -687,7 +691,6 @@ procedure TMainForm.ClearDetailsInfo;
   var
     i: integer;
   begin
-    AParent.AutoSize:=True;
     AParent.AutoSize:=False;
     AParent.ChildSizing.Layout:=cclNone;
     for i:=0 to AParent.ControlCount - 1 do begin
@@ -706,6 +709,7 @@ begin
   ClearChildren(panGeneralInfo);
   ClearChildren(panTransfer);
   pbDownloaded.Position:=0;
+  txDownProgress.AutoSize:=False;
   txDownProgress.Caption:='';
 end;
 
@@ -1242,6 +1246,7 @@ begin
 
   pbDownloaded.Position:=Round(FTorrents[idxDone, it.Index]*10);
   txDownProgress.Caption:=it.SubItems[idxDone-1];
+  txDownProgress.AutoSize:=True;
 
   panTransfer.ChildSizing.Layout:=cclNone;
   txStatus.Caption:=it.SubItems[idxStatus-1];

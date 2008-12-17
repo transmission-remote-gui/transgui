@@ -528,29 +528,35 @@ object MainForm: TMainForm
         ClientWidth = 733
         TabOrder = 1
         object txDownProgressLabel: TLabel
-          Left = 4
-          Height = 14
-          Top = 5
+          Left = 8
+          Height = 26
           Width = 64
+          Align = alLeft
+          BorderSpacing.Left = 8
           Caption = 'Downloaded:'
+          Layout = tlCenter
           ParentColor = False
         end
         object txDownProgress: TLabel
-          Left = 684
-          Height = 14
-          Top = 5
+          Left = 685
+          Height = 26
           Width = 40
+          Align = alRight
           Alignment = taRightJustify
           Anchors = [akTop, akRight]
+          BorderSpacing.Right = 8
           Caption = '100.0%'
+          Layout = tlCenter
           ParentColor = False
         end
         object pbDownloaded: TProgressBar
-          Left = 88
+          Left = 78
           Height = 14
-          Top = 5
-          Width = 588
+          Top = 6
+          Width = 601
+          Align = alClient
           Anchors = [akTop, akLeft, akRight]
+          BorderSpacing.Around = 6
           Max = 1000
           Smooth = True
           TabOrder = 0
