@@ -50,6 +50,8 @@ type
     ActionList: TActionList;
     ApplicationProperties: TApplicationProperties;
     ImageList16: TImageList;
+    miCopyLabel: TMenuItem;
+    pmLabels: TPopupMenu;
     txError: TLabel;
     txErrorLabel: TLabel;
     MenuItem17: TMenuItem;
@@ -130,6 +132,7 @@ type
     procedure lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
     procedure lvTorrentsCompare(Sender: TObject; Item1, Item2: TListItem; Data: Integer; var Compare: Integer);
     procedure lvTorrentsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+    procedure miCopyLabelClick(Sender: TObject);
     procedure miExitClick(Sender: TObject);
     procedure PageInfoChange(Sender: TObject);
     procedure DetailsTimerTimer(Sender: TObject);
@@ -204,7 +207,7 @@ const
 
 implementation
 
-uses AddTorrent, synacode, ConnOptions;
+uses AddTorrent, synacode, ConnOptions, clipbrd;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -318,6 +321,15 @@ begin
 
   DetailsTimer.Enabled:=False;
   DetailsTimer.Enabled:=True;
+end;
+
+procedure TMainForm.miCopyLabelClick(Sender: TObject);
+begin
+  with TLabel(pmLabels.PopupComponent) do
+    if (Length(Name) > 5) and (Copy(Name, Length(Name) - 4, 5) = 'Label') then
+      Clipboard.AsText:=TLabel(Parent.ControlByName(Copy(Name, 1, Length(Name) - 5))).Caption
+    else
+      Clipboard.AsText:=Caption;
 end;
 
 procedure TMainForm.acConnectExecute(Sender: TObject);
@@ -627,15 +639,28 @@ begin
 end;
 
 procedure TMainForm.ClearDetailsInfo;
+
+  procedure ClearChildren(AParent: TWinControl);
+  var
+    i: integer;
+  begin
+    for i:=0 to AParent.ControlCount - 1 do begin
+      if AParent.Controls[i] is TLabel then
+        with AParent.Controls[i] as TLabel do begin
+          if (Length(Name) < 5) or (Copy(Name, Length(Name) - 4, 5) <> 'Label') then
+            Caption:='';
+          PopupMenu:=pmLabels;
+        end;
+    end;
+  end;
+
 begin
   lvPeers.Clear;
   lvFiles.Clear;
   panGeneralInfo.ChildSizing.Layout:=cclNone;
   panTransfer.ChildSizing.Layout:=cclNone;
-  txTotalSize.Caption:='';
-  txPieces.Caption:='';
-  txHash.Caption:='';
-  txComment.Caption:='';
+  ClearChildren(panGeneralInfo);
+  ClearChildren(panTransfer);
 end;
 
 procedure TMainForm.UpdateUI;
@@ -845,12 +870,16 @@ var
   i, j: integer;
   s: string;
   f: double;
+  UpSpeed, DownSpeed: double;
 begin
 //  lvTorrents.BeginUpdate;
   lvTorrents.Tag:=1;
   try
     lvTorrents.Enabled:=True;
     lvTorrents.Color:=clWindow;
+
+    UpSpeed:=0;
+    DownSpeed:=0;
 
     FTorrents.Sort(FTorrentsSortColumn, FTorrentsSortDesc);
 
@@ -947,6 +976,10 @@ begin
         it.Focused:=True;
         it.Selected:=True;
       end;
+
+      DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, i];
+      UpSpeed:=UpSpeed + FTorrents[idxUpSpeed, i];
+
       it.Data:=pointer(ptruint(j));
     end;
 
@@ -956,6 +989,9 @@ begin
     lvTorrents.Tag:=0;
 //    lvTorrents.EndUpdate;
   end;
+
+  StatusBar.Panels[1].Text:=Format('D: %s/s', [GetHumanSize(DownSpeed, 1)]);
+  StatusBar.Panels[2].Text:=Format('U: %s/s', [GetHumanSize(UpSpeed, 1)]);
 end;
 
 procedure TMainForm.FillPeersList(list: TJSONArray);
@@ -1167,6 +1203,7 @@ end;
 procedure TMainForm.CheckStatus(Fatal: boolean);
 var
   s: string;
+  i: integer;
 begin
   s:=RpcObj.Status;
   if s <> '' then begin
@@ -1176,6 +1213,9 @@ begin
     MessageDlg(s, mtError, [mbOK], 0);
   end;
   StatusBar.Panels[0].Text:=RpcObj.InfoStatus;
+  if not RpcObj.Connected then
+    for i:=1 to StatusBar.Panels.Count - 1 do
+      StatusBar.Panels[i].Text:='';
 end;
 
 function TMainForm.TorrentAction(TorrentId: integer; const AAction: string): boolean;

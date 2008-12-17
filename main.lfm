@@ -22,6 +22,12 @@ object MainForm: TMainForm
         Width = 300
       end    
       item
+        Width = 100
+      end    
+      item
+        Width = 100
+      end    
+      item
         Width = 50
       end>
     SimplePanel = False
@@ -1465,5 +1471,13 @@ object MainForm: TMainForm
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000
     }
+  end
+  object pmLabels: TPopupMenu
+    left = 64
+    top = 360
+    object miCopyLabel: TMenuItem
+      Caption = 'Copy'
+      OnClick = miCopyLabelClick
+    end
   end
 end
