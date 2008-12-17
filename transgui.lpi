@@ -34,7 +34,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="transgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -74,6 +74,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="varlist"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="tz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tz"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
