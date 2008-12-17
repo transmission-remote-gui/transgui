@@ -2,12 +2,12 @@ object ConnOptionsForm: TConnOptionsForm
   Left = 384
   Height = 239
   Top = 185
-  Width = 400
+  Width = 350
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Connection options'
   ClientHeight = 239
-  ClientWidth = 400
+  ClientWidth = 350
   ParentFont = False
   Position = poMainFormCenter
   LCLVersion = '0.9.26'
@@ -15,9 +15,10 @@ object ConnOptionsForm: TConnOptionsForm
     Left = 8
     Height = 196
     Top = 4
-    Width = 385
+    Width = 335
+    Anchors = [akTop, akLeft, akRight, akBottom]
     ClientHeight = 178
-    ClientWidth = 381
+    ClientWidth = 331
     TabOrder = 0
     object txHost: TLabel
       Left = 10
@@ -71,7 +72,8 @@ object ConnOptionsForm: TConnOptionsForm
       Left = 134
       Height = 23
       Top = 4
-      Width = 236
+      Width = 186
+      Anchors = [akTop, akLeft, akRight]
       TabOrder = 0
     end
     object edPort: TSpinEdit
@@ -88,14 +90,16 @@ object ConnOptionsForm: TConnOptionsForm
       Left = 134
       Height = 23
       Top = 68
-      Width = 236
+      Width = 186
+      Anchors = [akTop, akLeft, akRight]
       TabOrder = 2
     end
     object edPassword: TEdit
       Left = 134
       Height = 23
       Top = 100
-      Width = 236
+      Width = 186
+      Anchors = [akTop, akLeft, akRight]
       EchoMode = emPassword
       PasswordChar = '*'
       TabOrder = 3
@@ -112,7 +116,7 @@ object ConnOptionsForm: TConnOptionsForm
     end
   end
   object btOK: TButton
-    Left = 238
+    Left = 188
     Height = 23
     Top = 210
     Width = 75
@@ -123,7 +127,7 @@ object ConnOptionsForm: TConnOptionsForm
     TabOrder = 1
   end
   object btCancel: TButton
-    Left = 318
+    Left = 268
     Height = 23
     Top = 210
     Width = 75
