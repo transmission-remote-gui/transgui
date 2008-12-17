@@ -50,6 +50,44 @@ type
     ActionList: TActionList;
     ApplicationProperties: TApplicationProperties;
     ImageList16: TImageList;
+    txCreated: TLabel;
+    txCreatedLabel: TLabel;
+    txTorrentName: TLabel;
+    txTorrentNameLabel: TLabel;
+    txDownProgress: TLabel;
+    txDownProgressLabel: TLabel;
+    panProgress: TPanel;
+    pbDownloaded: TProgressBar;
+    txTransferHeader: TLabel;
+    txTorrentHeader: TLabel;
+    txMaxPeers: TLabel;
+    txMaxPeersLabel: TLabel;
+    txPeers: TLabel;
+    txPeersLabel: TLabel;
+    txSeeds: TLabel;
+    txSeedsLabel: TLabel;
+    txTrackerUpdate: TLabel;
+    txTrackerUpdateLabel: TLabel;
+    txRemaining: TLabel;
+    txRemainingLabel: TLabel;
+    txStatus: TLabel;
+    txStatusLabel: TLabel;
+    txRatio: TLabel;
+    txRatioLabel: TLabel;
+    txDownLimit: TLabel;
+    txDownLimitLabel: TLabel;
+    txUpSpeed: TLabel;
+    txUpLimit: TLabel;
+    txUpSpeedLabel: TLabel;
+    txDownSpeed: TLabel;
+    txDownSpeedLabel: TLabel;
+    txUploaded: TLabel;
+    txUploadedLabel: TLabel;
+    txDownloaded: TLabel;
+    txDownloadedLabel: TLabel;
+    txUpLimitLabel: TLabel;
+    txWasted: TLabel;
+    txWastedLabel: TLabel;
     miCopyLabel: TMenuItem;
     pmLabels: TPopupMenu;
     txError: TLabel;
@@ -153,6 +191,7 @@ type
     procedure SaveColumns(LV: TListView; const AName: string);
     procedure LoadColumns(LV: TListView; const AName: string);
     function GetTorrentError(t: TJSONObject): string;
+    function SecondsToString(j: integer): string;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -207,7 +246,7 @@ const
 
 implementation
 
-uses AddTorrent, synacode, ConnOptions, clipbrd;
+uses AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -215,6 +254,10 @@ const
   TR_STATUS_DOWNLOAD     = ( 1 shl 2 ); // Downloading
   TR_STATUS_SEED         = ( 1 shl 3 ); // Seeding
   TR_STATUS_STOPPED      = ( 1 shl 4 ); // Torrent is stopped
+
+  TR_SPEEDLIMIT_GLOBAL    = 0;    // only follow the overall speed limit
+  TR_SPEEDLIMIT_SINGLE    = 0;    // only follow the per-torrent limit
+  TR_SPEEDLIMIT_UNLIMITED = 0;    // no limits at all
 
 const
   SizeNames: array[1..5] of string = ('B', 'KB', 'MB', 'GB', 'TB');
@@ -640,10 +683,13 @@ end;
 
 procedure TMainForm.ClearDetailsInfo;
 
-  procedure ClearChildren(AParent: TWinControl);
+  procedure ClearChildren(AParent: TPanel);
   var
     i: integer;
   begin
+    AParent.AutoSize:=True;
+    AParent.AutoSize:=False;
+    AParent.ChildSizing.Layout:=cclNone;
     for i:=0 to AParent.ControlCount - 1 do begin
       if AParent.Controls[i] is TLabel then
         with AParent.Controls[i] as TLabel do begin
@@ -657,10 +703,10 @@ procedure TMainForm.ClearDetailsInfo;
 begin
   lvPeers.Clear;
   lvFiles.Clear;
-  panGeneralInfo.ChildSizing.Layout:=cclNone;
-  panTransfer.ChildSizing.Layout:=cclNone;
   ClearChildren(panGeneralInfo);
   ClearChildren(panTransfer);
+  pbDownloaded.Position:=0;
+  txDownProgress.Caption:='';
 end;
 
 procedure TMainForm.UpdateUI;
@@ -762,6 +808,25 @@ begin
           Result:='Tracker: ' + Copy(Result, 1, i - 1);
     end;
   end;
+end;
+
+function TMainForm.SecondsToString(j: integer): string;
+begin
+  if j < 60 then
+    Result:=Format('%ds', [j])
+  else
+  if j < 60*60 then
+    Result:=Format('%dm, %ds', [j div 60, j mod 60])
+  else begin
+    j:=(j + 30) div 60;
+    if j < 60*24 then
+      Result:=Format('%dh, %dm', [j div 60, j mod 60])
+    else begin
+      j:=(j + 30) div 60;
+      Result:=Format('%dd, %dh', [j div 24, j mod 24])
+    end;
+  end;
+
 end;
 
 procedure TMainForm.FillTorrentsList(list: TJSONArray);
@@ -941,22 +1006,8 @@ begin
       else
       if j = -2 then
         s:=''
-      else begin
-        if j < 60 then
-          s:=Format('%ds', [j])
-        else
-        if j < 60*60 then
-          s:=Format('%dm, %ds', [j div 60, j mod 60])
-        else begin
-          j:=(j + 30) div 60;
-          if j < 60*24 then
-            s:=Format('%dh, %dm', [j div 60, j mod 60])
-          else begin
-            j:=(j + 30) div 60;
-            s:=Format('%dd, %dh', [j div 24, j mod 24])
-          end;
-        end;
-      end;
+      else
+        s:=SecondsToString(j);
       SetSubItem(idxETA, s);
 
       f:=FTorrents[idxRatio, i];
@@ -1182,13 +1233,64 @@ end;
 
 procedure TMainForm.FillGeneralInfo(t: TJSONObject);
 var
-  i: integer;
+  i, j: integer;
+  it: TListItem;
+  s: string;
 begin
+  if lvTorrents.Selected = nil then exit;
+  it:=lvTorrents.Selected;
+
+  pbDownloaded.Position:=Round(FTorrents[idxDone, it.Index]*10);
+  txDownProgress.Caption:=it.SubItems[idxDone-1];
+
   panTransfer.ChildSizing.Layout:=cclNone;
+  txStatus.Caption:=it.SubItems[idxStatus-1];
   txError.Caption:=GetTorrentError(t);
+  txRemaining.Caption:=it.SubItems[idxETA-1];
+  txDownloaded.Caption:=GetHumanSize(t.Floats['downloadedEver']);
+  txUploaded.Caption:=GetHumanSize(t.Floats['uploadedEver']);
+  txWasted.Caption:=Format('%s (%d hashfails)', [GetHumanSize(t.Floats['corruptEver']), Round(t.Floats['corruptEver']/t.Floats['pieceSize'])]);
+  txDownSpeed.Caption:=GetHumanSize(FTorrents[idxDownSpeed, it.Index], 1)+'/s';
+  txUpSpeed.Caption:=GetHumanSize(FTorrents[idxUpSpeed, it.Index], 1)+'/s';
+  txRatio.Caption:=it.SubItems[idxRatio-1];
+
+  j:=t.Integers['downloadLimitMode'];
+  if j = TR_SPEEDLIMIT_GLOBAL then
+    s:='-'
+  else begin
+    i:=t.Integers['downloadLimit'];
+    if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
+      s:=Utf8Encode(WideChar($221E))
+    else
+      s:=GetHumanSize(i*1024)+'/s';
+  end;
+  txDownLimit.Caption:=s;
+
+  j:=t.Integers['uploadLimitMode'];
+  if j = TR_SPEEDLIMIT_GLOBAL then
+    s:='-'
+  else begin
+    i:=t.Integers['uploadLimit'];
+    if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
+      s:=Utf8Encode(WideChar($221E))
+    else
+      s:=GetHumanSize(i*1024)+'/s';
+  end;
+  txUpLimit.Caption:=s;
+
+  txTrackerUpdate.Caption:=DateTimeToStr(UnixToDateTime(Trunc(t.Floats['nextAnnounceTime'])) + GetTimeZoneDelta);
+  txSeeds.Caption:=StringReplace(it.SubItems[idxSeeds-1], '/', ' of ', []) + ' connected';
+  s:=it.SubItems[idxPeers-1];
+  s:=StringReplace(s, ' ', ' connected ', []);
+  s:=StringReplace(s, '/', ' of ', []);
+  txPeers.Caption:=StringReplace(s, ')', ' in swarm)', []);
+  txMaxPeers.Caption:=t.Strings['maxConnectedPeers'];
   panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
 
   panGeneralInfo.ChildSizing.Layout:=cclNone;
+
+  txTorrentName.Caption:=it.Caption;
+  txCreated.Caption:=Format('%s by %s', [DateTimeToStr(UnixToDateTime(Trunc(t.Floats['dateCreated'])) + GetTimeZoneDelta), t.Strings['creator']]);
   txTotalSize.Caption:=Format('%s (%s done)', [GetHumanSize(t.Floats['totalSize']), GetHumanSize(t.Floats['sizeWhenDone'] - t.Floats['leftUntilDone'])]);
   if t.Floats['totalSize'] = t.Floats['haveValid'] then
     i:=t.Integers['pieceCount']
