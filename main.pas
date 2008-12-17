@@ -50,11 +50,14 @@ type
     ActionList: TActionList;
     ApplicationProperties: TApplicationProperties;
     ImageList16: TImageList;
+    txError: TLabel;
+    txErrorLabel: TLabel;
     MenuItem17: TMenuItem;
     MenuItem18: TMenuItem;
     miOptions: TMenuItem;
     DummyTimer: TTimer;
     MainToolBar: TToolBar;
+    panTransfer: TPanel;
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
@@ -146,6 +149,7 @@ type
     function ShowConnOptions: boolean;
     procedure SaveColumns(LV: TListView; const AName: string);
     procedure LoadColumns(LV: TListView; const AName: string);
+    function GetTorrentError(t: TJSONObject): string;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -179,8 +183,9 @@ const
   idxSeedsTotal = 12;
   idxLeechers = 13;
   idxPeersTotal = 14;
+  idxStateImg = 15;
 
-  idxTorrentColCount = 15;
+  idxTorrentColCount = 16;
 
   // Peers list
   idxPeerIP = 0;
@@ -626,6 +631,7 @@ begin
   lvPeers.Clear;
   lvFiles.Clear;
   panGeneralInfo.ChildSizing.Layout:=cclNone;
+  panTransfer.ChildSizing.Layout:=cclNone;
   txTotalSize.Caption:='';
   txPieces.Caption:='';
   txHash.Caption:='';
@@ -715,9 +721,27 @@ begin
   end;
 end;
 
+function TMainForm.GetTorrentError(t: TJSONObject): string;
+var
+  i: integer;
+begin
+  Result:=t.Strings['errorString'];
+  if Result = '' then begin
+    Result:=t.Strings['announceResponse'];
+    if Result <> '' then begin
+      i:=Pos('(', Result);
+      if i <> 0 then
+        if Copy(Result, i, 5) = '(200)' then
+          Result:=''
+        else
+          Result:='Tracker: ' + Copy(Result, 1, i - 1);
+    end;
+  end;
+end;
+
 procedure TMainForm.FillTorrentsList(list: TJSONArray);
 var
-  i, j, row, id: integer;
+  i, j, row, id, StateImg: integer;
   t: TJSONObject;
   f: double;
 begin
@@ -730,6 +754,8 @@ begin
     FTorrents[idxTag, i]:=0;
 
   for i:=0 to list.Count - 1 do begin
+    StateImg:=-1;
+
     t:=list[i] as TJSONObject;
     id:=t.Integers['id'];
     row:=FTorrents.Count;
@@ -746,6 +772,13 @@ begin
 
     FTorrents[idxSize, row]:=t.Floats['totalSize'];
     FTorrents[idxStatus, row]:=t.Integers['status'];
+    case integer(FTorrents[idxStatus, row]) of
+      TR_STATUS_CHECK_WAIT: StateImg:=16;
+      TR_STATUS_CHECK:      StateImg:=16;
+      TR_STATUS_DOWNLOAD:   StateImg:=9;
+      TR_STATUS_SEED:       StateImg:=10;
+      TR_STATUS_STOPPED:    StateImg:=14;
+    end;
 
     if FTorrents[idxStatus, row] = TR_STATUS_CHECK then
       f:=t.Floats['recheckProgress']*100.0
@@ -753,6 +786,8 @@ begin
       f:=t.Floats['sizeWhenDone'];
       if f <> 0 then
         f:=(f - t.Floats['leftUntilDone'])*100.0/f;
+      if (StateImg = 14) and (t.Floats['leftUntilDone'] <> 0) then
+        StateImg:=15;
     end;
     FTorrents[idxDone, row]:=f;
 
@@ -765,11 +800,19 @@ begin
     FTorrents[idxUpSpeed, row]:=t.Integers['rateUpload'];
     FTorrents[idxETA, row]:=t.Integers['eta'];
 
+    if GetTorrentError(t) <> '' then
+      if t.Strings['errorString'] <> '' then
+        StateImg:=13
+      else
+        if StateImg in [9,10] then
+          Inc(StateImg, 2);
+
     f:=t.Floats['uploadRatio'];
     if f = -2 then
       f:=MaxInt;
     FTorrents[idxRatio, row]:=f;
 
+    FTorrents[idxStateImg, row]:=StateImg;
     FTorrents[idxTag, row]:=1;
   end;
 
@@ -818,6 +861,7 @@ begin
         it:=lvTorrents.Items[i];
 
       it.Caption:=FTorrents[idxName, i];
+      it.ImageIndex:=FTorrents[idxStateImg, i];
 
       SetSubItem(idxSize, GetHumanSize(FTorrents[idxSize, i], 0));
 
@@ -1104,6 +1148,10 @@ procedure TMainForm.FillGeneralInfo(t: TJSONObject);
 var
   i: integer;
 begin
+  panTransfer.ChildSizing.Layout:=cclNone;
+  txError.Caption:=GetTorrentError(t);
+  panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
+
   panGeneralInfo.ChildSizing.Layout:=cclNone;
   txTotalSize.Caption:=Format('%s (%s done)', [GetHumanSize(t.Floats['totalSize']), GetHumanSize(t.Floats['sizeWhenDone'] - t.Floats['leftUntilDone'])]);
   if t.Floats['totalSize'] = t.Floats['haveValid'] then
