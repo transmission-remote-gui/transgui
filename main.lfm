@@ -160,7 +160,6 @@ object MainForm: TMainForm
           ChildSizing.HorizontalSpacing = 16
           ChildSizing.VerticalSpacing = 4
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-          ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 4
           ClientHeight = 58
           ClientWidth = 729
@@ -274,7 +273,6 @@ object MainForm: TMainForm
           ChildSizing.HorizontalSpacing = 16
           ChildSizing.VerticalSpacing = 4
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-          ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 6
           ClientHeight = 94
           ClientWidth = 729
@@ -283,7 +281,7 @@ object MainForm: TMainForm
             Left = 4
             Height = 14
             Top = 4
-            Width = 115
+            Width = 36
             Caption = 'Status:'
             ParentColor = False
           end
@@ -291,7 +289,7 @@ object MainForm: TMainForm
             Left = 135
             Height = 14
             Top = 4
-            Width = 101
+            Width = 42
             Caption = 'txStatus'
             ParentColor = False
           end
@@ -299,7 +297,7 @@ object MainForm: TMainForm
             Left = 252
             Height = 14
             Top = 4
-            Width = 101
+            Width = 29
             Caption = 'Error:'
             ParentColor = False
           end
@@ -307,7 +305,7 @@ object MainForm: TMainForm
             Left = 369
             Height = 14
             Top = 4
-            Width = 87
+            Width = 35
             Caption = 'txError'
             ParentColor = False
           end
@@ -315,7 +313,7 @@ object MainForm: TMainForm
             Left = 472
             Height = 14
             Top = 4
-            Width = 124
+            Width = 54
             Caption = 'Remaining:'
             ParentColor = False
           end
@@ -323,7 +321,7 @@ object MainForm: TMainForm
             Left = 612
             Height = 14
             Top = 4
-            Width = 113
+            Width = 60
             Caption = 'txRemaining'
             ParentColor = False
           end
@@ -331,7 +329,7 @@ object MainForm: TMainForm
             Left = 4
             Height = 14
             Top = 22
-            Width = 115
+            Width = 64
             Caption = 'Downloaded:'
             ParentColor = False
           end
@@ -339,7 +337,7 @@ object MainForm: TMainForm
             Left = 135
             Height = 14
             Top = 22
-            Width = 101
+            Width = 70
             Caption = 'txDownloaded'
             ParentColor = False
           end
@@ -347,7 +345,7 @@ object MainForm: TMainForm
             Left = 252
             Height = 14
             Top = 22
-            Width = 101
+            Width = 50
             Caption = 'Uploaded:'
             ParentColor = False
           end
@@ -355,7 +353,7 @@ object MainForm: TMainForm
             Left = 369
             Height = 14
             Top = 22
-            Width = 87
+            Width = 56
             Caption = 'txUploaded'
             ParentColor = False
           end
@@ -363,7 +361,7 @@ object MainForm: TMainForm
             Left = 472
             Height = 14
             Top = 22
-            Width = 124
+            Width = 42
             Caption = 'Wasted:'
             ParentColor = False
           end
@@ -371,7 +369,7 @@ object MainForm: TMainForm
             Left = 612
             Height = 14
             Top = 22
-            Width = 113
+            Width = 48
             Caption = 'txWasted'
             ParentColor = False
           end
@@ -379,7 +377,7 @@ object MainForm: TMainForm
             Left = 4
             Height = 14
             Top = 40
-            Width = 115
+            Width = 84
             Caption = 'Download speed:'
             ParentColor = False
           end
@@ -387,7 +385,7 @@ object MainForm: TMainForm
             Left = 135
             Height = 14
             Top = 40
-            Width = 101
+            Width = 68
             Caption = 'txDownSpeed'
             ParentColor = False
           end
@@ -395,7 +393,7 @@ object MainForm: TMainForm
             Left = 252
             Height = 14
             Top = 40
-            Width = 101
+            Width = 70
             Caption = 'Upload speed:'
             ParentColor = False
           end
@@ -403,7 +401,7 @@ object MainForm: TMainForm
             Left = 369
             Height = 14
             Top = 40
-            Width = 87
+            Width = 54
             Caption = 'txUpSpeed'
             ParentColor = False
           end
@@ -411,7 +409,7 @@ object MainForm: TMainForm
             Left = 472
             Height = 14
             Top = 40
-            Width = 124
+            Width = 58
             Caption = 'Share ratio:'
             ParentColor = False
           end
@@ -419,7 +417,7 @@ object MainForm: TMainForm
             Left = 612
             Height = 14
             Top = 40
-            Width = 113
+            Width = 36
             Caption = 'txRatio'
             ParentColor = False
           end
@@ -427,7 +425,7 @@ object MainForm: TMainForm
             Left = 4
             Height = 14
             Top = 58
-            Width = 115
+            Width = 53
             Caption = 'Down limit:'
             ParentColor = False
           end
@@ -435,7 +433,7 @@ object MainForm: TMainForm
             Left = 135
             Height = 14
             Top = 58
-            Width = 101
+            Width = 59
             Caption = 'txDownLimit'
             ParentColor = False
           end
@@ -443,7 +441,7 @@ object MainForm: TMainForm
             Left = 252
             Height = 14
             Top = 58
-            Width = 101
+            Width = 39
             Caption = 'Up limit:'
             ParentColor = False
           end
@@ -451,7 +449,7 @@ object MainForm: TMainForm
             Left = 369
             Height = 14
             Top = 58
-            Width = 87
+            Width = 45
             Caption = 'txUpLimit'
             ParentColor = False
           end
@@ -459,7 +457,7 @@ object MainForm: TMainForm
             Left = 472
             Height = 14
             Top = 58
-            Width = 124
+            Width = 93
             Caption = 'Tracker update on:'
             ParentColor = False
           end
@@ -467,7 +465,7 @@ object MainForm: TMainForm
             Left = 612
             Height = 14
             Top = 58
-            Width = 113
+            Width = 82
             Caption = 'txTrackerUpdate'
             ParentColor = False
           end
@@ -475,7 +473,7 @@ object MainForm: TMainForm
             Left = 4
             Height = 14
             Top = 76
-            Width = 115
+            Width = 34
             Caption = 'Seeds:'
             ParentColor = False
           end
@@ -483,7 +481,7 @@ object MainForm: TMainForm
             Left = 135
             Height = 14
             Top = 76
-            Width = 101
+            Width = 40
             Caption = 'txSeeds'
             ParentColor = False
           end
@@ -491,7 +489,7 @@ object MainForm: TMainForm
             Left = 252
             Height = 14
             Top = 76
-            Width = 101
+            Width = 32
             Caption = 'Peers:'
             ParentColor = False
           end
@@ -499,7 +497,7 @@ object MainForm: TMainForm
             Left = 369
             Height = 14
             Top = 76
-            Width = 87
+            Width = 38
             Caption = 'txPeers'
             ParentColor = False
           end
@@ -507,7 +505,7 @@ object MainForm: TMainForm
             Left = 472
             Height = 14
             Top = 76
-            Width = 124
+            Width = 55
             Caption = 'Max peers:'
             ParentColor = False
           end
@@ -515,7 +513,7 @@ object MainForm: TMainForm
             Left = 612
             Height = 14
             Top = 76
-            Width = 113
+            Width = 58
             Caption = 'txMaxPeers'
             ParentColor = False
           end
