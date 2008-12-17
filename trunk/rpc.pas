@@ -229,7 +229,7 @@ begin
   args:=FRpc.RequestInfo(0, ['id', 'name', 'totalSize', 'rateDownload', 'rateUpload', 'seeders',
                         'eta', 'peersConnected', 'peersGettingFromUs', 'peersSendingToUs',
                         'leftUntilDone', 'sizeWhenDone', 'status', 'leechers', 'peersKnown',
-                        'recheckProgress', 'uploadRatio']);
+                        'recheckProgress', 'uploadRatio', 'errorString', 'announceResponse']);
   try
     if args <> nil then begin
       ResultData:=args.Arrays['torrents'];
@@ -287,8 +287,8 @@ var
   t: TJSONArray;
 begin
   args:=FRpc.RequestInfo(TorrentId, ['totalSize', 'sizeWhenDone', 'leftUntilDone', 'pieceCount', 'pieceSize', 'haveValid',
-                                         'hashString', 'comment']);
-  try
+                                     'hashString', 'comment', 'errorString', 'announceResponse']);
+try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
       if t.Count > 0 then
