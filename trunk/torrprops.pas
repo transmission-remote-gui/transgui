@@ -17,24 +17,40 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 *************************************************************************************}
 
-program transgui;
+unit TorrProps;
 
 {$mode objfpc}{$H+}
 
+interface
+
 uses
-  {$IFDEF UNIX}
-  cthreads,
-  {$ENDIF}
-  Interfaces, // this includes the LCL widgetset
-  Forms
-  { you can add units after this }, Main, LResources, rpc, AddTorrent, ConnOptions, varlist, tz, TorrProps;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin;
 
-{$IFDEF WINDOWS}{$R transgui.rc}{$ENDIF}
+type
 
-begin
-  {$I transgui.lrs}
-  Application.Initialize;
-  Application.CreateForm(TMainForm, MainForm);
-  Application.Run;
+  { TTorrPropsForm }
+
+  TTorrPropsForm = class(TForm)
+    btCancel: TButton;
+    btOK: TButton;
+    cbMaxDown: TCheckBox;
+    cbMaxUp: TCheckBox;
+    edMaxUp: TSpinEdit;
+    gbBandwidth: TGroupBox;
+    edMaxDown: TSpinEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    txName: TLabel;
+  private
+    { private declarations }
+  public
+    { public declarations }
+  end; 
+
+implementation
+
+initialization
+  {$I torrprops.lrs}
+
 end.
 

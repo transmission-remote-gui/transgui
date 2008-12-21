@@ -894,6 +894,10 @@ object MainForm: TMainForm
         Action = acVerifyTorrent
         OnClick = acVerifyTorrentExecute
       end
+      object MenuItem21: TMenuItem
+        Action = acTorrentProps
+        OnClick = acTorrentPropsExecute
+      end
       object MenuItem1: TMenuItem
         Caption = '-'
       end
@@ -967,7 +971,7 @@ object MainForm: TMainForm
     end
     object acStartTorrent: TAction
       Category = 'Torrent'
-      Caption = 'Start torrent'
+      Caption = 'Start'
       DisableIfNoHandler = True
       Hint = 'Start torrent'
       ImageIndex = 1
@@ -975,7 +979,7 @@ object MainForm: TMainForm
     end
     object acStopTorrent: TAction
       Category = 'Torrent'
-      Caption = 'Stop torrent'
+      Caption = 'Stop'
       DisableIfNoHandler = True
       Hint = 'Stop torrent'
       ImageIndex = 2
@@ -983,7 +987,7 @@ object MainForm: TMainForm
     end
     object acRemoveTorrent: TAction
       Category = 'Torrent'
-      Caption = 'Remove torrent'
+      Caption = 'Remove'
       DisableIfNoHandler = True
       Hint = 'Remove torrent'
       ImageIndex = 3
@@ -991,7 +995,7 @@ object MainForm: TMainForm
     end
     object acVerifyTorrent: TAction
       Category = 'Torrent'
-      Caption = 'Verify torrent'
+      Caption = 'Verify'
       DisableIfNoHandler = True
       Hint = 'Verify torrent'
       OnExecute = acVerifyTorrentExecute
@@ -1029,6 +1033,12 @@ object MainForm: TMainForm
       Caption = 'Transmission options...'
       DisableIfNoHandler = True
       ImageIndex = 8
+    end
+    object acTorrentProps: TAction
+      Category = 'Torrent'
+      Caption = 'Properties...'
+      DisableIfNoHandler = True
+      OnExecute = acTorrentPropsExecute
     end
   end
   object DetailsTimer: TTimer
@@ -1173,6 +1183,14 @@ object MainForm: TMainForm
       Action = acVerifyTorrent
       OnClick = acVerifyTorrentExecute
     end
+    object MenuItem19: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem20: TMenuItem
+      Action = acTorrentProps
+      Default = True
+      OnClick = acTorrentPropsExecute
+    end
   end
   object ApplicationProperties: TApplicationProperties
     CaptureExceptions = True
@@ -1181,6 +1199,7 @@ object MainForm: TMainForm
     HintPause = 500
     HintShortCuts = True
     ShowHint = True
+    OnException = ApplicationPropertiesException
     OnIdle = ApplicationPropertiesIdle
     left = 348
     top = 52

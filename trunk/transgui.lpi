@@ -34,7 +34,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="transgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -79,6 +79,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tz"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="torrprops.pas"/>
+        <ComponentName Value="TorrPropsForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="torrprops.lrs"/>
+        <UnitName Value="TorrProps"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
