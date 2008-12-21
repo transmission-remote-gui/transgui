@@ -46,10 +46,14 @@ type
     acSetNotDownload: TAction;
     acConnOptions: TAction;
     acOptions: TAction;
+    acTorrentProps: TAction;
     acVerifyTorrent: TAction;
     ActionList: TActionList;
     ApplicationProperties: TApplicationProperties;
     ImageList16: TImageList;
+    MenuItem19: TMenuItem;
+    MenuItem20: TMenuItem;
+    MenuItem21: TMenuItem;
     txCreated: TLabel;
     txCreatedLabel: TLabel;
     txTorrentName: TLabel;
@@ -160,7 +164,9 @@ type
     procedure acSetNotDownloadExecute(Sender: TObject);
     procedure acStartTorrentExecute(Sender: TObject);
     procedure acStopTorrentExecute(Sender: TObject);
+    procedure acTorrentPropsExecute(Sender: TObject);
     procedure acVerifyTorrentExecute(Sender: TObject);
+    procedure ApplicationPropertiesException(Sender: TObject; E: Exception);
     procedure ApplicationPropertiesIdle(Sender: TObject; var Done: Boolean);
     procedure DummyTimerTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -246,7 +252,7 @@ const
 
 implementation
 
-uses AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz;
+uses AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz, TorrProps;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -256,17 +262,21 @@ const
   TR_STATUS_STOPPED      = ( 1 shl 4 ); // Torrent is stopped
 
   TR_SPEEDLIMIT_GLOBAL    = 0;    // only follow the overall speed limit
-  TR_SPEEDLIMIT_SINGLE    = 0;    // only follow the per-torrent limit
-  TR_SPEEDLIMIT_UNLIMITED = 0;    // no limits at all
+  TR_SPEEDLIMIT_SINGLE    = 1;    // only follow the per-torrent limit
+  TR_SPEEDLIMIT_UNLIMITED = 2;    // no limits at all
 
 const
-  SizeNames: array[1..5] of string = ('B', 'KB', 'MB', 'GB', 'TB');
+  SizeNames: array[1..5] of string = ('b', 'KB', 'MB', 'GB', 'TB');
 
 function GetHumanSize(sz: double; RoundTo: integer = 0): string;
 var
   i: integer;
 begin
   i:=Low(SizeNames);
+  if RoundTo > 0 then begin
+    Inc(i);
+    sz:=sz/1024;
+  end;
   while i <= High(SizeNames) do begin
     if sz < 1024 then
       break;
@@ -276,6 +286,30 @@ begin
   if (RoundTo = 0) and (i > 3) then
     RoundTo:=i - 2;
   Result:=Format('%.' + IntToStr(RoundTo) + 'f %s', [sz, SizeNames[i]]);
+end;
+
+var
+  BusyCount: integer = 0;
+
+procedure AppBusy;
+begin
+  Inc(BusyCount);
+  Screen.Cursor:=crHourGlass;
+end;
+
+procedure AppNormal;
+begin
+  Dec(BusyCount);
+  if BusyCount <= 0 then begin
+    BusyCount:=0;
+    Screen.Cursor:=crDefault;
+  end;
+end;
+
+procedure ForceAppNormal;
+begin
+  BusyCount:=0;
+  AppNormal;
 end;
 
 { TMainForm }
@@ -412,6 +446,7 @@ begin
     fs.Free;
   end;
 
+  AppBusy;
   req:=TJSONObject.Create;
   try
     req.Add('method', 'torrent-add');
@@ -439,6 +474,8 @@ begin
     exit;
   end;
 
+  RpcObj.RefreshNow:=True;
+
   try
     with TAddTorrentForm.Create(Self) do
     try
@@ -463,7 +500,11 @@ begin
         args.Free;
       end;
 
+      AppNormal;
+
       if ShowModal = mrOk then begin
+        AppBusy;
+        Self.Update;
         req:=TJSONObject.Create;
         try
           req.Add('method', 'torrent-set');
@@ -512,6 +553,7 @@ begin
             end;
 
         id:=0;
+        AppNormal;
       end;
     finally
       Free;
@@ -566,11 +608,89 @@ begin
   TorrentAction(PtrUInt(lvTorrents.Selected.Data), 'stop');
 end;
 
+procedure TMainForm.acTorrentPropsExecute(Sender: TObject);
+var
+  req, res, args, t: TJSONObject;
+  i, j, id: integer;
+begin
+  AppBusy;
+  id:=RpcObj.CurTorrentId;
+  with TTorrPropsForm.Create(Self) do
+  try
+    args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode',
+                                                   'uploadLimit', 'uploadLimitMode', 'name']);
+    if args = nil then begin
+      CheckStatus(False);
+      exit;
+    end;
+    try
+      t:=args.Arrays['torrents'].Objects[0];
+
+      txName.Caption:=txName.Caption + ' ' + t.Strings['name'];
+
+      j:=t.Integers['downloadLimitMode'];
+      cbMaxDown.Checked:=j = TR_SPEEDLIMIT_SINGLE;
+      i:=t.Integers['downloadLimit'];
+      if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
+        edMaxDown.ValueEmpty:=True
+      else
+        edMaxDown.Value:=i;
+
+      j:=t.Integers['uploadLimitMode'];
+      cbMaxUp.Checked:=j = TR_SPEEDLIMIT_SINGLE;
+      i:=t.Integers['uploadLimit'];
+      if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
+        edMaxUp.ValueEmpty:=True
+      else
+        edMaxUp.Value:=i;
+    finally
+      args.Free;
+    end;
+    AppNormal;
+    if ShowModal = mrOk then begin
+      AppBusy;
+      Self.Update;
+      req:=TJSONObject.Create;
+      try
+        req.Add('method', 'torrent-set');
+        args:=TJSONObject.Create;
+        args.Add('ids', TJSONArray.Create([id]));
+        args.Add('speed-limit-down-enabled', TJSONIntegerNumber.Create(integer(cbMaxDown.Checked) and 1));
+        if cbMaxDown.Checked then
+          args.Add('speed-limit-down', TJSONIntegerNumber.Create(edMaxDown.Value));
+        args.Add('speed-limit-up-enabled', TJSONIntegerNumber.Create(integer(cbMaxUp.Checked) and 1));
+        if cbMaxUp.Checked then
+          args.Add('speed-limit-up', TJSONIntegerNumber.Create(edMaxUp.Value));
+        req.Add('arguments', args);
+        args:=nil;
+        res:=RpcObj.SendRequest(req);
+        if res = nil then begin
+          CheckStatus(False);
+          exit;
+        end;
+        res.Free;
+      finally
+        req.Free;
+      end;
+      RpcObj.RefreshNow:=True;
+      AppNormal;
+    end;
+  finally
+    Free;
+  end;
+end;
+
 procedure TMainForm.acVerifyTorrentExecute(Sender: TObject);
 begin
   if lvTorrents.Selected = nil then exit;
   if MessageDlg('', Format('Torrent verification may take a long time.'#13'Are you sure to start verification of torrent ''%s''?', [lvTorrents.Selected.Caption]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
   TorrentAction(PtrUInt(lvTorrents.Selected.Data), 'verify');
+end;
+
+procedure TMainForm.ApplicationPropertiesException(Sender: TObject; E: Exception);
+begin
+  ForceAppNormal;
+  MessageDlg(E.Message, mtError, [mbOK], 0);
 end;
 
 procedure TMainForm.ApplicationPropertiesIdle(Sender: TObject; var Done: Boolean);
@@ -720,6 +840,7 @@ begin
   acStopTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
   acVerifyTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
   acRemoveTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
+  acTorrentProps.Enabled:=acRemoveTorrent.Enabled;
 
   acSetHighPriority.Enabled:=RpcObj.Connected and (lvTorrents.Selected <> nil) and
                       (lvFiles.Selected <> nil) and (PageInfo.ActivePage = tabFiles);
@@ -1317,6 +1438,7 @@ begin
     RpcObj.Status:='';
     if Fatal then
       DoDisconnect;
+    ForceAppNormal;
     MessageDlg(s, mtError, [mbOK], 0);
   end;
   StatusBar.Panels[0].Text:=RpcObj.InfoStatus;
@@ -1329,6 +1451,7 @@ function TMainForm.TorrentAction(TorrentId: integer; const AAction: string): boo
 var
   req, res, args: TJSONObject;
 begin
+  AppBusy;
   req:=TJSONObject.Create;
   try
     req.Add('method', 'torrent-' + AAction);
@@ -1346,6 +1469,7 @@ begin
     CheckStatus(False)
   else
     RpcObj.RefreshNow:=True;
+  AppNormal;
 end;
 
 function TMainForm.SetFilePriority(TorrentId, FileIdx: integer; const APriority: string): boolean;
