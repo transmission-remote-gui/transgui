@@ -8,9 +8,8 @@ object AddTorrentForm: TAddTorrentForm
   ClientHeight = 405
   ClientWidth = 506
   OnShow = FormShow
-  ParentFont = False
   Position = poMainFormCenter
-  LCLVersion = '0.9.26'
+  LCLVersion = '0.9.27'
   object gbSaveAs: TGroupBox
     Left = 8
     Height = 88
@@ -35,7 +34,6 @@ object AddTorrentForm: TAddTorrentForm
       Anchors = [akTop, akLeft, akRight]
       Enabled = False
       ItemHeight = 13
-      MaxLength = -1
       ParentColor = True
       TabOrder = 0
     end

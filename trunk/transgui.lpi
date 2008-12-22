@@ -2,15 +2,15 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="\"/>
-    <Version Value="6"/>
+    <Version Value="7"/>
     <General>
       <Flags>
         <AlwaysBuild Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
-      <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
       <UseXPManifest Value="True"/>
     </General>
@@ -45,7 +45,6 @@
         <ComponentName Value="MainForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="main.lrs"/>
         <UnitName Value="Main"/>
       </Unit1>
       <Unit2>
@@ -58,7 +57,6 @@
         <ComponentName Value="AddTorrentForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="addtorrent.lrs"/>
         <UnitName Value="AddTorrent"/>
       </Unit3>
       <Unit4>
@@ -66,7 +64,6 @@
         <ComponentName Value="ConnOptionsForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="connoptions.lrs"/>
         <UnitName Value="ConnOptions"/>
       </Unit4>
       <Unit5>
@@ -84,7 +81,6 @@
         <ComponentName Value="TorrPropsForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="torrprops.lrs"/>
         <UnitName Value="TorrProps"/>
       </Unit7>
       <Unit8>
@@ -92,7 +88,6 @@
         <ComponentName Value="DaemonOptionsForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="daemonoptions.lrs"/>
         <UnitName Value="DaemonOptions"/>
       </Unit8>
     </Units>
