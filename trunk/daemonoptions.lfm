@@ -1,24 +1,24 @@
 object DaemonOptionsForm: TDaemonOptionsForm
   Left = 380
-  Height = 272
+  Height = 303
   Top = 213
   Width = 410
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Transmission options'
-  ClientHeight = 272
+  ClientHeight = 303
   ClientWidth = 410
   ParentFont = False
   Position = poMainFormCenter
   LCLVersion = '0.9.26'
   object gbBandwidth: TGroupBox
     Left = 8
-    Height = 87
-    Top = 144
+    Height = 86
+    Top = 176
     Width = 394
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Global bandwidth settings'
-    ClientHeight = 69
+    ClientHeight = 68
     ClientWidth = 390
     TabOrder = 2
     object Label1: TLabel
@@ -79,7 +79,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
   object btOK: TButton
     Left = 245
     Height = 23
-    Top = 242
+    Top = 273
     Width = 75
     Anchors = [akRight, akBottom]
     Caption = 'OK'
@@ -90,7 +90,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
   object btCancel: TButton
     Left = 327
     Height = 23
-    Top = 242
+    Top = 273
     Width = 75
     Anchors = [akRight, akBottom]
     Cancel = True
@@ -100,11 +100,11 @@ object DaemonOptionsForm: TDaemonOptionsForm
   end
   object GroupBox1: TGroupBox
     Left = 8
-    Height = 133
+    Height = 165
     Top = 4
     Width = 394
     Anchors = [akTop, akLeft, akRight]
-    ClientHeight = 115
+    ClientHeight = 147
     ClientWidth = 390
     TabOrder = 3
     object txDownloadDir: TLabel
@@ -129,6 +129,14 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Top = 64
       Width = 56
       Caption = 'Encryption:'
+      ParentColor = False
+    end
+    object txPeerLimit: TLabel
+      Left = 6
+      Height = 14
+      Top = 116
+      Width = 48
+      Caption = 'Peer limit:'
       ParentColor = False
     end
     object edDownloadDir: TEdit
@@ -179,6 +187,16 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Width = 133
       Caption = 'Enable Peer Exchange'
       TabOrder = 4
+    end
+    object edMaxPeers: TSpinEdit
+      Left = 114
+      Height = 23
+      Top = 112
+      Width = 66
+      MaxValue = 99999
+      MinValue = 1
+      TabOrder = 5
+      Value = 1
     end
   end
 end
