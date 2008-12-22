@@ -601,6 +601,7 @@ begin
             cbEncryption.ItemIndex:=2
           else
             cbEncryption.ItemIndex:=0;
+          edMaxPeers.Value:=args.Integers['peer-limit'];
           cbMaxDown.Checked:=args.Integers['speed-limit-down-enabled'] <> 0;
           edMaxDown.Value:=args.Integers['speed-limit-down'];
           cbMaxUp.Checked:=args.Integers['speed-limit-up-enabled'] <> 0;
@@ -634,6 +635,7 @@ begin
           else s:='tolerated';
         end;
         args.Add('encryption', TJSONString.Create(s));
+        args.Add('peer-limit', TJSONIntegerNumber.Create(edMaxPeers.Value));
         args.Add('speed-limit-down-enabled', TJSONIntegerNumber.Create(integer(cbMaxDown.Checked) and 1));
         if cbMaxDown.Checked then
           args.Add('speed-limit-down', TJSONIntegerNumber.Create(edMaxDown.Value));
@@ -1499,10 +1501,14 @@ begin
   txUpLimit.Caption:=s;
 
   f:=t.Floats['nextAnnounceTime'];
-  if f <> 0 then
-    txTrackerUpdate.Caption:=DateTimeToStr(UnixToDateTime(Trunc(f)) + GetTimeZoneDelta)
+  if f = 0 then
+    s:='-'
   else
-    txTrackerUpdate.Caption:='-';
+  if f = 1 then
+    s:='Updating...'
+  else
+    s:=DateTimeToStr(UnixToDateTime(Trunc(f)) + GetTimeZoneDelta);
+  txTrackerUpdate.Caption:=s;
   txSeeds.Caption:=StringReplace(it.SubItems[idxSeeds-1], '/', ' of ', []) + ' connected';
   s:=it.SubItems[idxPeers-1];
   s:=StringReplace(s, ' ', ' connected ', []);
