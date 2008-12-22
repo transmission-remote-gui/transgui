@@ -142,7 +142,7 @@ type
     PageInfo: TPageControl;
     pmTorrents: TPopupMenu;
     pmFiles: TPopupMenu;
-    ScrollBox1: TScrollBox;
+    sbGenInfo: TScrollBox;
     txPieces: TLabel;
     txPiecesLabel: TLabel;
     txTotalSize: TLabel;
@@ -157,6 +157,7 @@ type
     procedure acConnectExecute(Sender: TObject);
     procedure acConnOptionsExecute(Sender: TObject);
     procedure acDisconnectExecute(Sender: TObject);
+    procedure acOptionsExecute(Sender: TObject);
     procedure acRemoveTorrentExecute(Sender: TObject);
     procedure acSetHighPriorityExecute(Sender: TObject);
     procedure acSetLowPriorityExecute(Sender: TObject);
@@ -182,6 +183,7 @@ type
     procedure DetailsTimerTimer(Sender: TObject);
     procedure pmFilesPopup(Sender: TObject);
     procedure pmTorrentsPopup(Sender: TObject);
+    procedure sbGenInfoResize(Sender: TObject);
   private
     FIni: TIniFile;
     FStarted: boolean;
@@ -252,7 +254,7 @@ const
 
 implementation
 
-uses AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz, TorrProps;
+uses AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz, TorrProps, DaemonOptions;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -569,6 +571,92 @@ begin
   DoDisconnect;
 end;
 
+procedure TMainForm.acOptionsExecute(Sender: TObject);
+var
+  req, res, args: TJSONObject;
+  s: string;
+begin
+  with TDaemonOptionsForm.Create(Self) do
+  try
+    AppBusy;
+    req:=TJSONObject.Create;
+    try
+      req.Add('method', 'session-get');
+      res:=RpcObj.SendRequest(req);
+      if res <> nil then
+        try
+          args:=res.Objects['arguments'];
+          if args = nil then
+            raise Exception.Create('Arguments object not found.');
+
+          edDownloadDir.Text:=args.Strings['download-dir'];
+          edPort.Value:=args.Integers['port'];
+          cbPortForwarding.Checked:=args.Integers['port-forwarding-enabled'] <> 0;
+          cbPEX.Checked:=args.Integers['pex-allowed'] <> 0;
+          s:=args.Strings['encryption'];
+          if s = 'preferred' then
+            cbEncryption.ItemIndex:=1
+          else
+          if s = 'required' then
+            cbEncryption.ItemIndex:=2
+          else
+            cbEncryption.ItemIndex:=0;
+          cbMaxDown.Checked:=args.Integers['speed-limit-down-enabled'] <> 0;
+          edMaxDown.Value:=args.Integers['speed-limit-down'];
+          cbMaxUp.Checked:=args.Integers['speed-limit-up-enabled'] <> 0;
+          edMaxUp.Value:=args.Integers['speed-limit-up'];
+        finally
+          res.Free;
+        end
+      else begin
+        CheckStatus(False);
+        exit;
+      end;
+    finally
+      req.Free;
+    end;
+    AppNormal;
+
+    if ShowModal = mrOK then begin
+      AppBusy;
+      Self.Update;
+      req:=TJSONObject.Create;
+      try
+        req.Add('method', 'session-set');
+        args:=TJSONObject.Create;
+        args.Add('download-dir', TJSONString.Create(edDownloadDir.Text));
+        args.Add('port', TJSONIntegerNumber.Create(edPort.Value));
+        args.Add('port-forwarding-enabled', TJSONIntegerNumber.Create(integer(cbPortForwarding.Checked) and 1));
+        args.Add('pex-allowed', TJSONIntegerNumber.Create(integer(cbPEX.Checked) and 1));
+        case cbEncryption.ItemIndex of
+          1: s:='preferred';
+          2: s:='required';
+          else s:='tolerated';
+        end;
+        args.Add('encryption', TJSONString.Create(s));
+        args.Add('speed-limit-down-enabled', TJSONIntegerNumber.Create(integer(cbMaxDown.Checked) and 1));
+        if cbMaxDown.Checked then
+          args.Add('speed-limit-down', TJSONIntegerNumber.Create(edMaxDown.Value));
+        args.Add('speed-limit-up-enabled', TJSONIntegerNumber.Create(integer(cbMaxUp.Checked) and 1));
+        if cbMaxUp.Checked then
+          args.Add('speed-limit-up', TJSONIntegerNumber.Create(edMaxUp.Value));
+        req.Add('arguments', args);
+        res:=RpcObj.SendRequest(req);
+        if res = nil then begin
+          CheckStatus(False);
+          exit;
+        end;
+        res.Free;
+      finally
+        req.Free;
+      end;
+      AppNormal;
+    end;
+  finally
+    Free;
+  end;
+end;
+
 procedure TMainForm.acRemoveTorrentExecute(Sender: TObject);
 begin
   if lvTorrents.Selected = nil then exit;
@@ -762,6 +850,11 @@ end;
 procedure TMainForm.pmTorrentsPopup(Sender: TObject);
 begin
   UpdateUI;
+end;
+
+procedure TMainForm.sbGenInfoResize(Sender: TObject);
+begin
+  sbGenInfo.HorzScrollBar.Visible:=False;
 end;
 
 procedure TMainForm.DoConnect;
@@ -1361,6 +1454,7 @@ var
   i, j: integer;
   it: TListItem;
   s: string;
+  f: double;
 begin
   if lvTorrents.Selected = nil then exit;
   it:=lvTorrents.Selected;
@@ -1404,7 +1498,11 @@ begin
   end;
   txUpLimit.Caption:=s;
 
-  txTrackerUpdate.Caption:=DateTimeToStr(UnixToDateTime(Trunc(t.Floats['nextAnnounceTime'])) + GetTimeZoneDelta);
+  f:=t.Floats['nextAnnounceTime'];
+  if f <> 0 then
+    txTrackerUpdate.Caption:=DateTimeToStr(UnixToDateTime(Trunc(f)) + GetTimeZoneDelta)
+  else
+    txTrackerUpdate.Caption:='-';
   txSeeds.Caption:=StringReplace(it.SubItems[idxSeeds-1], '/', ' of ', []) + ' connected';
   s:=it.SubItems[idxPeers-1];
   s:=StringReplace(s, ' ', ' connected ', []);
@@ -1476,6 +1574,7 @@ function TMainForm.SetFilePriority(TorrentId, FileIdx: integer; const APriority:
 var
   req, res, args: TJSONObject;
 begin
+  AppBusy;
   req:=TJSONObject.Create;
   try
     req.Add('method', 'torrent-set');
@@ -1509,6 +1608,7 @@ begin
     CheckStatus(False)
   else
     RpcObj.RefreshNow:=True;
+  AppNormal;
 end;
 
 function TMainForm.SetCurrentFilePriority(const APriority: string): boolean;

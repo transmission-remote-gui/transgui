@@ -34,7 +34,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="9">
       <Unit0>
         <Filename Value="transgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -87,6 +87,14 @@
         <ResourceFilename Value="torrprops.lrs"/>
         <UnitName Value="TorrProps"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="daemonoptions.pas"/>
+        <ComponentName Value="DaemonOptionsForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="daemonoptions.lrs"/>
+        <UnitName Value="DaemonOptions"/>
+      </Unit8>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
