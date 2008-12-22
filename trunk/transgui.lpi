@@ -12,6 +12,7 @@
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
       <TargetFileExt Value=".exe"/>
+      <Icon Value="0"/>
       <UseXPManifest Value="True"/>
     </General>
     <VersionInfo>

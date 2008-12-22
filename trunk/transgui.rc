@@ -23,3 +23,4 @@ CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE
  "</trustInfo>"
  "</assembly>"
 }
+MAINICON ICON "transgui.ico"
