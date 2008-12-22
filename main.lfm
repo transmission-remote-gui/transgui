@@ -11,8 +11,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  ParentFont = False
-  LCLVersion = '0.9.26'
+  LCLVersion = '0.9.27'
   object StatusBar: TStatusBar
     Height = 23
     Top = 398
@@ -662,14 +661,12 @@ object MainForm: TMainForm
     Width = 741
     AutoSize = True
     Caption = 'MainToolBar'
-    Flat = True
     Images = ImageList16
     ParentShowHint = False
     ShowHint = True
     TabOrder = 4
     object ToolButton1: TToolButton
       Left = 1
-      Hint = 'Add torrent'
       Top = 2
       Action = acAddTorrent
     end
@@ -682,19 +679,16 @@ object MainForm: TMainForm
     end
     object ToolButton3: TToolButton
       Left = 27
-      Hint = 'Start torrent'
       Top = 2
       Action = acStartTorrent
     end
     object ToolButton4: TToolButton
       Left = 50
-      Hint = 'Stop torrent'
       Top = 2
       Action = acStopTorrent
     end
     object ToolButton5: TToolButton
       Left = 76
-      Hint = 'Remove torrent'
       Top = 2
       Action = acRemoveTorrent
     end
@@ -714,7 +708,6 @@ object MainForm: TMainForm
     end
     object ToolButton8: TToolButton
       Left = 102
-      Hint = 'Transmission options'
       Top = 2
       Action = acOptions
     end

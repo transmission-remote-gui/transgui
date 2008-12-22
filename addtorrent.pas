@@ -46,7 +46,6 @@ type
     procedure FormShow(Sender: TObject);
     procedure lvFilesMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   private
-    { private declarations }
   public
     { public declarations }
   end; 
@@ -61,16 +60,12 @@ procedure TAddTorrentForm.lvFilesMouseDown(Sender: TObject; Button: TMouseButton
 {$ifdef windows}
 var
   it: TListItem;
-  R: TRect;
 {$endif}
 begin
 {$ifdef windows}
   it:=lvFiles.GetItemAt(X, Y);
-  if it <> nil then begin
-    R:=it.DisplayRect(drLabel);
-    if PtInRect(Rect(0, R.Top, R.Left, R.Bottom), Point(X, Y)) then
-      it.Checked:=not it.Checked;
-  end;
+  if it <> nil then
+    it.Checked:=it.Checked;
 {$endif}
 end;
 
