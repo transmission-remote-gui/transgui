@@ -176,6 +176,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
     procedure lvTorrentsCompare(Sender: TObject; Item1, Item2: TListItem; Data: Integer; var Compare: Integer);
+    procedure lvTorrentsDblClick(Sender: TObject);
+    procedure lvTorrentsResize(Sender: TObject);
     procedure lvTorrentsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     procedure miCopyLabelClick(Sender: TObject);
     procedure miExitClick(Sender: TObject);
@@ -336,15 +338,12 @@ begin
     Position:=poDefaultPosOnly
   else begin
     ws:=TWindowState(FIni.ReadInteger('MainForm', 'State', integer(WindowState)));
-    if ws = wsNormal then begin
-      Left:=FIni.ReadInteger('MainForm', 'Left', Left);
-      Top:=FIni.ReadInteger('MainForm', 'Top', Top);
-      Width:=FIni.ReadInteger('MainForm', 'Width', Width);
-      Height:=FIni.ReadInteger('MainForm', 'Height', Height);
-    end
-    else
-      if ws = wsMaximized then
-        WindowState:=wsMaximized;
+    Left:=FIni.ReadInteger('MainForm', 'Left', Left);
+    Top:=FIni.ReadInteger('MainForm', 'Top', Top);
+    Width:=FIni.ReadInteger('MainForm', 'Width', Width);
+    Height:=FIni.ReadInteger('MainForm', 'Height', Height);
+    if ws = wsMaximized then
+      WindowState:=wsMaximized;
   end;
 
   LoadColumns(lvTorrents, 'TorrentsList');
@@ -366,10 +365,7 @@ end;
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
-  panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
-  panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
-  panTransfer.AutoSize:=True;
-  panGeneralInfo.AutoSize:=True;
+  DummyTimer.Enabled:=True;
 end;
 
 procedure TMainForm.lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
@@ -385,6 +381,17 @@ end;
 
 procedure TMainForm.lvTorrentsCompare(Sender: TObject; Item1, Item2: TListItem; Data: Integer; var Compare: Integer);
 begin
+end;
+
+procedure TMainForm.lvTorrentsDblClick(Sender: TObject);
+begin
+  acTorrentProps.Execute;
+end;
+
+procedure TMainForm.lvTorrentsResize(Sender: TObject);
+begin
+  if not FStarted then
+    VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
 end;
 
 procedure TMainForm.lvTorrentsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
@@ -794,15 +801,24 @@ begin
   if not FStarted then begin
     FStarted:=True;
     acConnect.Execute;
+    panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
+    panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
+    panTransfer.AutoSize:=True;
+    panGeneralInfo.AutoSize:=True;
+    Application.ProcessMessages;
+    panTransfer.AutoSize:=False;
+    panGeneralInfo.AutoSize:=False;
   end;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  FIni.WriteInteger('MainForm', 'Left', Left);
-  FIni.WriteInteger('MainForm', 'Top', Top);
-  FIni.WriteInteger('MainForm', 'Width', Width);
-  FIni.WriteInteger('MainForm', 'Height', Height);
+  if WindowState = wsNormal then begin
+    FIni.WriteInteger('MainForm', 'Left', Left);
+    FIni.WriteInteger('MainForm', 'Top', Top);
+    FIni.WriteInteger('MainForm', 'Width', Width);
+    FIni.WriteInteger('MainForm', 'Height', Height);
+  end;
   FIni.WriteInteger('MainForm', 'State', integer(WindowState));
 
   FIni.WriteInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition);

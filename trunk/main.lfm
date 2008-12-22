@@ -92,6 +92,8 @@ object MainForm: TMainForm
     ViewStyle = vsReport
     OnColumnClick = lvTorrentsColumnClick
     OnCompare = lvTorrentsCompare
+    OnDblClick = lvTorrentsDblClick
+    OnResize = lvTorrentsResize
     OnSelectItem = lvTorrentsSelectItem
   end
   object PageInfo: TPageControl
@@ -1265,6 +1267,7 @@ object MainForm: TMainForm
     end
   end
   object DummyTimer: TTimer
+    Enabled = False
     Interval = 100
     OnTimer = DummyTimerTimer
     left = 455
