@@ -6,6 +6,8 @@ object MainForm: TMainForm
   Caption = ' '
   ClientHeight = 421
   ClientWidth = 741
+  Constraints.MinHeight = 300
+  Constraints.MinWidth = 300
   Menu = MainMenu
   OnClose = FormClose
   OnCreate = FormCreate
@@ -984,6 +986,13 @@ object MainForm: TMainForm
       object MenuItem17: TMenuItem
         Action = acConnOptions
         OnClick = acConnOptionsExecute
+      end
+    end
+    object miHelp: TMenuItem
+      Caption = 'Help'
+      object miAbout: TMenuItem
+        Caption = 'About...'
+        OnClick = miAboutClick
       end
     end
   end

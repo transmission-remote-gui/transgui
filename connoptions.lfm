@@ -8,9 +8,10 @@ object ConnOptionsForm: TConnOptionsForm
   Caption = 'Connection options'
   ClientHeight = 239
   ClientWidth = 350
-  ParentFont = False
+  Constraints.MinHeight = 239
+  Constraints.MinWidth = 300
   Position = poMainFormCenter
-  LCLVersion = '0.9.26'
+  LCLVersion = '0.9.27'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 196

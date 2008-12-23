@@ -8,10 +8,10 @@ object TorrPropsForm: TTorrPropsForm
   Caption = 'Torrent properties'
   ClientHeight = 156
   ClientWidth = 350
+  Constraints.MinHeight = 156
   Constraints.MinWidth = 350
-  ParentFont = False
   Position = poMainFormCenter
-  LCLVersion = '0.9.26'
+  LCLVersion = '0.9.27'
   object txName: TLabel
     Left = 8
     Height = 14

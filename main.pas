@@ -29,6 +29,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
+  AppVersion = '0.9 beta';
 
 type
 
@@ -54,6 +55,8 @@ type
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
+    miAbout: TMenuItem;
+    miHelp: TMenuItem;
     txCreated: TLabel;
     txCreatedLabel: TLabel;
     txTorrentName: TLabel;
@@ -179,6 +182,7 @@ type
     procedure lvTorrentsDblClick(Sender: TObject);
     procedure lvTorrentsResize(Sender: TObject);
     procedure lvTorrentsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+    procedure miAboutClick(Sender: TObject);
     procedure miCopyLabelClick(Sender: TObject);
     procedure miExitClick(Sender: TObject);
     procedure PageInfoChange(Sender: TObject);
@@ -256,7 +260,7 @@ const
 
 implementation
 
-uses AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz, TorrProps, DaemonOptions;
+uses AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz, TorrProps, DaemonOptions, About;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -411,6 +415,16 @@ begin
 
   DetailsTimer.Enabled:=False;
   DetailsTimer.Enabled:=True;
+end;
+
+procedure TMainForm.miAboutClick(Sender: TObject);
+begin
+  with TAboutForm.Create(Self) do
+  try
+    ShowModal;
+  finally
+    Free;
+  end;
 end;
 
 procedure TMainForm.miCopyLabelClick(Sender: TObject);
