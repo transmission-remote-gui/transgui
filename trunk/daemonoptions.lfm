@@ -3,6 +3,10 @@ object DaemonOptionsForm: TDaemonOptionsForm
   Height = 303
   Top = 213
   Width = 410
+  HorzScrollBar.Page = 409
+  VertScrollBar.Page = 302
+  VertScrollBar.Range = 169
+  AutoScroll = False
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Transmission options'

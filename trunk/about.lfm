@@ -2,18 +2,21 @@ object AboutForm: TAboutForm
   Left = 384
   Height = 317
   Top = 185
-  Width = 419
+  Width = 424
+  HorzScrollBar.Page = 423
+  VertScrollBar.Page = 316
+  AutoScroll = False
   BorderIcons = [biSystemMenu]
   Caption = 'About'
   ClientHeight = 317
-  ClientWidth = 419
+  ClientWidth = 424
   Constraints.MinHeight = 300
   Constraints.MinWidth = 300
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '0.9.27'
   object btOK: TButton
-    Left = 339
+    Left = 344
     Height = 23
     Top = 289
     Width = 75
@@ -28,10 +31,10 @@ object AboutForm: TAboutForm
     Left = 6
     Height = 276
     Top = 8
-    Width = 408
-    ActivePage = tabAbout
+    Width = 413
+    ActivePage = tabLicense
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 1
     object tabAbout: TTabSheet
       Caption = 'About'
@@ -140,7 +143,7 @@ object AboutForm: TAboutForm
         }
       end
       object imgSynapse: TImage
-        Left = 10
+        Left = 154
         Height = 42
         Top = 194
         Width = 102
@@ -282,7 +285,7 @@ object AboutForm: TAboutForm
         }
       end
       object imgLazarus: TImage
-        Left = 126
+        Left = 10
         Height = 57
         Top = 179
         Width = 125
@@ -492,12 +495,12 @@ object AboutForm: TAboutForm
     object tabLicense: TTabSheet
       Caption = 'License'
       ClientHeight = 250
-      ClientWidth = 400
+      ClientWidth = 405
       object edLicense: TMemo
         Left = 4
         Height = 242
         Top = 4
-        Width = 392
+        Width = 397
         Align = alClient
         BorderSpacing.Around = 4
         Lines.Strings = (
@@ -864,8 +867,9 @@ object AboutForm: TAboutForm
           'Public License instead of this License.'
         )
         ReadOnly = True
-        ScrollBars = ssVertical
+        ScrollBars = ssBoth
         TabOrder = 0
+        WordWrap = False
       end
     end
   end
