@@ -260,7 +260,8 @@ const
 
 implementation
 
-uses AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz, TorrProps, DaemonOptions, About;
+uses AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz, TorrProps, DaemonOptions, About,
+     ToolWin;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -320,6 +321,47 @@ begin
   AppNormal;
 end;
 
+function AddToChannel(Clr: TColor; Value: integer; Position: byte): TColor;
+var i: integer;
+
+begin
+     i:=(Clr shr (Position*8)) and $FF;
+     i:=i + Value;
+     if i < 0 then i:=0;
+     if i > $FF then i:=$FF;
+     Result:=Clr and (not (Cardinal($FF) shl (Position*8))) or (Cardinal(i) shl (Position*8));
+end;
+
+function AddToColor(Color: TColor; R, G, B: integer): TColor;
+begin
+     Result:=ColorToRGB(Color);
+     Result:=AddToChannel(Result, R, 0);
+     Result:=AddToChannel(Result, G, 1);
+     Result:=AddToChannel(Result, B, 2);
+end;
+
+function GetLikeColor(Color: TColor; Delta: integer): TColor;
+var i, j: integer;
+
+begin
+    Result:=ColorToRGB(Color);
+    j:=Result and $FF;               //red
+    i:=(Result shr 8) and $FF;       // green
+    if i > j then
+      j:=i;
+    i:=((Result shr 16) and $FF) shr 1;      // blue
+    if i > j then
+      j:=i;
+    if j < $80 then
+      i:=(($80 - j) div $20 + 1)*Delta
+    else
+      i:=Delta;
+    if (i + j > 255) or (i + j < 0) then
+      i:=-Delta;
+
+    Result:=AddToColor(Result, i, i, i);
+end;
+
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -337,6 +379,18 @@ begin
   DoDisconnect;
   PageInfo.ActivePageIndex:=0;
   PageInfoChange(nil);
+{$ifdef LCLgtk2}
+  with MainToolBar do begin
+    EdgeBorders:=[ebLeft, ebTop, ebRight, ebBottom];
+    EdgeInner:=esNone;
+    EdgeOuter:=esRaised;
+    Flat:=True;
+  end;
+{$endif}
+  txTransferHeader.Color:=GetLikeColor(clBtnFace, -15);
+  txTorrentHeader.Color:=txTransferHeader.Color;
+  txTransferHeader.Caption:=' ' + txTransferHeader.Caption;
+  txTorrentHeader.Caption:=' ' + txTorrentHeader.Caption;
 
   if FIni.ReadInteger('MainForm', 'State', -1) = -1 then
     Position:=poDefaultPosOnly
@@ -814,7 +868,9 @@ procedure TMainForm.DummyTimerTimer(Sender: TObject);
 begin
   if not FStarted then begin
     FStarted:=True;
+    Application.ProcessMessages;
     acConnect.Execute;
+    Application.ProcessMessages;
     panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
     panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
     panTransfer.AutoSize:=True;
@@ -928,6 +984,7 @@ begin
 
   RpcObj.InfoStatus:='Disconnected';
   CheckStatus;
+  UpdateUI;
 end;
 
 procedure TMainForm.ClearDetailsInfo;

@@ -3,6 +3,11 @@ object TorrPropsForm: TTorrPropsForm
   Height = 156
   Top = 185
   Width = 350
+  HorzScrollBar.Page = 349
+  HorzScrollBar.Range = 40
+  VertScrollBar.Page = 155
+  VertScrollBar.Range = 22
+  AutoScroll = False
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Torrent properties'

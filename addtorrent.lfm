@@ -3,6 +3,10 @@ object AddTorrentForm: TAddTorrentForm
   Height = 405
   Top = 185
   Width = 506
+  HorzScrollBar.Page = 505
+  VertScrollBar.Page = 404
+  VertScrollBar.Range = 92
+  AutoScroll = False
   BorderIcons = [biSystemMenu]
   Caption = 'Add new torrent'
   ClientHeight = 405

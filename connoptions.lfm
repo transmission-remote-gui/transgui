@@ -3,6 +3,9 @@ object ConnOptionsForm: TConnOptionsForm
   Height = 239
   Top = 185
   Width = 350
+  HorzScrollBar.Page = 349
+  VertScrollBar.Page = 238
+  AutoScroll = False
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Connection options'

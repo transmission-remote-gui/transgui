@@ -65,6 +65,7 @@ procedure TAboutForm.FormCreate(Sender: TObject);
 begin
   txAppName.Caption:=AppName;
   txVersion.Caption:=Format(txVersion.Caption, [AppVersion]);
+  Page.ActivePageIndex:=0;
 end;
 
 initialization

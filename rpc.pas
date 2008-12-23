@@ -73,6 +73,7 @@ type
     FLock: TCriticalSection;
     FStatus: string;
     FInfoStatus: string;
+    FConnected: boolean;
 
     function GetConnected: boolean;
     function GetInfoStatus: string;
@@ -118,6 +119,12 @@ var
 begin
   try
     GetStatusInfo;
+    if Status <> '' then begin
+      NotifyCheckStatus;
+      Terminate;
+    end
+    else
+      FRpc.FConnected:=True;
 
     t:=Now - 1;
     while not Terminated do begin
@@ -144,6 +151,8 @@ begin
     NotifyCheckStatus;
   end;
   FRpc.RpcThread:=nil;
+  FRpc.FConnected:=False;
+  Sleep(20);
 end;
 
 constructor TRpcThread.Create;
@@ -480,7 +489,7 @@ end;
 
 function TRpc.GetConnected: boolean;
 begin
-  Result:=Assigned(RpcThread);
+  Result:=Assigned(RpcThread) and FConnected;
 end;
 
 function TRpc.GetInfoStatus: string;
@@ -529,7 +538,10 @@ procedure TRpc.Disconnect;
 begin
   if Assigned(RpcThread) then begin
     RpcThread.Terminate;
-    RpcThread.WaitFor;
+    while FConnected do begin
+      Application.ProcessMessages;
+      Sleep(20);
+    end;
   end;
 end;
 
