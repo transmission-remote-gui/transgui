@@ -198,6 +198,7 @@ end;
 procedure TRpcThread.GetStatusInfo;
 var
   req, res, args: TJSONObject;
+  s: string;
 begin
   req:=TJSONObject.Create;
   try
@@ -209,9 +210,11 @@ begin
       if args = nil then
         Status:='Arguments object not found.'
       else begin
-        if args.IndexOfName('version') < 0 then
-          raise Exception.Create('Unsupported Transmission version.');
-        FRpc.InfoStatus:=Format('Transmission %s at %s:%s', [args.Strings['version'], FRpc.Http.TargetHost, FRpc.Http.TargetPort]);
+        if args.IndexOfName('version') >= 0 then
+          s:=' ' + args.Strings['version']
+        else
+          s:='';
+        FRpc.InfoStatus:=Format('Transmission%s at %s:%s', [s, FRpc.Http.TargetHost, FRpc.Http.TargetPort]);
       end;
     finally
       res.Free;

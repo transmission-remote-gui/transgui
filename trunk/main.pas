@@ -961,6 +961,7 @@ end;
 procedure TMainForm.UpdateUI;
 begin
   acAddTorrent.Enabled:=RpcObj.Connected;
+  acOptions.Enabled:=RpcObj.Connected;
   acStartTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
   acStopTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
   acVerifyTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
