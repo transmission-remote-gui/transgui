@@ -8,9 +8,10 @@ object DaemonOptionsForm: TDaemonOptionsForm
   Caption = 'Transmission options'
   ClientHeight = 303
   ClientWidth = 410
-  ParentFont = False
+  Constraints.MinHeight = 300
+  Constraints.MinWidth = 400
   Position = poMainFormCenter
-  LCLVersion = '0.9.26'
+  LCLVersion = '0.9.27'
   object gbBandwidth: TGroupBox
     Left = 8
     Height = 86
@@ -165,10 +166,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
       ItemHeight = 13
       Items.Strings = (
         'Outgoing disabled'
-        'Outgoing enabled'
-        'Forced both'
+        'Outgoing preferred'
+        'Require outgoing and incoming'
       )
-      MaxLength = -1
       Style = csDropDownList
       TabOrder = 3
     end

@@ -17,24 +17,58 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 *************************************************************************************}
 
-program transgui;
+unit About;
 
 {$mode objfpc}{$H+}
 
+interface
+
 uses
-  {$IFDEF UNIX}
-  cthreads,
-  {$ENDIF}
-  Interfaces, // this includes the LCL widgetset
-  Forms
-  { you can add units after this }, Main, LResources, rpc, AddTorrent, ConnOptions, varlist, tz, TorrProps, DaemonOptions, About;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, ExtCtrls;
 
-{$IFDEF WINDOWS}{$R transgui.rc}{$ENDIF}
+type
 
+  { TAboutForm }
+
+  TAboutForm = class(TForm)
+    btOK: TButton;
+    edLicense: TMemo;
+    imgTransmission: TImage;
+    imgSynapse: TImage;
+    imgLazarus: TImage;
+    txAuthor: TLabel;
+    txVersion: TLabel;
+    txAppName: TLabel;
+    Page: TPageControl;
+    tabAbout: TTabSheet;
+    tabLicense: TTabSheet;
+    procedure FormCreate(Sender: TObject);
+    procedure imgSynapseClick(Sender: TObject);
+  private
+    { private declarations }
+  public
+    { public declarations }
+  end; 
+
+implementation
+
+uses Main;
+
+{ TAboutForm }
+
+procedure TAboutForm.imgSynapseClick(Sender: TObject);
 begin
-  {$I transgui.lrs}
-  Application.Initialize;
-  Application.CreateForm(TMainForm, MainForm);
-  Application.Run;
+
+end;
+
+procedure TAboutForm.FormCreate(Sender: TObject);
+begin
+  txAppName.Caption:=AppName;
+  txVersion.Caption:=Format(txVersion.Caption, [AppVersion]);
+end;
+
+initialization
+  {$I about.lrs}
+
 end.
 

@@ -7,6 +7,8 @@ object AddTorrentForm: TAddTorrentForm
   Caption = 'Add new torrent'
   ClientHeight = 405
   ClientWidth = 506
+  Constraints.MinHeight = 300
+  Constraints.MinWidth = 300
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '0.9.27'
