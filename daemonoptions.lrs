@@ -11,7 +11,7 @@ LazarusResources.Add('TDaemonOptionsForm','FORMDATA',[
   +'ndwidth'#4'Left'#2#8#6'Height'#2'V'#3'Top'#3#176#0#5'Width'#3#138#1#7'Ancho'
   +'rs'#11#5'akTop'#6'akLeft'#7'akRight'#8'akBottom'#0#7'Caption'#6#25'Global b'
   +'andwidth settings'#12'ClientHeight'#2'D'#11'ClientWidth'#3#134#1#8'TabOrder'
-  +#2#2#0#6'TLabel'#6'Label1'#4'Left'#3'h'#1#6'Height'#2#14#3'Top'#2#8#5'Width'
+  +#2#3#0#6'TLabel'#6'Label1'#4'Left'#3'h'#1#6'Height'#2#14#3'Top'#2#8#5'Width'
   +#2#22#7'Anchors'#11#5'akTop'#7'akRight'#0#7'Caption'#6#4'KB/s'#11'ParentColo'
   +'r'#8#0#0#6'TLabel'#6'Label2'#4'Left'#3'h'#1#6'Height'#2#14#3'Top'#2'('#5'Wi'
   +'dth'#2#22#7'Anchors'#11#5'akTop'#7'akRight'#0#7'Caption'#6#4'KB/s'#11'Paren'
@@ -31,7 +31,7 @@ LazarusResources.Add('TDaemonOptionsForm','FORMDATA',[
   +#6'Cancel'#11'ModalResult'#2#2#8'TabOrder'#2#1#0#0#9'TGroupBox'#9'GroupBox1'
   +#4'Left'#2#8#6'Height'#3#165#0#3'Top'#2#4#5'Width'#3#138#1#7'Anchors'#11#5'a'
   +'kTop'#6'akLeft'#7'akRight'#0#12'ClientHeight'#3#147#0#11'ClientWidth'#3#134
-  +#1#8'TabOrder'#2#3#0#6'TLabel'#13'txDownloadDir'#4'Left'#2#6#6'Height'#2#14#3
+  +#1#8'TabOrder'#2#2#0#6'TLabel'#13'txDownloadDir'#4'Left'#2#6#6'Height'#2#14#3
   +'Top'#2#4#5'Width'#2'C'#7'Caption'#6#13'Download dir:'#11'ParentColor'#8#0#0
   +#6'TLabel'#6'txPort'#4'Left'#2#6#6'Height'#2#14#3'Top'#2'#'#5'Width'#2'G'#7
   +'Caption'#6#14'Incoming port:'#11'ParentColor'#8#0#0#6'TLabel'#12'txEncrypti'
