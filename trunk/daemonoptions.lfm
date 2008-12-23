@@ -25,7 +25,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Caption = 'Global bandwidth settings'
     ClientHeight = 68
     ClientWidth = 390
-    TabOrder = 2
+    TabOrder = 3
     object Label1: TLabel
       Left = 360
       Height = 14
@@ -111,7 +111,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 147
     ClientWidth = 390
-    TabOrder = 3
+    TabOrder = 2
     object txDownloadDir: TLabel
       Left = 6
       Height = 14
