@@ -867,8 +867,8 @@ end;
 procedure TMainForm.DummyTimerTimer(Sender: TObject);
 begin
   if not FStarted then begin
-    FStarted:=True;
     Application.ProcessMessages;
+    FStarted:=True;
     acConnect.Execute;
     Application.ProcessMessages;
     panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
