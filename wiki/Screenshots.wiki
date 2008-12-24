@@ -1,0 +1,19 @@
+[http://transmisson-remote-gui.googlecode.com/svn/wiki/PeersWin.png]
+
+*Main window with peers list page / Windows XP*
+
+[http://transmisson-remote-gui.googlecode.com/svn/wiki/GeneralLinux.png]
+
+*Main window with general info page / Linux, default GTK2 theme*
+
+[http://transmisson-remote-gui.googlecode.com/svn/wiki/FilesLinux.png]
+
+*Main window with files list page / Linux, default GTK2 theme*
+
+[http://transmisson-remote-gui.googlecode.com/svn/wiki/AddTorrentWin.png]
+
+*Add torrent window / Windows XP*
+
+[http://transmisson-remote-gui.googlecode.com/svn/wiki/OptionsWin.png]
+
+*Transmission options / Windows XP*
