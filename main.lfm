@@ -126,36 +126,6 @@ object MainForm: TMainForm
         Align = alClient
         TabOrder = 0
         OnResize = sbGenInfoResize
-        object txTransferHeader: TLabel
-          Left = 2
-          Height = 17
-          Top = 2
-          Width = 725
-          Align = alTop
-          BorderSpacing.Around = 2
-          Caption = 'Transfer'
-          Color = clBtnFace
-          Font.Height = -13
-          Font.Style = [fsBold]
-          ParentColor = False
-          ParentFont = False
-          Transparent = False
-        end
-        object txTorrentHeader: TLabel
-          Left = 2
-          Height = 17
-          Top = 117
-          Width = 725
-          Align = alTop
-          BorderSpacing.Around = 2
-          Caption = 'Torrent'
-          Color = clBtnFace
-          Font.Height = -13
-          Font.Style = [fsBold]
-          ParentColor = False
-          ParentFont = False
-          Transparent = False
-        end
         object panGeneralInfo: TPanel
           Height = 58
           Top = 136
@@ -524,6 +494,39 @@ object MainForm: TMainForm
             Caption = 'txMaxPeers'
             ParentColor = False
           end
+        end
+        object txTransferHeader: TPanel
+          Left = 2
+          Height = 17
+          Top = 2
+          Width = 725
+          Align = alTop
+          Alignment = taLeftJustify
+          AutoSize = True
+          BorderSpacing.Around = 2
+          BevelOuter = bvNone
+          Caption = 'Transfer'
+          Font.Height = -13
+          Font.Style = [fsBold]
+          ParentColor = False
+          ParentFont = False
+          TabOrder = 2
+        end
+        object txTorrentHeader: TPanel
+          Left = 2
+          Height = 17
+          Top = 117
+          Width = 725
+          Align = alTop
+          Alignment = taLeftJustify
+          BorderSpacing.Around = 2
+          BevelOuter = bvNone
+          Caption = 'Torrent'
+          Font.Height = -13
+          Font.Style = [fsBold]
+          ParentColor = False
+          ParentFont = False
+          TabOrder = 3
         end
       end
       object panProgress: TPanel
