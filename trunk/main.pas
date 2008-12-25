@@ -515,7 +515,7 @@ begin
   if not OpenTorrentDlg.Execute then exit;
   id:=0;
 
-  fs:=TFileStream.Create(OpenTorrentDlg.FileName, fmOpenRead or fmShareDenyNone);
+  fs:=TFileStream.Create(UTF8Decode(OpenTorrentDlg.FileName), fmOpenRead or fmShareDenyNone);
   try
     SetLength(s, fs.Size);
     fs.ReadBuffer(PChar(s)^, Length(s));
@@ -664,7 +664,7 @@ begin
           if args = nil then
             raise Exception.Create('Arguments object not found.');
 
-          edDownloadDir.Text:=args.Strings['download-dir'];
+          edDownloadDir.Text:=UTF8Encode(args.Strings['download-dir']);
           edPort.Value:=args.Integers['port'];
           cbPortForwarding.Checked:=args.Integers['port-forwarding-enabled'] <> 0;
           cbPEX.Checked:=args.Integers['pex-allowed'] <> 0;
@@ -700,7 +700,7 @@ begin
       try
         req.Add('method', 'session-set');
         args:=TJSONObject.Create;
-        args.Add('download-dir', TJSONString.Create(edDownloadDir.Text));
+        args.Add('download-dir', TJSONString.Create(UTF8Decode(edDownloadDir.Text)));
         args.Add('port', TJSONIntegerNumber.Create(edPort.Value));
         args.Add('port-forwarding-enabled', TJSONIntegerNumber.Create(integer(cbPortForwarding.Checked) and 1));
         args.Add('pex-allowed', TJSONIntegerNumber.Create(integer(cbPEX.Checked) and 1));
@@ -791,7 +791,7 @@ begin
     try
       t:=args.Arrays['torrents'].Objects[0];
 
-      txName.Caption:=txName.Caption + ' ' + t.Strings['name'];
+      txName.Caption:=txName.Caption + ' ' + UTF8Encode(t.Strings['name']);
 
       j:=t.Integers['downloadLimitMode'];
       cbMaxDown.Checked:=j = TR_SPEEDLIMIT_SINGLE;
