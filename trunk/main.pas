@@ -47,6 +47,8 @@ type
     acSetNotDownload: TAction;
     acConnOptions: TAction;
     acOptions: TAction;
+    acStartAllTorrents: TAction;
+    acStopAllTorrents: TAction;
     acTorrentProps: TAction;
     acVerifyTorrent: TAction;
     ActionList: TActionList;
@@ -55,6 +57,8 @@ type
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
+    MenuItem22: TMenuItem;
+    MenuItem23: TMenuItem;
     miAbout: TMenuItem;
     miHelp: TMenuItem;
     txCreated: TLabel;
@@ -166,7 +170,9 @@ type
     procedure acSetLowPriorityExecute(Sender: TObject);
     procedure acSetNormalPriorityExecute(Sender: TObject);
     procedure acSetNotDownloadExecute(Sender: TObject);
+    procedure acStartAllTorrentsExecute(Sender: TObject);
     procedure acStartTorrentExecute(Sender: TObject);
+    procedure acStopAllTorrentsExecute(Sender: TObject);
     procedure acStopTorrentExecute(Sender: TObject);
     procedure acTorrentPropsExecute(Sender: TObject);
     procedure acVerifyTorrentExecute(Sender: TObject);
@@ -761,10 +767,20 @@ begin
   SetCurrentFilePriority('skip');
 end;
 
+procedure TMainForm.acStartAllTorrentsExecute(Sender: TObject);
+begin
+  TorrentAction(0, 'start');
+end;
+
 procedure TMainForm.acStartTorrentExecute(Sender: TObject);
 begin
   if lvTorrents.Selected = nil then exit;
   TorrentAction(PtrUInt(lvTorrents.Selected.Data), 'start');
+end;
+
+procedure TMainForm.acStopAllTorrentsExecute(Sender: TObject);
+begin
+  TorrentAction(0, 'stop');
 end;
 
 procedure TMainForm.acStopTorrentExecute(Sender: TObject);
@@ -1020,6 +1036,8 @@ procedure TMainForm.UpdateUI;
 begin
   acAddTorrent.Enabled:=RpcObj.Connected;
   acOptions.Enabled:=RpcObj.Connected;
+  acStartAllTorrents.Enabled:=RpcObj.Connected and (lvTorrents.Items.Count > 0);
+  acStopAllTorrents.Enabled:=acStartAllTorrents.Enabled;
   acStartTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
   acStopTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
   acVerifyTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
@@ -1199,7 +1217,7 @@ begin
     FTorrents[idxUpSpeed, row]:=t.Integers['rateUpload'];
     FTorrents[idxETA, row]:=t.Integers['eta'];
 
-    if GetTorrentError(t) <> '' then
+    if (FTorrents[idxStatus, row] <> TR_STATUS_STOPPED) and (GetTorrentError(t) <> '') then
       if t.Strings['errorString'] <> '' then
         StateImg:=13
       else

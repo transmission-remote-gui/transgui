@@ -851,6 +851,10 @@ object MainForm: TMainForm
         }
         OnClick = acStartTorrentExecute
       end
+      object MenuItem22: TMenuItem
+        Action = acStartAllTorrents
+        OnClick = acStartAllTorrentsExecute
+      end
       object MenuItem5: TMenuItem
         Action = acStopTorrent
         Bitmap.Data = {
@@ -890,6 +894,10 @@ object MainForm: TMainForm
           FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000000000000000
         }
         OnClick = acStopTorrentExecute
+      end
+      object MenuItem23: TMenuItem
+        Action = acStopAllTorrents
+        OnClick = acStopAllTorrentsExecute
       end
       object MenuItem6: TMenuItem
         Action = acRemoveTorrent
@@ -1091,6 +1099,20 @@ object MainForm: TMainForm
       Caption = 'Properties...'
       DisableIfNoHandler = True
       OnExecute = acTorrentPropsExecute
+    end
+    object acStartAllTorrents: TAction
+      Category = 'Torrent'
+      Caption = 'Start all'
+      DisableIfNoHandler = True
+      Hint = 'Start all'
+      OnExecute = acStartAllTorrentsExecute
+    end
+    object acStopAllTorrents: TAction
+      Category = 'Torrent'
+      Caption = 'Stop all'
+      DisableIfNoHandler = True
+      Hint = 'Stop all'
+      OnExecute = acStopAllTorrentsExecute
     end
   end
   object DetailsTimer: TTimer
