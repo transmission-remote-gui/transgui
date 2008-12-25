@@ -211,6 +211,7 @@ type
     procedure LoadColumns(LV: TListView; const AName: string);
     function GetTorrentError(t: TJSONObject): string;
     function SecondsToString(j: integer): string;
+    procedure DoAddTorrent(const FileName: Utf8String);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -223,6 +224,8 @@ type
     function SetCurrentFilePriority(const APriority: string): boolean;
     procedure ClearDetailsInfo;
   end;
+
+function CheckAppParams: boolean;
 
 var
   MainForm: TMainForm;
@@ -368,20 +371,56 @@ begin
     Result:=AddToColor(Result, i, i, i);
 end;
 
+var
+  FAppEvent: TEvent;
+  FHomeDir: string;
+  FIPCFileName: string;
+
+function CheckAppParams: boolean;
+var
+  h: THandle;
+  s: utf8string;
+begin
+  Application.Title:=AppName;
+  FHomeDir:=IncludeTrailingPathDelimiter(GetAppConfigDir(False));
+  ForceDirectories(FHomeDir);
+  FIPCFileName:=FHomeDir + 'ipc.txt';
+
+  if ParamCount > 0 then begin
+    s:=ParamStrUTF8(1);
+    if FileExistsUTF8(s) then begin
+      h:=FileCreate(FIPCFileName, fmCreate);
+      if h <> THandle(-1) then begin
+        FileWrite(h, s[1], Length(s));
+        FileClose(h);
+      end;
+    end;
+  end;
+
+  FAppEvent:=TEvent.Create(nil, True, False, 'transgui-running');
+  if FAppEvent.WaitFor(0) = wrSignaled then begin
+    FAppEvent.Free;
+    if not FileExists(FIPCFileName) then
+      FileClose(FileCreate(FIPCFileName, fmCreate));
+    Result:=False;
+    exit;
+  end;
+
+  FAppEvent.SetEvent;
+  Result:=True;
+end;
+
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
 var
-  s: string;
   ws: TWindowState;
 begin
   Application.Title:=AppName;
   Caption:=Application.Title;
   RpcObj:=TRpc.Create;
   FTorrents:=TVarList.Create(idxTorrentColCount, 0);
-  s:=GetAppConfigDir(False);
-  ForceDirectories(s);
-  FIni:=TIniFile.Create(IncludeTrailingPathDelimiter(s)+ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
+  FIni:=TIniFile.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
   DoDisconnect;
   PageInfo.ActivePageIndex:=0;
   PageInfoChange(nil);
@@ -424,6 +463,7 @@ begin
   FIni.Free;
   RpcObj.Free;
   FTorrents.Free;
+  FAppEvent.Free;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -510,6 +550,12 @@ begin
 end;
 
 procedure TMainForm.acAddTorrentExecute(Sender: TObject);
+begin
+  if not OpenTorrentDlg.Execute then exit;
+  DoAddTorrent(OpenTorrentDlg.FileName);
+end;
+
+procedure TMainForm.DoAddTorrent(const FileName: Utf8String);
 var
   req, res, args: TJSONObject;
   id: ptruint;
@@ -518,10 +564,9 @@ var
   s: string;
   fs: TFileStream;
 begin
-  if not OpenTorrentDlg.Execute then exit;
   id:=0;
 
-  fs:=TFileStream.Create(UTF8Decode(OpenTorrentDlg.FileName), fmOpenRead or fmShareDenyNone);
+  fs:=TFileStream.Create(UTF8Decode(FileName), fmOpenRead or fmShareDenyNone);
   try
     SetLength(s, fs.Size);
     fs.ReadBuffer(PChar(s)^, Length(s));
@@ -646,6 +691,7 @@ begin
       TorrentAction(id, 'remove');
   end;
 end;
+
 
 procedure TMainForm.acDisconnectExecute(Sender: TObject);
 begin
@@ -881,20 +927,41 @@ begin
 end;
 
 procedure TMainForm.DummyTimerTimer(Sender: TObject);
+var
+  s: string;
 begin
-  if not FStarted then begin
-    Application.ProcessMessages;
-    FStarted:=True;
-    acConnect.Execute;
-    Application.ProcessMessages;
-    panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
-    panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
-    panTransfer.ChildSizing.Layout:=cclNone;
-    panGeneralInfo.ChildSizing.Layout:=cclNone;
-    with panTransfer do
-      ClientHeight:=Controls[ControlCount - 1].BoundsRect.Bottom + ChildSizing.TopBottomSpacing;
-    with panGeneralInfo do
-      ClientHeight:=Controls[ControlCount - 1].BoundsRect.Bottom + ChildSizing.TopBottomSpacing;
+  DummyTimer.Enabled:=False;
+  try
+    if not FStarted then begin
+      Application.ProcessMessages;
+      FStarted:=True;
+      acConnect.Execute;
+      Application.ProcessMessages;
+      panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
+      panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
+      panTransfer.ChildSizing.Layout:=cclNone;
+      panGeneralInfo.ChildSizing.Layout:=cclNone;
+      with panTransfer do
+        ClientHeight:=Controls[ControlCount - 1].BoundsRect.Bottom + ChildSizing.TopBottomSpacing;
+      with panGeneralInfo do
+        ClientHeight:=Controls[ControlCount - 1].BoundsRect.Bottom + ChildSizing.TopBottomSpacing;
+    end;
+
+    if FileExists(FIPCFileName) then begin
+      s:=ReadFileToString(FIPCFileName);
+      DeleteFile(FIPCFileName);
+      if Self.WindowState = wsMinimized then
+        Application.Restore;
+      Application.BringToFront;
+
+      if s = '' then
+        exit;
+
+      if FileExistsUTF8(s) then
+        DoAddTorrent(s);
+    end;
+  finally
+    DummyTimer.Enabled:=True;
   end;
 end;
 
