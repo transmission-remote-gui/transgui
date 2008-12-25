@@ -24,20 +24,26 @@ unit ConnOptions;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ComCtrls;
 
 type
 
-  { TConnOptionsForm }
+  { TOptionsForm }
 
-  TConnOptionsForm = class(TForm)
+  TOptionsForm = class(TForm)
     btCancel: TButton;
     btOK: TButton;
+    cbTrayIconAlways: TCheckBox;
+    cbTrayMinimize: TCheckBox;
+    cbTrayClose: TCheckBox;
     edHost: TEdit;
     edRefreshInterval: TSpinEdit;
     edUserName: TEdit;
     edPassword: TEdit;
-    GroupBox1: TGroupBox;
+    gbTray: TGroupBox;
+    Page: TPageControl;
+    tabConnection: TTabSheet;
+    tabInterface: TTabSheet;
     txSeconds: TLabel;
     txRefreshInterval: TLabel;
     txUserName: TLabel;
@@ -46,6 +52,7 @@ type
     txHost: TLabel;
     txPassword: TLabel;
     procedure btOKClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -54,17 +61,23 @@ type
 
 implementation
 
-{ TConnOptionsForm }
+{ TOptionsForm }
 
-procedure TConnOptionsForm.btOKClick(Sender: TObject);
+procedure TOptionsForm.btOKClick(Sender: TObject);
 begin
   edHost.Text:=Trim(edHost.Text);
   if edHost.Text = '' then begin
+    Page.ActivePage:=tabConnection;
     edHost.SetFocus;
     MessageDlg('No host name specified.', mtError, [mbOK], 0);
     exit;
   end;
   ModalResult:=mrOk;
+end;
+
+procedure TOptionsForm.FormCreate(Sender: TObject);
+begin
+  Page.ActivePageIndex:=0;
 end;
 
 initialization
