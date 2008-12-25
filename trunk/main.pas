@@ -199,7 +199,6 @@ type
 
     procedure DoConnect;
     procedure DoDisconnect;
-    procedure ClearDetailsInfo;
     procedure UpdateUI;
     function ShowConnOptions: boolean;
     procedure SaveColumns(LV: TListView; const AName: string);
@@ -216,6 +215,7 @@ type
     function TorrentAction(TorrentId: integer; const AAction: string): boolean;
     function SetFilePriority(TorrentId, FileIdx: integer; const APriority: string): boolean;
     function SetCurrentFilePriority(const APriority: string): boolean;
+    procedure ClearDetailsInfo;
   end;
 
 var
@@ -1144,7 +1144,7 @@ var
   f: double;
 begin
   if list = nil then begin
-    FTorrents.Clear;
+    ClearDetailsInfo;
     exit;
   end;
 
@@ -1351,6 +1351,11 @@ begin
 
   StatusBar.Panels[1].Text:=Format('D: %s/s', [GetHumanSize(DownSpeed, 1)]);
   StatusBar.Panels[2].Text:=Format('U: %s/s', [GetHumanSize(UpSpeed, 1)]);
+
+  if (RpcObj.CurTorrentId <> 0) and (lvTorrents.Selected = nil) then begin
+    RpcObj.CurTorrentId:=0;
+    ClearDetailsInfo;
+  end;
 end;
 
 procedure TMainForm.FillPeersList(list: TJSONArray);
@@ -1377,6 +1382,10 @@ var
   s: string;
 
 begin
+  if list = nil then begin
+    ClearDetailsInfo;
+    exit;
+  end;
 //  lvPeers.BeginUpdate;
   try
     lvPeers.Enabled:=True;
@@ -1476,6 +1485,10 @@ var
   ff: double;
 
 begin
+  if (list = nil) or (priorities = nil) or (wanted = nil) then begin
+    ClearDetailsInfo;
+    exit;
+  end;
 //  lvFiles.BeginUpdate;
   try
     lvFiles.Enabled:=True;
@@ -1546,7 +1559,10 @@ var
   s: string;
   f: double;
 begin
-  if lvTorrents.Selected = nil then exit;
+  if (lvTorrents.Selected = nil) or (t = nil) then begin
+    ClearDetailsInfo;
+    exit;
+  end;
   it:=lvTorrents.Selected;
 
   pbDownloaded.Position:=Round(FTorrents[idxDone, it.Index]*10);
