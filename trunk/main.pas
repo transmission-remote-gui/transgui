@@ -24,12 +24,19 @@ unit Main;
 interface
 
 uses
+{$ifdef windows}
+  Windows, win32int, InterfaceBase,
+{$endif}
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
   httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist;
 
 const
   AppName = 'Transmission Remote GUI';
   AppVersion = '0.9 beta';
+
+resourcestring
+  SShowApp = 'Show';
+  SHideApp = 'Hide';
 
 type
 
@@ -45,10 +52,11 @@ type
     acSetNormalPriority: TAction;
     acSetLowPriority: TAction;
     acSetNotDownload: TAction;
-    acConnOptions: TAction;
     acOptions: TAction;
+    acDaemonOptions: TAction;
     acStartAllTorrents: TAction;
     acStopAllTorrents: TAction;
+    acExit: TAction;
     acTorrentProps: TAction;
     acVerifyTorrent: TAction;
     ActionList: TActionList;
@@ -59,8 +67,16 @@ type
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
     MenuItem23: TMenuItem;
+    MenuItem24: TMenuItem;
+    MenuItem25: TMenuItem;
+    MenuItem26: TMenuItem;
+    MenuItem27: TMenuItem;
+    MenuItem28: TMenuItem;
+    miToggleApp: TMenuItem;
     miAbout: TMenuItem;
     miHelp: TMenuItem;
+    pmTray: TPopupMenu;
+    TrayIcon: TTrayIcon;
     txCreated: TLabel;
     txCreatedLabel: TLabel;
     txTorrentHeader: TPanel;
@@ -162,9 +178,10 @@ type
     tabFiles: TTabSheet;
     procedure acAddTorrentExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
-    procedure acConnOptionsExecute(Sender: TObject);
-    procedure acDisconnectExecute(Sender: TObject);
     procedure acOptionsExecute(Sender: TObject);
+    procedure acDisconnectExecute(Sender: TObject);
+    procedure acExitExecute(Sender: TObject);
+    procedure acDaemonOptionsExecute(Sender: TObject);
     procedure acRemoveTorrentExecute(Sender: TObject);
     procedure acSetHighPriorityExecute(Sender: TObject);
     procedure acSetLowPriorityExecute(Sender: TObject);
@@ -178,6 +195,8 @@ type
     procedure acVerifyTorrentExecute(Sender: TObject);
     procedure ApplicationPropertiesException(Sender: TObject; E: Exception);
     procedure ApplicationPropertiesIdle(Sender: TObject; var Done: Boolean);
+    procedure ApplicationPropertiesMinimize(Sender: TObject);
+    procedure ApplicationPropertiesRestore(Sender: TObject);
     procedure DummyTimerTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -191,11 +210,13 @@ type
     procedure miAboutClick(Sender: TObject);
     procedure miCopyLabelClick(Sender: TObject);
     procedure miExitClick(Sender: TObject);
+    procedure miToggleAppClick(Sender: TObject);
     procedure PageInfoChange(Sender: TObject);
     procedure DetailsTimerTimer(Sender: TObject);
     procedure pmFilesPopup(Sender: TObject);
     procedure pmTorrentsPopup(Sender: TObject);
     procedure sbGenInfoResize(Sender: TObject);
+    procedure TrayIconDblClick(Sender: TObject);
   private
     FIni: TIniFile;
     FStarted: boolean;
@@ -212,6 +233,10 @@ type
     function GetTorrentError(t: TJSONObject): string;
     function SecondsToString(j: integer): string;
     procedure DoAddTorrent(const FileName: Utf8String);
+    procedure UpdateTray;
+    procedure HideApp;
+    procedure ShowApp;
+    procedure DownloadFinished(const TorrentName: string);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -269,8 +294,9 @@ const
 
 implementation
 
-uses AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz, TorrProps, DaemonOptions, About,
-     ToolWin;
+uses
+  AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz, TorrProps, DaemonOptions, About,
+  ToolWin;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -470,6 +496,7 @@ procedure TMainForm.FormShow(Sender: TObject);
 begin
   VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
   DummyTimer.Enabled:=True;
+  UpdateTray;
 end;
 
 procedure TMainForm.lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
@@ -544,7 +571,7 @@ begin
     DoConnect;
 end;
 
-procedure TMainForm.acConnOptionsExecute(Sender: TObject);
+procedure TMainForm.acOptionsExecute(Sender: TObject);
 begin
   ShowConnOptions;
 end;
@@ -579,9 +606,19 @@ begin
   try
     req.Add('method', 'torrent-add');
     args:=TJSONObject.Create;
-    args.Add('metainfo', TJSONString.Create(EncodeBase64(s)));
     args.Add('paused', TJSONIntegerNumber.Create(1));
+    args.Add('metainfo', TJSONString.Create(EncodeBase64(s)));
     req.Add('arguments', args);
+{
+  fs:=TFileStream.Create('c:\aa.torrent', fmCreate);
+  try
+    s:=DecodeBase64(args.Strings['metainfo']);
+    s:=req.AsJSON;
+    fs.WriteBuffer(PChar(s)^, Length(s));
+  finally
+    fs.Free;
+  end;
+}
     args:=nil;
     res:=RpcObj.SendRequest(req);
     if res <> nil then
@@ -692,13 +729,53 @@ begin
   end;
 end;
 
+procedure TMainForm.UpdateTray;
+begin
+  TrayIcon.Visible:=not Self.Visible or FIni.ReadBool('Interface', 'TrayIconAlways', True);
+  if Visible and (WindowState <> wsMinimized) then
+    miToggleApp.Caption:=SHideApp
+  else
+    miToggleApp.Caption:=SShowApp;
+end;
+
+procedure TMainForm.HideApp;
+begin
+  Hide;
+{$ifdef mswindows}
+  ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_HIDE);
+{$endif mswindows}
+end;
+
+procedure TMainForm.ShowApp;
+begin
+{$ifdef mswindows}
+  ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_SHOW);
+{$endif mswindows}
+  if WindowState = wsMinimized then
+    Application.Restore;
+  Application.BringToFront;
+  Show;
+  BringToFront;
+end;
+
+procedure TMainForm.DownloadFinished(const TorrentName: string);
+begin
+  TrayIcon.BalloonHint:=Format('Torrent ''%s'' has finished downloading.', [TorrentName]);
+  TrayIcon.BalloonTitle:='Download complete';
+  TrayIcon.ShowBalloonHint;
+end;
 
 procedure TMainForm.acDisconnectExecute(Sender: TObject);
 begin
   DoDisconnect;
 end;
 
-procedure TMainForm.acOptionsExecute(Sender: TObject);
+procedure TMainForm.acExitExecute(Sender: TObject);
+begin
+  Application.Terminate;
+end;
+
+procedure TMainForm.acDaemonOptionsExecute(Sender: TObject);
 var
   req, res, args: TJSONObject;
   s: string;
@@ -926,6 +1003,18 @@ begin
   Done:=True;
 end;
 
+procedure TMainForm.ApplicationPropertiesMinimize(Sender: TObject);
+begin
+  if FIni.ReadBool('Interface', 'TrayMinimize', True) then
+    HideApp;
+  UpdateTray;
+end;
+
+procedure TMainForm.ApplicationPropertiesRestore(Sender: TObject);
+begin
+  UpdateTray;
+end;
+
 procedure TMainForm.DummyTimerTimer(Sender: TObject);
 var
   s: string;
@@ -950,9 +1039,7 @@ begin
     if FileExists(FIPCFileName) then begin
       s:=ReadFileToString(FIPCFileName);
       DeleteFile(FIPCFileName);
-      if Self.WindowState = wsMinimized then
-        Application.Restore;
-      Application.BringToFront;
+      ShowApp;
 
       if s = '' then
         exit;
@@ -967,6 +1054,13 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  if FIni.ReadBool('Interface', 'TrayClose', False) then begin
+    CloseAction:=caHide;
+    HideApp;
+    UpdateTray;
+    exit;
+  end;
+
   if WindowState = wsNormal then begin
     FIni.WriteInteger('MainForm', 'Left', Left);
     FIni.WriteInteger('MainForm', 'Top', Top);
@@ -987,7 +1081,15 @@ end;
 
 procedure TMainForm.miExitClick(Sender: TObject);
 begin
-  Close;
+end;
+
+procedure TMainForm.miToggleAppClick(Sender: TObject);
+begin
+  if miToggleApp.Caption = SHideApp then
+    HideApp
+  else
+    ShowApp;
+  UpdateTray;
 end;
 
 procedure TMainForm.PageInfoChange(Sender: TObject);
@@ -1029,6 +1131,11 @@ begin
   sbGenInfo.HorzScrollBar.Visible:=False;
 end;
 
+procedure TMainForm.TrayIconDblClick(Sender: TObject);
+begin
+  miToggleApp.Click;
+end;
+
 procedure TMainForm.DoConnect;
 var
   auth, p: string;
@@ -1048,6 +1155,7 @@ begin
   RpcObj.RefreshInterval:=RpcObj.RefreshInterval/SecsPerDay;
   RpcObj.InfoStatus:='Connecting to daemon...';
   CheckStatus;
+  TrayIcon.Hint:=RpcObj.InfoStatus;
   RpcObj.Connect;
 end;
 
@@ -1069,6 +1177,8 @@ begin
   RpcObj.InfoStatus:='Disconnected';
   CheckStatus;
   UpdateUI;
+  TrayIcon.Hint:=RpcObj.InfoStatus;
+  FTorrents.RowCnt:=0;
 end;
 
 procedure TMainForm.ClearDetailsInfo;
@@ -1102,7 +1212,7 @@ end;
 procedure TMainForm.UpdateUI;
 begin
   acAddTorrent.Enabled:=RpcObj.Connected;
-  acOptions.Enabled:=RpcObj.Connected;
+  acDaemonOptions.Enabled:=RpcObj.Connected;
   acStartAllTorrents.Enabled:=RpcObj.Connected and (lvTorrents.Items.Count > 0);
   acStopAllTorrents.Enabled:=acStartAllTorrents.Enabled;
   acStartTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
@@ -1121,7 +1231,7 @@ end;
 function TMainForm.ShowConnOptions: boolean;
 begin
   Result:=False;
-  with TConnOptionsForm.Create(Self) do
+  with TOptionsForm.Create(Self) do
   try
     edHost.Text:=FIni.ReadString('Connection', 'Host', 'localhost');
     edPort.Value:=FIni.ReadInteger('Connection', 'Port', 9091);
@@ -1129,6 +1239,10 @@ begin
     if FIni.ReadString('Connection', 'Password', '') <> '' then
       edPassword.Text:='******';
     edRefreshInterval.Value:=FIni.ReadInteger('Connection', 'RefreshInterval', 5);
+
+    cbTrayClose.Checked:=FIni.ReadBool('Interface', 'TrayClose', False);
+    cbTrayMinimize.Checked:=FIni.ReadBool('Interface', 'TrayMinimize', True);
+    cbTrayIconAlways.Checked:=FIni.ReadBool('Interface', 'TrayIconAlways', True);
 
     if ShowModal = mrOK then begin
       if (edHost.Text <> FIni.ReadString('Connection', 'Host', 'localhost')) or
@@ -1143,8 +1257,14 @@ begin
         FIni.WriteString('Connection', 'Password', EncodeBase64(edPassword.Text));
       FIni.WriteInteger('Connection', 'RefreshInterval', edRefreshInterval.Value);
 
+      FIni.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
+      FIni.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
+      FIni.WriteBool('Interface', 'TrayIconAlways', cbTrayIconAlways.Checked);
+
       if not RpcObj.Connected then
         DoConnect;
+
+      UpdateTray;
       Result:=True;
     end;
   finally
@@ -1228,6 +1348,7 @@ var
   i, j, row, id, StateImg: integer;
   t: TJSONObject;
   f: double;
+  ExistingRow: boolean;
 begin
   if list = nil then begin
     ClearDetailsInfo;
@@ -1243,9 +1364,11 @@ begin
     t:=list[i] as TJSONObject;
     id:=t.Integers['id'];
     row:=FTorrents.Count;
+    ExistingRow:=False;
     for j:=0 to FTorrents.Count - 1 do
       if FTorrents[idxTorrentId, j] = id then begin
         row:=j;
+        ExistingRow:=True;
         break;
       end;
 
@@ -1255,8 +1378,11 @@ begin
       FTorrents[idxName, row]:=UTF8Encode(t.Strings['name']);
 
     FTorrents[idxSize, row]:=t.Floats['totalSize'];
-    FTorrents[idxStatus, row]:=t.Integers['status'];
-    case integer(FTorrents[idxStatus, row]) of
+    j:=t.Integers['status'];
+    if ExistingRow and (j = TR_STATUS_SEED) and (FTorrents[idxStatus, row] = TR_STATUS_DOWNLOAD) then
+      DownloadFinished(FTorrents[idxName, row]);
+    FTorrents[idxStatus, row]:=j;
+    case j of
       TR_STATUS_CHECK_WAIT: StateImg:=16;
       TR_STATUS_CHECK:      StateImg:=16;
       TR_STATUS_DOWNLOAD:   StateImg:=9;
@@ -1330,6 +1456,7 @@ var
   s: string;
   f: double;
   UpSpeed, DownSpeed: double;
+  DownCnt, SeedCnt: integer;
 begin
 //  lvTorrents.BeginUpdate;
   lvTorrents.Tag:=1;
@@ -1339,6 +1466,8 @@ begin
 
     UpSpeed:=0;
     DownSpeed:=0;
+    DownCnt:=0;
+    SeedCnt:=0;
 
     FTorrents.Sort(FTorrentsSortColumn, FTorrentsSortDesc);
 
@@ -1356,8 +1485,14 @@ begin
       case integer(FTorrents[idxStatus, i]) of
         TR_STATUS_CHECK_WAIT: s:='Waiting';
         TR_STATUS_CHECK:      s:='Verifying';
-        TR_STATUS_DOWNLOAD:   s:='Downloading';
-        TR_STATUS_SEED:       s:='Seeding';
+        TR_STATUS_DOWNLOAD:   begin
+                                s:='Downloading';
+                                Inc(DownCnt);
+                              end;
+        TR_STATUS_SEED:       begin
+                                s:='Seeding';
+                                Inc(SeedCnt);
+                              end;
         TR_STATUS_STOPPED:    s:='Stopped';
         else                  s:='Unknown';
       end;
@@ -1435,8 +1570,13 @@ begin
 //    lvTorrents.EndUpdate;
   end;
 
+  CheckStatus;
+
   StatusBar.Panels[1].Text:=Format('D: %s/s', [GetHumanSize(DownSpeed, 1)]);
   StatusBar.Panels[2].Text:=Format('U: %s/s', [GetHumanSize(UpSpeed, 1)]);
+
+  TrayIcon.Hint:=Format('%s%s%s, %s',
+        [RpcObj.InfoStatus, LineEnding, StatusBar.Panels[1].Text, StatusBar.Panels[2].Text]);
 
   if (RpcObj.CurTorrentId <> 0) and (lvTorrents.Selected = nil) then begin
     RpcObj.CurTorrentId:=0;
@@ -1735,7 +1875,10 @@ begin
     ForceAppNormal;
     MessageDlg(s, mtError, [mbOK], 0);
   end;
-  StatusBar.Panels[0].Text:=RpcObj.InfoStatus;
+  if StatusBar.Panels[0].Text <> RpcObj.InfoStatus then begin
+    StatusBar.Panels[0].Text:=RpcObj.InfoStatus;
+    TrayIcon.Hint:=RpcObj.InfoStatus;
+  end;
   if not RpcObj.Connected then
     for i:=1 to StatusBar.Panels.Count - 1 do
       StatusBar.Panels[i].Text:='';

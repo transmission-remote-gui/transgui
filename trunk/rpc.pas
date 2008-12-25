@@ -119,12 +119,11 @@ var
 begin
   try
     GetStatusInfo;
-    if Status <> '' then begin
-      NotifyCheckStatus;
-      Terminate;
-    end
+    if Status <> '' then
+      Terminate
     else
       FRpc.FConnected:=True;
+    NotifyCheckStatus;
 
     t:=Now - 1;
     while not Terminated do begin
