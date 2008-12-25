@@ -590,7 +590,7 @@ begin
 
           files:=TJSONArray.Create;
           for i:=0 to lvFiles.Items.Count - 1 do
-            if lvFiles.Items[0].Checked then
+            if lvFiles.Items[i].Checked then
               files.Add(i);
           if files.Count > 0 then
             args.Add('files-wanted', files)
@@ -873,11 +873,12 @@ begin
     Application.ProcessMessages;
     panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
     panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
-    panTransfer.AutoSize:=True;
-    panGeneralInfo.AutoSize:=True;
-    Application.ProcessMessages;
-    panTransfer.AutoSize:=False;
-    panGeneralInfo.AutoSize:=False;
+    panTransfer.ChildSizing.Layout:=cclNone;
+    panGeneralInfo.ChildSizing.Layout:=cclNone;
+    with panTransfer do
+      ClientHeight:=Controls[ControlCount - 1].BoundsRect.Bottom + ChildSizing.TopBottomSpacing;
+    with panGeneralInfo do
+      ClientHeight:=Controls[ControlCount - 1].BoundsRect.Bottom + ChildSizing.TopBottomSpacing;
   end;
 end;
 
