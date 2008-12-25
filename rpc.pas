@@ -184,6 +184,10 @@ procedure TRpcThread.DoFillFilesList;
 var
   t: TJSONObject;
 begin
+  if ResultData = nil then begin
+    MainForm.ClearDetailsInfo;
+    exit;
+  end;
   t:=ResultData as TJSONObject;
   MainForm.FillFilesList(t.Arrays['files'], t.Arrays['priorities'], t.Arrays['wanted']);
 end;
@@ -526,6 +530,7 @@ end;
 
 procedure TRpc.Connect;
 begin
+  CurTorrentId:=0;
   RpcThread:=TRpcThread.Create;
   with RpcThread do begin
     FreeOnTerminate:=True;
