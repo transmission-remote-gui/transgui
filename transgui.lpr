@@ -32,7 +32,9 @@ uses
 {$IFDEF WINDOWS}{$R transgui.rc}{$ENDIF}
 
 begin
+  if not CheckAppParams then exit;
   {$I transgui.lrs}
+
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;
