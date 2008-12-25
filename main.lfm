@@ -161,7 +161,6 @@ object MainForm: TMainForm
           Top = 136
           Width = 729
           Align = alTop
-          AutoSize = True
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 4
           ChildSizing.TopBottomSpacing = 4
