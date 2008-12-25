@@ -59,14 +59,13 @@ type
     miHelp: TMenuItem;
     txCreated: TLabel;
     txCreatedLabel: TLabel;
+    txTorrentHeader: TPanel;
     txTorrentName: TLabel;
     txTorrentNameLabel: TLabel;
     txDownProgress: TLabel;
     txDownProgressLabel: TLabel;
     panProgress: TPanel;
     pbDownloaded: TProgressBar;
-    txTransferHeader: TLabel;
-    txTorrentHeader: TLabel;
     txMaxPeers: TLabel;
     txMaxPeersLabel: TLabel;
     txPeers: TLabel;
@@ -83,6 +82,7 @@ type
     txRatioLabel: TLabel;
     txDownLimit: TLabel;
     txDownLimitLabel: TLabel;
+    txTransferHeader: TPanel;
     txUpSpeed: TLabel;
     txUpLimit: TLabel;
     txUpSpeedLabel: TLabel;
