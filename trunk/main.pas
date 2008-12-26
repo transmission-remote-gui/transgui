@@ -32,7 +32,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '0.9 beta';
+  AppVersion = '0.91 beta';
 
 resourcestring
   SShowApp = 'Show';
@@ -609,16 +609,6 @@ begin
     args.Add('paused', TJSONIntegerNumber.Create(1));
     args.Add('metainfo', TJSONString.Create(EncodeBase64(s)));
     req.Add('arguments', args);
-{
-  fs:=TFileStream.Create('c:\aa.torrent', fmCreate);
-  try
-    s:=DecodeBase64(args.Strings['metainfo']);
-    s:=req.AsJSON;
-    fs.WriteBuffer(PChar(s)^, Length(s));
-  finally
-    fs.Free;
-  end;
-}
     args:=nil;
     res:=RpcObj.SendRequest(req);
     if res <> nil then
@@ -760,7 +750,7 @@ end;
 
 procedure TMainForm.DownloadFinished(const TorrentName: string);
 begin
-  TrayIcon.BalloonHint:=Format('Torrent ''%s'' has finished downloading.', [TorrentName]);
+  TrayIcon.BalloonHint:=Format('''%s'' has finished downloading.', [TorrentName]);
   TrayIcon.BalloonTitle:='Download complete';
   TrayIcon.ShowBalloonHint;
 end;
