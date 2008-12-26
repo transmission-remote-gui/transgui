@@ -397,7 +397,15 @@ begin
       end
       else begin
         if Http.ResultCode <> 200 then begin
-          Status:=Http.ResultString;
+          SetString(s, Http.Document.Memory, Http.Document.Size);
+          s:=StringReplace(s, '<p>', LineEnding, [rfReplaceAll, rfIgnoreCase]);
+          s:=StringReplace(s, '</p>', '', [rfReplaceAll, rfIgnoreCase]);
+          s:=StringReplace(s, '<h1>', '', [rfReplaceAll, rfIgnoreCase]);
+          s:=StringReplace(s, '</h1>', '', [rfReplaceAll, rfIgnoreCase]);
+          if s <> '' then
+            Status:=s
+          else
+            Status:=Http.ResultString;
           continue;
         end;
         Http.Document.Position:=0;
