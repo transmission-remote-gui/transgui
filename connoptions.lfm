@@ -152,12 +152,12 @@ object OptionsForm: TOptionsForm
       end
       object gbTray: TGroupBox
         Left = 8
-        Height = 89
+        Height = 85
         Top = 42
         Width = 327
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Tray icon'
-        ClientHeight = 71
+        ClientHeight = 67
         ClientWidth = 323
         TabOrder = 1
         object cbTrayIconAlways: TCheckBox

@@ -444,6 +444,7 @@ var
 begin
   Application.Title:=AppName;
   Caption:=Application.Title;
+  TrayIcon.Icon.Assign(Application.Icon);
   RpcObj:=TRpc.Create;
   FTorrents:=TVarList.Create(idxTorrentColCount, 0);
   FIni:=TIniFile.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
@@ -763,6 +764,7 @@ begin
               if ptruint(Data) = id then begin
                 Selected:=True;
                 MakeVisible(False);
+                RpcObj.CurTorrentId:=id;
                 id:=0;
                 break;
               end;
