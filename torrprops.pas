@@ -36,11 +36,15 @@ type
     cbMaxDown: TCheckBox;
     cbMaxUp: TCheckBox;
     edMaxUp: TSpinEdit;
-    gbBandwidth: TGroupBox;
+    edPeerLimit: TSpinEdit;
+    gbOptions: TGroupBox;
     edMaxDown: TSpinEdit;
     Label1: TLabel;
     Label2: TLabel;
     txName: TLabel;
+    txPeerLimit: TLabel;
+    procedure cbMaxDownClick(Sender: TObject);
+    procedure cbMaxUpClick(Sender: TObject);
   private
     { private declarations }
   public
@@ -48,6 +52,18 @@ type
   end; 
 
 implementation
+
+{ TTorrPropsForm }
+
+procedure TTorrPropsForm.cbMaxDownClick(Sender: TObject);
+begin
+  edMaxDown.Enabled:=cbMaxDown.Checked;
+end;
+
+procedure TTorrPropsForm.cbMaxUpClick(Sender: TObject);
+begin
+  edMaxUp.Enabled:=cbMaxUp.Checked;
+end;
 
 initialization
   {$I torrprops.lrs}

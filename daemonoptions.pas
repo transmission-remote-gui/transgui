@@ -51,6 +51,8 @@ type
     txPort: TLabel;
     edPort: TSpinEdit;
     txDownloadDir: TLabel;
+    procedure cbMaxDownClick(Sender: TObject);
+    procedure cbMaxUpClick(Sender: TObject);
   private
     { private declarations }
   public
@@ -58,6 +60,18 @@ type
   end; 
 
 implementation
+
+{ TDaemonOptionsForm }
+
+procedure TDaemonOptionsForm.cbMaxDownClick(Sender: TObject);
+begin
+  edMaxDown.Enabled:=cbMaxDown.Checked;
+end;
+
+procedure TDaemonOptionsForm.cbMaxUpClick(Sender: TObject);
+begin
+  edMaxUp.Enabled:=cbMaxUp.Checked;
+end;
 
 initialization
   {$I daemonoptions.lrs}

@@ -50,6 +50,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Top = 6
       Width = 155
       Caption = 'Maximum download speed:'
+      OnClick = cbMaxDownClick
       TabOrder = 0
     end
     object edMaxDown: TSpinEdit
@@ -68,6 +69,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Top = 38
       Width = 141
       Caption = 'Maximum upload speed:'
+      OnClick = cbMaxUpClick
       TabOrder = 2
     end
     object edMaxUp: TSpinEdit
@@ -140,8 +142,8 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Left = 6
       Height = 14
       Top = 116
-      Width = 48
-      Caption = 'Peer limit:'
+      Width = 80
+      Caption = 'Global peer limit:'
       ParentColor = False
     end
     object edDownloadDir: TEdit
