@@ -24,7 +24,7 @@ unit AddTorrent;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, Spin;
 
 type
 
@@ -39,6 +39,8 @@ type
     cbDestFolder: TComboBox;
     gbSaveAs: TGroupBox;
     gbContents: TGroupBox;
+    edPeerLimit: TSpinEdit;
+    txPeerLimit: TLabel;
     lvFiles: TListView;
     txDestFolder: TLabel;
     procedure btSelectAllClick(Sender: TObject);
