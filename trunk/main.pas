@@ -882,6 +882,8 @@ begin
     finally
       req.Free;
     end;
+    cbMaxDownClick(nil);
+    cbMaxUpClick(nil);
     AppNormal;
 
     if ShowModal = mrOK then begin
@@ -984,7 +986,7 @@ begin
   with TTorrPropsForm.Create(Self) do
   try
     args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode',
-                                                   'uploadLimit', 'uploadLimitMode', 'name']);
+                                  'uploadLimit', 'uploadLimitMode', 'name', 'maxConnectedPeers']);
     if args = nil then begin
       CheckStatus(False);
       exit;
@@ -1009,9 +1011,12 @@ begin
         edMaxUp.ValueEmpty:=True
       else
         edMaxUp.Value:=i;
+      edPeerLimit.Value:=t.Integers['maxConnectedPeers'];
     finally
       args.Free;
     end;
+    cbMaxDownClick(nil);
+    cbMaxUpClick(nil);
     AppNormal;
     if ShowModal = mrOk then begin
       AppBusy;
@@ -1027,6 +1032,7 @@ begin
         args.Add('speed-limit-up-enabled', TJSONIntegerNumber.Create(integer(cbMaxUp.Checked) and 1));
         if cbMaxUp.Checked then
           args.Add('speed-limit-up', TJSONIntegerNumber.Create(edMaxUp.Value));
+        args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
         req.Add('arguments', args);
         args:=nil;
         args:=RpcObj.SendRequest(req, False);
