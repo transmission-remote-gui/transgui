@@ -1026,6 +1026,7 @@ object MainForm: TMainForm
       Hint = 'Add torrent'
       ImageIndex = 0
       OnExecute = acAddTorrentExecute
+      ShortCut = 45
     end
     object acStartTorrent: TAction
       Category = 'Torrent'
@@ -1050,6 +1051,7 @@ object MainForm: TMainForm
       Hint = 'Remove torrent'
       ImageIndex = 3
       OnExecute = acRemoveTorrentExecute
+      ShortCut = 46
     end
     object acVerifyTorrent: TAction
       Category = 'Torrent'
@@ -1941,6 +1943,7 @@ object MainForm: TMainForm
     end
   end
   object TrayIcon: TTrayIcon
+    BalloonFlags = bfInfo
     BalloonTimeout = 10000
     PopUpMenu = pmTray
     Icon.Data = {
