@@ -39,9 +39,9 @@ LazarusResources.Add('TOptionsForm','FORMDATA',[
   +#2'R'#7'Caption'#6#17'Refresh interval:'#11'ParentColor'#8#0#0#9'TSpinEdit'
   +#17'edRefreshInterval'#4'Left'#3#128#0#6'Height'#2#23#3'Top'#2#10#5'Width'#2
   +'b'#8'MaxValue'#3#231#3#8'MinValue'#2#1#8'TabOrder'#2#0#5'Value'#2#1#0#0#9'T'
-  +'GroupBox'#6'gbTray'#4'Left'#2#8#6'Height'#2'Y'#3'Top'#2'*'#5'Width'#3'G'#1#7
+  +'GroupBox'#6'gbTray'#4'Left'#2#8#6'Height'#2'U'#3'Top'#2'*'#5'Width'#3'G'#1#7
   +'Anchors'#11#5'akTop'#6'akLeft'#7'akRight'#0#7'Caption'#6#9'Tray icon'#12'Cl'
-  +'ientHeight'#2'G'#11'ClientWidth'#3'C'#1#8'TabOrder'#2#1#0#9'TCheckBox'#16'c'
+  +'ientHeight'#2'C'#11'ClientWidth'#3'C'#1#8'TabOrder'#2#1#0#9'TCheckBox'#16'c'
   +'bTrayIconAlways'#4'Left'#2#10#6'Height'#2#19#3'Top'#2'('#5'Width'#3#138#0#7
   +'Caption'#6#24'Tray icon always visible'#8'TabOrder'#2#2#0#0#9'TCheckBox'#14
   +'cbTrayMinimize'#4'Left'#2#10#6'Height'#2#19#5'Width'#2'e'#7'Caption'#6#16'M'
