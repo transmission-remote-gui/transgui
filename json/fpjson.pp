@@ -29,6 +29,8 @@ type
   TJSONtype = (jtUnknown, jtNumber, jtString, jtBoolean, jtNull, jtArray, jtObject);
   TJSONFloat = Extended;
   TJSONStringType = WideString;
+  TJSONCharType = widechar;
+  PJSONCharType = ^TJSONCharType;
 
   { TJSONData }
 
@@ -92,7 +94,7 @@ type
     function GetValue: variant; override;
     procedure SetValue(const AValue: variant); override;
   public
-    Constructor Create(AValue : TJSONFloat);
+    Constructor Create(AValue : TJSONFloat); reintroduce;
     class function NumberType : TJSONNumberType; override;
     Procedure Clear;  override;
   end;
@@ -115,7 +117,7 @@ type
     function GetValue: variant; override;
     procedure SetValue(const AValue: variant); override;
   public
-    Constructor Create(AValue : Integer);
+    Constructor Create(AValue : Integer); reintroduce;
     class function NumberType : TJSONNumberType; override;
     Procedure Clear;  override;
   end;
@@ -138,7 +140,7 @@ type
     function GetAsString: TJSONStringType; override;
     procedure SetAsString(const AValue: TJSONStringType); override;
   public
-    Constructor Create(AValue : TJSONStringType);
+    Constructor Create(AValue : TJSONStringType); reintroduce;
     class function JSONType: TJSONType; override;
     Procedure Clear;  override;
   end;
@@ -161,7 +163,7 @@ type
     function GetAsString: TJSONStringType; override;
     procedure SetAsString(const AValue: TJSONStringType); override;
   public
-    Constructor Create(AValue : Boolean);
+    Constructor Create(AValue : Boolean); reintroduce;
     class function JSONType: TJSONType; override;
     Procedure Clear;  override;
   end;
@@ -227,7 +229,7 @@ type
     function GetItem(Index : Integer): TJSONData; override;
     procedure SetItem(Index : Integer; const AValue: TJSONData); override;
   public
-    Constructor Create; overload;
+    Constructor Create; overload; reintroduce;
     Constructor Create(const Elements : Array of Const); overload;
     Destructor Destroy; override;
     class function JSONType: TJSONType; override;
@@ -270,7 +272,7 @@ type
     function GetElements(AName: string): TJSONData;
     function GetFloats(AName : String): TJSONFloat;
     function GetIntegers(AName : String): Integer;
-    function GetIsNull(AName : String): Boolean;
+    function GetIsNull(AName : String): Boolean; reintroduce;
     function GetNameOf(Index : Integer): TJSONStringType;
     function GetObjects(AName : String): TJSONObject;
     function GetStrings(AName : String): TJSONStringType;
@@ -300,7 +302,7 @@ type
     function GetItem(Index : Integer): TJSONData; override;
     procedure SetItem(Index : Integer; const AValue: TJSONData); override;
   public
-    constructor Create;
+    constructor Create; reintroduce;
     Constructor Create(const Elements : Array of Const); overload;
     destructor Destroy; override;
     class function JSONType: TJSONType; override;
@@ -366,17 +368,17 @@ Function StringToJSONString(S : TJSONStringType) : TJSONStringType;
 
 Var
   I,J,L : Integer;
-  P : Pchar;
+  P : PJSONCharType;
 
 begin
   I:=1;
   J:=1;
   Result:='';
   L:=Length(S);
-  P:=PChar(S);
+  P:=PJSONCharType(S);
   While I<=L do
     begin
-    if (P^ in ['"','/','\',#8,#9,#10,#12,#13]) then
+    if (AnsiChar(P^) in ['"','/','\',#8,#9,#10,#12,#13]) then
       begin
       Result:=Result+Copy(S,J,I-J);
       Case P^ of
@@ -401,7 +403,7 @@ Function JSONStringToString(S : TJSONStringType) : TJSONStringType;
 
 Var
   I,J,L : Integer;
-  P : PChar;
+  P : PJSONCharType;
   w : String;
 
 begin
@@ -409,7 +411,7 @@ begin
   J:=1;
   L:=Length(S);
   Result:='';
-  P:=PChar(S);
+  P:=PJSONCharType(S);
   While (I<=L) do
     begin
     if (P^='\') then
@@ -419,7 +421,7 @@ begin
       If (P^<>#0) then
         begin
         Inc(I);
-        Case P^ of
+        Case AnsiChar(P^) of
           '\','"','/'
               : Result:=Result+P^;
           'b' : Result:=Result+#8;
@@ -655,6 +657,7 @@ begin
     Raise EJSON.Create(SErrCannotConvertToNull);
 end;
 
+{$warnings off}
 function TJSONnull.GetAsBoolean: Boolean;
 begin
   ConvertError(True);
@@ -724,6 +727,7 @@ procedure TJSONNull.Clear;
 begin
   // Do nothing
 end;
+{$warnings on}
 
 
 
@@ -959,6 +963,7 @@ begin
     Raise EJSON.Create(SErrCannotConvertToArray);
 end;
 
+{$warnings off}
 function TJSONArray.GetAsBoolean: Boolean;
 begin
   ConvertError(True);
@@ -988,6 +993,7 @@ procedure TJSONArray.SetAsInteger(const AValue: Integer);
 begin
   ConvertError(False);
 end;
+{$warnings on}
 
 function TJSONArray.GetAsJSON: TJSONStringType;
 
@@ -1005,6 +1011,7 @@ begin
   Result:=Result+']';
 end;
 
+{$warnings off}
 function TJSONArray.GetAsString: TJSONStringType;
 begin
   ConvertError(True);
@@ -1024,6 +1031,7 @@ procedure TJSONArray.SetValue(const AValue: variant);
 begin
   ConvertError(False);
 end;
+{$warnings on}
 
 function TJSONArray.GetCount: Integer;
 begin
@@ -1293,6 +1301,7 @@ begin
     Raise EJSON.Create(SErrCannotConvertToObject);
 end;
 
+{$warnings off}
 function TJSONObject.GetAsBoolean: Boolean;
 begin
   ConvertError(True);
@@ -1322,6 +1331,7 @@ procedure TJSONObject.SetAsInteger(const AValue: Integer);
 begin
   ConvertError(False);
 end;
+{$warnings on}
 
 function TJSONObject.GetAsJSON: TJSONStringType;
 
@@ -1342,6 +1352,7 @@ begin
     Result:='{}';
 end;
 
+{$warnings off}
 function TJSONObject.GetAsString: TJSONStringType;
 begin
   ConvertError(True);
@@ -1361,6 +1372,7 @@ procedure TJSONObject.SetValue(const AValue: variant);
 begin
   ConvertError(False);
 end;
+{$warnings on}
 
 function TJSONObject.GetCount: Integer;
 begin
@@ -1388,7 +1400,6 @@ constructor TJSONObject.Create(const Elements: array of const);
 
 Var
   I : integer;
-  F : TJSONFloat;
   AName : String;
   J : TJSONData;
 
