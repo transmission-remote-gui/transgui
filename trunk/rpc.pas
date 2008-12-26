@@ -99,7 +99,7 @@ type
     procedure Connect;
     procedure Disconnect;
 
-    function SendRequest(req: TJSONObject): TJSONObject;
+    function SendRequest(req: TJSONObject; ReturnArguments: boolean = True): TJSONObject;
     function RequestInfo(TorrentId: integer; const Fields: array of const): TJSONObject;
 
     property Status: string read GetStatus write SetStatus;
@@ -209,27 +209,22 @@ end;
 
 procedure TRpcThread.GetStatusInfo;
 var
-  req, res, args: TJSONObject;
+  req, args: TJSONObject;
   s: string;
 begin
   req:=TJSONObject.Create;
   try
     req.Add('method', 'session-get');
-    res:=FRpc.SendRequest(req);
-    if res <> nil then
+    args:=FRpc.SendRequest(req);
+    if args <> nil then
     try
-      args:=res.Objects['arguments'];
-      if args = nil then
-        Status:='Arguments object not found.'
-      else begin
-        if args.IndexOfName('version') >= 0 then
-          s:=' ' + args.Strings['version']
-        else
-          s:='';
-        FRpc.InfoStatus:=Format('Transmission%s at %s:%s', [s, FRpc.Http.TargetHost, FRpc.Http.TargetPort]);
-      end;
+      if args.IndexOfName('version') >= 0 then
+        s:=' ' + args.Strings['version']
+      else
+        s:='';
+      FRpc.InfoStatus:=Format('Transmission%s at %s:%s', [s, FRpc.Http.TargetHost, FRpc.Http.TargetPort]);
     finally
-      res.Free;
+      args.Free;
     end;
   finally
     req.Free;
@@ -373,9 +368,10 @@ begin
   inherited Destroy;
 end;
 
-function TRpc.SendRequest(req: TJSONObject): TJSONObject;
+function TRpc.SendRequest(req: TJSONObject; ReturnArguments: boolean): TJSONObject;
 var
   obj: TJSONData;
+  res: TJSONObject;
   jp: TJSONParser;
   s: string;
   i: integer;
@@ -424,14 +420,21 @@ begin
           end;
           try
             if obj is TJSONObject then begin
-              Result:=obj as TJSONObject;
-              s:=Result.Strings['result'];
-              if AnsiCompareText(s, 'success') <> 0 then begin
-                Status:=s;
-                Result:=nil;
-              end
-              else
-                obj:=nil;
+              res:=obj as TJSONObject;
+              s:=res.Strings['result'];
+              if AnsiCompareText(s, 'success') <> 0 then
+                Status:=s
+              else begin
+                if ReturnArguments then begin
+                  Result:=res.Objects['arguments'];
+                  if Result = nil then
+                    Status:='Arguments object not found.';
+                end
+                else
+                  Result:=res;
+                if Result <> nil then
+                  obj:=nil;
+              end;
               break;
             end
             else begin
@@ -454,7 +457,7 @@ end;
 
 function TRpc.RequestInfo(TorrentId: integer; const Fields: array of const): TJSONObject;
 var
-  req, res, args: TJSONObject;
+  req, args: TJSONObject;
 begin
   Result:=nil;
   req:=TJSONObject.Create;
@@ -465,12 +468,7 @@ begin
       args.Add('ids', TJSONArray.Create([TorrentId]));
     args.Add('fields', TJSONArray.Create(Fields));
     req.Add('arguments', args);
-    res:=SendRequest(req);
-    if res <> nil then begin
-      Result:=res.Objects['arguments'];
-      if Result = nil then
-        Status:='Arguments object not found.';
-    end;
+    Result:=SendRequest(req);
   finally
     req.Free;
   end;

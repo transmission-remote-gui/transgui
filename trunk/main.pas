@@ -584,57 +584,95 @@ end;
 
 procedure TMainForm.DoAddTorrent(const FileName: Utf8String);
 var
+  torrent: string;
+
+  function _AddTorrent(args: TJSONObject): integer;
+  var
+    req: TJSONObject;
+  begin
+    Result:=0;
+    req:=TJSONObject.Create;
+    try
+      req.Add('method', 'torrent-add');
+      args.Add('metainfo', TJSONString.Create(torrent));
+      req.Add('arguments', args);
+      args:=RpcObj.SendRequest(req);
+      if args <> nil then
+      try
+        Result:=args.Objects['torrent-added'].Integers['id'];
+      finally
+        args.Free;
+      end;
+    finally
+      req.Free;
+    end;
+
+    if Result = 0 then
+      CheckStatus(False);
+  end;
+
+var
   req, res, args: TJSONObject;
   id: ptruint;
   t, files: TJSONArray;
-  i: integer;
-  s: string;
+  i, j: integer;
   fs: TFileStream;
+  s, OldDownloadDir: string;
+  tt: TDateTime;
 begin
+  AppBusy;
   id:=0;
 
   fs:=TFileStream.Create(UTF8Decode(FileName), fmOpenRead or fmShareDenyNone);
   try
-    SetLength(s, fs.Size);
-    fs.ReadBuffer(PChar(s)^, Length(s));
+    SetLength(torrent, fs.Size);
+    fs.ReadBuffer(PChar(torrent)^, Length(torrent));
   finally
     fs.Free;
   end;
-
-  AppBusy;
-  req:=TJSONObject.Create;
-  try
-    req.Add('method', 'torrent-add');
-    args:=TJSONObject.Create;
-    args.Add('paused', TJSONIntegerNumber.Create(1));
-    args.Add('metainfo', TJSONString.Create(EncodeBase64(s)));
-    req.Add('arguments', args);
-    args:=nil;
-    res:=RpcObj.SendRequest(req);
-    if res <> nil then
-      try
-        args:=res.Objects['arguments'];
-        if args = nil then
-          raise Exception.Create('Arguments object not found.');
-        id:=args.Objects['torrent-added'].Integers['id'];
-      finally
-        res.Free;
-      end;
-  finally
-    req.Free;
-  end;
-
-  if id = 0 then begin
-    CheckStatus(False);
-    exit;
-  end;
-
-  RpcObj.RefreshNow:=True;
-
+  torrent:=EncodeBase64(torrent);
   try
     with TAddTorrentForm.Create(Self) do
     try
-      args:=RpcObj.RequestInfo(id, ['files']);
+      j:=FIni.ReadInteger('AddTorrent', 'FolderCount', 0);
+      for i:=0 to j - 1 do begin
+        s:=FIni.ReadString('AddTorrent', Format('Folder%d', [i]), '');
+        if s <> '' then
+          cbDestFolder.Items.Add(s);
+      end;
+      if cbDestFolder.Items.Count > 0 then
+        cbDestFolder.ItemIndex:=0;
+
+      if cbDestFolder.Text = '' then begin
+        req:=TJSONObject.Create;
+        try
+          req.Add('method', 'session-get');
+          args:=RpcObj.SendRequest(req);
+          if args = nil then begin
+            CheckStatus(False);
+            exit;
+          end;
+          cbDestFolder.Items.Add(UTF8Encode(args.Strings['download-dir']));
+          cbDestFolder.ItemIndex:=0;
+          args.Free;
+        finally
+          req.Free;
+        end;
+      end;
+
+      args:=TJSONObject.Create;
+      args.Add('paused', TJSONIntegerNumber.Create(1));
+      i:=FIni.ReadInteger('AddTorrent', 'PeerLimit', 0);
+      if i <> 0 then
+        args.Add('peer-limit', TJSONIntegerNumber.Create(i));
+      args.Add('download-dir', TJSONString.Create(UTF8Decode(cbDestFolder.Text)));
+      id:=_AddTorrent(args);
+      if id = 0 then
+        exit;
+
+      RpcObj.RefreshNow:=True;
+
+      args:=RpcObj.RequestInfo(id, ['files', 'maxConnectedPeers']);
       if args = nil then begin
         CheckStatus(False);
         exit;
@@ -643,6 +681,7 @@ begin
         t:=args.Arrays['torrents'];
         if t.Count = 0 then
           raise Exception.Create('Unable to get files list');
+        edPeerLimit.Value:=t.Objects[0].Integers['maxConnectedPeers'];
         files:=t.Objects[0].Arrays['files'];
         for i:=0 to files.Count - 1 do begin
           res:=files.Objects[i];
@@ -655,16 +694,33 @@ begin
         args.Free;
       end;
 
+      OldDownloadDir:=cbDestFolder.Text;
       AppNormal;
 
       if ShowModal = mrOk then begin
         AppBusy;
         Self.Update;
+
+        if OldDownloadDir <> cbDestFolder.Text then begin
+          TorrentAction(id, 'remove');
+          id:=0;
+          args:=TJSONObject.Create;
+          args.Add('paused', TJSONIntegerNumber.Create(1));
+          args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
+          args.Add('download-dir', TJSONString.Create(UTF8Decode(cbDestFolder.Text)));
+          id:=_AddTorrent(args);
+          if id = 0 then
+            exit;
+          RpcObj.RefreshNow:=True;
+          Application.ProcessMessages;
+        end;
+
         req:=TJSONObject.Create;
         try
           req.Add('method', 'torrent-set');
           args:=TJSONObject.Create;
           args.Add('ids', TJSONArray.Create([id]));
+          args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
 
           files:=TJSONArray.Create;
           for i:=0 to lvFiles.Items.Count - 1 do
@@ -686,12 +742,12 @@ begin
 
           req.Add('arguments', args);
           args:=nil;
-          res:=RpcObj.SendRequest(req);
-          if res = nil then begin
+          args:=RpcObj.SendRequest(req, False);
+          if args = nil then begin
             CheckStatus(False);
             exit;
           end;
-          res.Free;
+          args.Free;
         finally
           req.Free;
         end;
@@ -699,15 +755,33 @@ begin
         if cbStartTorrent.Checked then
           TorrentAction(id, 'start');
 
-        for i:=0 to lvTorrents.Items.Count - 1 do
-          with lvTorrents.Items[i] do
-            if ptruint(Data) = id then begin
-              Selected:=True;
-              MakeVisible(False);
-              break;
-            end;
+        tt:=Now;
+        while (Now - tt < 2/SecsPerDay) and (id <> 0) do begin
+          Application.ProcessMessages;
+          for i:=0 to lvTorrents.Items.Count - 1 do
+            with lvTorrents.Items[i] do
+              if ptruint(Data) = id then begin
+                Selected:=True;
+                MakeVisible(False);
+                id:=0;
+                break;
+              end;
+          Sleep(100);
+        end;
 
         id:=0;
+
+        FIni.WriteInteger('AddTorrent', 'PeerLimit', edPeerLimit.Value);
+        i:=cbDestFolder.Items.IndexOf(cbDestFolder.Text);
+        if i >= 0 then
+          cbDestFolder.Items.Move(i, 0)
+        else
+          cbDestFolder.Items.Insert(0, cbDestFolder.Text);
+        while cbDestFolder.Items.Count > 6 do
+          cbDestFolder.Items.Delete(cbDestFolder.Items.Count - 1);
+        FIni.WriteInteger('AddTorrent', 'FolderCount', cbDestFolder.Items.Count);
+        for i:=0 to cbDestFolder.Items.Count - 1 do
+          FIni.WriteString('AddTorrent', Format('Folder%d', [i]), cbDestFolder.Items[i]);
         AppNormal;
       end;
     finally
@@ -751,6 +825,7 @@ end;
 
 procedure TMainForm.DownloadFinished(const TorrentName: string);
 begin
+  if not TrayIcon.Visible then exit;
   TrayIcon.BalloonHint:=Format('''%s'' has finished downloading', [TorrentName]);
   TrayIcon.BalloonTitle:='Download complete';
   TrayIcon.ShowBalloonHint;
@@ -768,7 +843,7 @@ end;
 
 procedure TMainForm.acDaemonOptionsExecute(Sender: TObject);
 var
-  req, res, args: TJSONObject;
+  req, args: TJSONObject;
   s: string;
 begin
   with TDaemonOptionsForm.Create(Self) do
@@ -777,13 +852,9 @@ begin
     req:=TJSONObject.Create;
     try
       req.Add('method', 'session-get');
-      res:=RpcObj.SendRequest(req);
-      if res <> nil then
+      args:=RpcObj.SendRequest(req);
+      if args <> nil then
         try
-          args:=res.Objects['arguments'];
-          if args = nil then
-            raise Exception.Create('Arguments object not found.');
-
           edDownloadDir.Text:=UTF8Encode(args.Strings['download-dir']);
           edPort.Value:=args.Integers['port'];
           cbPortForwarding.Checked:=args.Integers['port-forwarding-enabled'] <> 0;
@@ -802,7 +873,7 @@ begin
           cbMaxUp.Checked:=args.Integers['speed-limit-up-enabled'] <> 0;
           edMaxUp.Value:=args.Integers['speed-limit-up'];
         finally
-          res.Free;
+          args.Free;
         end
       else begin
         CheckStatus(False);
@@ -838,12 +909,12 @@ begin
         if cbMaxUp.Checked then
           args.Add('speed-limit-up', TJSONIntegerNumber.Create(edMaxUp.Value));
         req.Add('arguments', args);
-        res:=RpcObj.SendRequest(req);
-        if res = nil then begin
+        args:=RpcObj.SendRequest(req, False);
+        if args = nil then begin
           CheckStatus(False);
           exit;
         end;
-        res.Free;
+        args.Free;
       finally
         req.Free;
       end;
@@ -905,7 +976,7 @@ end;
 
 procedure TMainForm.acTorrentPropsExecute(Sender: TObject);
 var
-  req, res, args, t: TJSONObject;
+  req, args, t: TJSONObject;
   i, j, id: integer;
 begin
   AppBusy;
@@ -958,12 +1029,12 @@ begin
           args.Add('speed-limit-up', TJSONIntegerNumber.Create(edMaxUp.Value));
         req.Add('arguments', args);
         args:=nil;
-        res:=RpcObj.SendRequest(req);
-        if res = nil then begin
+        args:=RpcObj.SendRequest(req, False);
+        if args = nil then begin
           CheckStatus(False);
           exit;
         end;
-        res.Free;
+        args.Free;
       finally
         req.Free;
       end;
@@ -1877,7 +1948,7 @@ end;
 
 function TMainForm.TorrentAction(TorrentId: integer; const AAction: string): boolean;
 var
-  req, res, args: TJSONObject;
+  req, args: TJSONObject;
 begin
   AppBusy;
   req:=TJSONObject.Create;
@@ -1887,9 +1958,9 @@ begin
     if TorrentId <> 0 then
       args.Add('ids', TJSONArray.Create([TorrentId]));
     req.Add('arguments', args);
-    res:=RpcObj.SendRequest(req);
-    Result:=res <> nil;
-    res.Free;
+    args:=RpcObj.SendRequest(req, False);
+    Result:=args <> nil;
+    args.Free;
   finally
     req.Free;
   end;
@@ -1902,7 +1973,7 @@ end;
 
 function TMainForm.SetFilePriority(TorrentId, FileIdx: integer; const APriority: string): boolean;
 var
-  req, res, args: TJSONObject;
+  req, args: TJSONObject;
 begin
   AppBusy;
   req:=TJSONObject.Create;
@@ -1928,9 +1999,9 @@ begin
       end;
     end;
     req.Add('arguments', args);
-    res:=RpcObj.SendRequest(req);
-    Result:=res <> nil;
-    res.Free;
+    args:=RpcObj.SendRequest(req, False);
+    Result:=args<> nil;
+    args.Free;
   finally
     req.Free;
   end;

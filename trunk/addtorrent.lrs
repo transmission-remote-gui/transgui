@@ -1,39 +1,44 @@
 { This is an automatically generated lazarus resource file }
 
 LazarusResources.Add('TAddTorrentForm','FORMDATA',[
-  'TPF0'#15'TAddTorrentForm'#14'AddTorrentForm'#4'Left'#3#128#1#6'Height'#3#149
-  +#1#3'Top'#3#185#0#5'Width'#3#250#1#18'HorzScrollBar.Page'#3#249#1#18'VertScr'
-  +'ollBar.Page'#3#148#1#19'VertScrollBar.Range'#2'\'#10'AutoScroll'#8#11'Borde'
-  +'rIcons'#11#12'biSystemMenu'#0#7'Caption'#6#15'Add new torrent'#12'ClientHei'
-  +'ght'#3#149#1#11'ClientWidth'#3#250#1#21'Constraints.MinHeight'#3','#1#20'Co'
-  +'nstraints.MinWidth'#3','#1#6'OnShow'#7#8'FormShow'#8'Position'#7#16'poMainF'
-  +'ormCenter'#10'LCLVersion'#6#6'0.9.27'#0#9'TGroupBox'#8'gbSaveAs'#4'Left'#2#8
-  +#6'Height'#2'X'#3'Top'#2#4#5'Width'#3#235#1#7'Anchors'#11#5'akTop'#6'akLeft'
-  +#7'akRight'#0#12'ClientHeight'#2'F'#11'ClientWidth'#3#231#1#8'TabOrder'#2#0#0
-  +#6'TLabel'#12'txDestFolder'#4'Left'#2#10#6'Height'#2#14#5'Width'#2'Z'#7'Capt'
-  +'ion'#6#19'Destination folder:'#11'ParentColor'#8#0#0#9'TComboBox'#12'cbDest'
-  +'Folder'#4'Left'#2#10#6'Height'#2#21#3'Top'#2#16#5'Width'#3#210#1#7'Anchors'
-  +#11#5'akTop'#6'akLeft'#7'akRight'#0#7'Enabled'#8#10'ItemHeight'#2#13#11'Pare'
-  +'ntColor'#9#8'TabOrder'#2#0#0#0#9'TCheckBox'#14'cbStartTorrent'#4'Left'#2#10
-  +#6'Height'#2#19#3'Top'#2','#5'Width'#2'W'#7'Caption'#6#13'Start torrent'#7'C'
-  +'hecked'#9#5'State'#7#9'cbChecked'#8'TabOrder'#2#1#0#0#0#9'TGroupBox'#10'gbC'
-  +'ontents'#4'Left'#2#8#6'Height'#3#11#1#3'Top'#2'd'#5'Width'#3#235#1#7'Anchor'
-  +'s'#11#5'akTop'#6'akLeft'#7'akRight'#8'akBottom'#0#7'Caption'#6#16'Torrent c'
-  +'ontents'#12'ClientHeight'#3#249#0#11'ClientWidth'#3#231#1#8'TabOrder'#2#1#0
-  +#9'TListView'#7'lvFiles'#4'Left'#2#10#6'Height'#3#208#0#3'Top'#2#28#5'Width'
-  +#3#210#1#7'Anchors'#11#5'akTop'#6'akLeft'#7'akRight'#8'akBottom'#0#10'Checkb'
-  +'oxes'#9#7'Columns'#14#1#7'Caption'#6#9'File name'#5'Width'#3'^'#1#0#1#7'Cap'
-  +'tion'#6#4'Size'#5'Width'#2'P'#0#0#11'ColumnClick'#8#8'ReadOnly'#9#9'RowSele'
-  +'ct'#9#8'TabOrder'#2#0#9'ViewStyle'#7#8'vsReport'#11'OnMouseDown'#7#16'lvFil'
-  +'esMouseDown'#0#0#7'TButton'#11'btSelectAll'#4'Left'#3'B'#1#6'Height'#2#23#5
-  +'Width'#2'K'#7'Anchors'#11#5'akTop'#7'akRight'#0#7'Caption'#6#10'Select all'
-  +#7'OnClick'#7#16'btSelectAllClick'#8'TabOrder'#2#1#0#0#7'TButton'#12'btSelec'
-  +'tNone'#4'Left'#3#145#1#6'Height'#2#23#5'Width'#2'K'#7'Anchors'#11#5'akTop'#7
-  +'akRight'#0#7'Caption'#6#11'Select none'#7'OnClick'#7#17'btSelectNoneClick'#8
-  +'TabOrder'#2#2#0#0#0#7'TButton'#4'btOK'#4'Left'#3'X'#1#6'Height'#2#23#3'Top'
-  +#3'w'#1#5'Width'#2'K'#7'Anchors'#11#7'akRight'#8'akBottom'#0#7'Caption'#6#2
-  +'OK'#7'Default'#9#11'ModalResult'#2#1#8'TabOrder'#2#2#0#0#7'TButton'#8'btCan'
-  +'cel'#4'Left'#3#168#1#6'Height'#2#23#3'Top'#3'w'#1#5'Width'#2'K'#7'Anchors'
-  +#11#7'akRight'#8'akBottom'#0#6'Cancel'#9#7'Caption'#6#6'Cancel'#11'ModalResu'
-  +'lt'#2#2#8'TabOrder'#2#3#0#0#0
+  'TPF0'#15'TAddTorrentForm'#14'AddTorrentForm'#4'Left'#3#128#1#6'Height'#3'W'#1
+  +#3'Top'#3#185#0#5'Width'#3#200#1#18'HorzScrollBar.Page'#3#249#1#18'VertScrol'
+  +'lBar.Page'#3#148#1#19'VertScrollBar.Range'#2'\'#10'AutoScroll'#8#11'BorderI'
+  +'cons'#11#12'biSystemMenu'#0#7'Caption'#6#15'Add new torrent'#12'ClientHeigh'
+  +'t'#3'W'#1#11'ClientWidth'#3#200#1#21'Constraints.MinHeight'#3','#1#20'Const'
+  +'raints.MinWidth'#3','#1#6'OnShow'#7#8'FormShow'#8'Position'#7#16'poMainForm'
+  +'Center'#10'LCLVersion'#6#6'0.9.27'#0#9'TGroupBox'#8'gbSaveAs'#4'Left'#2#8#6
+  +'Height'#2'd'#3'Top'#2#4#5'Width'#3#185#1#7'Anchors'#11#5'akTop'#6'akLeft'#7
+  +'akRight'#0#12'ClientHeight'#2'R'#11'ClientWidth'#3#181#1#8'TabOrder'#2#0#0#6
+  +'TLabel'#12'txDestFolder'#4'Left'#2#10#6'Height'#2#14#5'Width'#2'Z'#7'Captio'
+  +'n'#6#19'Destination folder:'#11'ParentColor'#8#0#0#6'TLabel'#11'txPeerLimit'
+  +#4'Left'#3','#1#6'Height'#2#14#3'Top'#2'4'#5'Width'#2'0'#9'Alignment'#7#14't'
+  +'aRightJustify'#7'Anchors'#11#5'akTop'#7'akRight'#0#7'Caption'#6#11'Peer lim'
+  +'it:'#11'ParentColor'#8#0#0#9'TComboBox'#12'cbDestFolder'#4'Left'#2#10#6'Hei'
+  +'ght'#2#21#3'Top'#2#16#5'Width'#3#160#1#7'Anchors'#11#5'akTop'#6'akLeft'#7'a'
+  +'kRight'#0#10'ItemHeight'#2#13#8'TabOrder'#2#0#0#0#9'TCheckBox'#14'cbStartTo'
+  +'rrent'#4'Left'#2#10#6'Height'#2#19#3'Top'#2'1'#5'Width'#2'W'#7'Caption'#6#13
+  +'Start torrent'#7'Checked'#9#5'State'#7#9'cbChecked'#8'TabOrder'#2#1#0#0#9'T'
+  +'SpinEdit'#11'edPeerLimit'#4'Left'#3'l'#1#6'Height'#2#23#3'Top'#2'/'#5'Width'
+  +#2'>'#7'Anchors'#11#5'akTop'#7'akRight'#0#8'MaxValue'#3#231#3#8'MinValue'#2#1
+  +#8'TabOrder'#2#2#5'Value'#2#1#0#0#0#9'TGroupBox'#10'gbContents'#4'Left'#2#8#6
+  +'Height'#3#197#0#3'Top'#2'l'#5'Width'#3#185#1#7'Anchors'#11#5'akTop'#6'akLef'
+  +'t'#7'akRight'#8'akBottom'#0#7'Caption'#6#16'Torrent contents'#12'ClientHeig'
+  +'ht'#3#179#0#11'ClientWidth'#3#181#1#8'TabOrder'#2#1#0#9'TListView'#7'lvFile'
+  +'s'#4'Left'#2#10#6'Height'#3#138#0#3'Top'#2#28#5'Width'#3#160#1#7'Anchors'#11
+  +#5'akTop'#6'akLeft'#7'akRight'#8'akBottom'#0#10'Checkboxes'#9#7'Columns'#14#1
+  +#7'Caption'#6#9'File name'#5'Width'#3','#1#0#1#7'Caption'#6#4'Size'#5'Width'
+  +#2'P'#0#0#11'ColumnClick'#8#8'ReadOnly'#9#9'RowSelect'#9#8'TabOrder'#2#0#9'V'
+  +'iewStyle'#7#8'vsReport'#11'OnMouseDown'#7#16'lvFilesMouseDown'#0#0#7'TButto'
+  +'n'#11'btSelectAll'#4'Left'#3#16#1#6'Height'#2#23#5'Width'#2'K'#7'Anchors'#11
+  +#5'akTop'#7'akRight'#0#7'Caption'#6#10'Select all'#7'OnClick'#7#16'btSelectA'
+  +'llClick'#8'TabOrder'#2#1#0#0#7'TButton'#12'btSelectNone'#4'Left'#3'_'#1#6'H'
+  +'eight'#2#23#5'Width'#2'K'#7'Anchors'#11#5'akTop'#7'akRight'#0#7'Caption'#6
+  +#11'Select none'#7'OnClick'#7#17'btSelectNoneClick'#8'TabOrder'#2#2#0#0#0#7
+  +'TButton'#4'btOK'#4'Left'#3'&'#1#6'Height'#2#23#3'Top'#3'9'#1#5'Width'#2'K'#7
+  +'Anchors'#11#7'akRight'#8'akBottom'#0#7'Caption'#6#2'OK'#7'Default'#9#11'Mod'
+  +'alResult'#2#1#8'TabOrder'#2#2#0#0#7'TButton'#8'btCancel'#4'Left'#3'v'#1#6'H'
+  +'eight'#2#23#3'Top'#3'9'#1#5'Width'#2'K'#7'Anchors'#11#7'akRight'#8'akBottom'
+  +#0#6'Cancel'#9#7'Caption'#6#6'Cancel'#11'ModalResult'#2#2#8'TabOrder'#2#3#0#0
+  +#0
 ]);
