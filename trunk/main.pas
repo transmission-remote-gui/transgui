@@ -721,7 +721,7 @@ end;
 
 procedure TMainForm.UpdateTray;
 begin
-  TrayIcon.Visible:=not Self.Visible or FIni.ReadBool('Interface', 'TrayIconAlways', True);
+  TrayIcon.Visible:=not Self.Visible or (WindowState = wsMinimized) or FIni.ReadBool('Interface', 'TrayIconAlways', True);
   if Visible and (WindowState <> wsMinimized) then
     miToggleApp.Caption:=SHideApp
   else
@@ -730,7 +730,8 @@ end;
 
 procedure TMainForm.HideApp;
 begin
-  Hide;
+  if WindowState <> wsMinimized then
+    Hide;
 {$ifdef mswindows}
   ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_HIDE);
 {$endif mswindows}
@@ -743,14 +744,14 @@ begin
 {$endif mswindows}
   if WindowState = wsMinimized then
     Application.Restore;
-  Application.BringToFront;
   Show;
+  Application.BringToFront;
   BringToFront;
 end;
 
 procedure TMainForm.DownloadFinished(const TorrentName: string);
 begin
-  TrayIcon.BalloonHint:=Format('''%s'' has finished downloading.', [TorrentName]);
+  TrayIcon.BalloonHint:=Format('''%s'' has finished downloading', [TorrentName]);
   TrayIcon.BalloonTitle:='Download complete';
   TrayIcon.ShowBalloonHint;
 end;
@@ -1565,8 +1566,8 @@ begin
   StatusBar.Panels[1].Text:=Format('D: %s/s', [GetHumanSize(DownSpeed, 1)]);
   StatusBar.Panels[2].Text:=Format('U: %s/s', [GetHumanSize(UpSpeed, 1)]);
 
-  TrayIcon.Hint:=Format('%s%s%s, %s',
-        [RpcObj.InfoStatus, LineEnding, StatusBar.Panels[1].Text, StatusBar.Panels[2].Text]);
+  TrayIcon.Hint:=Format('%s%s%d downloading, %d seeding%s%s, %s',
+        [RpcObj.InfoStatus, LineEnding, DownCnt, SeedCnt, LineEnding, StatusBar.Panels[1].Text, StatusBar.Panels[2].Text]);
 
   if (RpcObj.CurTorrentId <> 0) and (lvTorrents.Selected = nil) then begin
     RpcObj.CurTorrentId:=0;
