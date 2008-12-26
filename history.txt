@@ -1,0 +1,18 @@
+0.91 beta (Dec 26, 2008)
+------------------------
+[+] Download folder and peer limit can be specified when adding new torrent.
+[+] Tray icon.
+[+] Balloon tooltip when torrent download is complete.
+[+] Added "Start all" and "Stop all" items into "Torrent" menu.
+[+] Torrent file name can be passed as command line parameter.
+[+] Peer limit can be changed in torrent properties.
+[+] Windows installer.
+[*] Only single instance of the application is allowed.
+[*] Improved startup speed on Linux.
+[-] Skipping of files to download was not possible during torrent addition.
+[-] "Access violation" error after removing a torrent.
+[-] Issues with non-english charsets.
+
+0.9 beta
+--------
+[+] Initial version.
