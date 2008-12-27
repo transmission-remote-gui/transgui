@@ -1,3 +1,4 @@
+#labels Featured
 [http://transmisson-remote-gui.googlecode.com/svn/wiki/PeersWin.png]
 
 *Main window with peers list page / Windows XP*
