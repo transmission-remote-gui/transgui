@@ -618,7 +618,7 @@ var
   t, files: TJSONArray;
   i, j: integer;
   fs: TFileStream;
-  s, OldDownloadDir: string;
+  s, OldDownloadDir, IniSec: string;
   tt: TDateTime;
 begin
   AppBusy;
@@ -635,9 +635,10 @@ begin
   try
     with TAddTorrentForm.Create(Self) do
     try
-      j:=FIni.ReadInteger('AddTorrent', 'FolderCount', 0);
+      IniSec:='AddTorrent.' + RpcObj.Http.TargetHost;
+      j:=FIni.ReadInteger(IniSec, 'FolderCount', 0);
       for i:=0 to j - 1 do begin
-        s:=FIni.ReadString('AddTorrent', Format('Folder%d', [i]), '');
+        s:=FIni.ReadString(IniSec, Format('Folder%d', [i]), '');
         if s <> '' then
           cbDestFolder.Items.Add(s);
       end;
@@ -663,7 +664,7 @@ begin
 
       args:=TJSONObject.Create;
       args.Add('paused', TJSONIntegerNumber.Create(1));
-      i:=FIni.ReadInteger('AddTorrent', 'PeerLimit', 0);
+      i:=FIni.ReadInteger(IniSec, 'PeerLimit', 0);
       if i <> 0 then
         args.Add('peer-limit', TJSONIntegerNumber.Create(i));
       args.Add('download-dir', TJSONString.Create(UTF8Decode(cbDestFolder.Text)));
@@ -773,7 +774,7 @@ begin
 
         id:=0;
 
-        FIni.WriteInteger('AddTorrent', 'PeerLimit', edPeerLimit.Value);
+        FIni.WriteInteger(IniSec, 'PeerLimit', edPeerLimit.Value);
         i:=cbDestFolder.Items.IndexOf(cbDestFolder.Text);
         if i >= 0 then
           cbDestFolder.Items.Move(i, 0)
@@ -781,9 +782,9 @@ begin
           cbDestFolder.Items.Insert(0, cbDestFolder.Text);
         while cbDestFolder.Items.Count > 6 do
           cbDestFolder.Items.Delete(cbDestFolder.Items.Count - 1);
-        FIni.WriteInteger('AddTorrent', 'FolderCount', cbDestFolder.Items.Count);
+        FIni.WriteInteger(IniSec, 'FolderCount', cbDestFolder.Items.Count);
         for i:=0 to cbDestFolder.Items.Count - 1 do
-          FIni.WriteString('AddTorrent', Format('Folder%d', [i]), cbDestFolder.Items[i]);
+          FIni.WriteString(IniSec, Format('Folder%d', [i]), cbDestFolder.Items[i]);
         AppNormal;
       end;
     finally
