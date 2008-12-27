@@ -1137,7 +1137,8 @@ begin
     FIni.WriteInteger('MainForm', 'Width', Width);
     FIni.WriteInteger('MainForm', 'Height', Height);
   end;
-  FIni.WriteInteger('MainForm', 'State', integer(WindowState));
+  if WindowState <> wsMinimized then
+    FIni.WriteInteger('MainForm', 'State', integer(WindowState));
 
   FIni.WriteInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition);
 
