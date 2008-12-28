@@ -1,15 +1,15 @@
 object MainForm: TMainForm
   Left = -843
-  Height = 441
+  Height = 471
   Top = 146
-  Width = 741
+  Width = 780
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
   VertScrollBar.Range = 24
   AutoScroll = False
   Caption = ' '
-  ClientHeight = 421
-  ClientWidth = 741
+  ClientHeight = 451
+  ClientWidth = 780
   Constraints.MinHeight = 300
   Constraints.MinWidth = 300
   Menu = MainMenu
@@ -18,10 +18,117 @@ object MainForm: TMainForm
   OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '0.9.27'
+  object panTop: TPanel
+    Height = 146
+    Top = 24
+    Width = 780
+    Align = alClient
+    ClientHeight = 146
+    ClientWidth = 780
+    Constraints.MinHeight = 50
+    TabOrder = 4
+    object lvTorrents: TListView
+      Left = 116
+      Height = 144
+      Top = 1
+      Width = 663
+      Align = alClient
+      Columns = <      
+        item
+          Caption = 'Name'
+          Width = 200
+        end      
+        item
+          Alignment = taRightJustify
+          Caption = 'Size'
+          Width = 60
+        end      
+        item
+          Alignment = taCenter
+          Caption = 'Done'
+        end      
+        item
+          Caption = 'Status'
+          Width = 70
+        end      
+        item
+          Alignment = taRightJustify
+          Caption = 'Seeds'
+          Width = 55
+        end      
+        item
+          Alignment = taRightJustify
+          Caption = 'Peers'
+          Width = 55
+        end      
+        item
+          Alignment = taRightJustify
+          Caption = 'Down speed'
+          Width = 75
+        end      
+        item
+          Alignment = taRightJustify
+          Caption = 'Up speed'
+          Width = 75
+        end      
+        item
+          Caption = 'ETA'
+          Width = 80
+        end      
+        item
+          Caption = 'Ratio'
+        end>
+      Constraints.MinHeight = 50
+      Constraints.MinWidth = 50
+      HideSelection = False
+      PopupMenu = pmTorrents
+      ReadOnly = True
+      RowSelect = True
+      SmallImages = ImageList16
+      SortType = stData
+      TabOrder = 0
+      ViewStyle = vsReport
+      OnColumnClick = lvTorrentsColumnClick
+      OnCompare = lvTorrentsCompare
+      OnDblClick = lvTorrentsDblClick
+      OnResize = lvTorrentsResize
+      OnSelectItem = lvTorrentsSelectItem
+    end
+    object lvFilter: TListView
+      Left = 1
+      Height = 144
+      Top = 1
+      Width = 110
+      Align = alLeft
+      Columns = <      
+        item
+          Width = 10
+        end>
+      Constraints.MinWidth = 50
+      HideSelection = False
+      ReadOnly = True
+      RowSelect = True
+      ScrollBars = ssVertical
+      ShowColumnHeaders = False
+      SmallImages = ImageList16
+      TabOrder = 1
+      ViewStyle = vsReport
+      OnResize = lvFilterResize
+      OnSelectItem = lvFilterSelectItem
+    end
+    object HSplitter: TSplitter
+      Left = 111
+      Height = 144
+      Top = 1
+      Width = 5
+      AutoSnap = False
+      MinSize = 50
+    end
+  end
   object StatusBar: TStatusBar
     Height = 23
-    Top = 398
-    Width = 741
+    Top = 428
+    Width = 780
     Panels = <    
       item
         Width = 300
@@ -37,99 +144,34 @@ object MainForm: TMainForm
       end>
     SimplePanel = False
   end
-  object lvTorrents: TListView
-    Height = 104
-    Top = 24
-    Width = 741
-    Align = alClient
-    Columns = <    
-      item
-        Caption = 'Name'
-        Width = 200
-      end    
-      item
-        Alignment = taRightJustify
-        Caption = 'Size'
-        Width = 70
-      end    
-      item
-        Alignment = taCenter
-        Caption = 'Done'
-      end    
-      item
-        Caption = 'Status'
-        Width = 80
-      end    
-      item
-        Alignment = taRightJustify
-        Caption = 'Seeds'
-        Width = 60
-      end    
-      item
-        Alignment = taRightJustify
-        Caption = 'Peers'
-        Width = 60
-      end    
-      item
-        Alignment = taRightJustify
-        Caption = 'Down speed'
-        Width = 80
-      end    
-      item
-        Alignment = taRightJustify
-        Caption = 'Up speed'
-        Width = 80
-      end    
-      item
-        Caption = 'ETA'
-        Width = 100
-      end    
-      item
-        Caption = 'Ratio'
-      end>
-    Constraints.MinHeight = 50
-    HideSelection = False
-    PopupMenu = pmTorrents
-    ReadOnly = True
-    RowSelect = True
-    SmallImages = ImageList16
-    SortType = stData
-    TabOrder = 0
-    ViewStyle = vsReport
-    OnColumnClick = lvTorrentsColumnClick
-    OnCompare = lvTorrentsCompare
-    OnDblClick = lvTorrentsDblClick
-    OnResize = lvTorrentsResize
-    OnSelectItem = lvTorrentsSelectItem
-  end
   object PageInfo: TPageControl
-    Height = 265
-    Top = 133
-    Width = 741
+    Height = 253
+    Top = 175
+    Width = 780
     ActivePage = tabGeneral
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
     TabIndex = 0
-    TabOrder = 1
+    TabOrder = 0
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 238
-      ClientWidth = 733
+      ClientHeight = 226
+      ClientWidth = 772
       ImageIndex = 4
       object sbGenInfo: TScrollBox
-        Height = 212
+        Height = 200
         Top = 26
-        Width = 733
+        Width = 772
         Align = alClient
         TabOrder = 0
         OnResize = sbGenInfoResize
         object panGeneralInfo: TPanel
           Height = 58
           Top = 136
-          Width = 729
+          Width = 768
           Align = alTop
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 4
@@ -139,7 +181,7 @@ object MainForm: TMainForm
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
           ChildSizing.ControlsPerLine = 4
           ClientHeight = 58
-          ClientWidth = 729
+          ClientWidth = 768
           TabOrder = 0
           object txTorrentNameLabel: TLabel
             Left = 4
@@ -242,7 +284,7 @@ object MainForm: TMainForm
         object panTransfer: TPanel
           Height = 94
           Top = 21
-          Width = 729
+          Width = 768
           Align = alTop
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 4
@@ -252,7 +294,7 @@ object MainForm: TMainForm
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
           ChildSizing.ControlsPerLine = 6
           ClientHeight = 94
-          ClientWidth = 729
+          ClientWidth = 768
           TabOrder = 1
           object txStatusLabel: TLabel
             Left = 4
@@ -499,7 +541,7 @@ object MainForm: TMainForm
           Left = 2
           Height = 17
           Top = 2
-          Width = 725
+          Width = 764
           Align = alTop
           Alignment = taLeftJustify
           AutoSize = True
@@ -516,7 +558,7 @@ object MainForm: TMainForm
           Left = 2
           Height = 17
           Top = 117
-          Width = 725
+          Width = 764
           Align = alTop
           Alignment = taLeftJustify
           BorderSpacing.Around = 2
@@ -531,11 +573,11 @@ object MainForm: TMainForm
       end
       object panProgress: TPanel
         Height = 26
-        Width = 733
+        Width = 772
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 26
-        ClientWidth = 733
+        ClientWidth = 772
         TabOrder = 1
         object txDownProgressLabel: TLabel
           Left = 8
@@ -548,7 +590,7 @@ object MainForm: TMainForm
           ParentColor = False
         end
         object txDownProgress: TLabel
-          Left = 685
+          Left = 724
           Height = 26
           Width = 40
           Align = alRight
@@ -563,7 +605,7 @@ object MainForm: TMainForm
           Left = 78
           Height = 14
           Top = 6
-          Width = 601
+          Width = 640
           Align = alClient
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Around = 6
@@ -660,21 +702,22 @@ object MainForm: TMainForm
   object VSplitter: TSplitter
     Cursor = crVSplit
     Height = 5
-    Top = 128
-    Width = 741
+    Top = 170
+    Width = 780
     Align = alBottom
+    AutoSnap = False
     MinSize = 50
     ResizeAnchor = akBottom
   end
   object MainToolBar: TToolBar
     Height = 24
-    Width = 741
+    Width = 780
     AutoSize = True
     Caption = 'MainToolBar'
     Images = ImageList16
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 4
+    TabOrder = 1
     object ToolButton1: TToolButton
       Left = 1
       Top = 2
@@ -1122,10 +1165,10 @@ object MainForm: TMainForm
       OnExecute = acExitExecute
     end
   end
-  object DetailsTimer: TTimer
+  object RefreshNowTimer: TTimer
     Enabled = False
     Interval = 100
-    OnTimer = DetailsTimerTimer
+    OnTimer = RefreshNowTimerTimer
     left = 253
     top = 55
   end
@@ -1285,7 +1328,7 @@ object MainForm: TMainForm
     OnMinimize = ApplicationPropertiesMinimize
     OnRestore = ApplicationPropertiesRestore
     left = 348
-    top = 52
+    top = 56
   end
   object pmFiles: TPopupMenu
     Images = ImageList16
@@ -1323,7 +1366,7 @@ object MainForm: TMainForm
     left = 520
     top = 60
     Bitmap = {
-      4C69130000001000000010000000000000000000000000000000000000000000
+      4C69150000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000007308FF087B08FF088C10FF088C10FF087B08FF0000
@@ -1931,7 +1974,71 @@ object MainForm: TMainForm
       000000000000000000000000000000000000000000FF000000FF000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000
+      0000000000000000000000000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00E5E5E5FFE5E5
+      E5FFE5E5E5FFE5E5E5FFE5E5E5FFE5E5E5FFE5E5E5FFE5E5E5FFE5E5E5FFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00E5E5E5FFCCCCCCFFC5C5
+      C5FFC5C5C5FFC1C1C1FFBDBDBDFFBABABAFFBABABAFFB6B6B6FFB3B3B3FFE5E5
+      E5FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00E5E5E5FFCCCCCCFFCCCCCCFFCCCC
+      CCFFC5C5C5FFC5C5C5FFC1C1C1FFBDBDBDFFBABABAFFBABABAFFB6B6B6FFB3B3
+      B3FFB3B3B3FFFFFFFF00FFFFFF00FFFFFF00E5E5E5FFD4D4D4FFCCCCCCFFCCCC
+      CCFFCCCCCCFFC5C5C5FF000000FFC1C1C1FFBDBDBDFFBABABAFFBABABAFFB6B6
+      B6FFB3B3B3FFFFFFFF00FFFFFF00FFFFFF00E5E5E5FFD4D4D4FFD4D4D4FFCCCC
+      CCFF000000FFCCCCCCFF000000FF636363FF000000FFBDBDBDFFBABABAFFB6B6
+      B6FFB3B3B3FFFFFFFF00FFFFFF00FFFFFF00E5E5E5FFD4D4D4FFD4D4D4FFD4D4
+      D4FF000000FF000000FF000000FF000000FF000000FF5E5E5EFFBDBDBDFFBABA
+      BAFFB3B3B3FFFFFFFF00FFFFFF00FFFFFF00E5E5E5FFDBDBDBFFD4D4D4FFD4D4
+      D4FFD4D4D4FF000000FF000000FF000000FF636363FF636363FFC1C1C1FFBDBD
+      BDFFB3B3B3FFFFFFFF00FFFFFF00FFFFFF00E5E5E5FFDBDBDBFFD4D4D4FFD4D4
+      D4FF000000FF000000FF000000FF000000FF000000FFC5C5C5FFC5C5C5FFC1C1
+      C1FFB3B3B3FFFFFFFF00FFFFFF00FFFFFF00E5E5E5FFDBDBDBFFDBDBDBFFD4D4
+      D4FF000000FF6A6A6AFF000000FF636363FF000000FF636363FFC5C5C5FFC1C1
+      C1FFB3B3B3FFFFFFFF00FFFFFF00FFFFFF00E5E5E5FFDBDBDBFFDBDBDBFFDBDB
+      DBFFD4D4D4FF6A6A6AFF000000FF6A6A6AFFCCCCCCFF636363FFC5C5C5FFC5C5
+      C5FFB3B3B3FFFFFFFF00FFFFFF00FFFFFF00E5E5E5FFDBDBDBFFDBDBDBFFDBDB
+      DBFFDBDBDBFFD4D4D4FFD4D4D4FF6A6A6AFFCCCCCCFFCCCCCCFFCCCCCCFFC5C5
+      C5FFB3B3B3FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00E5E5E5FFDBDBDBFFDBDB
+      DBFFDBDBDBFFDBDBDBFFD4D4D4FFD4D4D4FFD4D4D4FFCCCCCCFFCCCCCCFFB3B3
+      B3FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00B3B3B3FFB3B3
+      B3FFB3B3B3FFB3B3B3FFB3B3B3FFB3B3B3FFB3B3B3FFB3B3B3FFB3B3B3FFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF0000FF000000FF000000FF000000FF000000FF
+      000000FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF
+      000000FF000000FF000000FF000000FF000000FF000000FF00005790D4FF5790
+      D4FF5790D4FF5790D4FF5790D4FF5790D4FF5790D4FF5790D4FF5790D4FF00FF
+      000000FF000000FF000000FF000000FF000000FF00005790D4FF0E70E1FF0060
+      CCFF0060CCFF0060CCFF0056B7FF0056B7FF004BA0FF004BA0FF004BA0FF5790
+      D4FF00FF000000FF000000FF000000FF00005790D4FF0E70E1FF0E70E1FF0E70
+      E1FFFFFFFFFF0060CCFF0060CCFF0056B7FF0056B7FF004BA0FF004BA0FF004B
+      A0FF0035AAFF00FF000000FF000000FF00005790D4FF2C83E7FF0E70E1FFFFFF
+      FFFFFFFFFFFFFFFFFFFF0060CCFF0060CCFFFFFFFFFF0056B7FF004BA0FF004B
+      A0FF0035AAFF00FF000000FF000000FF00005790D4FF2C83E7FFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFF0060CCFFFFFFFFFF09386DFF0056B7FF004B
+      A0FF0035AAFF00FF000000FF000000FF00005790D4FF2C83E7FF2C83E7FF2C83
+      E7FFFFFFFFFF09386DFF09386DFF09386DFFFFFFFFFF09386DFF0056B7FF0056
+      B7FF0035AAFF00FF000000FF000000FF00005790D4FF4591E7FF2C83E7FF2C83
+      E7FFFFFFFFFF09386DFF27588FFF0E70E1FFFFFFFFFF09386DFF0060CCFF0056
+      B7FF0035AAFF00FF000000FF000000FF00005790D4FF4591E7FF4591E7FF2C83
+      E7FFFFFFFFFF09386DFF0E70E1FF0E70E1FFFFFFFFFF09386DFF0060CCFF0060
+      CCFF0035AAFF00FF000000FF000000FF00005790D4FF599CE7FF4591E7FF4591
+      E7FFFFFFFFFF09386DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0060
+      CCFF0035AAFF00FF000000FF000000FF00005790D4FF599CE7FF599CE7FF4591
+      E7FFFFFFFFFF09386DFF2C83E7FFFFFFFFFFFFFFFFFFFFFFFFFF09386DFF2758
+      8FFF0035AAFF00FF000000FF000000FF00005790D4FF599CE7FF599CE7FF599C
+      E7FF4591E7FF09386DFF2C83E7FF2C83E7FFFFFFFFFF09386DFF27588FFF0E70
+      E1FF0035AAFF00FF000000FF000000FF000000FF00000035AAFF599CE7FF599C
+      E7FF599CE7FF4591E7FF4591E7FF2C83E7FF2C83E7FF27588FFF0E70E1FF0035
+      AAFF00FF000000FF000000FF000000FF000000FF000000FF00000035AAFF0035
+      AAFF0035AAFF0035AAFF0035AAFF0035AAFF0035AAFF0035AAFF0035AAFF00FF
+      000000FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF
+      000000FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF
+      000000FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF
+      000000FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF
+      000000FF000000FF000000FF0000
     }
   end
   object pmLabels: TPopupMenu

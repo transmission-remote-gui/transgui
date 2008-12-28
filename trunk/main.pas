@@ -37,6 +37,11 @@ const
 resourcestring
   SShowApp = 'Show';
   SHideApp = 'Hide';
+  SAll = 'All';
+  SDownloading = 'Downloading';
+  SCompleted = 'Completed';
+  SActive = 'Active';
+  SInactive = 'Inactive';
 
 type
 
@@ -62,6 +67,7 @@ type
     ActionList: TActionList;
     ApplicationProperties: TApplicationProperties;
     ImageList16: TImageList;
+    lvFilter: TListView;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
@@ -75,7 +81,9 @@ type
     miToggleApp: TMenuItem;
     miAbout: TMenuItem;
     miHelp: TMenuItem;
+    panTop: TPanel;
     pmTray: TPopupMenu;
+    HSplitter: TSplitter;
     TrayIcon: TTrayIcon;
     txCreated: TLabel;
     txCreatedLabel: TLabel;
@@ -174,7 +182,7 @@ type
     StatusBar: TStatusBar;
     tabPeers: TTabSheet;
     tabGeneral: TTabSheet;
-    DetailsTimer: TTimer;
+    RefreshNowTimer: TTimer;
     tabFiles: TTabSheet;
     procedure acAddTorrentExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
@@ -202,6 +210,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure lvFilterResize(Sender: TObject);
+    procedure lvFilterSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     procedure lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
     procedure lvTorrentsCompare(Sender: TObject; Item1, Item2: TListItem; Data: Integer; var Compare: Integer);
     procedure lvTorrentsDblClick(Sender: TObject);
@@ -212,7 +222,7 @@ type
     procedure miExitClick(Sender: TObject);
     procedure miToggleAppClick(Sender: TObject);
     procedure PageInfoChange(Sender: TObject);
-    procedure DetailsTimerTimer(Sender: TObject);
+    procedure RefreshNowTimerTimer(Sender: TObject);
     procedure pmFilesPopup(Sender: TObject);
     procedure pmTorrentsPopup(Sender: TObject);
     procedure sbGenInfoResize(Sender: TObject);
@@ -291,6 +301,26 @@ const
   idxFileDone = 2;
   idxFileProgress = 3;
   idxFilePriority = 4;
+
+  // Filter idices
+  fltAll      = 0;
+  fltDown     = 1;
+  fltDone     = 2;
+  fltActive   = 3;
+  fltInactive = 4;
+
+  // Status images
+  imgDown      = 9;
+  imgSeed      = 10;
+  imgDownError = 11;
+  imgSeedError = 12;
+  imgError     = 13;
+  imgDone      = 14;
+  imgStopped   = 15;
+  imgDownQueue = 16;
+  imgSeedQueue = 17;
+  imgAll       = 19;
+  imgActive    = 20;
 
 implementation
 
@@ -448,6 +478,15 @@ begin
   RpcObj:=TRpc.Create;
   FTorrents:=TVarList.Create(idxTorrentColCount, 0);
   FIni:=TIniFile.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
+
+  with lvFilter.Items do begin
+    Add.ImageIndex:=imgAll;
+    Add.ImageIndex:=imgDown;
+    Add.ImageIndex:=imgSeed;
+    Add.ImageIndex:=imgActive;
+    Add.ImageIndex:=imgStopped;
+  end;
+
   DoDisconnect;
   PageInfo.ActivePageIndex:=0;
   PageInfoChange(nil);
@@ -465,7 +504,7 @@ begin
   txTorrentHeader.Caption:=' ' + txTorrentHeader.Caption;
 
   if FIni.ReadInteger('MainForm', 'State', -1) = -1 then
-    Position:=poDefaultPosOnly
+    Position:=poScreenCenter
   else begin
     ws:=TWindowState(FIni.ReadInteger('MainForm', 'State', integer(WindowState)));
     Left:=FIni.ReadInteger('MainForm', 'Left', Left);
@@ -496,8 +535,20 @@ end;
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
+  HSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
   DummyTimer.Enabled:=True;
   UpdateTray;
+end;
+
+procedure TMainForm.lvFilterResize(Sender: TObject);
+begin
+  lvFilter.Columns[0].Width:=lvFilter.ClientWidth - 4;
+end;
+
+procedure TMainForm.lvFilterSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+begin
+  RefreshNowTimer.Enabled:=False;
+  RefreshNowTimer.Enabled:=True;
 end;
 
 procedure TMainForm.lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
@@ -522,8 +573,10 @@ end;
 
 procedure TMainForm.lvTorrentsResize(Sender: TObject);
 begin
-  if not FStarted then
+  if not FStarted then begin
     VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
+    HSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
+  end;
 end;
 
 procedure TMainForm.lvTorrentsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
@@ -541,8 +594,8 @@ begin
 
   ClearDetailsInfo;
 
-  DetailsTimer.Enabled:=False;
-  DetailsTimer.Enabled:=True;
+  RefreshNowTimer.Enabled:=False;
+  RefreshNowTimer.Enabled:=True;
 end;
 
 procedure TMainForm.miAboutClick(Sender: TObject);
@@ -1142,6 +1195,7 @@ begin
     FIni.WriteInteger('MainForm', 'State', integer(WindowState));
 
   FIni.WriteInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition);
+  FIni.WriteInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition);
 
   SaveColumns(lvTorrents, 'TorrentsList');
   SaveColumns(lvFiles, 'FilesList');
@@ -1182,9 +1236,9 @@ begin
   end;
 end;
 
-procedure TMainForm.DetailsTimerTimer(Sender: TObject);
+procedure TMainForm.RefreshNowTimerTimer(Sender: TObject);
 begin
-  DetailsTimer.Enabled:=False;
+  RefreshNowTimer.Enabled:=False;
   RpcObj.RefreshNow:=True;
 end;
 
@@ -1234,7 +1288,7 @@ end;
 procedure TMainForm.DoDisconnect;
 
 begin
-  DetailsTimer.Enabled:=False;
+  RefreshNowTimer.Enabled:=False;
   ClearDetailsInfo;
   lvTorrents.Clear;
   lvTorrents.Enabled:=False;
@@ -1244,6 +1298,14 @@ begin
   lvFiles.Enabled:=False;
   lvFiles.Color:=Self.Color;
 
+  lvFilter.Enabled:=False;
+  lvFilter.Color:=Self.Color;
+  lvFilter.Items[0].Caption:=SAll;
+  lvFilter.Items[1].Caption:=SDownloading;
+  lvFilter.Items[2].Caption:=SCompleted;
+  lvFilter.Items[3].Caption:=SActive;
+  lvFilter.Items[4].Caption:=SInactive;
+
   RpcObj.Disconnect;
 
   RpcObj.InfoStatus:='Disconnected';
@@ -1251,6 +1313,8 @@ begin
   UpdateUI;
   TrayIcon.Hint:=RpcObj.InfoStatus;
   FTorrents.RowCnt:=0;
+  lvFilter.Items[0].Selected:=True;
+  RefreshNowTimer.Enabled:=False;
 end;
 
 procedure TMainForm.ClearDetailsInfo;
@@ -1455,11 +1519,11 @@ begin
       DownloadFinished(FTorrents[idxName, row]);
     FTorrents[idxStatus, row]:=j;
     case j of
-      TR_STATUS_CHECK_WAIT: StateImg:=16;
-      TR_STATUS_CHECK:      StateImg:=16;
-      TR_STATUS_DOWNLOAD:   StateImg:=9;
-      TR_STATUS_SEED:       StateImg:=10;
-      TR_STATUS_STOPPED:    StateImg:=14;
+      TR_STATUS_CHECK_WAIT: StateImg:=imgDownQueue;
+      TR_STATUS_CHECK:      StateImg:=imgDownQueue;
+      TR_STATUS_DOWNLOAD:   StateImg:=imgDown;
+      TR_STATUS_SEED:       StateImg:=imgSeed;
+      TR_STATUS_STOPPED:    StateImg:=imgDone;
     end;
 
     if FTorrents[idxStatus, row] = TR_STATUS_CHECK then
@@ -1468,8 +1532,8 @@ begin
       f:=t.Floats['sizeWhenDone'];
       if f <> 0 then
         f:=(f - t.Floats['leftUntilDone'])*100.0/f;
-      if (StateImg = 14) and (t.Floats['leftUntilDone'] <> 0) then
-        StateImg:=15;
+      if (StateImg = imgDone) and (t.Floats['leftUntilDone'] <> 0) then
+        StateImg:=imgStopped;
     end;
     FTorrents[idxDone, row]:=f;
 
@@ -1484,9 +1548,9 @@ begin
 
     if (FTorrents[idxStatus, row] <> TR_STATUS_STOPPED) and (GetTorrentError(t) <> '') then
       if t.Strings['errorString'] <> '' then
-        StateImg:=13
+        StateImg:=imgError
       else
-        if StateImg in [9,10] then
+        if StateImg in [imgDown,imgSeed] then
           Inc(StateImg, 2);
 
     f:=t.Floats['uploadRatio'];
@@ -1524,50 +1588,93 @@ var
   end;
 
 var
-  i, j: integer;
+  i, j, FilterIdx: integer;
   s: string;
   f: double;
   UpSpeed, DownSpeed: double;
-  DownCnt, SeedCnt: integer;
+  Cnt, DownCnt, SeedCnt, CompletedCnt, ActiveCnt: integer;
+  IsActive: boolean;
 begin
 //  lvTorrents.BeginUpdate;
   lvTorrents.Tag:=1;
   try
     lvTorrents.Enabled:=True;
     lvTorrents.Color:=clWindow;
+    lvFilter.Enabled:=True;
+    lvFilter.Color:=clWindow;
 
     UpSpeed:=0;
     DownSpeed:=0;
     DownCnt:=0;
     SeedCnt:=0;
+    CompletedCnt:=0;
+    ActiveCnt:=0;
+    Cnt:=0;
+
+    if lvFilter.Selected <> nil then
+      FilterIdx:=lvFilter.Selected.Index
+    else
+      FilterIdx:=fltAll;
 
     FTorrents.Sort(FTorrentsSortColumn, FTorrentsSortDesc);
 
     for i:=0 to FTorrents.Count - 1 do begin
-      if i >= lvTorrents.Items.Count then
+      IsActive:=(FTorrents[idxDownSpeed, i] <> 0) or (FTorrents[idxUpSpeed, i] <> 0);
+      if IsActive then
+        Inc(ActiveCnt);
+
+      case integer(FTorrents[idxStatus, i]) of
+        TR_STATUS_CHECK_WAIT:
+          s:='Waiting';
+        TR_STATUS_CHECK:
+          s:='Verifying';
+        TR_STATUS_DOWNLOAD:
+          begin
+            s:='Downloading';
+            Inc(DownCnt);
+          end;
+        TR_STATUS_SEED:
+          begin
+            s:='Seeding';
+            Inc(SeedCnt);
+            Inc(CompletedCnt);
+          end;
+        TR_STATUS_STOPPED:
+          if FTorrents[idxStateImg, i] = imgDone then begin
+            s:='Finished';
+            Inc(CompletedCnt);
+          end
+          else
+            s:='Stopped';
+        else
+          s:='Unknown';
+      end;
+
+      case FilterIdx of
+        fltActive:
+          if not IsActive then
+            continue;
+        fltInactive:
+          if IsActive then
+            continue;
+        fltDown:
+          if FTorrents[idxStatus, i] <> TR_STATUS_DOWNLOAD then
+            continue;
+        fltDone:
+          if (FTorrents[idxStateImg, i] <> imgDone) and (FTorrents[idxStatus, i] <> TR_STATUS_SEED) then
+            continue;
+      end;
+
+      if Cnt >= lvTorrents.Items.Count then
         it:=lvTorrents.Items.Add
       else
-        it:=lvTorrents.Items[i];
+        it:=lvTorrents.Items[Cnt];
 
       it.Caption:=FTorrents[idxName, i];
       it.ImageIndex:=FTorrents[idxStateImg, i];
 
       SetSubItem(idxSize, GetHumanSize(FTorrents[idxSize, i], 0));
 
-      case integer(FTorrents[idxStatus, i]) of
-        TR_STATUS_CHECK_WAIT: s:='Waiting';
-        TR_STATUS_CHECK:      s:='Verifying';
-        TR_STATUS_DOWNLOAD:   begin
-                                s:='Downloading';
-                                Inc(DownCnt);
-                              end;
-        TR_STATUS_SEED:       begin
-                                s:='Seeding';
-                                Inc(SeedCnt);
-                              end;
-        TR_STATUS_STOPPED:    s:='Stopped';
-        else                  s:='Unknown';
-      end;
       SetSubItem(idxStatus, s);
 
       SetSubItem(idxDone, Format('%.1f%%', [double(FTorrents[idxDone, i])]));
@@ -1633,14 +1740,21 @@ begin
       UpSpeed:=UpSpeed + FTorrents[idxUpSpeed, i];
 
       it.Data:=pointer(ptruint(j));
+      Inc(Cnt);
     end;
 
-    while lvTorrents.Items.Count > FTorrents.Count do
+    while lvTorrents.Items.Count > Cnt do
       lvTorrents.Items.Delete(lvTorrents.Items.Count - 1);
   finally
     lvTorrents.Tag:=0;
 //    lvTorrents.EndUpdate;
   end;
+
+  lvFilter.Items[0].Caption:=Format('%s (%d)', [SAll, FTorrents.Count]);
+  lvFilter.Items[1].Caption:=Format('%s (%d)', [SDownloading, DownCnt]);
+  lvFilter.Items[2].Caption:=Format('%s (%d)', [SCompleted, CompletedCnt]);
+  lvFilter.Items[3].Caption:=Format('%s (%d)', [SActive, ActiveCnt]);
+  lvFilter.Items[4].Caption:=Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt]);
 
   CheckStatus;
 
