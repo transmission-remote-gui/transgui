@@ -40,6 +40,7 @@ type
     gbSaveAs: TGroupBox;
     gbContents: TGroupBox;
     edPeerLimit: TSpinEdit;
+    txWarning: TLabel;
     txPeerLimit: TLabel;
     lvFiles: TListView;
     txDestFolder: TLabel;
