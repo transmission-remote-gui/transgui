@@ -89,6 +89,7 @@ type
     CurTorrentId: cardinal;
     AdvInfo: TAdvInfoType;
     RefreshNow: boolean;
+    RequestFullInfo: boolean;
 
     constructor Create;
     destructor Destroy; override;
@@ -100,6 +101,7 @@ type
     procedure Disconnect;
 
     function SendRequest(req: TJSONObject; ReturnArguments: boolean = True): TJSONObject;
+    function RequestInfo(TorrentId: integer; const Fields: array of const; const ExtraFields: array of string): TJSONObject;
     function RequestInfo(TorrentId: integer; const Fields: array of const): TJSONObject;
 
     property Status: string read GetStatus write SetStatus;
@@ -234,14 +236,22 @@ end;
 function TRpcThread.GetTorrents: boolean;
 var
   args: TJSONObject;
+  ExtraFields: array of string;
 begin
   Result:=False;
+  ExtraFields:=nil;
+  if FRpc.RequestFullInfo then begin
+    SetLength(ExtraFields, 1);
+    ExtraFields[0]:='trackers';
+  end;
   args:=FRpc.RequestInfo(0, ['id', 'name', 'totalSize', 'rateDownload', 'rateUpload', 'seeders',
                         'eta', 'peersConnected', 'peersGettingFromUs', 'peersSendingToUs',
                         'leftUntilDone', 'sizeWhenDone', 'status', 'leechers', 'peersKnown',
-                        'recheckProgress', 'uploadRatio', 'errorString', 'announceResponse']);
+                        'recheckProgress', 'uploadRatio', 'errorString', 'announceResponse'],
+                        ExtraFields);
   try
     if args <> nil then begin
+      FRpc.RequestFullInfo:=False;
       ResultData:=args.Arrays['torrents'];
       Synchronize(@DoFillTorrentsList);
       Result:=True;
@@ -404,6 +414,7 @@ begin
             Status:=Http.ResultString;
           continue;
         end;
+//        Http.Document.SaveToFile('c:\out.txt');
         Http.Document.Position:=0;
         jp:=TJSONParser.Create(Http.Document);
         HttpLock.Leave;
@@ -455,9 +466,11 @@ begin
   end;
 end;
 
-function TRpc.RequestInfo(TorrentId: integer; const Fields: array of const): TJSONObject;
+function TRpc.RequestInfo(TorrentId: integer; const Fields: array of const; const ExtraFields: array of string): TJSONObject;
 var
   req, args: TJSONObject;
+  _fields: TJSONArray;
+  i: integer;
 begin
   Result:=nil;
   req:=TJSONObject.Create;
@@ -466,13 +479,22 @@ begin
     args:=TJSONObject.Create;
     if TorrentId <> 0 then
       args.Add('ids', TJSONArray.Create([TorrentId]));
-    args.Add('fields', TJSONArray.Create(Fields));
+    _fields:=TJSONArray.Create(Fields);
+    for i:=Low(ExtraFields) to High(ExtraFields) do
+      _fields.Add(ExtraFields[i]);
+    args.Add('fields', _fields);
     req.Add('arguments', args);
     Result:=SendRequest(req);
   finally
     req.Free;
   end;
 end;
+
+function TRpc.RequestInfo(TorrentId: integer; const Fields: array of const): TJSONObject;
+begin
+  Result:=RequestInfo(TorrentId, Fields, []);
+end;
+
 
 function TRpc.GetStatus: string;
 begin
@@ -536,6 +558,7 @@ end;
 procedure TRpc.Connect;
 begin
   CurTorrentId:=0;
+  RequestFullInfo:=True;
   RpcThread:=TRpcThread.Create;
   with RpcThread do begin
     FreeOnTerminate:=True;
