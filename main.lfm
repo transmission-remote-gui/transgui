@@ -148,11 +148,11 @@ object MainForm: TMainForm
     Height = 253
     Top = 175
     Width = 780
-    ActivePage = tabGeneral
+    ActivePage = tabFiles
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -617,12 +617,12 @@ object MainForm: TMainForm
     end
     object tabPeers: TTabSheet
       Caption = 'Peers'
-      ClientHeight = 187
-      ClientWidth = 733
+      ClientHeight = 226
+      ClientWidth = 772
       ImageIndex = 6
       object lvPeers: TListView
-        Height = 187
-        Width = 733
+        Height = 226
+        Width = 772
         Align = alClient
         Columns = <        
           item
@@ -659,12 +659,12 @@ object MainForm: TMainForm
     end
     object tabFiles: TTabSheet
       Caption = 'Files'
-      ClientHeight = 140
-      ClientWidth = 733
+      ClientHeight = 226
+      ClientWidth = 772
       ImageIndex = 7
       object lvFiles: TListView
-        Height = 140
-        Width = 733
+        Height = 226
+        Width = 772
         Align = alClient
         Columns = <        
           item

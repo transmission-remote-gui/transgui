@@ -310,7 +310,7 @@ begin
                                      'hashString', 'comment', 'downloadedEver', 'uploadedEver', 'corruptEver', 'errorString',
                                      'announceResponse', 'downloadLimit', 'downloadLimitMode', 'uploadLimit', 'uploadLimitMode',
                                      'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator']);
-try
+  try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
       if t.Count > 0 then
@@ -437,9 +437,15 @@ begin
                 Status:=s
               else begin
                 if ReturnArguments then begin
-                  Result:=res.Objects['arguments'];
-                  if Result = nil then
-                    Status:='Arguments object not found.';
+                  res:=res.Objects['arguments'];
+                  if res = nil then
+                    Status:='Arguments object not found.'
+                  else begin
+                    FreeAndNil(jp);
+                    jp:=TJSONParser.Create(res.AsJSON);
+                    Result:=TJSONObject(jp.Parse);
+                    FreeAndNil(obj);
+                  end;
                 end
                 else
                   Result:=res;
