@@ -1928,7 +1928,7 @@ var
   d: TJSONData;
   p: TJSONObject;
   ports: array of pointer;
-  s: string;
+  s, ip: string;
   hostinfo: PHostEntry;
   pic: TPicture;
 begin
@@ -1965,17 +1965,19 @@ begin
       d:=list[i];
       if not (d is TJSONObject) then continue;
       p:=d as TJSONObject;
-      s:=p.Strings['address'];
+      ip:=p.Strings['address'];
       if acResolvePeers.Checked then
-        hostinfo:=FResolver.Resolve(s)
+        hostinfo:=FResolver.Resolve(ip)
       else
         hostinfo:=nil;
       if hostinfo <> nil then
-        s:=hostinfo^.HostName;
+        s:=hostinfo^.HostName
+      else
+        s:=ip;
       port:=p.Integers['port'];
       it:=nil;
       for j:=0 to High(ports) do
-        if (port = ptruint(ports[j])) and (lvPeers.Items[j].Caption = s) then begin
+        if (port = ptruint(ports[j])) and ((lvPeers.Items[j].Caption = s) or (lvPeers.Items[j].Caption = ip)) then begin
           it:=lvPeers.Items[j];
           break;
         end;

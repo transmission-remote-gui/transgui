@@ -1541,5 +1541,5 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#6'acExit'#7'OnClick'#7#13'acExitExecute'#0#0#0#10'TImageList'#8'imgFlags'#6
   +'Height'#2#12#5'Width'#2#18#4'left'#3#245#0#3'top'#3#7#1#0#0#10'TPopupMenu'#7
   +'pmPeers'#4'left'#3#188#2#3'top'#3'h'#1#0#9'TMenuItem'#10'MenuItem29'#6'Acti'
-  +'on'#7#14'acResolvePeers'#0#0#0#0
+  +'on'#7#14'acResolvePeers'#7'OnClick'#7#21'acResolvePeersExecute'#0#0#0#0
 ]);
