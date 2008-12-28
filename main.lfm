@@ -2106,6 +2106,7 @@ object MainForm: TMainForm
     top = 360
     object MenuItem29: TMenuItem
       Action = acResolvePeers
+      OnClick = acResolvePeersExecute
     end
   end
 end
