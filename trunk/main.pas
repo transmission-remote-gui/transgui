@@ -28,7 +28,7 @@ uses
   Windows, win32int, InterfaceBase,
 {$endif}
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
-  httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist;
+  httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -62,10 +62,12 @@ type
     acStartAllTorrents: TAction;
     acStopAllTorrents: TAction;
     acExit: TAction;
+    acResolvePeers: TAction;
     acTorrentProps: TAction;
     acVerifyTorrent: TAction;
     ActionList: TActionList;
     ApplicationProperties: TApplicationProperties;
+    imgFlags: TImageList;
     ImageList16: TImageList;
     lvFilter: TListView;
     MenuItem19: TMenuItem;
@@ -78,12 +80,14 @@ type
     MenuItem26: TMenuItem;
     MenuItem27: TMenuItem;
     MenuItem28: TMenuItem;
+    MenuItem29: TMenuItem;
     miToggleApp: TMenuItem;
     miAbout: TMenuItem;
     miHelp: TMenuItem;
     panTop: TPanel;
     pmTray: TPopupMenu;
     HSplitter: TSplitter;
+    pmPeers: TPopupMenu;
     TrayIcon: TTrayIcon;
     txCreated: TLabel;
     txCreatedLabel: TLabel;
@@ -191,6 +195,7 @@ type
     procedure acExitExecute(Sender: TObject);
     procedure acDaemonOptionsExecute(Sender: TObject);
     procedure acRemoveTorrentExecute(Sender: TObject);
+    procedure acResolvePeersExecute(Sender: TObject);
     procedure acSetHighPriorityExecute(Sender: TObject);
     procedure acSetLowPriorityExecute(Sender: TObject);
     procedure acSetNormalPriorityExecute(Sender: TObject);
@@ -233,6 +238,7 @@ type
     FTorrentsSortColumn: integer;
     FTorrentsSortDesc: boolean;
     FTrackers: TStringList;
+    FResolver: TIpResolver;
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -291,11 +297,12 @@ const
 
   // Peers list
   idxPeerIP = 0;
-  idxPeerClient = 1;
-  idxPeerFlags = 2;
-  idxPeerDone = 3;
-  idxPeerUpSpeed = 4;
-  idxPeerDownSpeed = 5;
+  idxPeerCountry = 1;
+  idxPeerClient = 2;
+  idxPeerFlags = 3;
+  idxPeerDone = 4;
+  idxPeerUpSpeed = 5;
+  idxPeerDownSpeed = 6;
 
   // Files list
   idxFileName = 0;
@@ -526,11 +533,13 @@ begin
 
   FTorrentsSortColumn:=FIni.ReadInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
   FTorrentsSortDesc:=FIni.ReadBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
+
+  acResolvePeers.Checked:=FIni.ReadBool('PeersList', 'ResolveIPs', True);
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  DoDisconnect;
+  FResolver.Free;
   FIni.Free;
   RpcObj.Free;
   FTorrents.Free;
@@ -1027,6 +1036,12 @@ begin
   TorrentAction(PtrUInt(lvTorrents.Selected.Data), 'remove');
 end;
 
+procedure TMainForm.acResolvePeersExecute(Sender: TObject);
+begin
+  acResolvePeers.Checked:=not acResolvePeers.Checked;
+  RpcObj.RefreshNow:=True;
+end;
+
 procedure TMainForm.acSetHighPriorityExecute(Sender: TObject);
 begin
   SetCurrentFilePriority('high');
@@ -1240,6 +1255,11 @@ begin
 
   FIni.WriteInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
   FIni.WriteBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
+
+  FIni.WriteBool('PeersList', 'ResolveIPs', acResolvePeers.Checked);
+
+  DoDisconnect;
+  Application.ProcessMessages;
 end;
 
 procedure TMainForm.miToggleAppClick(Sender: TObject);
@@ -1909,7 +1929,8 @@ var
   p: TJSONObject;
   ports: array of pointer;
   s: string;
-
+  hostinfo: PHostEntry;
+  pic: TPicture;
 begin
   if list = nil then begin
     ClearDetailsInfo;
@@ -1924,6 +1945,16 @@ begin
       exit;
     end;
 
+    if (FResolver = nil) and acResolvePeers.Checked then begin
+      s:=ExtractFilePath(ParamStr(0)) + 'GeoIP.dat';
+      if not FileExists(s) then begin
+        s:=FHomeDir + 'GeoIP.dat';
+        if not FileExists(s) then
+          s:='';
+      end;
+      FResolver:=TIpResolver.Create(s);
+    end;
+
     SetLength(ports, lvPeers.Items.Count);
     for i:=0 to lvPeers.Items.Count - 1 do begin
       ports[i]:=lvPeers.Items[i].Data;
@@ -1935,6 +1966,12 @@ begin
       if not (d is TJSONObject) then continue;
       p:=d as TJSONObject;
       s:=p.Strings['address'];
+      if acResolvePeers.Checked then
+        hostinfo:=FResolver.Resolve(s)
+      else
+        hostinfo:=nil;
+      if hostinfo <> nil then
+        s:=hostinfo^.HostName;
       port:=p.Integers['port'];
       it:=nil;
       for j:=0 to High(ports) do
@@ -1946,6 +1983,41 @@ begin
         it:=lvPeers.Items.Add;
 
       it.Caption:=s;
+
+      j:=-1;
+      if hostinfo <> nil then begin
+        if (hostinfo^.ImageIndex = -1) and (hostinfo^.CountryCode <> '') then begin
+          s:=ExtractFilePath(ParamStr(0)) + 'flags' + DirectorySeparator + hostinfo^.CountryCode + '.png';
+          if not FileExists(s) then begin
+            s:=FHomeDir + 'flags' + DirectorySeparator + hostinfo^.CountryCode + '.png';
+            if not FileExists(s) then
+              s:='';
+          end;
+          if s <> '' then
+          try
+            pic:=TPicture.Create;
+            try
+              pic.LoadFromFile(s);
+              if imgFlags.Count = 0 then begin
+                imgFlags.Width:=pic.Width;
+                imgFlags.Height:=pic.Height;
+              end;
+              hostinfo^.ImageIndex:=imgFlags.AddMasked(pic.Bitmap, clNone);
+            finally
+              pic.Free;
+            end;
+          except
+          end;
+        end;
+        j:=hostinfo^.ImageIndex
+      end;
+      it.ImageIndex:=j;
+
+      if hostinfo <> nil then
+        s:=UTF8Encode(hostinfo^.CountryName)
+      else
+        s:='';
+      SetSubItem(idxPeerCountry, s);
 
       SetSubItem(idxPeerClient, UTF8Encode(p.Strings['clientName']));
 
