@@ -148,11 +148,11 @@ object MainForm: TMainForm
     Height = 253
     Top = 175
     Width = 780
-    ActivePage = tabFiles
+    ActivePage = tabPeers
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -630,6 +630,10 @@ object MainForm: TMainForm
             Width = 150
           end        
           item
+            Caption = 'Country'
+            Width = 100
+          end        
+          item
             Caption = 'Client'
             Width = 150
           end        
@@ -651,8 +655,10 @@ object MainForm: TMainForm
             Caption = 'Down speed'
             Width = 80
           end>
+        PopupMenu = pmPeers
         ReadOnly = True
         RowSelect = True
+        SmallImages = imgFlags
         TabOrder = 0
         ViewStyle = vsReport
       end
@@ -1163,6 +1169,12 @@ object MainForm: TMainForm
       Caption = 'Exit'
       DisableIfNoHandler = True
       OnExecute = acExitExecute
+    end
+    object acResolvePeers: TAction
+      Category = 'Peers'
+      Caption = 'Resolve IPs'
+      DisableIfNoHandler = True
+      OnExecute = acResolvePeersExecute
     end
   end
   object RefreshNowTimer: TTimer
@@ -2081,6 +2093,19 @@ object MainForm: TMainForm
     object MenuItem24: TMenuItem
       Action = acExit
       OnClick = acExitExecute
+    end
+  end
+  object imgFlags: TImageList
+    Height = 12
+    Width = 18
+    left = 245
+    top = 263
+  end
+  object pmPeers: TPopupMenu
+    left = 700
+    top = 360
+    object MenuItem29: TMenuItem
+      Action = acResolvePeers
     end
   end
 end
