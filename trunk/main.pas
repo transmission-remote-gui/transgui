@@ -574,6 +574,7 @@ end;
 
 procedure TMainForm.lvFilterSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
 begin
+  if lvFilter.Tag <> 0 then exit;
   if Selected and (ptrint(ptruint(Item.Data)) = -1) then begin
     Application.QueueAsyncCall(@SelectFilterItem, Item.Index - 1);
     exit;
@@ -742,6 +743,8 @@ begin
         end;
       end;
 
+      lvFilter.Items[0].Selected:=True;
+
       args:=TJSONObject.Create;
       args.Add('paused', TJSONIntegerNumber.Create(1));
       i:=FIni.ReadInteger(IniSec, 'PeerLimit', 0);
@@ -846,6 +849,7 @@ begin
                 Selected:=True;
                 MakeVisible(False);
                 RpcObj.CurTorrentId:=id;
+                lvTorrents.SetFocus;
                 id:=0;
                 break;
               end;
@@ -1828,39 +1832,46 @@ begin
 //    lvTorrents.EndUpdate;
   end;
 
-  lvFilter.Items[0].Caption:=Format('%s (%d)', [SAll, FTorrents.Count]);
-  lvFilter.Items[1].Caption:=Format('%s (%d)', [SDownloading, DownCnt]);
-  lvFilter.Items[2].Caption:=Format('%s (%d)', [SCompleted, CompletedCnt]);
-  lvFilter.Items[3].Caption:=Format('%s (%d)', [SActive, ActiveCnt]);
-  lvFilter.Items[4].Caption:=Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt]);
+  lvFilter.Tag:=1;
+  try
+    lvFilter.Items[0].Caption:=Format('%s (%d)', [SAll, FTorrents.Count]);
+    lvFilter.Items[1].Caption:=Format('%s (%d)', [SDownloading, DownCnt]);
+    lvFilter.Items[2].Caption:=Format('%s (%d)', [SCompleted, CompletedCnt]);
+    lvFilter.Items[3].Caption:=Format('%s (%d)', [SActive, ActiveCnt]);
+    lvFilter.Items[4].Caption:=Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt]);
 
-  if StatusFiltersCount >= lvFilter.Items.Count then
-    it:=lvFilter.Items.Add
-  else
-    it:=lvFilter.Items[StatusFiltersCount];
-  it.Data:=pointer(ptrint(-1));
+    if StatusFiltersCount >= lvFilter.Items.Count then
+      it:=lvFilter.Items.Add
+    else
+      it:=lvFilter.Items[StatusFiltersCount];
+    it.Data:=pointer(ptrint(-1));
 
-  i:=0;
-  while i < FTrackers.Count do begin
-    j:=ptruint(FTrackers.Objects[i]);
-    if j > 0 then begin
-      if i + StatusFiltersCount + 1 >= lvFilter.Items.Count then begin
-        it:=lvFilter.Items.Add;
-        it.ImageIndex:=5;
+    i:=0;
+    while i < FTrackers.Count do begin
+      j:=ptruint(FTrackers.Objects[i]);
+      if j > 0 then begin
+        if i + StatusFiltersCount + 1 >= lvFilter.Items.Count then begin
+          it:=lvFilter.Items.Add;
+          it.ImageIndex:=5;
+        end
+        else
+          it:=lvFilter.Items[i + StatusFiltersCount + 1];
+        s:=FTrackers[i];
+        it.Caption:=Format('%s (%d)', [s, j]);
+        if s = TrackerFilter then
+          it.Selected:=True;
+        Inc(i);
       end
       else
-        it:=lvFilter.Items[i + StatusFiltersCount + 1];
-      s:=FTrackers[i];
-      it.Caption:=Format('%s (%d)', [s, j]);
-      if s = TrackerFilter then
-        it.Selected:=True;
-      Inc(i);
-    end
-    else
-      FTrackers.Delete(i);
+        FTrackers.Delete(i);
+    end;
+    while lvFilter.Items.Count > i + StatusFiltersCount + 1 do
+      lvFilter.Items.Delete(lvFilter.Items.Count - 1);
+  finally
+    lvFilter.Tag:=0;
   end;
-  while lvFilter.Items.Count > i + StatusFiltersCount + 1 do
-    lvFilter.Items.Delete(lvFilter.Items.Count - 1);
+  if lvFilter.Selected = nil then
+    lvFilter.Items[0].Selected:=True;
 
   CheckStatus;
 
