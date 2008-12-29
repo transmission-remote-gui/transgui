@@ -626,7 +626,7 @@ object MainForm: TMainForm
         Align = alClient
         Columns = <        
           item
-            Caption = 'IP'
+            Caption = 'Host'
             Width = 150
           end        
           item

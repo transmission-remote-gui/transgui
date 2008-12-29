@@ -28,7 +28,8 @@ uses
   Windows, win32int, InterfaceBase,
 {$endif}
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
-  httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver;
+  httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
+  zipper;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -239,6 +240,7 @@ type
     FTorrentsSortDesc: boolean;
     FTrackers: TStringList;
     FResolver: TIpResolver;
+    FUnZip: TUnZipper;
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -254,6 +256,7 @@ type
     procedure ShowApp;
     procedure DownloadFinished(const TorrentName: string);
     procedure SelectFilterItem(Data: PtrInt);
+    function GetFlagImage(const CountryCode: string): integer;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -438,6 +441,18 @@ begin
     Result:=AddToColor(Result, i, i, i);
 end;
 
+function LocateFile(const FileName: string; const Paths: array of string): string;
+var
+  i: integer;
+begin
+  for i:=Low(Paths) to High(Paths) do begin
+    Result:=IncludeTrailingPathDelimiter(Paths[i]) + FileName;
+    if FileExists(Result) then
+      exit;
+  end;
+  Result:='';
+end;
+
 var
   FAppEvent: TEvent;
   FHomeDir: string;
@@ -545,6 +560,7 @@ begin
   FTorrents.Free;
   FAppEvent.Free;
   FTrackers.Free;
+  FUnZip.Free;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -931,6 +947,55 @@ procedure TMainForm.SelectFilterItem(Data: PtrInt);
 begin
   if Data < lvFilter.Items.Count then
     lvFilter.Items[Data].Selected:=True;
+end;
+
+function TMainForm.GetFlagImage(const CountryCode: string): integer;
+var
+  s, FlagsPath, ImageName: string;
+  pic: TPicture;
+begin
+  Result:=-1;
+  if CountryCode = '' then exit;
+  try
+    ImageName:=CountryCode + '.png';
+    FlagsPath:=FHomeDir + 'flags' + DirectorySeparator;
+    if not FileExists(FlagsPath + ImageName) then begin
+      // Unzipping flag image
+      if FUnZip = nil then begin
+        s:=LocateFile('flags.zip', [FHomeDir, ExtractFilePath(ParamStr(0))]);
+        if s <> '' then begin
+          ForceDirectories(FlagsPath);
+          FUnZip:=TUnZipper.Create;
+          FUnZip.OutputPath:=FlagsPath;
+          FUnZip.FileName:=s;
+        end
+        else
+          exit;
+      end;
+
+      FUnZip.Files.Clear;
+      FUnZip.Files.Add(ImageName);
+      try
+        FUnZip.UnZipAllFiles;
+      except
+        exit;
+      end;
+      if not FileExists(FlagsPath + ImageName) then exit;
+    end;
+
+    pic:=TPicture.Create;
+    try
+      pic.LoadFromFile(FlagsPath + ImageName);
+      if imgFlags.Count = 0 then begin
+        imgFlags.Width:=pic.Width;
+        imgFlags.Height:=pic.Height;
+      end;
+      Result:=imgFlags.AddMasked(pic.Bitmap, clNone);
+    finally
+      pic.Free;
+    end;
+  except
+  end;
 end;
 
 procedure TMainForm.acDisconnectExecute(Sender: TObject);
@@ -1930,7 +1995,6 @@ var
   ports: array of pointer;
   s, ip: string;
   hostinfo: PHostEntry;
-  pic: TPicture;
 begin
   if list = nil then begin
     ClearDetailsInfo;
@@ -1945,15 +2009,8 @@ begin
       exit;
     end;
 
-    if (FResolver = nil) and acResolvePeers.Checked then begin
-      s:=ExtractFilePath(ParamStr(0)) + 'GeoIP.dat';
-      if not FileExists(s) then begin
-        s:=FHomeDir + 'GeoIP.dat';
-        if not FileExists(s) then
-          s:='';
-      end;
-      FResolver:=TIpResolver.Create(s);
-    end;
+    if (FResolver = nil) and acResolvePeers.Checked then
+      FResolver:=TIpResolver.Create(LocateFile('GeoIP.dat', [FHomeDir, ExtractFilePath(ParamStr(0))]));
 
     SetLength(ports, lvPeers.Items.Count);
     for i:=0 to lvPeers.Items.Count - 1 do begin
@@ -1986,33 +2043,13 @@ begin
 
       it.Caption:=s;
 
-      j:=-1;
       if hostinfo <> nil then begin
-        if (hostinfo^.ImageIndex = -1) and (hostinfo^.CountryCode <> '') then begin
-          s:=ExtractFilePath(ParamStr(0)) + 'flags' + DirectorySeparator + hostinfo^.CountryCode + '.png';
-          if not FileExists(s) then begin
-            s:=FHomeDir + 'flags' + DirectorySeparator + hostinfo^.CountryCode + '.png';
-            if not FileExists(s) then
-              s:='';
-          end;
-          if s <> '' then
-          try
-            pic:=TPicture.Create;
-            try
-              pic.LoadFromFile(s);
-              if imgFlags.Count = 0 then begin
-                imgFlags.Width:=pic.Width;
-                imgFlags.Height:=pic.Height;
-              end;
-              hostinfo^.ImageIndex:=imgFlags.AddMasked(pic.Bitmap, clNone);
-            finally
-              pic.Free;
-            end;
-          except
-          end;
-        end;
+        if hostinfo^.ImageIndex = -1 then
+          hostinfo^.ImageIndex:=GetFlagImage(hostinfo^.CountryCode);
         j:=hostinfo^.ImageIndex
-      end;
+      end
+      else
+        j:=-1;
       it.ImageIndex:=j;
 
       if hostinfo <> nil then

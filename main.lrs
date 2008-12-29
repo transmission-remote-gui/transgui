@@ -150,7 +150,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +'er'#2#0#0#0#0#0#9'TTabSheet'#8'tabPeers'#7'Caption'#6#5'Peers'#12'ClientHei'
   +'ght'#3#226#0#11'ClientWidth'#3#4#3#10'ImageIndex'#2#6#0#9'TListView'#7'lvPe'
   +'ers'#6'Height'#3#226#0#5'Width'#3#4#3#5'Align'#7#8'alClient'#7'Columns'#14#1
-  +#7'Caption'#6#2'IP'#5'Width'#3#150#0#0#1#7'Caption'#6#7'Country'#5'Width'#2
+  +#7'Caption'#6#4'Host'#5'Width'#3#150#0#0#1#7'Caption'#6#7'Country'#5'Width'#2
   +'d'#0#1#7'Caption'#6#6'Client'#5'Width'#3#150#0#0#1#7'Caption'#6#5'Flags'#5
   +'Width'#2'F'#0#1#9'Alignment'#7#14'taRightJustify'#7'Caption'#6#4'Have'#0#1#9
   +'Alignment'#7#14'taRightJustify'#7'Caption'#6#8'Up speed'#5'Width'#2'P'#0#1#9

@@ -127,7 +127,7 @@ begin
     end;
   except
   end;
-  Sleep(10);
+  Sleep(20);
 end;
 
 constructor TIpResolver.Create(const GeoIpCounryDB: string);
