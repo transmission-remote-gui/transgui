@@ -25,7 +25,7 @@ object OptionsForm: TOptionsForm
     Caption = 'OK'
     Default = True
     OnClick = btOKClick
-    TabOrder = 0
+    TabOrder = 1
   end
   object btCancel: TButton
     Left = 285
@@ -36,17 +36,17 @@ object OptionsForm: TOptionsForm
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
-    TabOrder = 1
+    TabOrder = 2
   end
   object Page: TPageControl
     Left = 8
     Height = 195
     Top = 8
     Width = 352
-    ActivePage = tabInterface
+    ActivePage = tabConnection
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
-    TabOrder = 2
+    TabIndex = 0
+    TabOrder = 0
     object tabConnection: TTabSheet
       Caption = 'Connection'
       ClientHeight = 169
@@ -91,7 +91,7 @@ object OptionsForm: TOptionsForm
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword
         PasswordChar = '*'
-        TabOrder = 0
+        TabOrder = 3
       end
       object edUserName: TEdit
         Left = 136
@@ -99,7 +99,7 @@ object OptionsForm: TOptionsForm
         Top = 74
         Width = 199
         Anchors = [akTop, akLeft, akRight]
-        TabOrder = 1
+        TabOrder = 2
       end
       object edPort: TSpinEdit
         Left = 136
@@ -108,7 +108,7 @@ object OptionsForm: TOptionsForm
         Width = 98
         MaxValue = 65535
         MinValue = 1
-        TabOrder = 2
+        TabOrder = 1
         Value = 1
       end
       object edHost: TEdit
@@ -117,7 +117,7 @@ object OptionsForm: TOptionsForm
         Top = 10
         Width = 199
         Anchors = [akTop, akLeft, akRight]
-        TabOrder = 3
+        TabOrder = 0
       end
     end
     object tabInterface: TTabSheet
