@@ -36,94 +36,74 @@ type
 
 implementation
 
-uses dnssend, synamisc;
+uses synsock;
 
 { TIpResolver }
 
 procedure TIpResolver.Execute;
 var
-  i: integer;
-  ip: string;
-  dns: TDNSSend;
-  DnsServers, reply: TStringList;
+  ip, s: string;
   c: PHostEntry;
   GeoCountry: TGeoIPCountry;
 begin
   try
-    DnsServers:=TStringList.Create;
-    DnsServers.CommaText:=GetDNS;
-    dns:=TDNSSend.Create;
-    try
-      while not Terminated do begin
-        if FResolveEvent.WaitFor(200) = wrSignaled then begin
-          FResolveEvent.ResetEvent;
+    while not Terminated do begin
+      if FResolveEvent.WaitFor(200) = wrSignaled then begin
+        FResolveEvent.ResetEvent;
 
-          while True do begin
-            FLock.Enter;
-            try
-              ip:='';
-              if FResolveIp.Count > 0 then begin
-                ip:=FResolveIp[0];
-                FResolveIp.Delete(0);
-              end;
-              UniqueString(ip);
-            finally
-              FLock.Leave;
+        while True do begin
+          FLock.Enter;
+          try
+            ip:='';
+            if FResolveIp.Count > 0 then begin
+              ip:=FResolveIp[0];
+              FResolveIp.Delete(0);
             end;
+            UniqueString(ip);
+          finally
+            FLock.Leave;
+          end;
 
-            if ip = '' then
-              break;
+          if ip = '' then
+            break;
 
-            FLock.Enter;
-            try
-              New(c);
-              c^.ImageIndex:=-1;
-              c^.IP:=ip;
-              UniqueString(c^.IP);
-              c^.HostName:=c^.IP;
-              FCache.Add(c);
-            finally
-              FLock.Leave;
-            end;
-            reply:=TStringList.Create;
-            try
-              for i:=0 to DnsServers.Count - 1 do begin
-                dns.TargetHost:=DnsServers[i];
-                if dns.DNSQuery(ip, QTYPE_PTR, reply) and (reply.Count > 0) then begin
-                  FLock.Enter;
-                  try
-                    c^.HostName:=reply[0];
-                    UniqueString(c^.HostName);
-                  finally
-                    FLock.Leave;
-                  end;
-                  break;
-                end;
-              end;
-            finally
-              reply.Free;
-            end;
+          FLock.Enter;
+          try
+            New(c);
+            c^.ImageIndex:=-1;
+            c^.IP:=ip;
+            UniqueString(c^.IP);
+            c^.HostName:=c^.IP;
+            FCache.Add(c);
+          finally
+            FLock.Leave;
+          end;
 
-            if FGeoIp <> nil then begin
-              if FGeoIp.GetCountry(ip, GeoCountry) = GEOIP_SUCCESS then begin
-                FLock.Enter;
-                try
-                  c^.CountryName:=GeoCountry.CountryName;
-                  UniqueString(c^.CountryName);
-                  c^.CountryCode:=AnsiLowerCase(GeoCountry.CountryCode);
-                  UniqueString(c^.CountryCode);
-                finally
-                  FLock.Leave;
-                end;
+          s:=synsock.ResolveIPToName(ip, AF_INET, IPPROTO_IP, 0);
+          FLock.Enter;
+          try
+            c^.HostName:=s;
+            UniqueString(c^.HostName);
+          finally
+            FLock.Leave;
+          end;
+
+          if FGeoIp <> nil then begin
+            if FGeoIp.GetCountry(ip, GeoCountry) = GEOIP_SUCCESS then begin
+              FLock.Enter;
+              try
+                c^.CountryName:=GeoCountry.CountryName;
+                UniqueString(c^.CountryName);
+                c^.CountryCode:=AnsiLowerCase(GeoCountry.CountryCode);
+                UniqueString(c^.CountryCode);
+              finally
+                FLock.Leave;
               end;
             end;
           end;
-
         end;
+
       end;
-    finally
-      dns.Free;
-      DnsServers.Free;
     end;
   except
   end;
