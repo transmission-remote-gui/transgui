@@ -2044,8 +2044,15 @@ begin
       it.Caption:=s;
 
       if hostinfo <> nil then begin
-        if hostinfo^.ImageIndex = -1 then
+        if hostinfo^.ImageIndex = -1 then begin
           hostinfo^.ImageIndex:=GetFlagImage(hostinfo^.CountryCode);
+{$ifdef LCLgtk2}
+          if hostinfo^.ImageIndex <> -1 then begin
+            lvPeers.SmallImages:=nil;
+            lvPeers.SmallImages:=imgFlags;
+          end;
+{$endif}
+        end;
         j:=hostinfo^.ImageIndex
       end
       else
