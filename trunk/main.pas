@@ -257,6 +257,7 @@ type
     procedure DownloadFinished(const TorrentName: string);
     procedure SelectFilterItem(Data: PtrInt);
     function GetFlagImage(const CountryCode: string): integer;
+    procedure BeforeCloseApp;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -556,11 +557,11 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   FResolver.Free;
   FIni.Free;
-  RpcObj.Free;
   FTorrents.Free;
   FAppEvent.Free;
   FTrackers.Free;
   FUnZip.Free;
+  RpcObj.Free;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -998,6 +999,33 @@ begin
   end;
 end;
 
+procedure TMainForm.BeforeCloseApp;
+begin
+  if WindowState = wsNormal then begin
+    FIni.WriteInteger('MainForm', 'Left', Left);
+    FIni.WriteInteger('MainForm', 'Top', Top);
+    FIni.WriteInteger('MainForm', 'Width', Width);
+    FIni.WriteInteger('MainForm', 'Height', Height);
+  end;
+  if WindowState <> wsMinimized then
+    FIni.WriteInteger('MainForm', 'State', integer(WindowState));
+
+  FIni.WriteInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition);
+  FIni.WriteInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition);
+
+  SaveColumns(lvTorrents, 'TorrentsList');
+  SaveColumns(lvFiles, 'FilesList');
+  SaveColumns(lvPeers, 'PeersList');
+
+  FIni.WriteInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
+  FIni.WriteBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
+
+  FIni.WriteBool('PeersList', 'ResolveIPs', acResolvePeers.Checked);
+
+  DoDisconnect;
+  Application.ProcessMessages;
+end;
+
 procedure TMainForm.acDisconnectExecute(Sender: TObject);
 begin
   DoDisconnect;
@@ -1005,6 +1033,7 @@ end;
 
 procedure TMainForm.acExitExecute(Sender: TObject);
 begin
+  BeforeCloseApp;
   Application.Terminate;
 end;
 
@@ -1301,30 +1330,7 @@ begin
     UpdateTray;
     exit;
   end;
-
-  if WindowState = wsNormal then begin
-    FIni.WriteInteger('MainForm', 'Left', Left);
-    FIni.WriteInteger('MainForm', 'Top', Top);
-    FIni.WriteInteger('MainForm', 'Width', Width);
-    FIni.WriteInteger('MainForm', 'Height', Height);
-  end;
-  if WindowState <> wsMinimized then
-    FIni.WriteInteger('MainForm', 'State', integer(WindowState));
-
-  FIni.WriteInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition);
-  FIni.WriteInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition);
-
-  SaveColumns(lvTorrents, 'TorrentsList');
-  SaveColumns(lvFiles, 'FilesList');
-  SaveColumns(lvPeers, 'PeersList');
-
-  FIni.WriteInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
-  FIni.WriteBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
-
-  FIni.WriteBool('PeersList', 'ResolveIPs', acResolvePeers.Checked);
-
-  DoDisconnect;
-  Application.ProcessMessages;
+  BeforeCloseApp;
 end;
 
 procedure TMainForm.miToggleAppClick(Sender: TObject);
