@@ -17,6 +17,9 @@ type
     ImageIndex: integer;
   end;
 
+  TResolverOption = (roResolveIP, roResolveCountry);
+  TResolverOptions = set of TResolverOption;
+
   { TIpResolverThread }
 
   TIpResolver = class(TThread)
@@ -26,10 +29,12 @@ type
     FCache: TList;
     FResolveIp: TStringList;
     FGeoIp: TGeoIP;
+    FOptions: TResolverOptions;
+    FGeoIpCounryDB: string;
   protected
     procedure Execute; override;
   public
-    constructor Create(const GeoIpCounryDB: string); reintroduce;
+    constructor Create(const GeoIpCounryDB: string; AOptions: TResolverOptions); reintroduce;
     destructor Destroy; override;
     function Resolve(const IpAddress: string): PHostEntry;
   end;
@@ -70,7 +75,7 @@ begin
           FLock.Enter;
           try
             New(c);
-            c^.ImageIndex:=-1;
+            c^.ImageIndex:=0;
             c^.IP:=ip;
             UniqueString(c^.IP);
             c^.HostName:=c^.IP;
@@ -79,16 +84,19 @@ begin
             FLock.Leave;
           end;
 
-          s:=synsock.ResolveIPToName(ip, AF_INET, IPPROTO_IP, 0);
-          FLock.Enter;
-          try
-            c^.HostName:=s;
-            UniqueString(c^.HostName);
-          finally
-            FLock.Leave;
+          if roResolveIP in FOptions then begin
+            s:=synsock.ResolveIPToName(ip, AF_INET, IPPROTO_IP, 0);
+            FLock.Enter;
+            try
+              c^.HostName:=s;
+              UniqueString(c^.HostName);
+            finally
+              FLock.Leave;
+            end;
           end;
 
-          if FGeoIp <> nil then begin
+          if FGeoIp <> nil then
+          try
             if FGeoIp.GetCountry(ip, GeoCountry) = GEOIP_SUCCESS then begin
               FLock.Enter;
               try
@@ -100,6 +108,9 @@ begin
                 FLock.Leave;
               end;
             end;
+          except
+            FreeAndNil(FGeoIp);
+            DeleteFile(FGeoIpCounryDB);
           end;
         end;
 
@@ -110,13 +121,15 @@ begin
   Sleep(20);
 end;
 
-constructor TIpResolver.Create(const GeoIpCounryDB: string);
+constructor TIpResolver.Create(const GeoIpCounryDB: string; AOptions: TResolverOptions);
 begin
+  FOptions:=AOptions;
   FLock:=TCriticalSection.Create;
   FResolveEvent:=TEvent.Create(nil, True, False, '');
   FCache:=TList.Create;
   FResolveIp:=TStringList.Create;
-  if GeoIpCounryDB <> '' then
+  FGeoIpCounryDB:=GeoIpCounryDB;
+  if (roResolveCountry in FOptions) and (FGeoIpCounryDB <> '') then
     FGeoIp:=TGeoIP.Create(GeoIpCounryDB);
   inherited Create(False);
 end;

@@ -27,7 +27,7 @@ uses
 {$ifdef windows}
   Windows, win32int, InterfaceBase,
 {$endif}
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
+  Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
   httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
   zipper;
 
@@ -63,7 +63,9 @@ type
     acStartAllTorrents: TAction;
     acStopAllTorrents: TAction;
     acExit: TAction;
-    acResolvePeers: TAction;
+    acResolveHost: TAction;
+    acResolveCountry: TAction;
+    acShowCountryFlag: TAction;
     acTorrentProps: TAction;
     acVerifyTorrent: TAction;
     ActionList: TActionList;
@@ -82,6 +84,8 @@ type
     MenuItem27: TMenuItem;
     MenuItem28: TMenuItem;
     MenuItem29: TMenuItem;
+    MenuItem30: TMenuItem;
+    MenuItem31: TMenuItem;
     miToggleApp: TMenuItem;
     miAbout: TMenuItem;
     miHelp: TMenuItem;
@@ -196,11 +200,13 @@ type
     procedure acExitExecute(Sender: TObject);
     procedure acDaemonOptionsExecute(Sender: TObject);
     procedure acRemoveTorrentExecute(Sender: TObject);
-    procedure acResolvePeersExecute(Sender: TObject);
+    procedure acResolveCountryExecute(Sender: TObject);
+    procedure acResolveHostExecute(Sender: TObject);
     procedure acSetHighPriorityExecute(Sender: TObject);
     procedure acSetLowPriorityExecute(Sender: TObject);
     procedure acSetNormalPriorityExecute(Sender: TObject);
     procedure acSetNotDownloadExecute(Sender: TObject);
+    procedure acShowCountryFlagExecute(Sender: TObject);
     procedure acStartAllTorrentsExecute(Sender: TObject);
     procedure acStartTorrentExecute(Sender: TObject);
     procedure acStopAllTorrentsExecute(Sender: TObject);
@@ -258,6 +264,8 @@ type
     procedure SelectFilterItem(Data: PtrInt);
     function GetFlagImage(const CountryCode: string): integer;
     procedure BeforeCloseApp;
+    function GetGeoIpDatabase: string;
+    function GetFlagsArchive: string;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -272,6 +280,7 @@ type
   end;
 
 function CheckAppParams: boolean;
+function GetHumanSize(sz: double; RoundTo: integer = 0): string;
 
 var
   MainForm: TMainForm;
@@ -341,7 +350,7 @@ implementation
 
 uses
   AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz, TorrProps, DaemonOptions, About,
-  ToolWin;
+  ToolWin, download;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -550,7 +559,10 @@ begin
   FTorrentsSortColumn:=FIni.ReadInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
   FTorrentsSortDesc:=FIni.ReadBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
 
-  acResolvePeers.Checked:=FIni.ReadBool('PeersList', 'ResolveIPs', True);
+  acResolveHost.Checked:=FIni.ReadBool('PeersList', 'ResolveHost', True);
+  acResolveCountry.Checked:=FIni.ReadBool('PeersList', 'ResolveCountry', True) and (GetGeoIpDatabase <> '');
+  acShowCountryFlag.Checked:=FIni.ReadBool('PeersList', 'ShowCountryFlag', True) and (GetFlagsArchive <> '');
+  acShowCountryFlag.Enabled:=acResolveCountry.Checked;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -686,6 +698,10 @@ end;
 
 procedure TMainForm.acAddTorrentExecute(Sender: TObject);
 begin
+  DownloadFile('http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz', 'c:\');
+//  DownloadFile('http://www.cp-lab.com/Files/PwdManager.pdf', 'c:\PwdManager.pdf');
+  exit;
+
   if not OpenTorrentDlg.Execute then exit;
   DoAddTorrent(OpenTorrentDlg.FileName);
 end;
@@ -955,7 +971,7 @@ var
   s, FlagsPath, ImageName: string;
   pic: TPicture;
 begin
-  Result:=-1;
+  Result:=0;
   if CountryCode = '' then exit;
   try
     ImageName:=CountryCode + '.png';
@@ -963,7 +979,7 @@ begin
     if not FileExists(FlagsPath + ImageName) then begin
       // Unzipping flag image
       if FUnZip = nil then begin
-        s:=LocateFile('flags.zip', [FHomeDir, ExtractFilePath(ParamStr(0))]);
+        s:=GetFlagsArchive;
         if s <> '' then begin
           ForceDirectories(FlagsPath);
           FUnZip:=TUnZipper.Create;
@@ -979,6 +995,10 @@ begin
       try
         FUnZip.UnZipAllFiles;
       except
+        FreeAndNil(FUnZip);
+        DeleteFile(GetFlagsArchive);
+        acShowCountryFlag.Checked:=False;
+        MessageDlg('Unable to extract flag image.'+LineEnding+Exception(ExceptObject).Message, mtError, [mbOK], 0);
         exit;
       end;
       if not FileExists(FlagsPath + ImageName) then exit;
@@ -987,7 +1007,7 @@ begin
     pic:=TPicture.Create;
     try
       pic.LoadFromFile(FlagsPath + ImageName);
-      if imgFlags.Count = 0 then begin
+      if imgFlags.Count = 1 then begin
         imgFlags.Width:=pic.Width;
         imgFlags.Height:=pic.Height;
       end;
@@ -1020,10 +1040,22 @@ begin
   FIni.WriteInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
   FIni.WriteBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
 
-  FIni.WriteBool('PeersList', 'ResolveIPs', acResolvePeers.Checked);
+  FIni.WriteBool('PeersList', 'ResolveHost', acResolveHost.Checked);
+  FIni.WriteBool('PeersList', 'ResolveCountry', acResolveCountry.Checked);
+  FIni.WriteBool('PeersList', 'ShowCountryFlag', acShowCountryFlag.Checked);
 
   DoDisconnect;
   Application.ProcessMessages;
+end;
+
+function TMainForm.GetGeoIpDatabase: string;
+begin
+  Result:=LocateFile('GeoIP.dat', [FHomeDir, ExtractFilePath(ParamStr(0))]);
+end;
+
+function TMainForm.GetFlagsArchive: string;
+begin
+  Result:=LocateFile('flags.zip', [FHomeDir, ExtractFilePath(ParamStr(0))]);
 end;
 
 procedure TMainForm.acDisconnectExecute(Sender: TObject);
@@ -1130,9 +1162,54 @@ begin
   TorrentAction(PtrUInt(lvTorrents.Selected.Data), 'remove');
 end;
 
-procedure TMainForm.acResolvePeersExecute(Sender: TObject);
+procedure TMainForm.acResolveCountryExecute(Sender: TObject);
+const
+  GeoLiteURL = 'http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz';
+var
+  tmp: string;
+  gz: TGZFileStream;
+  fs: TFileStream;
 begin
-  acResolvePeers.Checked:=not acResolvePeers.Checked;
+  if not acResolveCountry.Checked then
+    if GetGeoIpDatabase = '' then begin
+      tmp:=FHomeDir + 'GeoIP.dat.gz';
+      if not FileExists(tmp) then begin
+        if MessageDlg('', 'Geo IP database is needed to resolve country by IP address.' + LineEnding + 'Download this database now?', mtConfirmation, mbYesNo, 0, mbYes) <> mrYes then
+          exit;
+        if not DownloadFile(GeoLiteURL, ExtractFilePath(tmp), ExtractFileName(tmp)) then
+          exit;
+      end;
+      try
+        gz:=TGZFileStream.Create(tmp, gzopenread);
+        try
+          fs:=TFileStream.Create(FHomeDir + 'GeoIP.dat', fmCreate);
+          try
+            while fs.CopyFrom(gz, 64*1024) = 64*1024 do
+              ;
+          finally
+            fs.Free;
+          end;
+        finally
+          gz.Free;
+        end;
+        DeleteFile(tmp);
+      except
+        DeleteFile(FHomeDir + 'GeoIP.dat');
+        DeleteFile(tmp);
+        raise;
+      end;
+    end;
+
+  acResolveCountry.Checked:=not acResolveCountry.Checked;
+  FreeAndNil(FResolver);
+  RpcObj.RefreshNow:=True;
+  acShowCountryFlag.Enabled:=acResolveCountry.Checked;
+end;
+
+procedure TMainForm.acResolveHostExecute(Sender: TObject);
+begin
+  acResolveHost.Checked:=not acResolveHost.Checked;
+  FreeAndNil(FResolver);
   RpcObj.RefreshNow:=True;
 end;
 
@@ -1154,6 +1231,21 @@ end;
 procedure TMainForm.acSetNotDownloadExecute(Sender: TObject);
 begin
   SetCurrentFilePriority('skip');
+end;
+
+procedure TMainForm.acShowCountryFlagExecute(Sender: TObject);
+const
+  FlagsURL = 'http://transmisson-remote-gui.googlecode.com/files/flags.zip';
+begin
+  if not acShowCountryFlag.Checked then
+    if GetFlagsArchive = '' then begin
+      if MessageDlg('', 'Flag images archive is needed to display country flags.' + LineEnding + 'Download this archive now?', mtConfirmation, mbYesNo, 0, mbYes) <> mrYes then
+        exit;
+      if not DownloadFile(FlagsURL, FHomeDir) then
+        exit;
+    end;
+  acShowCountryFlag.Checked:=not acShowCountryFlag.Checked;
+  RpcObj.RefreshNow:=True;
 end;
 
 procedure TMainForm.acStartAllTorrentsExecute(Sender: TObject);
@@ -2001,6 +2093,7 @@ var
   ports: array of pointer;
   s, ip: string;
   hostinfo: PHostEntry;
+  opt: TResolverOptions;
 begin
   if list = nil then begin
     ClearDetailsInfo;
@@ -2015,8 +2108,15 @@ begin
       exit;
     end;
 
-    if (FResolver = nil) and acResolvePeers.Checked then
-      FResolver:=TIpResolver.Create(LocateFile('GeoIP.dat', [FHomeDir, ExtractFilePath(ParamStr(0))]));
+    if FResolver = nil then begin
+      opt:=[];
+      if acResolveHost.Checked then
+        Include(opt, roResolveIP);
+      if acResolveCountry.Checked then
+        Include(opt, roResolveCountry);
+      if opt <> [] then
+        FResolver:=TIpResolver.Create(GetGeoIpDatabase, opt);
+    end;
 
     SetLength(ports, lvPeers.Items.Count);
     for i:=0 to lvPeers.Items.Count - 1 do begin
@@ -2029,7 +2129,7 @@ begin
       if not (d is TJSONObject) then continue;
       p:=d as TJSONObject;
       ip:=p.Strings['address'];
-      if acResolvePeers.Checked then
+      if FResolver <> nil then
         hostinfo:=FResolver.Resolve(ip)
       else
         hostinfo:=nil;
@@ -2049,11 +2149,17 @@ begin
 
       it.Caption:=s;
 
-      if hostinfo <> nil then begin
-        if hostinfo^.ImageIndex = -1 then begin
+      if hostinfo <> nil then
+        s:=UTF8Encode(hostinfo^.CountryName)
+      else
+        s:='';
+
+      SetSubItem(idxPeerCountry, s);
+      if acShowCountryFlag.Checked and (hostinfo <> nil) then begin
+        if hostinfo^.ImageIndex = 0 then begin
           hostinfo^.ImageIndex:=GetFlagImage(hostinfo^.CountryCode);
 {$ifdef LCLgtk2}
-          if hostinfo^.ImageIndex <> -1 then begin
+          if hostinfo^.ImageIndex <> 0 then begin
             lvPeers.SmallImages:=nil;
             lvPeers.SmallImages:=imgFlags;
           end;
@@ -2062,14 +2168,8 @@ begin
         j:=hostinfo^.ImageIndex
       end
       else
-        j:=-1;
+        j:=0;
       it.ImageIndex:=j;
-
-      if hostinfo <> nil then
-        s:=UTF8Encode(hostinfo^.CountryName)
-      else
-        s:='';
-      SetSubItem(idxPeerCountry, s);
 
       SetSubItem(idxPeerClient, UTF8Encode(p.Strings['clientName']));
 
