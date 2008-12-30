@@ -33,7 +33,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '0.92 beta';
+  AppVersion = '0.93 beta';
 
 resourcestring
   SShowApp = 'Show';
@@ -709,10 +709,6 @@ end;
 
 procedure TMainForm.acAddTorrentExecute(Sender: TObject);
 begin
-  DownloadFile('http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz', 'c:\');
-//  DownloadFile('http://www.cp-lab.com/Files/PwdManager.pdf', 'c:\PwdManager.pdf');
-  exit;
-
   if not OpenTorrentDlg.Execute then exit;
   DoAddTorrent(OpenTorrentDlg.FileName);
 end;

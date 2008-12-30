@@ -1,3 +1,7 @@
+0.93 beta (Dec 30, 2008)
+------------------------
+[-] Unable to add new torrent. GeoIP database is downloading instead of this.
+
 0.92 beta (Dec 30, 2008)
 ------------------------
 [+] Torrent filtering by status and by tracker.
