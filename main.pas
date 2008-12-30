@@ -33,7 +33,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '0.91 beta';
+  AppVersion = '0.92 beta';
 
 resourcestring
   SShowApp = 'Show';
@@ -1427,7 +1427,7 @@ begin
       if FIni.ReadBool('MainForm', 'FirstRun', True) then begin
         if not acResolveCountry.Checked then
           acResolveCountry.Execute;
-        if not acShowCountryFlag.Checked then
+        if acResolveCountry.Checked and not acShowCountryFlag.Checked then
           acShowCountryFlag.Execute;
         FIni.WriteBool('MainForm', 'FirstRun', False);
       end;
