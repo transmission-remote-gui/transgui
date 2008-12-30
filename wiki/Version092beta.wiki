@@ -2,11 +2,12 @@
 Dec 30, 2008
 
 Version 0.92 beta released.
-
+<pre>
 [+] Torrent filtering by status and by tracker.
 [+] Resolving of peer's host by IP. 
 [+] Resolving of peer's country by IP. 
 [+] Displaying of peer's country flag.
-[*] Store parameters for add torrent window per each host.
-[*] Added "WARNING: Transmission daemon will crash if non-existent folder is specified." to add torrent window.
+[`*`] Store parameters for add torrent window per each host.
+[`*`] Added "WARNING: Transmission daemon will crash if non-existent folder is specified." to add torrent window.
 [-] Some bug fixes.
+</pre>
