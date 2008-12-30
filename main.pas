@@ -66,6 +66,7 @@ type
     acResolveHost: TAction;
     acResolveCountry: TAction;
     acShowCountryFlag: TAction;
+    acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
     acVerifyTorrent: TAction;
     ActionList: TActionList;
@@ -86,6 +87,8 @@ type
     MenuItem29: TMenuItem;
     MenuItem30: TMenuItem;
     MenuItem31: TMenuItem;
+    MenuItem32: TMenuItem;
+    MenuItem33: TMenuItem;
     miToggleApp: TMenuItem;
     miAbout: TMenuItem;
     miHelp: TMenuItem;
@@ -138,7 +141,7 @@ type
     txErrorLabel: TLabel;
     MenuItem17: TMenuItem;
     MenuItem18: TMenuItem;
-    miOptions: TMenuItem;
+    miTools: TMenuItem;
     DummyTimer: TTimer;
     MainToolBar: TToolBar;
     panTransfer: TPanel;
@@ -212,6 +215,7 @@ type
     procedure acStopAllTorrentsExecute(Sender: TObject);
     procedure acStopTorrentExecute(Sender: TObject);
     procedure acTorrentPropsExecute(Sender: TObject);
+    procedure acUpdateGeoIPExecute(Sender: TObject);
     procedure acVerifyTorrentExecute(Sender: TObject);
     procedure ApplicationPropertiesException(Sender: TObject; E: Exception);
     procedure ApplicationPropertiesIdle(Sender: TObject; var Done: Boolean);
@@ -266,6 +270,7 @@ type
     procedure BeforeCloseApp;
     function GetGeoIpDatabase: string;
     function GetFlagsArchive: string;
+    function DownloadGeoIpDatabase(AUpdate: boolean): boolean;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -1058,6 +1063,45 @@ begin
   Result:=LocateFile('flags.zip', [FHomeDir, ExtractFilePath(ParamStr(0))]);
 end;
 
+function TMainForm.DownloadGeoIpDatabase(AUpdate: boolean): boolean;
+const
+  GeoLiteURL = 'http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz';
+var
+  tmp: string;
+  gz: TGZFileStream;
+  fs: TFileStream;
+begin
+  Result:=False;
+  tmp:=FHomeDir + 'GeoIP.dat.gz';
+  if not FileExists(tmp) or AUpdate then begin
+    if MessageDlg('', 'Geo IP database is needed to resolve country by IP address.' + LineEnding + 'Download this database now?', mtConfirmation, mbYesNo, 0, mbYes) <> mrYes then
+      exit;
+    if not DownloadFile(GeoLiteURL, ExtractFilePath(tmp), ExtractFileName(tmp)) then
+      exit;
+  end;
+  try
+    gz:=TGZFileStream.Create(tmp, gzopenread);
+    try
+      fs:=TFileStream.Create(FHomeDir + 'GeoIP.dat', fmCreate);
+      try
+        while fs.CopyFrom(gz, 64*1024) = 64*1024 do
+          ;
+      finally
+        fs.Free;
+      end;
+    finally
+      gz.Free;
+    end;
+    DeleteFile(tmp);
+  except
+    DeleteFile(FHomeDir + 'GeoIP.dat');
+    DeleteFile(tmp);
+    raise;
+  end;
+  FreeAndNil(FResolver);
+  Result:=True;
+end;
+
 procedure TMainForm.acDisconnectExecute(Sender: TObject);
 begin
   DoDisconnect;
@@ -1163,42 +1207,11 @@ begin
 end;
 
 procedure TMainForm.acResolveCountryExecute(Sender: TObject);
-const
-  GeoLiteURL = 'http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz';
-var
-  tmp: string;
-  gz: TGZFileStream;
-  fs: TFileStream;
 begin
   if not acResolveCountry.Checked then
-    if GetGeoIpDatabase = '' then begin
-      tmp:=FHomeDir + 'GeoIP.dat.gz';
-      if not FileExists(tmp) then begin
-        if MessageDlg('', 'Geo IP database is needed to resolve country by IP address.' + LineEnding + 'Download this database now?', mtConfirmation, mbYesNo, 0, mbYes) <> mrYes then
-          exit;
-        if not DownloadFile(GeoLiteURL, ExtractFilePath(tmp), ExtractFileName(tmp)) then
-          exit;
-      end;
-      try
-        gz:=TGZFileStream.Create(tmp, gzopenread);
-        try
-          fs:=TFileStream.Create(FHomeDir + 'GeoIP.dat', fmCreate);
-          try
-            while fs.CopyFrom(gz, 64*1024) = 64*1024 do
-              ;
-          finally
-            fs.Free;
-          end;
-        finally
-          gz.Free;
-        end;
-        DeleteFile(tmp);
-      except
-        DeleteFile(FHomeDir + 'GeoIP.dat');
-        DeleteFile(tmp);
-        raise;
-      end;
-    end;
+    if GetGeoIpDatabase = '' then
+      if not DownloadGeoIpDatabase(False) then
+        exit;
 
   acResolveCountry.Checked:=not acResolveCountry.Checked;
   FreeAndNil(FResolver);
@@ -1344,6 +1357,12 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TMainForm.acUpdateGeoIPExecute(Sender: TObject);
+begin
+  if DownloadGeoIpDatabase(True) then
+    MessageDlg('Update complete.', mtInformation, [mbOK], 0);
 end;
 
 procedure TMainForm.acVerifyTorrentExecute(Sender: TObject);

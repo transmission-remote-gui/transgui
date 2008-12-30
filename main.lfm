@@ -1004,8 +1004,8 @@ object MainForm: TMainForm
         OnClick = acExitExecute
       end
     end
-    object miOptions: TMenuItem
-      Caption = 'Options'
+    object miTools: TMenuItem
+      Caption = 'Tools'
       object MenuItem18: TMenuItem
         Action = acDaemonOptions
         Bitmap.Data = {
@@ -1049,6 +1049,13 @@ object MainForm: TMainForm
       object MenuItem17: TMenuItem
         Action = acOptions
         OnClick = acOptionsExecute
+      end
+      object MenuItem32: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem33: TMenuItem
+        Action = acUpdateGeoIP
+        OnClick = acUpdateGeoIPExecute
       end
     end
     object miHelp: TMenuItem
@@ -1134,11 +1141,13 @@ object MainForm: TMainForm
       OnExecute = acSetNotDownloadExecute
     end
     object acOptions: TAction
+      Category = 'Tools'
       Caption = 'Options...'
       DisableIfNoHandler = True
       OnExecute = acOptionsExecute
     end
     object acDaemonOptions: TAction
+      Category = 'Tools'
       Caption = 'Transmission options...'
       DisableIfNoHandler = True
       Hint = 'Transmission options'
@@ -1187,6 +1196,12 @@ object MainForm: TMainForm
       Caption = 'Show country flag'
       DisableIfNoHandler = True
       OnExecute = acShowCountryFlagExecute
+    end
+    object acUpdateGeoIP: TAction
+      Category = 'Tools'
+      Caption = 'Update GeoIP database'
+      DisableIfNoHandler = True
+      OnExecute = acUpdateGeoIPExecute
     end
   end
   object RefreshNowTimer: TTimer
