@@ -469,19 +469,21 @@ begin
 end;
 
 var
-  FAppEvent: TEvent;
   FHomeDir: string;
   FIPCFileName: string;
+  FRunFileName: string;
 
 function CheckAppParams: boolean;
 var
   h: THandle;
   s: utf8string;
+  i: integer;
 begin
   Application.Title:=AppName;
   FHomeDir:=IncludeTrailingPathDelimiter(GetAppConfigDir(False));
   ForceDirectories(FHomeDir);
   FIPCFileName:=FHomeDir + 'ipc.txt';
+  FRunFileName:=FHomeDir + 'run';
 
   if ParamCount > 0 then begin
     s:=ParamStrUTF8(1);
@@ -494,16 +496,20 @@ begin
     end;
   end;
 
-  FAppEvent:=TEvent.Create(nil, True, False, 'transgui-running');
-  if FAppEvent.WaitFor(0) = wrSignaled then begin
-    FAppEvent.Free;
+  if FileExists(FRunFileName) then begin
     if not FileExists(FIPCFileName) then
       FileClose(FileCreate(FIPCFileName, fmCreate));
-    Result:=False;
-    exit;
-  end;
+    for i:=1 to 10 do
+      if not FileExists(FIPCFileName) then begin
+        Result:=False;
+        exit;
+      end
+      else
+        Sleep(200);
+  end
+  else
+    FileClose(FileCreate(FRunFileName, fmCreate));
 
-  FAppEvent.SetEvent;
   Result:=True;
 end;
 
@@ -572,10 +578,10 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+  DeleteFile(FRunFileName);
   FResolver.Free;
   FIni.Free;
   FTorrents.Free;
-  FAppEvent.Free;
   FTrackers.Free;
   FUnZip.Free;
   RpcObj.Free;
