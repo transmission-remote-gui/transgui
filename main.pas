@@ -1396,6 +1396,14 @@ begin
         ClientHeight:=Controls[ControlCount - 1].BoundsRect.Bottom + ChildSizing.TopBottomSpacing;
       with panGeneralInfo do
         ClientHeight:=Controls[ControlCount - 1].BoundsRect.Bottom + ChildSizing.TopBottomSpacing;
+
+      if FIni.ReadBool('MainForm', 'FirstRun', True) then begin
+        if not acResolveCountry.Checked then
+          acResolveCountry.Execute;
+        if not acShowCountryFlag.Checked then
+          acShowCountryFlag.Execute;
+        FIni.WriteBool('MainForm', 'FirstRun', False);
+      end;
     end;
 
     if FileExists(FIPCFileName) then begin
