@@ -1386,8 +1386,10 @@ end;
 
 procedure TMainForm.ApplicationPropertiesMinimize(Sender: TObject);
 begin
+{$ifdef windows}
   if FIni.ReadBool('Interface', 'TrayMinimize', True) then
     HideApp;
+{$endif windows}
   UpdateTray;
 end;
 
@@ -1622,7 +1624,11 @@ begin
     edRefreshInterval.Value:=FIni.ReadInteger('Connection', 'RefreshInterval', 5);
 
     cbTrayClose.Checked:=FIni.ReadBool('Interface', 'TrayClose', False);
+{$ifdef windows}
     cbTrayMinimize.Checked:=FIni.ReadBool('Interface', 'TrayMinimize', True);
+{$else}
+    cbTrayMinimize.Enabled:=False;
+{$endif}
     cbTrayIconAlways.Checked:=FIni.ReadBool('Interface', 'TrayIconAlways', True);
 
     if ShowModal = mrOK then begin
@@ -1639,7 +1645,9 @@ begin
       FIni.WriteInteger('Connection', 'RefreshInterval', edRefreshInterval.Value);
 
       FIni.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
+{$ifdef windows}
       FIni.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
+{$endif}
       FIni.WriteBool('Interface', 'TrayIconAlways', cbTrayIconAlways.Checked);
 
       if not RpcObj.Connected then
