@@ -35,7 +35,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="11">
+    <Units Count="12">
       <Unit0>
         <Filename Value="transgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -103,6 +103,13 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="IpResolver"/>
       </Unit10>
+      <Unit11>
+        <Filename Value="download.pas"/>
+        <ComponentName Value="DownloadForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="download"/>
+      </Unit11>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
