@@ -132,7 +132,7 @@ begin
       if (Now - t >= RefreshInterval) or FRpc.RefreshNow then begin
         FRpc.RefreshNow:=False;
         if GetTorrents then
-          if not Terminated and (CurTorrentId <> 0) then
+          if CurTorrentId <> 0 then
             case AdvInfo of
               aiGeneral:
                 GetInfo(CurTorrentId);
@@ -250,7 +250,7 @@ begin
                         'recheckProgress', 'uploadRatio', 'errorString', 'announceResponse'],
                         ExtraFields);
   try
-    if (args <> nil) and not Terminated then begin
+    if args <> nil then begin
       FRpc.RequestFullInfo:=False;
       ResultData:=args.Arrays['torrents'];
       Synchronize(@DoFillTorrentsList);
@@ -274,8 +274,7 @@ begin
         ResultData:=t.Objects[0].Arrays['peers']
       else
         ResultData:=nil;
-      if not Terminated then
-        Synchronize(@DoFillPeersList);
+      Synchronize(@DoFillPeersList);
     end;
   finally
     args.Free;
@@ -295,8 +294,7 @@ begin
         ResultData:=t.Objects[0]
       else
         ResultData:=nil;
-      if not Terminated then
-        Synchronize(@DoFillFilesList);
+      Synchronize(@DoFillFilesList);
     end;
   finally
     args.Free;
@@ -319,8 +317,7 @@ begin
         ResultData:=t.Objects[0]
       else
         ResultData:=nil;
-      if not Terminated then
-        Synchronize(@DoFillInfo);
+      Synchronize(@DoFillInfo);
     end;
   finally
     args.Free;
