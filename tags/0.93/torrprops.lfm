@@ -1,0 +1,134 @@
+object TorrPropsForm: TTorrPropsForm
+  Left = 384
+  Height = 186
+  Top = 185
+  Width = 350
+  HorzScrollBar.Page = 349
+  HorzScrollBar.Range = 40
+  VertScrollBar.Page = 155
+  VertScrollBar.Range = 22
+  AutoScroll = False
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Torrent properties'
+  ClientHeight = 186
+  ClientWidth = 350
+  Constraints.MinHeight = 186
+  Constraints.MinWidth = 350
+  Position = poMainFormCenter
+  LCLVersion = '0.9.27'
+  object gbOptions: TGroupBox
+    Left = 8
+    Height = 142
+    Top = 4
+    Width = 333
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ClientHeight = 124
+    ClientWidth = 329
+    TabOrder = 2
+    object Label1: TLabel
+      Left = 299
+      Height = 14
+      Top = 28
+      Width = 22
+      Anchors = [akTop, akRight]
+      Caption = 'KB/s'
+      ParentColor = False
+    end
+    object Label2: TLabel
+      Left = 299
+      Height = 14
+      Top = 60
+      Width = 22
+      Anchors = [akTop, akRight]
+      Caption = 'KB/s'
+      ParentColor = False
+    end
+    object txName: TLabel
+      Left = 10
+      Height = 14
+      Width = 32
+      Caption = 'Name:'
+      ParentColor = False
+    end
+    object txPeerLimit: TLabel
+      Left = 10
+      Height = 14
+      Top = 92
+      Width = 48
+      Caption = 'Peer limit:'
+      ParentColor = False
+    end
+    object cbMaxDown: TCheckBox
+      Left = 10
+      Height = 19
+      Top = 26
+      Width = 155
+      Caption = 'Maximum download speed:'
+      OnClick = cbMaxDownClick
+      TabOrder = 0
+    end
+    object edMaxDown: TSpinEdit
+      Left = 223
+      Height = 23
+      Top = 24
+      Width = 66
+      Anchors = [akTop, akRight]
+      Increment = 10
+      MaxValue = 999999
+      TabOrder = 1
+    end
+    object cbMaxUp: TCheckBox
+      Left = 10
+      Height = 19
+      Top = 58
+      Width = 141
+      Caption = 'Maximum upload speed:'
+      OnClick = cbMaxUpClick
+      TabOrder = 2
+    end
+    object edMaxUp: TSpinEdit
+      Left = 223
+      Height = 23
+      Top = 56
+      Width = 66
+      Anchors = [akTop, akRight]
+      Increment = 10
+      MaxValue = 999999
+      TabOrder = 3
+    end
+    object edPeerLimit: TSpinEdit
+      Left = 223
+      Height = 23
+      Top = 88
+      Width = 66
+      Anchors = [akTop, akRight]
+      MaxValue = 999
+      MinValue = 1
+      TabOrder = 4
+      Value = 1
+    end
+  end
+  object btOK: TButton
+    Left = 184
+    Height = 23
+    Top = 156
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = 'OK'
+    Default = True
+    ModalResult = 1
+    TabOrder = 0
+  end
+  object btCancel: TButton
+    Left = 266
+    Height = 23
+    Top = 156
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Cancel = True
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 1
+  end
+end

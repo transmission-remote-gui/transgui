@@ -1,0 +1,25 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+WINDOWS:
+
+Remember, Synapse work with Winsock2 on Windows! (on Win98 and WinNT 4.0 or higher)
+
+If you must use this unit on Win95, download Winsock2 from Microsoft
+and distribute it with your application!
+
+On WinNT standardly RAW sockets work if program is running under user with
+administrators provilegies. To use RAW sockets under another users, you must
+create the following registry variable and set its value to DWORD 1:
+
+HKLM\System\CurrentControlSet\Services\Afd\Parameters\DisableRawSecurity
+
+After you change the registry, you need to restart your computer!
+
+
+LINUX:
+
+Remember, some of functions or classes work only with root rights!
+If you need this for another user then root, you must assign root right
+for your binary file.
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

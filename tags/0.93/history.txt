@@ -1,0 +1,32 @@
+0.93 beta (Dec 30, 2008)
+------------------------
+[-] Unable to add new torrent. GeoIP database is downloading instead of this.
+
+0.92 beta (Dec 30, 2008)
+------------------------
+[+] Torrent filtering by status and by tracker.
+[+] Resolving of peer's host by IP. 
+[+] Resolving of peer's country by IP. 
+[+] Displaying of peer's country flag.
+[*] Store parameters for add torrent window per each host.
+[*] Added "WARNING: Transmission daemon will crash if non-existent folder is specified." to add torrent window.
+[-] Some bug fixes.
+
+0.91 beta (Dec 26, 2008)
+------------------------
+[+] Download folder and peer limit can be specified when adding new torrent.
+[+] Tray icon.
+[+] Balloon tooltip when torrent download is complete.
+[+] Added "Start all" and "Stop all" items into "Torrent" menu.
+[+] Torrent file name can be passed as command line parameter.
+[+] Peer limit can be changed in torrent properties.
+[+] Windows installer.
+[*] Only single instance of the application is allowed.
+[*] Improved startup speed on Linux.
+[-] Skipping of files to download was not possible during torrent addition.
+[-] "Access violation" error after removing a torrent.
+[-] Issues with non-english charsets.
+
+0.9 beta
+--------
+[+] Initial version.

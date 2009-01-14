@@ -1,0 +1,189 @@
+object OptionsForm: TOptionsForm
+  Left = 384
+  Height = 239
+  Top = 185
+  Width = 367
+  HorzScrollBar.Page = 349
+  VertScrollBar.Page = 238
+  AutoScroll = False
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Options'
+  ClientHeight = 239
+  ClientWidth = 367
+  Constraints.MinHeight = 239
+  Constraints.MinWidth = 300
+  OnCreate = FormCreate
+  Position = poMainFormCenter
+  LCLVersion = '0.9.27'
+  object btOK: TButton
+    Left = 205
+    Height = 23
+    Top = 210
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = 'OK'
+    Default = True
+    OnClick = btOKClick
+    TabOrder = 1
+  end
+  object btCancel: TButton
+    Left = 285
+    Height = 23
+    Top = 210
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Cancel = True
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 2
+  end
+  object Page: TPageControl
+    Left = 8
+    Height = 195
+    Top = 8
+    Width = 352
+    ActivePage = tabConnection
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabIndex = 0
+    TabOrder = 0
+    object tabConnection: TTabSheet
+      Caption = 'Connection'
+      ClientHeight = 169
+      ClientWidth = 344
+      object txPassword: TLabel
+        Left = 8
+        Height = 14
+        Top = 110
+        Width = 51
+        Caption = 'Password:'
+        ParentColor = False
+      end
+      object txUserName: TLabel
+        Left = 8
+        Height = 14
+        Top = 78
+        Width = 56
+        Caption = 'User name:'
+        ParentColor = False
+      end
+      object txPort: TLabel
+        Left = 8
+        Height = 14
+        Top = 46
+        Width = 25
+        Caption = 'Port:'
+        ParentColor = False
+      end
+      object txHost: TLabel
+        Left = 8
+        Height = 14
+        Top = 14
+        Width = 66
+        Caption = 'Remote host:'
+        ParentColor = False
+      end
+      object edPassword: TEdit
+        Left = 136
+        Height = 23
+        Top = 106
+        Width = 199
+        Anchors = [akTop, akLeft, akRight]
+        EchoMode = emPassword
+        PasswordChar = '*'
+        TabOrder = 3
+      end
+      object edUserName: TEdit
+        Left = 136
+        Height = 23
+        Top = 74
+        Width = 199
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 2
+      end
+      object edPort: TSpinEdit
+        Left = 136
+        Height = 23
+        Top = 42
+        Width = 98
+        MaxValue = 65535
+        MinValue = 1
+        TabOrder = 1
+        Value = 1
+      end
+      object edHost: TEdit
+        Left = 136
+        Height = 23
+        Top = 10
+        Width = 199
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 0
+      end
+    end
+    object tabInterface: TTabSheet
+      Caption = 'Interface'
+      ClientHeight = 169
+      ClientWidth = 344
+      object txSeconds: TLabel
+        Left = 236
+        Height = 14
+        Top = 14
+        Width = 40
+        Caption = 'seconds'
+        ParentColor = False
+      end
+      object txRefreshInterval: TLabel
+        Left = 8
+        Height = 14
+        Top = 14
+        Width = 82
+        Caption = 'Refresh interval:'
+        ParentColor = False
+      end
+      object edRefreshInterval: TSpinEdit
+        Left = 128
+        Height = 23
+        Top = 10
+        Width = 98
+        MaxValue = 999
+        MinValue = 1
+        TabOrder = 0
+        Value = 1
+      end
+      object gbTray: TGroupBox
+        Left = 8
+        Height = 85
+        Top = 42
+        Width = 327
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Tray icon'
+        ClientHeight = 67
+        ClientWidth = 323
+        TabOrder = 1
+        object cbTrayIconAlways: TCheckBox
+          Left = 10
+          Height = 19
+          Top = 40
+          Width = 138
+          Caption = 'Tray icon always visible'
+          TabOrder = 2
+        end
+        object cbTrayMinimize: TCheckBox
+          Left = 10
+          Height = 19
+          Width = 101
+          Caption = 'Minimize to tray'
+          TabOrder = 0
+        end
+        object cbTrayClose: TCheckBox
+          Left = 10
+          Height = 19
+          Top = 20
+          Width = 88
+          Caption = 'Close to tray'
+          TabOrder = 1
+        end
+      end
+    end
+  end
+end
