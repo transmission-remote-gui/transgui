@@ -414,30 +414,6 @@ begin
   Result:=Format('%.' + IntToStr(RoundTo) + 'f %s', [sz, SizeNames[i]]);
 end;
 
-var
-  BusyCount: integer = 0;
-
-procedure AppBusy;
-begin
-  Inc(BusyCount);
-  Screen.Cursor:=crHourGlass;
-end;
-
-procedure AppNormal;
-begin
-  Dec(BusyCount);
-  if BusyCount <= 0 then begin
-    BusyCount:=0;
-    Screen.Cursor:=crDefault;
-  end;
-end;
-
-procedure ForceAppNormal;
-begin
-  BusyCount:=0;
-  AppNormal;
-end;
-
 function AddToChannel(Clr: TColor; Value: integer; Position: byte): TColor;
 var i: integer;
 
