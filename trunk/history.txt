@@ -1,4 +1,4 @@
-0.94 beta (Jan ??, 2009)
+0.94 beta (Jan 18, 2009)
 ------------------------
 [+] Columns setup for torrents list.
 [+] New columns to torrents list: Downloaded, Uploaded, Tracker, Tracker status, Added on, Completed on, Last active.
