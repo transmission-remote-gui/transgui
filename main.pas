@@ -2494,7 +2494,7 @@ end;
 
 procedure TMainForm.FillGeneralInfo(t: TJSONObject);
 var
-  i, j: integer;
+  i, j, idx: integer;
   it: TListItem;
   s: string;
   f: double;
@@ -2504,20 +2504,31 @@ begin
     exit;
   end;
   it:=lvTorrents.Selected;
+  idx:=-1;
+  for i:=0 to FTorrents.Count - 1 do
+    if FTorrents[idxTorrentId, i] = PtrUInt(it.Data) then begin
+      idx:=i;
+      break;
+    end;
 
-  pbDownloaded.Position:=Round(FTorrents[idxDone, it.Index]*10);
-  txDownProgress.Caption:=Format('%.1f%%', [double(FTorrents[idxDone, it.Index])]);
+  if idx = -1 then begin
+    ClearDetailsInfo;
+    exit;
+  end;
+
+  pbDownloaded.Position:=Round(FTorrents[idxDone, idx]*10);
+  txDownProgress.Caption:=Format('%.1f%%', [double(FTorrents[idxDone, idx])]);
   txDownProgress.AutoSize:=True;
 
   panTransfer.ChildSizing.Layout:=cclNone;
-  txStatus.Caption:=GetTorrentStatus(it.Index);
+  txStatus.Caption:=GetTorrentStatus(idx);
   txError.Caption:=GetTorrentError(t);
   txRemaining.Caption:=EtaToString(t.Integers['eta']);
   txDownloaded.Caption:=GetHumanSize(t.Floats['downloadedEver']);
   txUploaded.Caption:=GetHumanSize(t.Floats['uploadedEver']);
   txWasted.Caption:=Format('%s (%d hashfails)', [GetHumanSize(t.Floats['corruptEver']), Round(t.Floats['corruptEver']/t.Floats['pieceSize'])]);
-  txDownSpeed.Caption:=GetHumanSize(FTorrents[idxDownSpeed, it.Index], 1)+'/s';
-  txUpSpeed.Caption:=GetHumanSize(FTorrents[idxUpSpeed, it.Index], 1)+'/s';
+  txDownSpeed.Caption:=GetHumanSize(FTorrents[idxDownSpeed, idx], 1)+'/s';
+  txUpSpeed.Caption:=GetHumanSize(FTorrents[idxUpSpeed, idx], 1)+'/s';
   txRatio.Caption:=RatioToString(t.Floats['uploadRatio']);
 
   j:=t.Integers['downloadLimitMode'];
@@ -2685,6 +2696,10 @@ end;
 
 initialization
   {$I main.lrs}
+
+end.
+
+{$I main.lrs}
 
 end.
 
