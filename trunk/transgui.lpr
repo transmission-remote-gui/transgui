@@ -27,8 +27,8 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms
-  { you can add units after this }, Main, LResources, rpc, AddTorrent, ConnOptions, varlist, tz, TorrProps, DaemonOptions, About, IpResolver,
-download, ColSetup;
+  { you can add units after this }, Main, LResources, rpc, AddTorrent, ConnOptions, varlist, tz,
+  TorrProps, DaemonOptions, About, IpResolver, download, ColSetup;
 
 {$IFDEF WINDOWS}{$R transgui.rc}{$ENDIF}
 
