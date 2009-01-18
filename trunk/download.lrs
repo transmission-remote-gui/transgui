@@ -1,3 +1,5 @@
+{ This is an automatically generated lazarus resource file }
+
 LazarusResources.Add('TDownloadForm','FORMDATA',[
   'TPF0'#13'TDownloadForm'#12'DownloadForm'#4'Left'#3#134#1#6'Height'#2'j'#3'To'
   +'p'#3#22#1#5'Width'#3#148#1#18'HorzScrollBar.Page'#3#147#1#19'HorzScrollBar.'
@@ -16,7 +18,7 @@ LazarusResources.Add('TDownloadForm','FORMDATA',[
   +'Left'#3#160#0#6'Height'#2#23#3'Top'#2'H'#5'Width'#2'K'#6'Cancel'#9#7'Captio'
   +'n'#6#6'Cancel'#7'Default'#9#7'OnClick'#7#13'btCancelClick'#8'TabOrder'#2#0#0
   +#0#12'TProgressBar'#10'pbDownload'#4'Left'#2#12#6'Height'#2#16#3'Top'#2','#5
-  +'Width'#3'|'#1#7'Anchors'#11#5'akTop'#6'akLeft'#7'akRight'#0#8'TabOrder'#2#1
-  +#0#0#6'TTimer'#11'UpdateTimer'#8'Interval'#3','#1#7'OnTimer'#7#16'UpdateTime'
-  +'rTimer'#4'left'#2'$'#3'top'#2'D'#0#0#0
+  +'Width'#3'|'#1#7'Anchors'#11#5'akTop'#6'akLeft'#7'akRight'#0#6'Smooth'#9#4'S'
+  +'tep'#2#1#8'TabOrder'#2#1#0#0#6'TTimer'#11'UpdateTimer'#8'Interval'#3','#1#7
+  +'OnTimer'#7#16'UpdateTimerTimer'#4'left'#2'$'#3'top'#2'D'#0#0#0
 ]);

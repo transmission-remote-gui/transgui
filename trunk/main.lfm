@@ -209,11 +209,11 @@ object MainForm: TMainForm
     Height = 253
     Top = 175
     Width = 780
-    ActivePage = tabFiles
+    ActivePage = tabGeneral
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -680,6 +680,7 @@ object MainForm: TMainForm
           BorderSpacing.Around = 6
           Max = 1000
           Smooth = True
+          Step = 1
           TabOrder = 0
         end
       end
