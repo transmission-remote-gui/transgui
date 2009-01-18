@@ -1,3 +1,4 @@
+#summary You can help to create and maintain Mac OS X version
 Mac OS X version of Transmission Remote GUI is possible. BUT, I do not have access to Mac OS X machine and not able to test and build Mac OS X binary.
 
 If you have some experience with [http://lazarus.freepascal.org Lazarus] and [http://www.freepascal.org Free Pascal] and have Mac OS X machine, you can maintain Mac OS X version of Transmission Remote GUI.
