@@ -389,7 +389,6 @@ object MainForm: TMainForm
           ChildSizing.HorizontalSpacing = 16
           ChildSizing.VerticalSpacing = 4
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-          ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 6
           ClientHeight = 111
           ClientWidth = 751
