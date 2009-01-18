@@ -1,4 +1,4 @@
-#labels Featured
+#labels Deprecated
 Dec 30, 2008
 
 Version 0.92 beta released.
