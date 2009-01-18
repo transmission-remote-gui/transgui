@@ -2226,6 +2226,9 @@ begin
   TrayIcon.Hint:=Format('%s%s%d downloading, %d seeding%s%s, %s',
         [RpcObj.InfoStatus, LineEnding, DownCnt, SeedCnt, LineEnding, StatusBar.Panels[1].Text, StatusBar.Panels[2].Text]);
 
+  if (lvTorrents.Selected <> nil) and (PtrUInt(lvTorrents.Selected.Data) <> RpcObj.CurTorrentId) then
+    lvTorrents.Selected:=nil;
+
   if (RpcObj.CurTorrentId <> 0) and (lvTorrents.Selected = nil) then begin
     RpcObj.CurTorrentId:=0;
     ClearDetailsInfo;
