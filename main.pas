@@ -1791,7 +1791,9 @@ begin
               Index:=FIni.ReadInteger(AName, Format('Index%d', [i]), Index);
               Visible:=FIni.ReadBool(AName, Format('Visible%d', [i]), Visible);
             end;
-            Tag:=FIni.ReadInteger(AName, Format('Width%d', [i]), Width);
+            if Width <> 0 then
+              Tag:=Width;
+            Tag:=FIni.ReadInteger(AName, Format('Width%d', [i]), Tag);
             Width:=Tag;
             break;
           end;
