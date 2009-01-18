@@ -1,0 +1,14 @@
+#summary Version 0.94 beta released
+#labels Featured
+
+<pre>
+[+] Columns setup for torrents list.
+[+] New columns to torrents list: Downloaded, Uploaded, Tracker, Tracker status, Added on, Completed on, Last active.
+[+] New entries on General info page: Tracker, Added on, Completed on, Last active.
+[+] Changing priority for multiple selected files.
+[`*`] Quicker shutdown of the application.
+[-] Buggy selection of files to download in add torrent window.
+[-] Wrong info was displayed in General info page for filtered torrents.
+[-] Allow @ character in password.
+[-] Do not require administrator privileges for Windows setup.
+</pre>
