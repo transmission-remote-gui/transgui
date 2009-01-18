@@ -48,8 +48,8 @@ object AddTorrentForm: TAddTorrentForm
       Left = 10
       Height = 14
       Top = 44
-      Width = 368
-      Caption = 'WARNING: Transmission daemon will crash if non-existent folder is specified.'
+      Width = 374
+      Caption = 'WARNING: Transmission daemon may crash if non-existent folder is specified.'
       ParentColor = False
     end
     object cbDestFolder: TComboBox

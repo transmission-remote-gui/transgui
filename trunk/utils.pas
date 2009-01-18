@@ -17,7 +17,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 *************************************************************************************}
 
-unit tz;
+unit utils;
 
 {$mode objfpc}{$H+}
 
@@ -26,7 +26,7 @@ interface
 uses
   SysUtils,
 {$ifdef windows}
-  Windows
+  Windows, win32int, InterfaceBase
 {$endif}
 {$ifdef unix}
   baseunix, unix
@@ -34,6 +34,9 @@ uses
   ;
 
 function GetTimeZoneDelta: TDateTime;
+
+procedure ShowTaskbarButton;
+procedure HideTaskbarButton;
 
 implementation
 
@@ -58,6 +61,20 @@ begin
   fpgettimeofday(@timeval, @timezone);
   Result:=-timezone.tz_minuteswest/MinsPerDay;
 {$endif}
+end;
+
+procedure ShowTaskbarButton;
+begin
+{$ifdef mswindows}
+  ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_SHOW);
+{$endif mswindows}
+end;
+
+procedure HideTaskbarButton;
+begin
+{$ifdef mswindows}
+  ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_HIDE);
+{$endif mswindows}
 end;
 
 end.

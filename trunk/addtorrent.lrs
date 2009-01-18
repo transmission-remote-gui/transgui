@@ -15,9 +15,9 @@ LazarusResources.Add('TAddTorrentForm','FORMDATA',[
   +'TLabel'#11'txPeerLimit'#4'Left'#3'8'#1#6'Height'#2#14#3'Top'#2'I'#5'Width'#2
   +'0'#9'Alignment'#7#14'taRightJustify'#7'Anchors'#11#5'akTop'#7'akRight'#0#7
   +'Caption'#6#11'Peer limit:'#11'ParentColor'#8#0#0#6'TLabel'#9'txWarning'#4'L'
-  +'eft'#2#10#6'Height'#2#14#3'Top'#2','#5'Width'#3'p'#1#7'Caption'#6'LWARNING:'
-  +' Transmission daemon will crash if non-existent folder is specified.'#11'Pa'
-  +'rentColor'#8#0#0#9'TComboBox'#12'cbDestFolder'#4'Left'#2#10#6'Height'#2#21#3
+  +'eft'#2#10#6'Height'#2#14#3'Top'#2','#5'Width'#3'v'#1#7'Caption'#6'KWARNING:'
+  +' Transmission daemon may crash if non-existent folder is specified.'#11'Par'
+  +'entColor'#8#0#0#9'TComboBox'#12'cbDestFolder'#4'Left'#2#10#6'Height'#2#21#3
   +'Top'#2#16#5'Width'#3#172#1#7'Anchors'#11#5'akTop'#6'akLeft'#7'akRight'#0#12
   +'AutoComplete'#8#5'Ctl3D'#8#10'ItemHeight'#2#13#9'ItemWidth'#2#0#8'TabOrder'
   +#2#0#0#0#9'TCheckBox'#14'cbStartTorrent'#4'Left'#2#10#6'Height'#2#17#3'Top'#2

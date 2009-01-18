@@ -24,9 +24,6 @@ unit Main;
 interface
 
 uses
-{$ifdef windows}
-  Windows, win32int, InterfaceBase,
-{$endif}
   Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
   httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
   zipper;
@@ -380,7 +377,7 @@ const
 implementation
 
 uses
-  AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz, TorrProps, DaemonOptions, About,
+  AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, utils, TorrProps, DaemonOptions, About,
   ToolWin, download, ColSetup;
 
 const
@@ -969,16 +966,12 @@ procedure TMainForm.HideApp;
 begin
   if WindowState <> wsMinimized then
     Hide;
-{$ifdef mswindows}
-  ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_HIDE);
-{$endif mswindows}
+  HideTaskbarButton;
 end;
 
 procedure TMainForm.ShowApp;
 begin
-{$ifdef mswindows}
-  ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_SHOW);
-{$endif mswindows}
+  ShowTaskbarButton;
   if WindowState = wsMinimized then
     Application.Restore;
   Show;
