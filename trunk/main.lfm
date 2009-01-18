@@ -20,17 +20,17 @@ object MainForm: TMainForm
   LCLVersion = '0.9.27'
   object panTop: TPanel
     Left = 0
-    Height = 146
+    Height = 120
     Top = 24
     Width = 780
     Align = alClient
-    ClientHeight = 146
+    ClientHeight = 120
     ClientWidth = 780
     Constraints.MinHeight = 50
     TabOrder = 4
     object lvTorrents: TListView
       Left = 116
-      Height = 144
+      Height = 118
       Top = 1
       Width = 663
       Align = alClient
@@ -151,7 +151,7 @@ object MainForm: TMainForm
     end
     object lvFilter: TListView
       Left = 1
-      Height = 144
+      Height = 118
       Top = 1
       Width = 110
       Align = alLeft
@@ -177,7 +177,7 @@ object MainForm: TMainForm
     end
     object HSplitter: TSplitter
       Left = 111
-      Height = 144
+      Height = 118
       Top = 1
       Width = 5
       AutoSnap = False
@@ -206,8 +206,8 @@ object MainForm: TMainForm
   end
   object PageInfo: TPageControl
     Left = 0
-    Height = 253
-    Top = 175
+    Height = 279
+    Top = 149
     Width = 780
     ActivePage = tabGeneral
     Align = alBottom
@@ -219,12 +219,12 @@ object MainForm: TMainForm
     OnPageChanged = PageInfoChange
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 226
+      ClientHeight = 252
       ClientWidth = 772
       ImageIndex = 4
       object sbGenInfo: TScrollBox
         Left = 0
-        Height = 200
+        Height = 226
         Top = 26
         Width = 772
         Align = alClient
@@ -233,9 +233,9 @@ object MainForm: TMainForm
         OnResize = sbGenInfoResize
         object panGeneralInfo: TPanel
           Left = 0
-          Height = 58
-          Top = 136
-          Width = 768
+          Height = 78
+          Top = 153
+          Width = 751
           Align = alTop
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 4
@@ -244,8 +244,8 @@ object MainForm: TMainForm
           ChildSizing.VerticalSpacing = 4
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
           ChildSizing.ControlsPerLine = 4
-          ClientHeight = 58
-          ClientWidth = 768
+          ClientHeight = 78
+          ClientWidth = 751
           TabOrder = 0
           object txTorrentNameLabel: TLabel
             Left = 4
@@ -256,7 +256,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txTorrentName: TLabel
-            Left = 179
+            Left = 181
             Height = 14
             Top = 4
             Width = 74
@@ -264,7 +264,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txCreatedLabel: TLabel
-            Left = 378
+            Left = 381
             Height = 14
             Top = 4
             Width = 59
@@ -272,7 +272,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txCreated: TLabel
-            Left = 562
+            Left = 578
             Height = 14
             Top = 4
             Width = 50
@@ -288,7 +288,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txTotalSize: TLabel
-            Left = 179
+            Left = 181
             Height = 14
             Top = 22
             Width = 54
@@ -296,7 +296,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txPiecesLabel: TLabel
-            Left = 378
+            Left = 381
             Height = 14
             Top = 22
             Width = 35
@@ -304,7 +304,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txPieces: TLabel
-            Left = 562
+            Left = 578
             Height = 14
             Top = 22
             Width = 54
@@ -320,7 +320,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txHash: TLabel
-            Left = 179
+            Left = 181
             Height = 14
             Top = 40
             Width = 35
@@ -328,28 +328,60 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txCommentLabel: TLabel
-            Left = 378
+            Left = 381
             Height = 14
             Top = 40
-            Width = 168
+            Width = 181
             AutoSize = False
             Caption = 'Comment:'
             ParentColor = False
           end
           object txComment: TLabel
-            Left = 562
+            Left = 578
             Height = 14
             Top = 40
             Width = 56
             Caption = 'txComment'
             ParentColor = False
           end
+          object txAddedOnLabel: TLabel
+            Left = 4
+            Height = 14
+            Top = 58
+            Width = 51
+            Caption = 'Added on:'
+            ParentColor = False
+          end
+          object txAddedOn: TLabel
+            Left = 181
+            Height = 14
+            Top = 58
+            Width = 56
+            Caption = 'txAddedOn'
+            ParentColor = False
+          end
+          object txCompletedOnLabel: TLabel
+            Left = 381
+            Height = 14
+            Top = 58
+            Width = 71
+            Caption = 'Completed on:'
+            ParentColor = False
+          end
+          object txCompletedOn: TLabel
+            Left = 578
+            Height = 14
+            Top = 58
+            Width = 76
+            Caption = 'txCompletedOn'
+            ParentColor = False
+          end
         end
         object panTransfer: TPanel
           Left = 0
-          Height = 94
+          Height = 111
           Top = 21
-          Width = 768
+          Width = 751
           Align = alTop
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 4
@@ -357,9 +389,10 @@ object MainForm: TMainForm
           ChildSizing.HorizontalSpacing = 16
           ChildSizing.VerticalSpacing = 4
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+          ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 6
-          ClientHeight = 94
-          ClientWidth = 768
+          ClientHeight = 111
+          ClientWidth = 751
           TabOrder = 1
           object txStatusLabel: TLabel
             Left = 4
@@ -370,7 +403,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txStatus: TLabel
-            Left = 135
+            Left = 140
             Height = 14
             Top = 4
             Width = 42
@@ -378,7 +411,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txErrorLabel: TLabel
-            Left = 252
+            Left = 262
             Height = 14
             Top = 4
             Width = 29
@@ -386,7 +419,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txError: TLabel
-            Left = 369
+            Left = 407
             Height = 14
             Top = 4
             Width = 35
@@ -394,7 +427,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txRemainingLabel: TLabel
-            Left = 472
+            Left = 541
             Height = 14
             Top = 4
             Width = 54
@@ -402,7 +435,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txRemaining: TLabel
-            Left = 612
+            Left = 651
             Height = 14
             Top = 4
             Width = 60
@@ -418,7 +451,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txDownloaded: TLabel
-            Left = 135
+            Left = 140
             Height = 14
             Top = 22
             Width = 70
@@ -426,7 +459,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txUploadedLabel: TLabel
-            Left = 252
+            Left = 262
             Height = 14
             Top = 22
             Width = 50
@@ -434,7 +467,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txUploaded: TLabel
-            Left = 369
+            Left = 407
             Height = 14
             Top = 22
             Width = 56
@@ -442,7 +475,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txWastedLabel: TLabel
-            Left = 472
+            Left = 541
             Height = 14
             Top = 22
             Width = 42
@@ -450,7 +483,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txWasted: TLabel
-            Left = 612
+            Left = 651
             Height = 14
             Top = 22
             Width = 48
@@ -466,7 +499,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txDownSpeed: TLabel
-            Left = 135
+            Left = 140
             Height = 14
             Top = 40
             Width = 68
@@ -474,7 +507,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txUpSpeedLabel: TLabel
-            Left = 252
+            Left = 262
             Height = 14
             Top = 40
             Width = 70
@@ -482,7 +515,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txUpSpeed: TLabel
-            Left = 369
+            Left = 407
             Height = 14
             Top = 40
             Width = 54
@@ -490,7 +523,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txRatioLabel: TLabel
-            Left = 472
+            Left = 541
             Height = 14
             Top = 40
             Width = 58
@@ -498,7 +531,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txRatio: TLabel
-            Left = 612
+            Left = 651
             Height = 14
             Top = 40
             Width = 36
@@ -514,7 +547,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txDownLimit: TLabel
-            Left = 135
+            Left = 140
             Height = 14
             Top = 58
             Width = 59
@@ -522,7 +555,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txUpLimitLabel: TLabel
-            Left = 252
+            Left = 262
             Height = 14
             Top = 58
             Width = 39
@@ -530,27 +563,25 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txUpLimit: TLabel
-            Left = 369
+            Left = 407
             Height = 14
             Top = 58
             Width = 45
             Caption = 'txUpLimit'
             ParentColor = False
           end
-          object txTrackerUpdateLabel: TLabel
-            Left = 472
+          object txDummy1: TLabel
+            Left = 541
             Height = 14
             Top = 58
-            Width = 93
-            Caption = 'Tracker update on:'
+            Width = 1
             ParentColor = False
           end
-          object txTrackerUpdate: TLabel
-            Left = 612
+          object txDummy2: TLabel
+            Left = 651
             Height = 14
             Top = 58
-            Width = 82
-            Caption = 'txTrackerUpdate'
+            Width = 1
             ParentColor = False
           end
           object txSeedsLabel: TLabel
@@ -562,7 +593,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txSeeds: TLabel
-            Left = 135
+            Left = 140
             Height = 14
             Top = 76
             Width = 40
@@ -570,7 +601,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txPeersLabel: TLabel
-            Left = 252
+            Left = 262
             Height = 14
             Top = 76
             Width = 32
@@ -578,7 +609,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txPeers: TLabel
-            Left = 369
+            Left = 407
             Height = 14
             Top = 76
             Width = 38
@@ -586,7 +617,7 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txMaxPeersLabel: TLabel
-            Left = 472
+            Left = 541
             Height = 14
             Top = 76
             Width = 55
@@ -594,11 +625,59 @@ object MainForm: TMainForm
             ParentColor = False
           end
           object txMaxPeers: TLabel
-            Left = 612
+            Left = 651
             Height = 14
             Top = 76
             Width = 58
             Caption = 'txMaxPeers'
+            ParentColor = False
+          end
+          object txTrackerLabel: TLabel
+            Left = 4
+            Height = 14
+            Top = 94
+            Width = 41
+            Caption = 'Tracker:'
+            ParentColor = False
+          end
+          object txTracker: TLabel
+            Left = 140
+            Height = 14
+            Top = 94
+            Width = 47
+            Caption = 'txTracker'
+            ParentColor = False
+          end
+          object txTrackerUpdateLabel: TLabel
+            Left = 262
+            Height = 14
+            Top = 94
+            Width = 93
+            Caption = 'Tracker update on:'
+            ParentColor = False
+          end
+          object txTrackerUpdate: TLabel
+            Left = 407
+            Height = 14
+            Top = 94
+            Width = 82
+            Caption = 'txTrackerUpdate'
+            ParentColor = False
+          end
+          object txLastActiveLabel: TLabel
+            Left = 541
+            Height = 14
+            Top = 94
+            Width = 57
+            Caption = 'Last active:'
+            ParentColor = False
+          end
+          object txLastActive: TLabel
+            Left = 651
+            Height = 14
+            Top = 94
+            Width = 61
+            Caption = 'txLastActive'
             ParentColor = False
           end
         end
@@ -606,7 +685,7 @@ object MainForm: TMainForm
           Left = 2
           Height = 17
           Top = 2
-          Width = 764
+          Width = 747
           Align = alTop
           Alignment = taLeftJustify
           AutoSize = True
@@ -622,8 +701,8 @@ object MainForm: TMainForm
         object txTorrentHeader: TPanel
           Left = 2
           Height = 17
-          Top = 117
-          Width = 764
+          Top = 134
+          Width = 747
           Align = alTop
           Alignment = taLeftJustify
           BorderSpacing.Around = 2
@@ -800,7 +879,7 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 170
+    Top = 144
     Width = 780
     Align = alBottom
     AutoSnap = False
@@ -1488,8 +1567,8 @@ object MainForm: TMainForm
   object pmFiles: TPopupMenu
     Images = ImageList16
     OnPopup = pmFilesPopup
-    left = 664
-    top = 360
+    left = 304
+    top = 92
     object MenuItem12: TMenuItem
       Action = acSetHighPriority
       OnClick = acSetHighPriorityExecute
@@ -2198,8 +2277,8 @@ object MainForm: TMainForm
     }
   end
   object pmLabels: TPopupMenu
-    left = 628
-    top = 360
+    left = 268
+    top = 92
     object miCopyLabel: TMenuItem
       Caption = 'Copy'
       OnClick = miCopyLabelClick
@@ -2243,8 +2322,8 @@ object MainForm: TMainForm
     Height = 12
     Masked = False
     Width = 18
-    left = 245
-    top = 263
+    left = 144
+    top = 92
     Bitmap = {
       4C6901000000120000000C000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
@@ -2277,8 +2356,8 @@ object MainForm: TMainForm
     }
   end
   object pmPeers: TPopupMenu
-    left = 700
-    top = 360
+    left = 340
+    top = 92
     object MenuItem29: TMenuItem
       Action = acResolveHost
       OnClick = acResolveHostExecute

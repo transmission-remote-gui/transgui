@@ -333,7 +333,8 @@ begin
                                      'hashString', 'comment', 'downloadedEver', 'uploadedEver', 'corruptEver', 'errorString',
                                      'announceResponse', 'downloadLimit', 'downloadLimitMode', 'uploadLimit', 'uploadLimitMode',
                                      'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
-                                     'seeders','peersGettingFromUs','leechers','peersKnown', 'uploadRatio']);
+                                     'seeders','peersGettingFromUs','leechers','peersKnown', 'uploadRatio', 'addedDate', 'doneDate',
+                                     'activityDate']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
