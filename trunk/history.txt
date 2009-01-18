@@ -8,6 +8,7 @@
 [-] Buggy selection of files to download in add torrent window.
 [-] Wrong info was displayed in General info page for filtered torrents.
 [-] Allow @ character in password.
+[-] Do not require administrator privileges for Windows setup.
 
 0.93 beta (Dec 30, 2008)
 ------------------------

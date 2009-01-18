@@ -28,7 +28,7 @@ Compression=lzma/max
 InternalCompressLevel=max
 SolidCompression=no
 
-;PrivilegesRequired=poweruser
+PrivilegesRequired=poweruser
 ChangesAssociations=yes
 
 WizardImageFile=compiler:\WizModernImage-IS.bmp
