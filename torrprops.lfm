@@ -25,6 +25,7 @@ object TorrPropsForm: TTorrPropsForm
     Anchors = [akTop, akLeft, akRight, akBottom]
     ClientHeight = 124
     ClientWidth = 329
+    Ctl3D = False
     TabOrder = 2
     object Label1: TLabel
       Left = 299
@@ -47,6 +48,7 @@ object TorrPropsForm: TTorrPropsForm
     object txName: TLabel
       Left = 10
       Height = 14
+      Top = 0
       Width = 32
       Caption = 'Name:'
       ParentColor = False
@@ -61,9 +63,9 @@ object TorrPropsForm: TTorrPropsForm
     end
     object cbMaxDown: TCheckBox
       Left = 10
-      Height = 19
+      Height = 17
       Top = 26
-      Width = 155
+      Width = 146
       Caption = 'Maximum download speed:'
       OnClick = cbMaxDownClick
       TabOrder = 0
@@ -80,9 +82,9 @@ object TorrPropsForm: TTorrPropsForm
     end
     object cbMaxUp: TCheckBox
       Left = 10
-      Height = 19
+      Height = 17
       Top = 58
-      Width = 141
+      Width = 132
       Caption = 'Maximum upload speed:'
       OnClick = cbMaxUpClick
       TabOrder = 2

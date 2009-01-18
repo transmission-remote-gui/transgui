@@ -159,6 +159,7 @@ object OptionsForm: TOptionsForm
         Caption = 'Tray icon'
         ClientHeight = 67
         ClientWidth = 323
+        Ctl3D = False
         TabOrder = 1
         object cbTrayIconAlways: TCheckBox
           Left = 10
@@ -171,6 +172,7 @@ object OptionsForm: TOptionsForm
         object cbTrayMinimize: TCheckBox
           Left = 10
           Height = 19
+          Top = 0
           Width = 101
           Caption = 'Minimize to tray'
           TabOrder = 0
