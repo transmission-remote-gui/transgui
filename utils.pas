@@ -29,7 +29,7 @@ uses
   Windows, win32int, InterfaceBase
 {$endif}
 {$ifdef unix}
-  baseunix, unix
+  baseunix, unix, process
 {$endif}
   ;
 
@@ -109,7 +109,6 @@ var
 begin
   Result:=-1;
   Comando:='';
-  DesktopManager:=;
   case DeterminaDesktopManager of
     dmGnome:
       Comando:='gnome-open';
