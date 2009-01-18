@@ -73,49 +73,49 @@
         <UnitName Value="varlist"/>
       </Unit5>
       <Unit6>
-        <Filename Value="tz.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tz"/>
-      </Unit6>
-      <Unit7>
         <Filename Value="torrprops.pas"/>
         <ComponentName Value="TorrPropsForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TorrProps"/>
-      </Unit7>
-      <Unit8>
+      </Unit6>
+      <Unit7>
         <Filename Value="daemonoptions.pas"/>
         <ComponentName Value="DaemonOptionsForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="DaemonOptions"/>
-      </Unit8>
-      <Unit9>
+      </Unit7>
+      <Unit8>
         <Filename Value="about.pas"/>
         <ComponentName Value="AboutForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="About"/>
-      </Unit9>
-      <Unit10>
+      </Unit8>
+      <Unit9>
         <Filename Value="ipresolver.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="IpResolver"/>
-      </Unit10>
-      <Unit11>
+      </Unit9>
+      <Unit10>
         <Filename Value="download.pas"/>
         <ComponentName Value="DownloadForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="download"/>
-      </Unit11>
-      <Unit12>
+      </Unit10>
+      <Unit11>
         <Filename Value="colsetup.pas"/>
         <ComponentName Value="ColSetupForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ColSetup"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="utils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="utils"/>
       </Unit12>
     </Units>
   </ProjectOptions>
