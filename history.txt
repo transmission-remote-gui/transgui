@@ -1,3 +1,13 @@
+0.94 beta (Jan ??, 2009)
+------------------------
+[+] Implemented columns setup for torrents list.
+[+] Added the following new columns: Downloaded, Uploaded, Tracker, Tracker status, Added on, Completed on, Last active.
+[+] Changing priority for multiple selected files.
+[*] Quicker shutdown of the application.
+[-] Buggy selection of files to download in add torrent window.
+[-] Wrong info was displayed in General info page for filtered torrents.
+[-] Allow @ character in password.
+
 0.93 beta (Dec 30, 2008)
 ------------------------
 [-] Unable to add new torrent. GeoIP database is downloading instead of this.
