@@ -1,3 +1,4 @@
+#summary Donate via PayPal
 #labels Featured
 Donate to support further development of Transmission Remote GUI.
 
