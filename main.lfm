@@ -19,6 +19,7 @@ object MainForm: TMainForm
   OnShow = FormShow
   LCLVersion = '0.9.27'
   object panTop: TPanel
+    Left = 0
     Height = 146
     Top = 24
     Width = 780
@@ -35,48 +36,102 @@ object MainForm: TMainForm
       Align = alClient
       Columns = <      
         item
+          AutoSize = False
           Caption = 'Name'
           Width = 200
         end      
         item
           Alignment = taRightJustify
+          AutoSize = False
           Caption = 'Size'
           Width = 60
         end      
         item
           Alignment = taCenter
+          AutoSize = False
           Caption = 'Done'
         end      
         item
+          AutoSize = False
           Caption = 'Status'
           Width = 70
         end      
         item
           Alignment = taRightJustify
+          AutoSize = False
           Caption = 'Seeds'
           Width = 55
         end      
         item
           Alignment = taRightJustify
+          AutoSize = False
           Caption = 'Peers'
           Width = 55
         end      
         item
           Alignment = taRightJustify
+          AutoSize = False
           Caption = 'Down speed'
           Width = 75
         end      
         item
           Alignment = taRightJustify
+          AutoSize = False
           Caption = 'Up speed'
           Width = 75
         end      
         item
+          AutoSize = False
           Caption = 'ETA'
           Width = 80
         end      
         item
+          AutoSize = False
           Caption = 'Ratio'
+        end      
+        item
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = 'Downloaded'
+          Visible = False
+          Width = 60
+        end      
+        item
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = 'Uploaded'
+          Visible = False
+          Width = 60
+        end      
+        item
+          AutoSize = False
+          Caption = 'Tracker'
+          Visible = False
+          Width = 100
+        end      
+        item
+          AutoSize = False
+          Caption = 'Tracker status'
+          Visible = False
+          Width = 100
+        end      
+        item
+          AutoSize = False
+          Caption = 'Added on'
+          Visible = False
+          Width = 70
+        end      
+        item
+          AutoSize = False
+          Caption = 'Completed on'
+          Visible = False
+          Width = 70
+        end      
+        item
+          AutoSize = False
+          Caption = 'Last active'
+          Visible = False
+          Width = 70
         end>
       Constraints.MinHeight = 50
       Constraints.MinWidth = 50
@@ -85,6 +140,7 @@ object MainForm: TMainForm
       ReadOnly = True
       RowSelect = True
       SmallImages = ImageList16
+      SortColumn = 0
       SortType = stData
       TabOrder = 0
       ViewStyle = vsReport
@@ -101,6 +157,7 @@ object MainForm: TMainForm
       Align = alLeft
       Columns = <      
         item
+          AutoSize = False
           Width = 10
         end>
       Constraints.MinWidth = 50
@@ -110,6 +167,8 @@ object MainForm: TMainForm
       ScrollBars = ssVertical
       ShowColumnHeaders = False
       SmallImages = ImageList16
+      SortColumn = 0
+      SortType = stNone
       TabOrder = 1
       ViewStyle = vsReport
       OnCustomDrawItem = lvFilterCustomDrawItem
@@ -126,6 +185,7 @@ object MainForm: TMainForm
     end
   end
   object StatusBar: TStatusBar
+    Left = 0
     Height = 23
     Top = 428
     Width = 780
@@ -145,6 +205,7 @@ object MainForm: TMainForm
     SimplePanel = False
   end
   object PageInfo: TPageControl
+    Left = 0
     Height = 253
     Top = 175
     Width = 780
@@ -162,13 +223,16 @@ object MainForm: TMainForm
       ClientWidth = 772
       ImageIndex = 4
       object sbGenInfo: TScrollBox
+        Left = 0
         Height = 200
         Top = 26
         Width = 772
         Align = alClient
+        Ctl3D = False
         TabOrder = 0
         OnResize = sbGenInfoResize
         object panGeneralInfo: TPanel
+          Left = 0
           Height = 58
           Top = 136
           Width = 768
@@ -282,6 +346,7 @@ object MainForm: TMainForm
           end
         end
         object panTransfer: TPanel
+          Left = 0
           Height = 94
           Top = 21
           Width = 768
@@ -572,7 +637,9 @@ object MainForm: TMainForm
         end
       end
       object panProgress: TPanel
+        Left = 0
         Height = 26
+        Top = 0
         Width = 772
         Align = alTop
         BevelOuter = bvNone
@@ -582,6 +649,7 @@ object MainForm: TMainForm
         object txDownProgressLabel: TLabel
           Left = 8
           Height = 26
+          Top = 0
           Width = 64
           Align = alLeft
           BorderSpacing.Left = 8
@@ -592,6 +660,7 @@ object MainForm: TMainForm
         object txDownProgress: TLabel
           Left = 724
           Height = 26
+          Top = 0
           Width = 40
           Align = alRight
           Alignment = taRightJustify
@@ -621,37 +690,46 @@ object MainForm: TMainForm
       ClientWidth = 772
       ImageIndex = 6
       object lvPeers: TListView
+        Left = 0
         Height = 226
+        Top = 0
         Width = 772
         Align = alClient
         Columns = <        
           item
+            AutoSize = False
             Caption = 'Host'
             Width = 150
           end        
           item
+            AutoSize = False
             Caption = 'Country'
             Width = 100
           end        
           item
+            AutoSize = False
             Caption = 'Client'
             Width = 150
           end        
           item
+            AutoSize = False
             Caption = 'Flags'
             Width = 70
           end        
           item
             Alignment = taRightJustify
+            AutoSize = False
             Caption = 'Have'
           end        
           item
             Alignment = taRightJustify
+            AutoSize = False
             Caption = 'Up speed'
             Width = 80
           end        
           item
             Alignment = taRightJustify
+            AutoSize = False
             Caption = 'Down speed'
             Width = 80
           end>
@@ -659,6 +737,8 @@ object MainForm: TMainForm
         ReadOnly = True
         RowSelect = True
         SmallImages = imgFlags
+        SortColumn = 0
+        SortType = stNone
         TabOrder = 0
         ViewStyle = vsReport
       end
@@ -669,30 +749,37 @@ object MainForm: TMainForm
       ClientWidth = 772
       ImageIndex = 7
       object lvFiles: TListView
+        Left = 0
         Height = 226
+        Top = 0
         Width = 772
         Align = alClient
         Columns = <        
           item
+            AutoSize = False
             Caption = 'File name'
             Width = 350
           end        
           item
             Alignment = taRightJustify
+            AutoSize = False
             Caption = 'Size'
             Width = 80
           end        
           item
             Alignment = taCenter
+            AutoSize = False
             Caption = 'Done'
             Width = 70
           end        
           item
             Alignment = taCenter
+            AutoSize = False
             Caption = '%'
             Width = 70
           end        
           item
+            AutoSize = False
             Caption = 'Priority'
             Width = 100
           end>
@@ -700,6 +787,8 @@ object MainForm: TMainForm
         PopupMenu = pmFiles
         ReadOnly = True
         RowSelect = True
+        SortColumn = 0
+        SortType = stNone
         TabOrder = 0
         ViewStyle = vsReport
       end
@@ -707,6 +796,7 @@ object MainForm: TMainForm
   end
   object VSplitter: TSplitter
     Cursor = crVSplit
+    Left = 0
     Height = 5
     Top = 170
     Width = 780
@@ -716,10 +806,13 @@ object MainForm: TMainForm
     ResizeAnchor = akBottom
   end
   object MainToolBar: TToolBar
+    Left = 0
     Height = 24
+    Top = 0
     Width = 780
     AutoSize = True
     Caption = 'MainToolBar'
+    Ctl3D = False
     Images = ImageList16
     ParentShowHint = False
     ShowHint = True
@@ -1006,6 +1099,13 @@ object MainForm: TMainForm
     end
     object miTools: TMenuItem
       Caption = 'Tools'
+      object MenuItem34: TMenuItem
+        Action = acSetupColumns
+        OnClick = acSetupColumnsExecute
+      end
+      object MenuItem35: TMenuItem
+        Caption = '-'
+      end
       object MenuItem18: TMenuItem
         Action = acDaemonOptions
         Bitmap.Data = {
@@ -1203,6 +1303,12 @@ object MainForm: TMainForm
       DisableIfNoHandler = True
       OnExecute = acUpdateGeoIPExecute
     end
+    object acSetupColumns: TAction
+      Category = 'Torrent'
+      Caption = 'Setup columns...'
+      DisableIfNoHandler = True
+      OnExecute = acSetupColumnsExecute
+    end
   end
   object RefreshNowTimer: TTimer
     Enabled = False
@@ -1354,6 +1460,13 @@ object MainForm: TMainForm
       Default = True
       OnClick = acTorrentPropsExecute
     end
+    object MenuItem36: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem37: TMenuItem
+      Action = acSetupColumns
+      OnClick = acSetupColumnsExecute
+    end
   end
   object ApplicationProperties: TApplicationProperties
     CaptureExceptions = True
@@ -1361,6 +1474,7 @@ object MainForm: TMainForm
     HintHidePause = 2500
     HintPause = 500
     HintShortCuts = True
+    HintShortPause = 0
     ShowHint = True
     OnException = ApplicationPropertiesException
     OnIdle = ApplicationPropertiesIdle
@@ -1402,6 +1516,7 @@ object MainForm: TMainForm
     top = 57
   end
   object ImageList16: TImageList
+    Masked = False
     left = 520
     top = 60
     Bitmap = {
@@ -2124,6 +2239,7 @@ object MainForm: TMainForm
   end
   object imgFlags: TImageList
     Height = 12
+    Masked = False
     Width = 18
     left = 245
     top = 263
@@ -2172,6 +2288,10 @@ object MainForm: TMainForm
     object MenuItem31: TMenuItem
       Action = acShowCountryFlag
       OnClick = acShowCountryFlagExecute
+    end
+  end
+end
+ = acShowCountryFlagExecute
     end
   end
 end
