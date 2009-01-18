@@ -1,7 +1,8 @@
 0.94 beta (Jan ??, 2009)
 ------------------------
-[+] Implemented columns setup for torrents list.
-[+] Added the following new columns: Downloaded, Uploaded, Tracker, Tracker status, Added on, Completed on, Last active.
+[+] Columns setup for torrents list.
+[+] New columns to torrents list: Downloaded, Uploaded, Tracker, Tracker status, Added on, Completed on, Last active.
+[+] New entries on General info page: Tracker, Added on, Completed on, Last active.
 [+] Changing priority for multiple selected files.
 [*] Quicker shutdown of the application.
 [-] Buggy selection of files to download in add torrent window.

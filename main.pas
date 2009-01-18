@@ -71,6 +71,14 @@ type
     ApplicationProperties: TApplicationProperties;
     imgFlags: TImageList;
     ImageList16: TImageList;
+    txLastActive: TLabel;
+    txLastActiveLabel: TLabel;
+    txTracker: TLabel;
+    txTrackerLabel: TLabel;
+    txCompletedOn: TLabel;
+    txCompletedOnLabel: TLabel;
+    txAddedOn: TLabel;
+    txAddedOnLabel: TLabel;
     lvFilter: TListView;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
@@ -114,8 +122,9 @@ type
     txPeersLabel: TLabel;
     txSeeds: TLabel;
     txSeedsLabel: TLabel;
+    txDummy2: TLabel;
     txTrackerUpdate: TLabel;
-    txTrackerUpdateLabel: TLabel;
+    txDummy1: TLabel;
     txRemaining: TLabel;
     txRemainingLabel: TLabel;
     txStatus: TLabel;
@@ -124,6 +133,7 @@ type
     txRatioLabel: TLabel;
     txDownLimit: TLabel;
     txDownLimitLabel: TLabel;
+    txTrackerUpdateLabel: TLabel;
     txTransferHeader: TPanel;
     txUpSpeed: TLabel;
     txUpLimit: TLabel;
@@ -2527,6 +2537,7 @@ begin
   else
     s:=DateTimeToStr(UnixToDateTime(Trunc(f)) + GetTimeZoneDelta);
   txTrackerUpdate.Caption:=s;
+  txTracker.Caption:=string(FTorrents[idxTracker, idx]);
   s:=GetSeedsText(t.Integers['peersSendingToUs'], t.Integers['seeders']);
   txSeeds.Caption:=StringReplace(s, '/', ' of ', []) + ' connected';
   s:=GetPeersText(t.Integers['peersGettingFromUs'], t.Integers['peersKnown'], t.Integers['leechers']);
@@ -2534,6 +2545,7 @@ begin
   s:=StringReplace(s, '/', ' of ', []);
   txPeers.Caption:=StringReplace(s, ')', ' in swarm)', []);
   txMaxPeers.Caption:=t.Strings['maxConnectedPeers'];
+  txLastActive.Caption:=TorrentDateTimeToString(Trunc(t.Floats['activityDate']));
   panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
 
   panGeneralInfo.ChildSizing.Layout:=cclNone;
@@ -2548,6 +2560,8 @@ begin
   txPieces.Caption:=Format('%d x %s (have %d)', [t.Integers['pieceCount'], GetHumanSize(t.Floats['pieceSize']), i]);
   txHash.Caption:=t.Strings['hashString'];
   txComment.Caption:=UTF8Encode(t.Strings['comment']);
+  txAddedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['addedDate']));
+  txCompletedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['doneDate']));
   panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
 end;
 
