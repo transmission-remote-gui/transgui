@@ -97,6 +97,7 @@ begin
   finally
     Free;
   end;
+  Application.ProcessMessages;
 end;
 
 { TColSetupForm }
