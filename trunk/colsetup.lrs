@@ -1,0 +1,23 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TColSetupForm','FORMDATA',[
+  'TPF0'#13'TColSetupForm'#12'ColSetupForm'#4'Left'#3#167#1#6'Height'#3#239#0#3
+  +'Top'#3#195#0#5'Width'#3#11#1#18'HorzScrollBar.Page'#3#143#1#18'VertScrollBa'
+  +'r.Page'#3'+'#1#10'AutoScroll'#8#11'BorderIcons'#11#12'biSystemMenu'#0#11'Bo'
+  +'rderStyle'#7#8'bsDialog'#7'Caption'#6#13'Setup columns'#12'ClientHeight'#3
+  +#239#0#11'ClientWidth'#3#11#1#21'Constraints.MinHeight'#3#200#0#20'Constrain'
+  +'ts.MinWidth'#3#4#1#8'Position'#7#16'poMainFormCenter'#10'LCLVersion'#6#6'0.'
+  +'9.27'#0#13'TCheckListBox'#10'lstColumns'#4'Left'#2#8#6'Height'#3#221#0#3'To'
+  +'p'#2#8#5'Width'#3#170#0#7'Anchors'#11#5'akTop'#6'akLeft'#7'akRight'#8'akBot'
+  +'tom'#0#10'ItemHeight'#2#0#7'OnClick'#7#15'lstColumnsClick'#8'TabOrder'#2#0#0
+  +#0#7'TButton'#4'btUp'#4'Left'#3#186#0#6'Height'#2#23#3'Top'#2#8#5'Width'#2'K'
+  +#7'Anchors'#11#5'akTop'#7'akRight'#0#7'Caption'#6#2'Up'#7'OnClick'#7#9'btUpC'
+  +'lick'#8'TabOrder'#2#1#0#0#7'TButton'#6'btDown'#4'Left'#3#186#0#6'Height'#2
+  +#23#3'Top'#2'$'#5'Width'#2'K'#7'Anchors'#11#5'akTop'#7'akRight'#0#7'Caption'
+  +#6#4'Down'#7'OnClick'#7#11'btDownClick'#8'TabOrder'#2#2#0#0#7'TButton'#4'btO'
+  +'k'#4'Left'#3#186#0#6'Height'#2#23#3'Top'#3#178#0#5'Width'#2'K'#7'Anchors'#11
+  +#7'akRight'#8'akBottom'#0#7'Caption'#6#2'OK'#7'Default'#9#7'OnClick'#7#9'btO'
+  +'kClick'#8'TabOrder'#2#3#0#0#7'TButton'#8'btCancel'#4'Left'#3#186#0#6'Height'
+  +#2#23#3'Top'#3#206#0#5'Width'#2'K'#7'Anchors'#11#7'akRight'#8'akBottom'#0#6
+  +'Cancel'#9#7'Caption'#6#6'Cancel'#11'ModalResult'#2#2#8'TabOrder'#2#4#0#0#0
+]);

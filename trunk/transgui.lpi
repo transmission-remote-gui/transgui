@@ -35,7 +35,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="13">
       <Unit0>
         <Filename Value="transgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -110,6 +110,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="download"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="colsetup.pas"/>
+        <ComponentName Value="ColSetupForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ColSetup"/>
+      </Unit12>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

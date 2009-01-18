@@ -5,592 +5,376 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +'ClientHeight'#3#195#1#11'ClientWidth'#3#12#3#21'Constraints.MinHeight'#3','
   +#1#20'Constraints.MinWidth'#3','#1#4'Menu'#7#8'MainMenu'#7'OnClose'#7#9'Form'
   +'Close'#8'OnCreate'#7#10'FormCreate'#9'OnDestroy'#7#11'FormDestroy'#6'OnShow'
-  +#7#8'FormShow'#10'LCLVersion'#6#6'0.9.27'#0#6'TPanel'#6'panTop'#6'Height'#3
-  +#146#0#3'Top'#2#24#5'Width'#3#12#3#5'Align'#7#8'alClient'#12'ClientHeight'#3
-  +#146#0#11'ClientWidth'#3#12#3#21'Constraints.MinHeight'#2'2'#8'TabOrder'#2#4
-  +#0#9'TListView'#10'lvTorrents'#4'Left'#2't'#6'Height'#3#144#0#3'Top'#2#1#5'W'
-  +'idth'#3#151#2#5'Align'#7#8'alClient'#7'Columns'#14#1#7'Caption'#6#4'Name'#5
-  +'Width'#3#200#0#0#1#9'Alignment'#7#14'taRightJustify'#7'Caption'#6#4'Size'#5
-  +'Width'#2'<'#0#1#9'Alignment'#7#8'taCenter'#7'Caption'#6#4'Done'#0#1#7'Capti'
-  +'on'#6#6'Status'#5'Width'#2'F'#0#1#9'Alignment'#7#14'taRightJustify'#7'Capti'
-  +'on'#6#5'Seeds'#5'Width'#2'7'#0#1#9'Alignment'#7#14'taRightJustify'#7'Captio'
-  +'n'#6#5'Peers'#5'Width'#2'7'#0#1#9'Alignment'#7#14'taRightJustify'#7'Caption'
-  +#6#10'Down speed'#5'Width'#2'K'#0#1#9'Alignment'#7#14'taRightJustify'#7'Capt'
-  +'ion'#6#8'Up speed'#5'Width'#2'K'#0#1#7'Caption'#6#3'ETA'#5'Width'#2'P'#0#1#7
-  +'Caption'#6#5'Ratio'#0#0#21'Constraints.MinHeight'#2'2'#20'Constraints.MinWi'
-  +'dth'#2'2'#13'HideSelection'#8#9'PopupMenu'#7#10'pmTorrents'#8'ReadOnly'#9#9
-  +'RowSelect'#9#11'SmallImages'#7#11'ImageList16'#8'SortType'#7#6'stData'#8'Ta'
-  +'bOrder'#2#0#9'ViewStyle'#7#8'vsReport'#13'OnColumnClick'#7#21'lvTorrentsCol'
-  +'umnClick'#10'OnDblClick'#7#18'lvTorrentsDblClick'#8'OnResize'#7#16'lvTorren'
-  +'tsResize'#12'OnSelectItem'#7#20'lvTorrentsSelectItem'#0#0#9'TListView'#8'lv'
-  +'Filter'#4'Left'#2#1#6'Height'#3#144#0#3'Top'#2#1#5'Width'#2'n'#5'Align'#7#6
-  +'alLeft'#7'Columns'#14#1#5'Width'#2#10#0#0#20'Constraints.MinWidth'#2'2'#13
-  +'HideSelection'#8#8'ReadOnly'#9#9'RowSelect'#9#10'ScrollBars'#7#10'ssVertica'
-  +'l'#17'ShowColumnHeaders'#8#11'SmallImages'#7#11'ImageList16'#8'TabOrder'#2#1
-  +#9'ViewStyle'#7#8'vsReport'#16'OnCustomDrawItem'#7#22'lvFilterCustomDrawItem'
-  +#8'OnResize'#7#14'lvFilterResize'#12'OnSelectItem'#7#18'lvFilterSelectItem'#0
-  +#0#9'TSplitter'#9'HSplitter'#4'Left'#2'o'#6'Height'#3#144#0#3'Top'#2#1#5'Wid'
-  +'th'#2#5#8'AutoSnap'#8#7'MinSize'#2'2'#0#0#0#10'TStatusBar'#9'StatusBar'#6'H'
-  +'eight'#2#23#3'Top'#3#172#1#5'Width'#3#12#3#6'Panels'#14#1#5'Width'#3','#1#0
-  +#1#5'Width'#2'd'#0#1#5'Width'#2'd'#0#1#5'Width'#2'2'#0#0#11'SimplePanel'#8#0
-  +#0#12'TPageControl'#8'PageInfo'#6'Height'#3#253#0#3'Top'#3#175#0#5'Width'#3
-  +#12#3#10'ActivePage'#7#8'tabPeers'#5'Align'#7#8'alBottom'#21'Constraints.Min'
-  +'Height'#2'2'#6'Images'#7#11'ImageList16'#8'TabIndex'#2#1#8'TabOrder'#2#0#8
-  +'OnChange'#7#14'PageInfoChange'#13'OnPageChanged'#7#14'PageInfoChange'#0#9'T'
-  +'TabSheet'#10'tabGeneral'#7'Caption'#6#7'General'#12'ClientHeight'#3#226#0#11
-  +'ClientWidth'#3#4#3#10'ImageIndex'#2#4#0#10'TScrollBox'#9'sbGenInfo'#6'Heigh'
-  +'t'#3#200#0#3'Top'#2#26#5'Width'#3#4#3#5'Align'#7#8'alClient'#8'TabOrder'#2#0
-  +#8'OnResize'#7#15'sbGenInfoResize'#0#6'TPanel'#14'panGeneralInfo'#6'Height'#2
-  +':'#3'Top'#3#136#0#5'Width'#3#0#3#5'Align'#7#5'alTop'#10'BevelOuter'#7#6'bvN'
-  +'one'#28'ChildSizing.LeftRightSpacing'#2#4#28'ChildSizing.TopBottomSpacing'#2
-  +#4#29'ChildSizing.HorizontalSpacing'#2#16#27'ChildSizing.VerticalSpacing'#2#4
-  +#29'ChildSizing.EnlargeHorizontal'#7#24'crsHomogenousChildResize'#27'ChildSi'
-  +'zing.ControlsPerLine'#2#4#12'ClientHeight'#2':'#11'ClientWidth'#3#0#3#8'Tab'
-  +'Order'#2#0#0#6'TLabel'#18'txTorrentNameLabel'#4'Left'#2#4#6'Height'#2#14#3
-  +'Top'#2#4#5'Width'#2' '#7'Caption'#6#5'Name:'#11'ParentColor'#8#0#0#6'TLabel'
-  +#13'txTorrentName'#4'Left'#3#179#0#6'Height'#2#14#3'Top'#2#4#5'Width'#2'J'#7
-  +'Caption'#6#13'txTorrentName'#11'ParentColor'#8#0#0#6'TLabel'#14'txCreatedLa'
-  +'bel'#4'Left'#3'z'#1#6'Height'#2#14#3'Top'#2#4#5'Width'#2';'#7'Caption'#6#11
-  +'Created on:'#11'ParentColor'#8#0#0#6'TLabel'#9'txCreated'#4'Left'#3'2'#2#6
-  +'Height'#2#14#3'Top'#2#4#5'Width'#2'2'#7'Caption'#6#9'txCreated'#11'ParentCo'
-  +'lor'#8#0#0#6'TLabel'#16'txTotalSizeLabel'#4'Left'#2#4#6'Height'#2#14#3'Top'
-  +#2#22#5'Width'#2'2'#7'Caption'#6#11'Total size:'#11'ParentColor'#8#0#0#6'TLa'
-  +'bel'#11'txTotalSize'#4'Left'#3#179#0#6'Height'#2#14#3'Top'#2#22#5'Width'#2
-  +'6'#7'Caption'#6#11'txTotalSize'#11'ParentColor'#8#0#0#6'TLabel'#13'txPieces'
-  +'Label'#4'Left'#3'z'#1#6'Height'#2#14#3'Top'#2#22#5'Width'#2'#'#7'Caption'#6
-  +#7'Pieces:'#11'ParentColor'#8#0#0#6'TLabel'#8'txPieces'#4'Left'#3'2'#2#6'Hei'
-  +'ght'#2#14#3'Top'#2#22#5'Width'#2'6'#7'Caption'#6#11'txTotalSize'#11'ParentC'
-  +'olor'#8#0#0#6'TLabel'#11'txHashLabel'#4'Left'#2#4#6'Height'#2#14#3'Top'#2'('
-  +#5'Width'#2#29#7'Caption'#6#5'Hash:'#11'ParentColor'#8#0#0#6'TLabel'#6'txHas'
-  +'h'#4'Left'#3#179#0#6'Height'#2#14#3'Top'#2'('#5'Width'#2'#'#7'Caption'#6#6
-  ,'txHash'#11'ParentColor'#8#0#0#6'TLabel'#14'txCommentLabel'#4'Left'#3'z'#1#6
-  +'Height'#2#14#3'Top'#2'('#5'Width'#3#168#0#8'AutoSize'#8#7'Caption'#6#8'Comm'
-  +'ent:'#11'ParentColor'#8#0#0#6'TLabel'#9'txComment'#4'Left'#3'2'#2#6'Height'
-  +#2#14#3'Top'#2'('#5'Width'#2'8'#7'Caption'#6#9'txComment'#11'ParentColor'#8#0
-  +#0#0#6'TPanel'#11'panTransfer'#6'Height'#2'^'#3'Top'#2#21#5'Width'#3#0#3#5'A'
-  +'lign'#7#5'alTop'#10'BevelOuter'#7#6'bvNone'#28'ChildSizing.LeftRightSpacing'
-  +#2#4#28'ChildSizing.TopBottomSpacing'#2#4#29'ChildSizing.HorizontalSpacing'#2
-  +#16#27'ChildSizing.VerticalSpacing'#2#4#29'ChildSizing.EnlargeHorizontal'#7
-  +#24'crsHomogenousChildResize'#27'ChildSizing.ControlsPerLine'#2#6#12'ClientH'
-  +'eight'#2'^'#11'ClientWidth'#3#0#3#8'TabOrder'#2#1#0#6'TLabel'#13'txStatusLa'
-  +'bel'#4'Left'#2#4#6'Height'#2#14#3'Top'#2#4#5'Width'#2'$'#7'Caption'#6#7'Sta'
-  +'tus:'#11'ParentColor'#8#0#0#6'TLabel'#8'txStatus'#4'Left'#3#135#0#6'Height'
-  +#2#14#3'Top'#2#4#5'Width'#2'*'#7'Caption'#6#8'txStatus'#11'ParentColor'#8#0#0
-  +#6'TLabel'#12'txErrorLabel'#4'Left'#3#252#0#6'Height'#2#14#3'Top'#2#4#5'Widt'
-  +'h'#2#29#7'Caption'#6#6'Error:'#11'ParentColor'#8#0#0#6'TLabel'#7'txError'#4
-  +'Left'#3'q'#1#6'Height'#2#14#3'Top'#2#4#5'Width'#2'#'#7'Caption'#6#7'txError'
-  +#11'ParentColor'#8#0#0#6'TLabel'#16'txRemainingLabel'#4'Left'#3#216#1#6'Heig'
-  +'ht'#2#14#3'Top'#2#4#5'Width'#2'6'#7'Caption'#6#10'Remaining:'#11'ParentColo'
-  +'r'#8#0#0#6'TLabel'#11'txRemaining'#4'Left'#3'd'#2#6'Height'#2#14#3'Top'#2#4
-  +#5'Width'#2'<'#7'Caption'#6#11'txRemaining'#11'ParentColor'#8#0#0#6'TLabel'
-  +#17'txDownloadedLabel'#4'Left'#2#4#6'Height'#2#14#3'Top'#2#22#5'Width'#2'@'#7
-  +'Caption'#6#11'Downloaded:'#11'ParentColor'#8#0#0#6'TLabel'#12'txDownloaded'
-  +#4'Left'#3#135#0#6'Height'#2#14#3'Top'#2#22#5'Width'#2'F'#7'Caption'#6#12'tx'
-  +'Downloaded'#11'ParentColor'#8#0#0#6'TLabel'#15'txUploadedLabel'#4'Left'#3
-  +#252#0#6'Height'#2#14#3'Top'#2#22#5'Width'#2'2'#7'Caption'#6#9'Uploaded:'#11
-  +'ParentColor'#8#0#0#6'TLabel'#10'txUploaded'#4'Left'#3'q'#1#6'Height'#2#14#3
-  +'Top'#2#22#5'Width'#2'8'#7'Caption'#6#10'txUploaded'#11'ParentColor'#8#0#0#6
-  +'TLabel'#13'txWastedLabel'#4'Left'#3#216#1#6'Height'#2#14#3'Top'#2#22#5'Widt'
-  +'h'#2'*'#7'Caption'#6#7'Wasted:'#11'ParentColor'#8#0#0#6'TLabel'#8'txWasted'
-  +#4'Left'#3'd'#2#6'Height'#2#14#3'Top'#2#22#5'Width'#2'0'#7'Caption'#6#8'txWa'
-  +'sted'#11'ParentColor'#8#0#0#6'TLabel'#16'txDownSpeedLabel'#4'Left'#2#4#6'He'
-  +'ight'#2#14#3'Top'#2'('#5'Width'#2'T'#7'Caption'#6#15'Download speed:'#11'Pa'
-  +'rentColor'#8#0#0#6'TLabel'#11'txDownSpeed'#4'Left'#3#135#0#6'Height'#2#14#3
-  +'Top'#2'('#5'Width'#2'D'#7'Caption'#6#11'txDownSpeed'#11'ParentColor'#8#0#0#6
-  +'TLabel'#14'txUpSpeedLabel'#4'Left'#3#252#0#6'Height'#2#14#3'Top'#2'('#5'Wid'
-  +'th'#2'F'#7'Caption'#6#13'Upload speed:'#11'ParentColor'#8#0#0#6'TLabel'#9't'
-  +'xUpSpeed'#4'Left'#3'q'#1#6'Height'#2#14#3'Top'#2'('#5'Width'#2'6'#7'Caption'
-  +#6#9'txUpSpeed'#11'ParentColor'#8#0#0#6'TLabel'#12'txRatioLabel'#4'Left'#3
-  +#216#1#6'Height'#2#14#3'Top'#2'('#5'Width'#2':'#7'Caption'#6#12'Share ratio:'
-  +#11'ParentColor'#8#0#0#6'TLabel'#7'txRatio'#4'Left'#3'd'#2#6'Height'#2#14#3
-  +'Top'#2'('#5'Width'#2'$'#7'Caption'#6#7'txRatio'#11'ParentColor'#8#0#0#6'TLa'
-  +'bel'#16'txDownLimitLabel'#4'Left'#2#4#6'Height'#2#14#3'Top'#2':'#5'Width'#2
-  +'5'#7'Caption'#6#11'Down limit:'#11'ParentColor'#8#0#0#6'TLabel'#11'txDownLi'
-  +'mit'#4'Left'#3#135#0#6'Height'#2#14#3'Top'#2':'#5'Width'#2';'#7'Caption'#6
-  +#11'txDownLimit'#11'ParentColor'#8#0#0#6'TLabel'#14'txUpLimitLabel'#4'Left'#3
-  +#252#0#6'Height'#2#14#3'Top'#2':'#5'Width'#2''''#7'Caption'#6#9'Up limit:'#11
-  +'ParentColor'#8#0#0#6'TLabel'#9'txUpLimit'#4'Left'#3'q'#1#6'Height'#2#14#3'T'
-  +'op'#2':'#5'Width'#2'-'#7'Caption'#6#9'txUpLimit'#11'ParentColor'#8#0#0#6'TL'
-  +'abel'#20'txTrackerUpdateLabel'#4'Left'#3#216#1#6'Height'#2#14#3'Top'#2':'#5
-  +'Width'#2']'#7'Caption'#6#18'Tracker update on:'#11'ParentColor'#8#0#0#6'TLa'
-  +'bel'#15'txTrackerUpdate'#4'Left'#3'd'#2#6'Height'#2#14#3'Top'#2':'#5'Width'
-  +#2'R'#7'Caption'#6#15'txTrackerUpdate'#11'ParentColor'#8#0#0#6'TLabel'#12'tx'
-  +'SeedsLabel'#4'Left'#2#4#6'Height'#2#14#3'Top'#2'L'#5'Width'#2'"'#7'Caption'
-  +#6#6'Seeds:'#11'ParentColor'#8#0#0#6'TLabel'#7'txSeeds'#4'Left'#3#135#0#6'He'
-  +'ight'#2#14#3'Top'#2'L'#5'Width'#2'('#7'Caption'#6#7'txSeeds'#11'ParentColor'
-  +#8#0#0#6'TLabel'#12'txPeersLabel'#4'Left'#3#252#0#6'Height'#2#14#3'Top'#2'L'
-  +#5'Width'#2' '#7'Caption'#6#6'Peers:'#11'ParentColor'#8#0#0#6'TLabel'#7'txPe'
-  +'ers'#4'Left'#3'q'#1#6'Height'#2#14#3'Top'#2'L'#5'Width'#2'&'#7'Caption'#6#7
-  +'txPeers'#11'ParentColor'#8#0#0#6'TLabel'#15'txMaxPeersLabel'#4'Left'#3#216#1
-  +#6'Height'#2#14#3'Top'#2'L'#5'Width'#2'7'#7'Caption'#6#10'Max peers:'#11'Par'
-  +'entColor'#8#0#0#6'TLabel'#10'txMaxPeers'#4'Left'#3'd'#2#6'Height'#2#14#3'To'
-  +'p'#2'L'#5'Width'#2':'#7'Caption'#6#10'txMaxPeers'#11'ParentColor'#8#0#0#0#6
-  +'TPanel'#16'txTransferHeader'#4'Left'#2#2#6'Height'#2#17#3'Top'#2#2#5'Width'
-  +#3#252#2#5'Align'#7#5'alTop'#9'Alignment'#7#13'taLeftJustify'#8'AutoSize'#9
-  ,#20'BorderSpacing.Around'#2#2#10'BevelOuter'#7#6'bvNone'#7'Caption'#6#8'Tran'
-  +'sfer'#11'Font.Height'#2#243#10'Font.Style'#11#6'fsBold'#0#11'ParentColor'#8
-  +#10'ParentFont'#8#8'TabOrder'#2#2#0#0#6'TPanel'#15'txTorrentHeader'#4'Left'#2
-  +#2#6'Height'#2#17#3'Top'#2'u'#5'Width'#3#252#2#5'Align'#7#5'alTop'#9'Alignme'
-  +'nt'#7#13'taLeftJustify'#20'BorderSpacing.Around'#2#2#10'BevelOuter'#7#6'bvN'
-  +'one'#7'Caption'#6#7'Torrent'#11'Font.Height'#2#243#10'Font.Style'#11#6'fsBo'
-  +'ld'#0#11'ParentColor'#8#10'ParentFont'#8#8'TabOrder'#2#3#0#0#0#6'TPanel'#11
-  +'panProgress'#6'Height'#2#26#5'Width'#3#4#3#5'Align'#7#5'alTop'#10'BevelOute'
-  +'r'#7#6'bvNone'#12'ClientHeight'#2#26#11'ClientWidth'#3#4#3#8'TabOrder'#2#1#0
-  +#6'TLabel'#19'txDownProgressLabel'#4'Left'#2#8#6'Height'#2#26#5'Width'#2'@'#5
-  +'Align'#7#6'alLeft'#18'BorderSpacing.Left'#2#8#7'Caption'#6#11'Downloaded:'#6
-  +'Layout'#7#8'tlCenter'#11'ParentColor'#8#0#0#6'TLabel'#14'txDownProgress'#4
-  +'Left'#3#212#2#6'Height'#2#26#5'Width'#2'('#5'Align'#7#7'alRight'#9'Alignmen'
-  +'t'#7#14'taRightJustify'#7'Anchors'#11#5'akTop'#7'akRight'#0#19'BorderSpacin'
-  +'g.Right'#2#8#7'Caption'#6#6'100.0%'#6'Layout'#7#8'tlCenter'#11'ParentColor'
-  +#8#0#0#12'TProgressBar'#12'pbDownloaded'#4'Left'#2'N'#6'Height'#2#14#3'Top'#2
-  +#6#5'Width'#3#128#2#5'Align'#7#8'alClient'#7'Anchors'#11#5'akTop'#6'akLeft'#7
-  +'akRight'#0#20'BorderSpacing.Around'#2#6#3'Max'#3#232#3#6'Smooth'#9#8'TabOrd'
-  +'er'#2#0#0#0#0#0#9'TTabSheet'#8'tabPeers'#7'Caption'#6#5'Peers'#12'ClientHei'
-  +'ght'#3#226#0#11'ClientWidth'#3#4#3#10'ImageIndex'#2#6#0#9'TListView'#7'lvPe'
-  +'ers'#6'Height'#3#226#0#5'Width'#3#4#3#5'Align'#7#8'alClient'#7'Columns'#14#1
-  +#7'Caption'#6#4'Host'#5'Width'#3#150#0#0#1#7'Caption'#6#7'Country'#5'Width'#2
-  +'d'#0#1#7'Caption'#6#6'Client'#5'Width'#3#150#0#0#1#7'Caption'#6#5'Flags'#5
-  +'Width'#2'F'#0#1#9'Alignment'#7#14'taRightJustify'#7'Caption'#6#4'Have'#0#1#9
-  +'Alignment'#7#14'taRightJustify'#7'Caption'#6#8'Up speed'#5'Width'#2'P'#0#1#9
-  +'Alignment'#7#14'taRightJustify'#7'Caption'#6#10'Down speed'#5'Width'#2'P'#0
-  +#0#9'PopupMenu'#7#7'pmPeers'#8'ReadOnly'#9#9'RowSelect'#9#11'SmallImages'#7#8
-  +'imgFlags'#8'TabOrder'#2#0#9'ViewStyle'#7#8'vsReport'#0#0#0#9'TTabSheet'#8't'
-  +'abFiles'#7'Caption'#6#5'Files'#12'ClientHeight'#3#226#0#11'ClientWidth'#3#4
-  +#3#10'ImageIndex'#2#7#0#9'TListView'#7'lvFiles'#6'Height'#3#226#0#5'Width'#3
-  +#4#3#5'Align'#7#8'alClient'#7'Columns'#14#1#7'Caption'#6#9'File name'#5'Widt'
-  +'h'#3'^'#1#0#1#9'Alignment'#7#14'taRightJustify'#7'Caption'#6#4'Size'#5'Widt'
-  +'h'#2'P'#0#1#9'Alignment'#7#8'taCenter'#7'Caption'#6#4'Done'#5'Width'#2'F'#0
-  +#1#9'Alignment'#7#8'taCenter'#7'Caption'#6#1'%'#5'Width'#2'F'#0#1#7'Caption'
-  +#6#8'Priority'#5'Width'#2'd'#0#0#11'ColumnClick'#8#9'PopupMenu'#7#7'pmFiles'
-  +#8'ReadOnly'#9#9'RowSelect'#9#8'TabOrder'#2#0#9'ViewStyle'#7#8'vsReport'#0#0
-  +#0#0#9'TSplitter'#9'VSplitter'#6'Cursor'#7#8'crVSplit'#6'Height'#2#5#3'Top'#3
-  +#170#0#5'Width'#3#12#3#5'Align'#7#8'alBottom'#8'AutoSnap'#8#7'MinSize'#2'2'
-  +#12'ResizeAnchor'#7#8'akBottom'#0#0#8'TToolBar'#11'MainToolBar'#6'Height'#2
-  +#24#5'Width'#3#12#3#8'AutoSize'#9#7'Caption'#6#11'MainToolBar'#6'Images'#7#11
-  +'ImageList16'#14'ParentShowHint'#8#8'ShowHint'#9#8'TabOrder'#2#1#0#11'TToolB'
-  +'utton'#11'ToolButton1'#4'Left'#2#1#3'Top'#2#2#6'Action'#7#12'acAddTorrent'#0
-  +#0#11'TToolButton'#11'ToolButton2'#4'Left'#2#24#3'Top'#2#2#5'Width'#2#3#7'Ca'
-  +'ption'#6#11'ToolButton2'#5'Style'#7#10'tbsDivider'#0#0#11'TToolButton'#11'T'
-  +'oolButton3'#4'Left'#2#27#3'Top'#2#2#6'Action'#7#14'acStartTorrent'#0#0#11'T'
-  +'ToolButton'#11'ToolButton4'#4'Left'#2'2'#3'Top'#2#2#6'Action'#7#13'acStopTo'
-  +'rrent'#0#0#11'TToolButton'#11'ToolButton5'#4'Left'#2'L'#3'Top'#2#2#6'Action'
-  +#7#15'acRemoveTorrent'#0#0#11'TToolButton'#11'ToolButton6'#4'Left'#2'I'#3'To'
-  +'p'#2#2#5'Width'#2#3#7'Caption'#6#11'ToolButton6'#5'Style'#7#10'tbsDivider'#0
-  +#0#11'TToolButton'#11'ToolButton7'#4'Left'#2'c'#3'Top'#2#2#5'Width'#2#3#7'Ca'
-  +'ption'#6#11'ToolButton7'#5'Style'#7#10'tbsDivider'#0#0#11'TToolButton'#11'T'
-  +'oolButton8'#4'Left'#2'f'#3'Top'#2#2#6'Action'#7#15'acDaemonOptions'#0#0#0#9
-  +'TMainMenu'#8'MainMenu'#6'Images'#7#11'ImageList16'#4'left'#2'$'#3'top'#2'7'
-  +#0#9'TMenuItem'#9'miTorrent'#7'Caption'#6#7'Torrent'#0#9'TMenuItem'#9'miConn'
-  +'ect'#6'Action'#7#9'acConnect'#11'Bitmap.Data'#10':'#4#0#0'6'#4#0#0'BM6'#4#0
-  +#0#0#0#0#0'6'#0#0#0'('#0#0#0#16#0#0#0#16#0#0#0#1#0' '#0#0#0#0#0#0#4#0#0'd'#0
-  +#0#0'd'#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#7#8'FormShow'#10'LCLVersion'#6#6'0.9.27'#0#6'TPanel'#6'panTop'#4'Left'#2#0#6
+  +'Height'#3#146#0#3'Top'#2#24#5'Width'#3#12#3#5'Align'#7#8'alClient'#12'Clien'
+  +'tHeight'#3#146#0#11'ClientWidth'#3#12#3#21'Constraints.MinHeight'#2'2'#8'Ta'
+  +'bOrder'#2#4#0#9'TListView'#10'lvTorrents'#4'Left'#2't'#6'Height'#3#144#0#3
+  +'Top'#2#1#5'Width'#3#151#2#5'Align'#7#8'alClient'#7'Columns'#14#1#8'AutoSize'
+  +#8#7'Caption'#6#4'Name'#5'Width'#3#200#0#0#1#9'Alignment'#7#14'taRightJustif'
+  +'y'#8'AutoSize'#8#7'Caption'#6#4'Size'#5'Width'#2'<'#0#1#9'Alignment'#7#8'ta'
+  +'Center'#8'AutoSize'#8#7'Caption'#6#4'Done'#0#1#8'AutoSize'#8#7'Caption'#6#6
+  +'Status'#5'Width'#2'F'#0#1#9'Alignment'#7#14'taRightJustify'#8'AutoSize'#8#7
+  +'Caption'#6#5'Seeds'#5'Width'#2'7'#0#1#9'Alignment'#7#14'taRightJustify'#8'A'
+  +'utoSize'#8#7'Caption'#6#5'Peers'#5'Width'#2'7'#0#1#9'Alignment'#7#14'taRigh'
+  +'tJustify'#8'AutoSize'#8#7'Caption'#6#10'Down speed'#5'Width'#2'K'#0#1#9'Ali'
+  +'gnment'#7#14'taRightJustify'#8'AutoSize'#8#7'Caption'#6#8'Up speed'#5'Width'
+  +#2'K'#0#1#8'AutoSize'#8#7'Caption'#6#3'ETA'#5'Width'#2'P'#0#1#8'AutoSize'#8#7
+  +'Caption'#6#5'Ratio'#0#1#9'Alignment'#7#14'taRightJustify'#8'AutoSize'#8#7'C'
+  +'aption'#6#10'Downloaded'#7'Visible'#8#5'Width'#2'<'#0#1#9'Alignment'#7#14't'
+  +'aRightJustify'#8'AutoSize'#8#7'Caption'#6#8'Uploaded'#7'Visible'#8#5'Width'
+  +#2'<'#0#1#8'AutoSize'#8#7'Caption'#6#7'Tracker'#7'Visible'#8#5'Width'#2'd'#0
+  +#1#8'AutoSize'#8#7'Caption'#6#14'Tracker status'#7'Visible'#8#5'Width'#2'd'#0
+  +#1#8'AutoSize'#8#7'Caption'#6#8'Added on'#7'Visible'#8#5'Width'#2'F'#0#1#8'A'
+  +'utoSize'#8#7'Caption'#6#12'Completed on'#7'Visible'#8#5'Width'#2'F'#0#1#8'A'
+  +'utoSize'#8#7'Caption'#6#11'Last active'#7'Visible'#8#5'Width'#2'F'#0#0#21'C'
+  +'onstraints.MinHeight'#2'2'#20'Constraints.MinWidth'#2'2'#13'HideSelection'#8
+  +#9'PopupMenu'#7#10'pmTorrents'#8'ReadOnly'#9#9'RowSelect'#9#11'SmallImages'#7
+  +#11'ImageList16'#10'SortColumn'#2#0#8'SortType'#7#6'stData'#8'TabOrder'#2#0#9
+  +'ViewStyle'#7#8'vsReport'#13'OnColumnClick'#7#21'lvTorrentsColumnClick'#10'O'
+  +'nDblClick'#7#18'lvTorrentsDblClick'#8'OnResize'#7#16'lvTorrentsResize'#12'O'
+  +'nSelectItem'#7#20'lvTorrentsSelectItem'#0#0#9'TListView'#8'lvFilter'#4'Left'
+  +#2#1#6'Height'#3#144#0#3'Top'#2#1#5'Width'#2'n'#5'Align'#7#6'alLeft'#7'Colum'
+  +'ns'#14#1#8'AutoSize'#8#5'Width'#2#10#0#0#20'Constraints.MinWidth'#2'2'#13'H'
+  +'ideSelection'#8#8'ReadOnly'#9#9'RowSelect'#9#10'ScrollBars'#7#10'ssVertical'
+  +#17'ShowColumnHeaders'#8#11'SmallImages'#7#11'ImageList16'#10'SortColumn'#2#0
+  +#8'SortType'#7#6'stNone'#8'TabOrder'#2#1#9'ViewStyle'#7#8'vsReport'#16'OnCus'
+  +'tomDrawItem'#7#22'lvFilterCustomDrawItem'#8'OnResize'#7#14'lvFilterResize'
+  +#12'OnSelectItem'#7#18'lvFilterSelectItem'#0#0#9'TSplitter'#9'HSplitter'#4'L'
+  +'eft'#2'o'#6'Height'#3#144#0#3'Top'#2#1#5'Width'#2#5#8'AutoSnap'#8#7'MinSize'
+  +#2'2'#0#0#0#10'TStatusBar'#9'StatusBar'#4'Left'#2#0#6'Height'#2#23#3'Top'#3
+  +#172#1#5'Width'#3#12#3#6'Panels'#14#1#5'Width'#3','#1#0#1#5'Width'#2'd'#0#1#5
+  +'Width'#2'd'#0#1#5'Width'#2'2'#0#0#11'SimplePanel'#8#0#0#12'TPageControl'#8
+  +'PageInfo'#4'Left'#2#0#6'Height'#3#253#0#3'Top'#3#175#0#5'Width'#3#12#3#10'A'
+  +'ctivePage'#7#8'tabPeers'#5'Align'#7#8'alBottom'#21'Constraints.MinHeight'#2
+  +'2'#6'Images'#7#11'ImageList16'#8'TabIndex'#2#1#8'TabOrder'#2#0#8'OnChange'#7
+  +#14'PageInfoChange'#13'OnPageChanged'#7#14'PageInfoChange'#0#9'TTabSheet'#10
+  +'tabGeneral'#7'Caption'#6#7'General'#12'ClientHeight'#3#226#0#11'ClientWidth'
+  +#3#4#3#10'ImageIndex'#2#4#0#10'TScrollBox'#9'sbGenInfo'#4'Left'#2#0#6'Height'
+  +#3#200#0#3'Top'#2#26#5'Width'#3#4#3#5'Align'#7#8'alClient'#5'Ctl3D'#8#8'TabO'
+  +'rder'#2#0#8'OnResize'#7#15'sbGenInfoResize'#0#6'TPanel'#14'panGeneralInfo'#4
+  +'Left'#2#0#6'Height'#2':'#3'Top'#3#136#0#5'Width'#3#0#3#5'Align'#7#5'alTop'
+  +#10'BevelOuter'#7#6'bvNone'#28'ChildSizing.LeftRightSpacing'#2#4#28'ChildSiz'
+  +'ing.TopBottomSpacing'#2#4#29'ChildSizing.HorizontalSpacing'#2#16#27'ChildSi'
+  +'zing.VerticalSpacing'#2#4#29'ChildSizing.EnlargeHorizontal'#7#24'crsHomogen'
+  +'ousChildResize'#27'ChildSizing.ControlsPerLine'#2#4#12'ClientHeight'#2':'#11
+  +'ClientWidth'#3#0#3#8'TabOrder'#2#0#0#6'TLabel'#18'txTorrentNameLabel'#4'Lef'
+  +'t'#2#4#6'Height'#2#14#3'Top'#2#4#5'Width'#2' '#7'Caption'#6#5'Name:'#11'Par'
+  +'entColor'#8#0#0#6'TLabel'#13'txTorrentName'#4'Left'#3#179#0#6'Height'#2#14#3
+  +'Top'#2#4#5'Width'#2'J'#7'Caption'#6#13'txTorrentName'#11'ParentColor'#8#0#0
+  +#6'TLabel'#14'txCreatedLabel'#4'Left'#3'z'#1#6'Height'#2#14#3'Top'#2#4#5'Wid'
+  +'th'#2';'#7'Caption'#6#11'Created on:'#11'ParentColor'#8#0#0#6'TLabel'#9'txC'
+  ,'reated'#4'Left'#3'2'#2#6'Height'#2#14#3'Top'#2#4#5'Width'#2'2'#7'Caption'#6
+  +#9'txCreated'#11'ParentColor'#8#0#0#6'TLabel'#16'txTotalSizeLabel'#4'Left'#2
+  +#4#6'Height'#2#14#3'Top'#2#22#5'Width'#2'2'#7'Caption'#6#11'Total size:'#11
+  +'ParentColor'#8#0#0#6'TLabel'#11'txTotalSize'#4'Left'#3#179#0#6'Height'#2#14
+  +#3'Top'#2#22#5'Width'#2'6'#7'Caption'#6#11'txTotalSize'#11'ParentColor'#8#0#0
+  +#6'TLabel'#13'txPiecesLabel'#4'Left'#3'z'#1#6'Height'#2#14#3'Top'#2#22#5'Wid'
+  +'th'#2'#'#7'Caption'#6#7'Pieces:'#11'ParentColor'#8#0#0#6'TLabel'#8'txPieces'
+  +#4'Left'#3'2'#2#6'Height'#2#14#3'Top'#2#22#5'Width'#2'6'#7'Caption'#6#11'txT'
+  +'otalSize'#11'ParentColor'#8#0#0#6'TLabel'#11'txHashLabel'#4'Left'#2#4#6'Hei'
+  +'ght'#2#14#3'Top'#2'('#5'Width'#2#29#7'Caption'#6#5'Hash:'#11'ParentColor'#8
+  +#0#0#6'TLabel'#6'txHash'#4'Left'#3#179#0#6'Height'#2#14#3'Top'#2'('#5'Width'
+  +#2'#'#7'Caption'#6#6'txHash'#11'ParentColor'#8#0#0#6'TLabel'#14'txCommentLab'
+  +'el'#4'Left'#3'z'#1#6'Height'#2#14#3'Top'#2'('#5'Width'#3#168#0#8'AutoSize'#8
+  +#7'Caption'#6#8'Comment:'#11'ParentColor'#8#0#0#6'TLabel'#9'txComment'#4'Lef'
+  +'t'#3'2'#2#6'Height'#2#14#3'Top'#2'('#5'Width'#2'8'#7'Caption'#6#9'txComment'
+  +#11'ParentColor'#8#0#0#0#6'TPanel'#11'panTransfer'#4'Left'#2#0#6'Height'#2'^'
+  +#3'Top'#2#21#5'Width'#3#0#3#5'Align'#7#5'alTop'#10'BevelOuter'#7#6'bvNone'#28
+  +'ChildSizing.LeftRightSpacing'#2#4#28'ChildSizing.TopBottomSpacing'#2#4#29'C'
+  +'hildSizing.HorizontalSpacing'#2#16#27'ChildSizing.VerticalSpacing'#2#4#29'C'
+  +'hildSizing.EnlargeHorizontal'#7#24'crsHomogenousChildResize'#27'ChildSizing'
+  +'.ControlsPerLine'#2#6#12'ClientHeight'#2'^'#11'ClientWidth'#3#0#3#8'TabOrde'
+  +'r'#2#1#0#6'TLabel'#13'txStatusLabel'#4'Left'#2#4#6'Height'#2#14#3'Top'#2#4#5
+  +'Width'#2'$'#7'Caption'#6#7'Status:'#11'ParentColor'#8#0#0#6'TLabel'#8'txSta'
+  +'tus'#4'Left'#3#135#0#6'Height'#2#14#3'Top'#2#4#5'Width'#2'*'#7'Caption'#6#8
+  +'txStatus'#11'ParentColor'#8#0#0#6'TLabel'#12'txErrorLabel'#4'Left'#3#252#0#6
+  +'Height'#2#14#3'Top'#2#4#5'Width'#2#29#7'Caption'#6#6'Error:'#11'ParentColor'
+  +#8#0#0#6'TLabel'#7'txError'#4'Left'#3'q'#1#6'Height'#2#14#3'Top'#2#4#5'Width'
+  +#2'#'#7'Caption'#6#7'txError'#11'ParentColor'#8#0#0#6'TLabel'#16'txRemaining'
+  +'Label'#4'Left'#3#216#1#6'Height'#2#14#3'Top'#2#4#5'Width'#2'6'#7'Caption'#6
+  +#10'Remaining:'#11'ParentColor'#8#0#0#6'TLabel'#11'txRemaining'#4'Left'#3'd'
+  +#2#6'Height'#2#14#3'Top'#2#4#5'Width'#2'<'#7'Caption'#6#11'txRemaining'#11'P'
+  +'arentColor'#8#0#0#6'TLabel'#17'txDownloadedLabel'#4'Left'#2#4#6'Height'#2#14
+  +#3'Top'#2#22#5'Width'#2'@'#7'Caption'#6#11'Downloaded:'#11'ParentColor'#8#0#0
+  +#6'TLabel'#12'txDownloaded'#4'Left'#3#135#0#6'Height'#2#14#3'Top'#2#22#5'Wid'
+  +'th'#2'F'#7'Caption'#6#12'txDownloaded'#11'ParentColor'#8#0#0#6'TLabel'#15't'
+  +'xUploadedLabel'#4'Left'#3#252#0#6'Height'#2#14#3'Top'#2#22#5'Width'#2'2'#7
+  +'Caption'#6#9'Uploaded:'#11'ParentColor'#8#0#0#6'TLabel'#10'txUploaded'#4'Le'
+  +'ft'#3'q'#1#6'Height'#2#14#3'Top'#2#22#5'Width'#2'8'#7'Caption'#6#10'txUploa'
+  +'ded'#11'ParentColor'#8#0#0#6'TLabel'#13'txWastedLabel'#4'Left'#3#216#1#6'He'
+  +'ight'#2#14#3'Top'#2#22#5'Width'#2'*'#7'Caption'#6#7'Wasted:'#11'ParentColor'
+  +#8#0#0#6'TLabel'#8'txWasted'#4'Left'#3'd'#2#6'Height'#2#14#3'Top'#2#22#5'Wid'
+  +'th'#2'0'#7'Caption'#6#8'txWasted'#11'ParentColor'#8#0#0#6'TLabel'#16'txDown'
+  +'SpeedLabel'#4'Left'#2#4#6'Height'#2#14#3'Top'#2'('#5'Width'#2'T'#7'Caption'
+  +#6#15'Download speed:'#11'ParentColor'#8#0#0#6'TLabel'#11'txDownSpeed'#4'Lef'
+  +'t'#3#135#0#6'Height'#2#14#3'Top'#2'('#5'Width'#2'D'#7'Caption'#6#11'txDownS'
+  +'peed'#11'ParentColor'#8#0#0#6'TLabel'#14'txUpSpeedLabel'#4'Left'#3#252#0#6
+  +'Height'#2#14#3'Top'#2'('#5'Width'#2'F'#7'Caption'#6#13'Upload speed:'#11'Pa'
+  +'rentColor'#8#0#0#6'TLabel'#9'txUpSpeed'#4'Left'#3'q'#1#6'Height'#2#14#3'Top'
+  +#2'('#5'Width'#2'6'#7'Caption'#6#9'txUpSpeed'#11'ParentColor'#8#0#0#6'TLabel'
+  +#12'txRatioLabel'#4'Left'#3#216#1#6'Height'#2#14#3'Top'#2'('#5'Width'#2':'#7
+  +'Caption'#6#12'Share ratio:'#11'ParentColor'#8#0#0#6'TLabel'#7'txRatio'#4'Le'
+  +'ft'#3'd'#2#6'Height'#2#14#3'Top'#2'('#5'Width'#2'$'#7'Caption'#6#7'txRatio'
+  +#11'ParentColor'#8#0#0#6'TLabel'#16'txDownLimitLabel'#4'Left'#2#4#6'Height'#2
+  +#14#3'Top'#2':'#5'Width'#2'5'#7'Caption'#6#11'Down limit:'#11'ParentColor'#8
+  +#0#0#6'TLabel'#11'txDownLimit'#4'Left'#3#135#0#6'Height'#2#14#3'Top'#2':'#5
+  +'Width'#2';'#7'Caption'#6#11'txDownLimit'#11'ParentColor'#8#0#0#6'TLabel'#14
+  +'txUpLimitLabel'#4'Left'#3#252#0#6'Height'#2#14#3'Top'#2':'#5'Width'#2''''#7
+  +'Caption'#6#9'Up limit:'#11'ParentColor'#8#0#0#6'TLabel'#9'txUpLimit'#4'Left'
+  +#3'q'#1#6'Height'#2#14#3'Top'#2':'#5'Width'#2'-'#7'Caption'#6#9'txUpLimit'#11
+  +'ParentColor'#8#0#0#6'TLabel'#20'txTrackerUpdateLabel'#4'Left'#3#216#1#6'Hei'
+  +'ght'#2#14#3'Top'#2':'#5'Width'#2']'#7'Caption'#6#18'Tracker update on:'#11
+  +'ParentColor'#8#0#0#6'TLabel'#15'txTrackerUpdate'#4'Left'#3'd'#2#6'Height'#2
+  +#14#3'Top'#2':'#5'Width'#2'R'#7'Caption'#6#15'txTrackerUpdate'#11'ParentColo'
+  +'r'#8#0#0#6'TLabel'#12'txSeedsLabel'#4'Left'#2#4#6'Height'#2#14#3'Top'#2'L'#5
+  ,'Width'#2'"'#7'Caption'#6#6'Seeds:'#11'ParentColor'#8#0#0#6'TLabel'#7'txSeed'
+  +'s'#4'Left'#3#135#0#6'Height'#2#14#3'Top'#2'L'#5'Width'#2'('#7'Caption'#6#7
+  +'txSeeds'#11'ParentColor'#8#0#0#6'TLabel'#12'txPeersLabel'#4'Left'#3#252#0#6
+  +'Height'#2#14#3'Top'#2'L'#5'Width'#2' '#7'Caption'#6#6'Peers:'#11'ParentColo'
+  +'r'#8#0#0#6'TLabel'#7'txPeers'#4'Left'#3'q'#1#6'Height'#2#14#3'Top'#2'L'#5'W'
+  +'idth'#2'&'#7'Caption'#6#7'txPeers'#11'ParentColor'#8#0#0#6'TLabel'#15'txMax'
+  +'PeersLabel'#4'Left'#3#216#1#6'Height'#2#14#3'Top'#2'L'#5'Width'#2'7'#7'Capt'
+  +'ion'#6#10'Max peers:'#11'ParentColor'#8#0#0#6'TLabel'#10'txMaxPeers'#4'Left'
+  +#3'd'#2#6'Height'#2#14#3'Top'#2'L'#5'Width'#2':'#7'Caption'#6#10'txMaxPeers'
+  +#11'ParentColor'#8#0#0#0#6'TPanel'#16'txTransferHeader'#4'Left'#2#2#6'Height'
+  +#2#17#3'Top'#2#2#5'Width'#3#252#2#5'Align'#7#5'alTop'#9'Alignment'#7#13'taLe'
+  +'ftJustify'#8'AutoSize'#9#20'BorderSpacing.Around'#2#2#10'BevelOuter'#7#6'bv'
+  +'None'#7'Caption'#6#8'Transfer'#11'Font.Height'#2#243#10'Font.Style'#11#6'fs'
+  +'Bold'#0#11'ParentColor'#8#10'ParentFont'#8#8'TabOrder'#2#2#0#0#6'TPanel'#15
+  +'txTorrentHeader'#4'Left'#2#2#6'Height'#2#17#3'Top'#2'u'#5'Width'#3#252#2#5
+  +'Align'#7#5'alTop'#9'Alignment'#7#13'taLeftJustify'#20'BorderSpacing.Around'
+  +#2#2#10'BevelOuter'#7#6'bvNone'#7'Caption'#6#7'Torrent'#11'Font.Height'#2#243
+  +#10'Font.Style'#11#6'fsBold'#0#11'ParentColor'#8#10'ParentFont'#8#8'TabOrder'
+  +#2#3#0#0#0#6'TPanel'#11'panProgress'#4'Left'#2#0#6'Height'#2#26#3'Top'#2#0#5
+  +'Width'#3#4#3#5'Align'#7#5'alTop'#10'BevelOuter'#7#6'bvNone'#12'ClientHeight'
+  +#2#26#11'ClientWidth'#3#4#3#8'TabOrder'#2#1#0#6'TLabel'#19'txDownProgressLab'
+  +'el'#4'Left'#2#8#6'Height'#2#26#3'Top'#2#0#5'Width'#2'@'#5'Align'#7#6'alLeft'
+  +#18'BorderSpacing.Left'#2#8#7'Caption'#6#11'Downloaded:'#6'Layout'#7#8'tlCen'
+  +'ter'#11'ParentColor'#8#0#0#6'TLabel'#14'txDownProgress'#4'Left'#3#212#2#6'H'
+  +'eight'#2#26#3'Top'#2#0#5'Width'#2'('#5'Align'#7#7'alRight'#9'Alignment'#7#14
+  +'taRightJustify'#7'Anchors'#11#5'akTop'#7'akRight'#0#19'BorderSpacing.Right'
+  +#2#8#7'Caption'#6#6'100.0%'#6'Layout'#7#8'tlCenter'#11'ParentColor'#8#0#0#12
+  +'TProgressBar'#12'pbDownloaded'#4'Left'#2'N'#6'Height'#2#14#3'Top'#2#6#5'Wid'
+  +'th'#3#128#2#5'Align'#7#8'alClient'#7'Anchors'#11#5'akTop'#6'akLeft'#7'akRig'
+  +'ht'#0#20'BorderSpacing.Around'#2#6#3'Max'#3#232#3#6'Smooth'#9#8'TabOrder'#2
+  +#0#0#0#0#0#9'TTabSheet'#8'tabPeers'#7'Caption'#6#5'Peers'#12'ClientHeight'#3
+  +#226#0#11'ClientWidth'#3#4#3#10'ImageIndex'#2#6#0#9'TListView'#7'lvPeers'#4
+  +'Left'#2#0#6'Height'#3#226#0#3'Top'#2#0#5'Width'#3#4#3#5'Align'#7#8'alClient'
+  +#7'Columns'#14#1#8'AutoSize'#8#7'Caption'#6#4'Host'#5'Width'#3#150#0#0#1#8'A'
+  +'utoSize'#8#7'Caption'#6#7'Country'#5'Width'#2'd'#0#1#8'AutoSize'#8#7'Captio'
+  +'n'#6#6'Client'#5'Width'#3#150#0#0#1#8'AutoSize'#8#7'Caption'#6#5'Flags'#5'W'
+  +'idth'#2'F'#0#1#9'Alignment'#7#14'taRightJustify'#8'AutoSize'#8#7'Caption'#6
+  +#4'Have'#0#1#9'Alignment'#7#14'taRightJustify'#8'AutoSize'#8#7'Caption'#6#8
+  +'Up speed'#5'Width'#2'P'#0#1#9'Alignment'#7#14'taRightJustify'#8'AutoSize'#8
+  +#7'Caption'#6#10'Down speed'#5'Width'#2'P'#0#0#9'PopupMenu'#7#7'pmPeers'#8'R'
+  +'eadOnly'#9#9'RowSelect'#9#11'SmallImages'#7#8'imgFlags'#10'SortColumn'#2#0#8
+  +'SortType'#7#6'stNone'#8'TabOrder'#2#0#9'ViewStyle'#7#8'vsReport'#0#0#0#9'TT'
+  +'abSheet'#8'tabFiles'#7'Caption'#6#5'Files'#12'ClientHeight'#3#226#0#11'Clie'
+  +'ntWidth'#3#4#3#10'ImageIndex'#2#7#0#9'TListView'#7'lvFiles'#4'Left'#2#0#6'H'
+  +'eight'#3#226#0#3'Top'#2#0#5'Width'#3#4#3#5'Align'#7#8'alClient'#7'Columns'
+  +#14#1#8'AutoSize'#8#7'Caption'#6#9'File name'#5'Width'#3'^'#1#0#1#9'Alignmen'
+  +'t'#7#14'taRightJustify'#8'AutoSize'#8#7'Caption'#6#4'Size'#5'Width'#2'P'#0#1
+  +#9'Alignment'#7#8'taCenter'#8'AutoSize'#8#7'Caption'#6#4'Done'#5'Width'#2'F'
+  +#0#1#9'Alignment'#7#8'taCenter'#8'AutoSize'#8#7'Caption'#6#1'%'#5'Width'#2'F'
+  +#0#1#8'AutoSize'#8#7'Caption'#6#8'Priority'#5'Width'#2'd'#0#0#11'ColumnClick'
+  +#8#9'PopupMenu'#7#7'pmFiles'#8'ReadOnly'#9#9'RowSelect'#9#10'SortColumn'#2#0
+  +#8'SortType'#7#6'stNone'#8'TabOrder'#2#0#9'ViewStyle'#7#8'vsReport'#0#0#0#0#9
+  +'TSplitter'#9'VSplitter'#6'Cursor'#7#8'crVSplit'#4'Left'#2#0#6'Height'#2#5#3
+  +'Top'#3#170#0#5'Width'#3#12#3#5'Align'#7#8'alBottom'#8'AutoSnap'#8#7'MinSize'
+  +#2'2'#12'ResizeAnchor'#7#8'akBottom'#0#0#8'TToolBar'#11'MainToolBar'#4'Left'
+  +#2#0#6'Height'#2#24#3'Top'#2#0#5'Width'#3#12#3#8'AutoSize'#9#7'Caption'#6#11
+  +'MainToolBar'#5'Ctl3D'#8#6'Images'#7#11'ImageList16'#14'ParentShowHint'#8#8
+  +'ShowHint'#9#8'TabOrder'#2#1#0#11'TToolButton'#11'ToolButton1'#4'Left'#2#1#3
+  +'Top'#2#2#6'Action'#7#12'acAddTorrent'#0#0#11'TToolButton'#11'ToolButton2'#4
+  +'Left'#2#24#3'Top'#2#2#5'Width'#2#3#7'Caption'#6#11'ToolButton2'#5'Style'#7
+  +#10'tbsDivider'#0#0#11'TToolButton'#11'ToolButton3'#4'Left'#2#27#3'Top'#2#2#6
+  +'Action'#7#14'acStartTorrent'#0#0#11'TToolButton'#11'ToolButton4'#4'Left'#2
+  +'2'#3'Top'#2#2#6'Action'#7#13'acStopTorrent'#0#0#11'TToolButton'#11'ToolButt'
+  +'on5'#4'Left'#2'L'#3'Top'#2#2#6'Action'#7#15'acRemoveTorrent'#0#0#11'TToolBu'
+  ,'tton'#11'ToolButton6'#4'Left'#2'I'#3'Top'#2#2#5'Width'#2#3#7'Caption'#6#11
+  +'ToolButton6'#5'Style'#7#10'tbsDivider'#0#0#11'TToolButton'#11'ToolButton7'#4
+  +'Left'#2'c'#3'Top'#2#2#5'Width'#2#3#7'Caption'#6#11'ToolButton7'#5'Style'#7
+  +#10'tbsDivider'#0#0#11'TToolButton'#11'ToolButton8'#4'Left'#2'f'#3'Top'#2#2#6
+  +'Action'#7#15'acDaemonOptions'#0#0#0#9'TMainMenu'#8'MainMenu'#6'Images'#7#11
+  +'ImageList16'#4'left'#2'$'#3'top'#2'7'#0#9'TMenuItem'#9'miTorrent'#7'Caption'
+  +#6#7'Torrent'#0#9'TMenuItem'#9'miConnect'#6'Action'#7#9'acConnect'#11'Bitmap'
+  +'.Data'#10':'#4#0#0'6'#4#0#0'BM6'#4#0#0#0#0#0#0'6'#0#0#0'('#0#0#0#16#0#0#0#16
+  +#0#0#0#1#0' '#0#0#0#0#0#0#4#0#0'd'#0#0#0'd'#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
   +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
   +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#255#0#0#0#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255'ff'#0#255'ff'#0
-  +#255#0#0#0#255#0#0#0#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#255#0#0#0#255#0#0#0#255'ff'#0#255#128#128#0#255#128#128#0
-  +#255#128#128#0#255#128#128#0#255#0#0#0#255#0#0#0#255#0#0#0#0#0#0#0#0#0#0#0#0
-  ,#0#0#0#0#0#0#0#0#0#0#0#255#134#134#134#255#134#134#134#255#0#0#0#255#0'ff'
-  +#255#0#128#128#255#0#128#128#255#192#192#192#255#192#192#192#255#128#128#0
-  +#255#128#128#0#255#0#0#0#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255#134#134#134
-  +#255#192#192#192#255#248#248#248#255#0#0#0#255#0#0#0#255#0#255#255#255#0#255
-  +#255#255#0#128#128#255#215#215#215#255#248#248#248#255#248#248#248#255#128
-  +#128#0#255#0#0#0#0#0#0#0#0#0#0#0#255#134#134#134#255#192#192#192#255#248#248
-  +#248#255#192#192#192#255#178#178#178#255#134#134#134#255#0#0#0#255#0#0#0#255
-  +#192#192#192#255#215#215#215#255#248#248#248#255#128#128#0#255#0#0#0#0#0#0#0
-  +#0#0#0#0#255#134#134#134#255#192#192#192#255#248#248#248#255#192#192#192#255
-  +#192#192#192#255#192#192#192#255#178#178#178#255#164#160#160#255#134#134#134
-  +#255#0#0#0#255#0#0#0#255#192#192#192#255#0#0#0#255#0#0#0#0#0#0#0#255#134#134
-  +#134#255#192#192#192#255#248#248#248#255#221#221#221#255#221#221#221#255#192
-  +#192#192#255#178#178#178#255#192#192#192#255#178#178#178#255#178#178#178#255
-  +#134#134#134#255#134#134#134#255#0#0#0#255#0#0#0#255#0#0#0#0#134#134#134#255
-  +#192#192#192#255#248#248#248#255#134#134#134#255#134#134#134#255#192#192#192
-  +#255#192#192#192#255#192#192#192#255#178#178#178#255#178#178#178#255#178#178
-  +#178#255#164#160#160#255#164#160#160#255#134#134#134#255#134#134#134#255#0#0
-  +#0#0#134#134#134#255#248#248#248#255#221#221#221#255#221#221#221#255#192#192
-  +#192#255#134#134#134#255#134#134#134#255#178#178#178#255#192#192#192#255#178
-  +#178#178#255#178#178#178#255#178#178#178#255#164#160#160#255#164#160#160#255
-  +#134#134#134#255#0#0#0#0#0#0#0#0#134#134#134#255#134#134#134#255#221#221#221
-  +#255#221#221#221#255#204#204#204#255#204#204#204#255#134#134#134#255#134#134
-  +#134#255#178#178#178#255#178#178#178#255#164#160#160#255#164#160#160#255#134
-  +#134#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#134#134#134#255#134#134
-  +#134#255#221#221#221#255#204#204#204#255#204#204#204#255#192#192#192#255#134
-  +#134#134#255#134#134#134#255#178#178#178#255#134#134#134#255#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255#134#134#134#255#0#0#0#0#134#134#134#255
-  +#134#134#134#255#204#204#204#255#204#204#204#255#192#192#192#255#192#192#192
-  +#255#134#134#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255#134
-  +#134#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#134#134#134#255#134#134#134#255
-  +#204#204#204#255#134#134#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#255#134#134#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#134#134#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#7'OnClick'
-  +#7#16'acConnectExecute'#0#0#9'TMenuItem'#9'MenuItem3'#7'Caption'#6#1'-'#0#0#9
-  +'TMenuItem'#9'MenuItem2'#6'Action'#7#12'acAddTorrent'#11'Bitmap.Data'#10':'#4
-  +#0#0'6'#4#0#0'BM6'#4#0#0#0#0#0#0'6'#0#0#0'('#0#0#0#16#0#0#0#16#0#0#0#1#0' '#0
-  +#0#0#0#0#0#4#0#0'd'#0#0#0'd'#0#0#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255#0#0#0#255#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#255'ff'#0#255'ff'#0#255#0#0#0#255#0#0#0#255#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255#0#0#0#255#0#0#0#255
+  +'ff'#0#255#128#128#0#255#128#128#0#255#128#128#0#255#128#128#0#255#0#0#0#255
+  +#0#0#0#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255#134#134#134#255
+  +#134#134#134#255#0#0#0#255#0'ff'#255#0#128#128#255#0#128#128#255#192#192#192
+  +#255#192#192#192#255#128#128#0#255#128#128#0#255#0#0#0#255#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#255#134#134#134#255#192#192#192#255#248#248#248#255#0#0#0#255#0
+  +#0#0#255#0#255#255#255#0#255#255#255#0#128#128#255#215#215#215#255#248#248
+  +#248#255#248#248#248#255#128#128#0#255#0#0#0#0#0#0#0#0#0#0#0#255#134#134#134
+  +#255#192#192#192#255#248#248#248#255#192#192#192#255#178#178#178#255#134#134
+  +#134#255#0#0#0#255#0#0#0#255#192#192#192#255#215#215#215#255#248#248#248#255
+  +#128#128#0#255#0#0#0#0#0#0#0#0#0#0#0#255#134#134#134#255#192#192#192#255#248
+  +#248#248#255#192#192#192#255#192#192#192#255#192#192#192#255#178#178#178#255
+  +#164#160#160#255#134#134#134#255#0#0#0#255#0#0#0#255#192#192#192#255#0#0#0
+  +#255#0#0#0#0#0#0#0#255#134#134#134#255#192#192#192#255#248#248#248#255#221
+  +#221#221#255#221#221#221#255#192#192#192#255#178#178#178#255#192#192#192#255
+  +#178#178#178#255#178#178#178#255#134#134#134#255#134#134#134#255#0#0#0#255#0
+  +#0#0#255#0#0#0#0#134#134#134#255#192#192#192#255#248#248#248#255#134#134#134
+  +#255#134#134#134#255#192#192#192#255#192#192#192#255#192#192#192#255#178#178
+  +#178#255#178#178#178#255#178#178#178#255#164#160#160#255#164#160#160#255#134
+  +#134#134#255#134#134#134#255#0#0#0#0#134#134#134#255#248#248#248#255#221#221
+  +#221#255#221#221#221#255#192#192#192#255#134#134#134#255#134#134#134#255#178
+  +#178#178#255#192#192#192#255#178#178#178#255#178#178#178#255#178#178#178#255
+  +#164#160#160#255#164#160#160#255#134#134#134#255#0#0#0#0#0#0#0#0#134#134#134
+  +#255#134#134#134#255#221#221#221#255#221#221#221#255#204#204#204#255#204#204
+  +#204#255#134#134#134#255#134#134#134#255#178#178#178#255#178#178#178#255#164
+  +#160#160#255#164#160#160#255#134#134#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#134#134#134#255#134#134#134#255#221#221#221#255#204#204#204#255#204
+  +#204#204#255#192#192#192#255#134#134#134#255#134#134#134#255#178#178#178#255
+  +#134#134#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255#134#134
+  +#134#255#0#0#0#0#134#134#134#255#134#134#134#255#204#204#204#255#204#204#204
+  +#255#192#192#192#255#192#192#192#255#134#134#134#255#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#255#134#134#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#134#134#134#255#134#134#134#255#204#204#204#255#134#134#134#255#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255#134#134#134#255#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#134#134#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#7'OnClick'#7#16'acConnectExecute'#0#0#9'TMenuItem'#9
+  +'MenuItem3'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#9'MenuItem2'#6'Action'#7#12'a'
+  +'cAddTorrent'#11'Bitmap.Data'#10':'#4#0#0'6'#4#0#0'BM6'#4#0#0#0#0#0#0'6'#0#0
+  +#0'('#0#0#0#16#0#0#0#16#0#0#0#1#0' '#0#0#0#0#0#0#4#0#0'd'#0#0#0'd'#0#0#0#0#0
+  +#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255'&'#255#255#255'f'#255#255#255'f'#255#255
+  +#255'f'#255#255#255'f'#255#255#255'f'#255#255#255'f'#255#255#255'f'#255#255
+  +#255'f'#255#255#255'f'#255#255#255'f'#255#255#255'f'#255#255#255'f'#255#255
+  +#255'@'#255#255#255#0#255#255#255#0'{{{'#159'666'#255'777'#255'777'#255'777'
+  +#255'777'#255'777'#255'777'#255'777'#255'777'#255'777'#255'777'#255'666'#255
+  +'SSS'#197#255#255#255#0#255#255#255#25',,,'#255'333'#255'333'#255'333'#255'3'
+  +'33'#255'333'#255'333'#255'333'#255'333'#255'333'#255'333'#255'333'#255'333'
+  +#255',,,'#255#255#255#255#25'PPPW)))'#255'...'#255'...'#255'...'#255'...'#255
+  ,'...'#255'...'#255'...'#255'...'#255'...'#255'...'#255'...'#255'...'#255')))'
+  +#255'PPPWZZZr&&&'#255')))'#255')))'#255')))'#255')))'#255')))'#255')))'#255
+  +')))'#255')))'#255')))'#255')))'#255')))'#255')))'#255'&&&'#255'ZZZrEEE'#159
+  +'###'#255'%%%'#255'%%%'#255'%%%'#255'%%%'#255'%%%'#255'%%%'#255'%%%'#255'%%%'
+  +#255'%%%'#255'%%%'#255'%%%'#255'%%%'#255'###'#255'EEE'#159':::'#188#31#31#31
+  +#255'   '#255'   '#255'   '#255'   '#255'   '#255'   '#255'   '#255'   '#255
+  +'   '#255'   '#255'   '#255'   '#255#31#31#31#255':::'#188',,,'#215#22#22#22
+  +#255#23#23#23#255#23#23#23#255#23#23#23#255#23#23#23#255#23#23#23#255#23#23
+  +#23#255#23#23#23#255#23#23#23#255#23#23#23#255#23#23#23#255#23#23#23#255#23
+  +#23#23#255#22#22#22#255',,,'#215#10#10#10#239#12#12#12#255#12#12#12#255#12#12
+  +#12#255#12#12#12#255#12#12#12#255#12#12#12#255#12#12#12#255#12#12#12#255#12
+  +#12#12#255#12#12#12#255#12#12#12#255#12#12#12#255#12#12#12#255#12#12#12#255
+  +#10#10#10#239'///0////////////////////////////////////////////'
+  +'/O'#255#255#255#0'000`000'#255'000'#255'000'#255'000'#255'000'#255'000'#255
+  +'000'#255'000'#255'000'#255'000'#255'000'#255'000'#255'000'#159#255#255#255#0
+  +#255#255#255#0#255#255#255#0#31#31#31#191#31#31#31#255#31#31#31#255#31#31#31
+  +#255#31#31#31#255#31#31#31#191#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#23#23#23'@'#23#23#23#255#23#23#23#255#23#23#23#255#23#23
+  +#23#255#23#23#23'@'#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#7'OnClick'#7#19'acA'
+  +'ddTorrentExecute'#0#0#9'TMenuItem'#9'MenuItem4'#6'Action'#7#14'acStartTorre'
+  +'nt'#11'Bitmap.Data'#10':'#4#0#0'6'#4#0#0'BM6'#4#0#0#0#0#0#0'6'#0#0#0'('#0#0
+  +#0#16#0#0#0#16#0#0#0#1#0' '#0#0#0#0#0#0#4#0#0'd'#0#0#0'd'#0#0#0#0#0#0#0#0#0#0
   +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
   +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255'&'
-  +#255#255#255'f'#255#255#255'f'#255#255#255'f'#255#255#255'f'#255#255#255'f'
-  +#255#255#255'f'#255#255#255'f'#255#255#255'f'#255#255#255'f'#255#255#255'f'
-  +#255#255#255'f'#255#255#255'f'#255#255#255'@'#255#255#255#0#255#255#255#0'{{'
-  +'{'#159'666'#255'777'#255'777'#255'777'#255'777'#255'777'#255'777'#255'777'
-  +#255'777'#255'777'#255'777'#255'666'#255'SSS'#197#255#255#255#0#255#255#255
-  +#25',,,'#255'333'#255'333'#255'333'#255'333'#255'333'#255'333'#255'333'#255
-  +'333'#255'333'#255'333'#255'333'#255'333'#255',,,'#255#255#255#255#25'PPPW))'
-  +')'#255'...'#255'...'#255'...'#255'...'#255'...'#255'...'#255'...'#255'...'
-  +#255'...'#255'...'#255'...'#255'...'#255')))'#255'PPPWZZZr&&&'#255')))'#255
-  +')))'#255')))'#255')))'#255')))'#255')))'#255')))'#255')))'#255')))'#255')))'
-  +#255')))'#255')))'#255'&&&'#255'ZZZrEEE'#159'###'#255'%%%'#255'%%%'#255'%%%'
-  +#255'%%%'#255'%%%'#255'%%%'#255'%%%'#255'%%%'#255'%%%'#255'%%%'#255'%%%'#255
-  +'%%%'#255'###'#255'EEE'#159':::'#188#31#31#31#255'   '#255'   '#255'   '#255
-  +'   '#255'   '#255'   '#255'   '#255'   '#255'   '#255'   '#255'   '#255'   '
-  +#255#31#31#31#255':::'#188',,,'#215#22#22#22#255#23#23#23#255#23#23#23#255#23
-  +#23#23#255#23#23#23#255#23#23#23#255#23#23#23#255#23#23#23#255#23#23#23#255
-  +#23#23#23#255#23#23#23#255#23#23#23#255#23#23#23#255#22#22#22#255',,,'#215#10
-  +#10#10#239#12#12#12#255#12#12#12#255#12#12#12#255#12#12#12#255#12#12#12#255
-  +#12#12#12#255#12#12#12#255#12#12#12#255#12#12#12#255#12#12#12#255#12#12#12
-  +#255#12#12#12#255#12#12#12#255#12#12#12#255#10#10#10#239'///0////////////'
-  +'/////////////////////////////////O'#255#255#255#0'000`000'#255'0'
-  +'00'#255'000'#255'000'#255'000'#255'000'#255'000'#255'000'#255'000'#255'000'
-  +#255'000'#255'000'#255'000'#159#255#255#255#0#255#255#255#0#255#255#255#0#31
-  +#31#31#191#31#31#31#255#31#31#31#255#31#31#31#255#31#31#31#255#31#31#31#191
-  ,#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#23#23#23
-  +'@'#23#23#23#255#23#23#23#255#23#23#23#255#23#23#23#255#23#23#23'@'#255#255
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#25#255#255#255'F'#255#255#255'f'#255#255#255'f'#255#255#255'S'#255
+  +#255#255'&'#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255'&'#155#155#155
+  +#140'PPP'#207'111'#255'111'#255'AAA'#226'|||'#159#255#255#255'@'#0#0#0#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#12'{{{'#159'000'#255'((('#255'   '#255#30#30#30#255'"""'
+  +#255'((('#255'NNN'#197#255#255#255'&'#255#255#255#0#255#255#255#0#255#255#255
+  +#0#255#255#255#0#255#255#255#0#255#255#255#0#169#169#169'W---'#255''''''''
+  +#255#22#22#22#175#4#4#4' '#2#2#2#16#9#9#9'P'#21#21#21#191#30#30#30#255']]]'
+  +#139#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#255#255#255#0'III'#193'***'#255'$$$'#198#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#8#8#8'@'#25#25#25#181#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0'222'#236
+  +''''''''#255#11#11#11'@'#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#0#0#0#0#5#5#5'0'#255#255#255#0#255#255#255#0#255#255#255
+  +#0#255#255#255#0#255#255#255#0#255#255#255#0'###'#255'%%%'#255#255#255#255#19
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0
+  +#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0'   '#243'###'#255#146#146#146'h'#255#255#255#0#255#255
+  +#255#0#255#255#255'@'#255#255#255#6#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255
+  +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#29
+  +#29#29#183#30#30#30#255'BBB'#207#255#255#255'@'#255#255#255#12'HHH'#197#215
+  +#215#215']'#255#255#255#19#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#6#6#6'@'#22#22#22#255#28
+  +#28#28#255'III'#197#195#195#195'y!!!'#255'333'#226#165#165#165'}'#255#255#255
+  +'&'#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#7#7#7'`'#18#18#18#255#22#22#22#255#26#26
+  +#26#255#30#30#30#255#29#29#29#255#30#30#30#245'<<<w'#0#0#0#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#4#4#4'@'#11#11#11#176#18#18#18#255#23#23#23#255#22
+  ,#22#22#255#18#18#18#240#7#7#7'`'#0#0#0#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#15#15#15#255#14#14#14#208#3#3#3'0'
+  +#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#7#7#7#159#1#1#1#16#255#255#255#0#0#0#0#0#0#0#0#0#255#255
   +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
   +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
   +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#7'OnClick'#7#19'acAddTorrentExecute'#0#0#9'TMen'
-  +'uItem'#9'MenuItem4'#6'Action'#7#14'acStartTorrent'#11'Bitmap.Data'#10':'#4#0
-  +#0'6'#4#0#0'BM6'#4#0#0#0#0#0#0'6'#0#0#0'('#0#0#0#16#0#0#0#16#0#0#0#1#0' '#0#0
-  +#0#0#0#0#4#0#0'd'#0#0#0'd'#0#0#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#25#255#255#255'F'#255
-  +#255#255'f'#255#255#255'f'#255#255#255'S'#255#255#255'&'#0#0#0#0#0#0#0#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255'&'#155#155#155#140'PPP'#207'111'#255'111'
-  +#255'AAA'#226'|||'#159#255#255#255'@'#0#0#0#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#12'{{{'#159
-  +'000'#255'((('#255'   '#255#30#30#30#255'"""'#255'((('#255'NNN'#197#255#255
-  +#255'&'#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#169#169#169'W---'#255''''''''#255#22#22#22#175#4#4#4' '#2#2#2
-  +#16#9#9#9'P'#21#21#21#191#30#30#30#255']]]'#139#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0'III'#193'***'#255'$'
-  +'$$'#198#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255
-  +#0#8#8#8'@'#25#25#25#181#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0'222'#236''''''''#255#11#11#11'@'#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#5#5#5
-  +'0'#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0'###'#255'%%%'#255#255#255#255#19#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0'   '#243'###'
-  +#255#146#146#146'h'#255#255#255#0#255#255#255#0#255#255#255'@'#255#255#255#6
-  +#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#29#29#29#183#30#30#30#255'BBB'#207#255
-  +#255#255'@'#255#255#255#12'HHH'#197#215#215#215']'#255#255#255#19#0#0#0#0#0#0
-  +#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#6#6#6'@'#22#22#22#255#28#28#28#255'III'#197#195#195#195'y!!!'
-  +#255'333'#226#165#165#165'}'#255#255#255'&'#0#0#0#0#255#255#255#0#255#255#255
-  +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#7#7
-  +#7'`'#18#18#18#255#22#22#22#255#26#26#26#255#30#30#30#255#29#29#29#255#30#30
-  +#30#245'<<<w'#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#4#4#4'@'#11#11#11
-  +#176#18#18#18#255#23#23#23#255#22#22#22#255#18#18#18#240#7#7#7'`'#0#0#0#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#15#15#15#255#14#14#14#208#3#3#3'0'#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255
-  +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#7#7#7#159#1#1#1#16#255
-  +#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#7'OnClick'
-  +#7#21'acStartTorrentExecute'#0#0#9'TMenuItem'#10'MenuItem22'#6'Action'#7#18
-  +'acStartAllTorrents'#7'OnClick'#7#25'acStartAllTorrentsExecute'#0#0#9'TMenuI'
-  +'tem'#9'MenuItem5'#6'Action'#7#13'acStopTorrent'#11'Bitmap.Data'#10':'#4#0#0
-  +'6'#4#0#0'BM6'#4#0#0#0#0#0#0'6'#0#0#0'('#0#0#0#16#0#0#0#16#0#0#0#1#0' '#0#0#0
-  +#0#0#0#4#0#0'd'#0#0#0'd'#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#255#0#255#255#255#0#255#255#255#0#7'OnClick'#7#21'acStartTorrentExecute'#0#0
+  +#9'TMenuItem'#10'MenuItem22'#6'Action'#7#18'acStartAllTorrents'#7'OnClick'#7
+  +#25'acStartAllTorrentsExecute'#0#0#9'TMenuItem'#9'MenuItem5'#6'Action'#7#13
+  +'acStopTorrent'#11'Bitmap.Data'#10':'#4#0#0'6'#4#0#0'BM6'#4#0#0#0#0#0#0'6'#0
+  +#0#0'('#0#0#0#16#0#0#0#16#0#0#0#1#0' '#0#0#0#0#0#0#4#0#0'd'#0#0#0'd'#0#0#0#0
   +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
   +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  ,#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255'3'#255#255#255'f'#255
-  +#255#255'3'#255#255#255#0#255#255#255#0#255#255#255'3'#255#255#255'f'#255#255
-  +#255'3'#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255
-  +#0#255#255#255#0#255#255#255#0'eee'#178'777'#255'eee'#178#255#255#255#0#255
-  +#255#255#0'eee'#178'777'#255'eee'#178#255#255#255#0#255#255#255#0#255#255#255
-  +#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0'---'#255'666'
-  +#255'---'#255#255#255#255#0#255#255#255#0'---'#255'666'#255'---'#255#255#255
-  +#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255
-  +#0#255#255#255#0'+++'#255'333'#255'+++'#255#255#255#255#0#255#255#255#0'+++'
-  +#255'333'#255'+++'#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0
-  +#0#0#255#255#255#0#255#255#255#0#255#255#255#0'((('#255'000'#255'((('#255#255
-  +#255#255#0#255#255#255#0'((('#255'000'#255'((('#255#255#255#255#0#255#255#255
-  +#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0'%'
-  +'%%'#255',,,'#255'%%%'#255#255#255#255#0#255#255#255#0'%%%'#255',,,'#255'%%%'
-  +#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0'"""'#255')))'#255'"""'#255#255#255#255#0#255#255
-  +#255#0'"""'#255')))'#255'"""'#255#255#255#255#0#255#255#255#0#255#255#255#0#0
-  +#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0'   '#255'&&&'#255' '
-  +'  '#255#255#255#255#0#255#255#255#0'   '#255'&&&'#255'   '#255#255#255#255#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255'3'#255#255#255'f'#255#255#255'3'#255#255#255#0#255#255
+  +#255#0#255#255#255'3'#255#255#255'f'#255#255#255'3'#255#255#255#0#255#255#255
+  +#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0'e'
+  +'ee'#178'777'#255'eee'#178#255#255#255#0#255#255#255#0'eee'#178'777'#255'eee'
+  +#178#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0'---'#255'666'#255'---'#255#255#255#255#0#255#255
+  +#255#0'---'#255'666'#255'---'#255#255#255#255#0#255#255#255#0#255#255#255#0#0
+  +#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0'+++'#255'333'#255'+'
+  +'++'#255#255#255#255#0#255#255#255#0'+++'#255'333'#255'+++'#255#255#255#255#0
   +#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#29#29#29#255'###'#255#29#29#29#255#255#255#255#0#255#255#255#0#29
-  +#29#29#255'###'#255#29#29#29#255#255#255#255#0#255#255#255#0#255#255#255#0#0
-  +#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#27#27#27#255'   '
-  +#255#27#27#27#255#255#255#255#0#255#255#255#0#27#27#27#255'   '#255#27#27#27
-  +#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#23#23#23#255#28#28#28#255#23#23#23#255#255#255
-  +#255#0#255#255#255#0#23#23#23#255#28#28#28#255#23#23#23#255#255#255#255#0#255
-  +#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#17#17#17#255#20#20#20#255#17#17#17#255#255#255#255#0#255#255#255#0#17
-  +#17#17#255#20#20#20#255#17#17#17#255#255#255#255#0#255#255#255#0#255#255#255
-  +#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#6#6#6#128#11#11
-  +#11#255#6#6#6#128#255#255#255#0#255#255#255#0#6#6#6#128#11#11#11#255#6#6#6
-  +#128#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#7'OnClick'#7#20'acStopTor'
-  +'rentExecute'#0#0#9'TMenuItem'#10'MenuItem23'#6'Action'#7#17'acStopAllTorren'
-  +'ts'#7'OnClick'#7#24'acStopAllTorrentsExecute'#0#0#9'TMenuItem'#9'MenuItem6'
-  +#6'Action'#7#15'acRemoveTorrent'#11'Bitmap.Data'#10':'#4#0#0'6'#4#0#0'BM6'#4
-  +#0#0#0#0#0#0'6'#0#0#0'('#0#0#0#16#0#0#0#16#0#0#0#1#0' '#0#0#0#0#0#0#4#0#0'd'
-  +#0#0#0'd'#0#0#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#6#255#255#255'3'#255#255#255'S'#255#255#255'f'#255#255
-  +#255'f'#255#255#255'S'#255#255#255'3'#255#255#255#6#255#255#255#0#0#0#0#0#0#0
-  +#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255'&'
-  +#221#221#221'iiii'#178'BBB'#226'000'#255'000'#255'AAA'#226'iii'#178#221#221
-  +#221'i'#255#255#255'&'#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255'&~~~'#159':::'#245'111'#255''''''''#255#30#30#30#255#29#29
-  +#29#255'"""'#255')))'#255'555'#245'|||'#159#255#255#255'&'#0#0#0#0#255#255
-  +#255#0#255#255#255#0#255#255#255#6'vvv'#155'222'#255'333'#255'@@@'#227'OOOj'
-  +#255#255#255#0#255#255#255#0#8#8#8'@'#22#22#22#192'$$$'#255'---'#255'vvv'#155
-  +#255#255#255#6#255#255#255#0#255#255#255#0#196#196#196'?111'#245'---'#255'..'
-  +'.'#255'///'#255'zzz'#160#255#255#255'&'#255#255#255#0#255#255#255#0#255#255
-  +#255#0#17#17#17#128'%%%'#255'000'#245#196#196#196'?'#255#255#255#0#255#255
-  +#255#0'VVV'#169')))'#255'%%%'#242'###'#255'***'#255'---'#255'zzz'#160#255#255
-  +#255'&'#255#255#255#0#255#255#255#0#255#255#255#0'!!!'#198'((('#255'VVV'#169
-  +#255#255#255#0#255#255#255#0'666'#226'%%%'#255#13#13#13'P'#17#17#17#160#31#31
-  +#31#255'((('#255'***'#255'yyy'#160#255#255#255'&'#255#255#255#0#255#255#255#0
-  +#10#10#10'@%%%'#255'666'#226#255#255#255#0#255#255#255#0'"""'#255'"""'#255
-  +#255#255#255#0#255#255#255#0#16#16#16#160#29#29#29#255'%%%'#255''''''''#255
-  +'www'#160#255#255#255'&'#255#255#255#0#255#255#255#0'###'#255'"""'#255#255
-  +#255#255#0#255#255#255#0#30#30#30#255'!!!'#255#255#255#255#26#255#255#255#0
-  +#255#255#255#0#15#15#15#160#28#28#28#255'###'#255'%%%'#255'vvv'#160#255#255
-  +#255'&'#255#255#255' !!!'#255#30#30#30#255#255#255#255#0#255#255#255#0'!!!'
-  ,#217#31#31#31#255#129#129#129'y'#255#255#255#0#255#255#255#0#255#255#255#0#14
-  +#14#14#160#25#25#25#255'   '#255'###'#255'www'#160'zzz'#137#31#31#31#255'!!!'
-  +#217#255#255#255#0#255#255#255#0#18#18#18#130#26#26#26#255'777'#217#255#255
-  +#255'3'#255#255#255#0#255#255#255#0#255#255#255#0#13#13#13#160#25#25#25#255
-  +#31#31#31#255'!!!'#255'222'#226#26#26#26#255#18#18#18#130#255#255#255#0#255
-  +#255#255#0#1#1#1#16#22#22#22#241#26#26#26#255'[[['#178#255#255#255'L'#255#255
-  +#255#25#255#255#255#0#255#255#255#0'%%%'#172#28#28#28#255#30#30#30#255#26#26
-  +#26#255#22#22#22#241#1#1#1#16#255#255#255#0#255#255#255#0#255#255#255#0#7#7#7
-  +'`'#18#18#18#255#22#22#22#255'333'#217#148#148#148#140#255#255#255'f'#255#255
-  +#255'f'#130#130#130#149#30#30#30#245#22#22#22#255#18#18#18#255#7#7#7'`'#0#0#0
-  +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#6#6#6'`'#13#13#13
-  +#239#17#17#17#255#20#20#20#255#21#21#21#255#21#21#21#255#20#20#20#255#17#17
-  +#17#255#13#13#13#239#6#6#6'`'#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#1#1#1#16#6#6#6#128#10#10#10#207#12#12
-  +#12#255#12#12#12#255#10#10#10#207#6#6#6#128#1#1#1#16#255#255#255#0#0#0#0#0#0
-  +#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#7'OnClick'#7#22'acRemoveTorrentExecute'#0#0#9'TMenuItem'
-  +#9'MenuItem7'#6'Action'#7#15'acVerifyTorrent'#7'OnClick'#7#22'acVerifyTorren'
-  +'tExecute'#0#0#9'TMenuItem'#10'MenuItem21'#6'Action'#7#14'acTorrentProps'#7
-  +'OnClick'#7#21'acTorrentPropsExecute'#0#0#9'TMenuItem'#9'MenuItem1'#7'Captio'
-  +'n'#6#1'-'#0#0#9'TMenuItem'#6'miExit'#6'Action'#7#6'acExit'#7'OnClick'#7#13
-  +'acExitExecute'#0#0#0#9'TMenuItem'#7'miTools'#7'Caption'#6#5'Tools'#0#9'TMen'
-  +'uItem'#10'MenuItem18'#6'Action'#7#15'acDaemonOptions'#11'Bitmap.Data'#10':'
-  +#4#0#0'6'#4#0#0'BM6'#4#0#0#0#0#0#0'6'#0#0#0'('#0#0#0#16#0#0#0#16#0#0#0#1#0' '
-  +#0#0#0#0#0#0#4#0#0'd'#0#0#0'd'#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255'U'
-  +#134#255'U'#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255'U'#134#255#191#156#194#255
-  +#191#156#194#255#26'G'#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255#3'#'#210#255#140#137#230#255#0#26
-  +#206#255#131#128#203#255#26'G'#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255#3'#'#210#255#147#169#255#255#4'6'
-  +#255#255#0#26#206#255#183#180#228#255#26'G'#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255#3'#'#210#255#147#169#255#255
-  +#0'3'#255#255#0#26#206#255#155#167#234#255#26'G'#217#255#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255#3'#'#210#255#147#169
-  +#255#255#0'3'#255#255#0#26#206#255#147#163#238#255#26'G'#217#255#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255#3'#'#210#255
-  +#147#169#255#255#0'3'#255#255#0#26#206#255#147#163#238#255#26'G'#217#255#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'YYY'#255'YYY'#255'YYY'#255#3'#'
-  +#210#255#147#169#255#255#0'3'#255#255#0#26#206#255#147#163#238#255#26'G'#217
-  +#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'YYY'#255'YYY'#255#171
-  +#171#171#255#153#153#153#255'z'#131#189#255#0'1'#252#255#0#26#206#255#147#163
-  +#238#255#26'G'#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'YYY'
-  +#255'YYY'#255#156#156#156#255#185#185#185#255#196#196#196#255#168#168#168#255
-  +'Ve'#174#255's'#147#238#255#26'G'#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0'YYY'#255#171#171#171#255#205#205#205#255#199#199#199#255
-  +#195#195#195#255#207#207#207#255#167#167#167#255'YYY'#255#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'YYY'#255#222#222#222#255'YYY'
-  +#255'YYY'#255#183#183#183#255#214#214#214#255#188#188#188#255'YYY'#255#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'YYY'#255'YYY'#255
-  +#0#0#0#0#153#153#153#255'YYY'#255#222#222#222#255#200#200#200#255'YYY'#255#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'YYY'#255#0#0#0
-  +#0#153#153#153#255'YYY'#255#212#212#212#255#224#224#224#255'YYY'#255#153#153
-  +#153#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0'YYY'#255#203#203#203#255#203#203#203#255'WWW'#255'YYY'#255#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#171#171#171#255'YYY'#255'YYY'#255'YYY'#255#153#153#153#255#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#7'OnClick'#7
-  +#22'acDaemonOptionsExecute'#0#0#9'TMenuItem'#10'MenuItem17'#6'Action'#7#9'ac'
-  +'Options'#7'OnClick'#7#16'acOptionsExecute'#0#0#9'TMenuItem'#10'MenuItem32'#7
-  +'Caption'#6#1'-'#0#0#9'TMenuItem'#10'MenuItem33'#6'Action'#7#13'acUpdateGeoI'
-  ,'P'#7'OnClick'#7#20'acUpdateGeoIPExecute'#0#0#0#9'TMenuItem'#6'miHelp'#7'Cap'
-  +'tion'#6#4'Help'#0#9'TMenuItem'#7'miAbout'#7'Caption'#6#8'About...'#7'OnClic'
-  +'k'#7#12'miAboutClick'#0#0#0#0#11'TActionList'#10'ActionList'#4'left'#2'M'#3
-  +'top'#2'7'#0#7'TAction'#9'acConnect'#7'Caption'#6#17'Connect to daemon'#18'D'
-  +'isableIfNoHandler'#9#10'ImageIndex'#2#18#9'OnExecute'#7#16'acConnectExecute'
-  +#0#0#7'TAction'#12'acAddTorrent'#8'Category'#6#7'Torrent'#7'Caption'#6#14'Ad'
-  +'d torrent...'#18'DisableIfNoHandler'#9#4'Hint'#6#11'Add torrent'#10'ImageIn'
-  +'dex'#2#0#9'OnExecute'#7#19'acAddTorrentExecute'#8'ShortCut'#2'-'#0#0#7'TAct'
-  +'ion'#14'acStartTorrent'#8'Category'#6#7'Torrent'#7'Caption'#6#5'Start'#18'D'
-  +'isableIfNoHandler'#9#4'Hint'#6#13'Start torrent'#10'ImageIndex'#2#1#9'OnExe'
-  +'cute'#7#21'acStartTorrentExecute'#0#0#7'TAction'#13'acStopTorrent'#8'Catego'
-  +'ry'#6#7'Torrent'#7'Caption'#6#4'Stop'#18'DisableIfNoHandler'#9#4'Hint'#6#12
-  +'Stop torrent'#10'ImageIndex'#2#2#9'OnExecute'#7#20'acStopTorrentExecute'#0#0
-  +#7'TAction'#15'acRemoveTorrent'#8'Category'#6#7'Torrent'#7'Caption'#6#6'Remo'
-  +'ve'#18'DisableIfNoHandler'#9#4'Hint'#6#14'Remove torrent'#10'ImageIndex'#2#3
-  +#9'OnExecute'#7#22'acRemoveTorrentExecute'#8'ShortCut'#2'.'#0#0#7'TAction'#15
-  +'acVerifyTorrent'#8'Category'#6#7'Torrent'#7'Caption'#6#6'Verify'#18'Disable'
-  +'IfNoHandler'#9#4'Hint'#6#14'Verify torrent'#9'OnExecute'#7#22'acVerifyTorre'
-  +'ntExecute'#0#0#7'TAction'#17'acSetHighPriority'#8'Category'#6#5'Files'#7'Ca'
-  +'ption'#6#13'High priority'#18'DisableIfNoHandler'#9#9'OnExecute'#7#24'acSet'
-  +'HighPriorityExecute'#0#0#7'TAction'#19'acSetNormalPriority'#8'Category'#6#5
-  +'Files'#7'Caption'#6#15'Normal priority'#18'DisableIfNoHandler'#9#9'OnExecut'
-  +'e'#7#26'acSetNormalPriorityExecute'#0#0#7'TAction'#16'acSetLowPriority'#8'C'
-  +'ategory'#6#5'Files'#7'Caption'#6#12'Low priority'#18'DisableIfNoHandler'#9#9
-  +'OnExecute'#7#23'acSetLowPriorityExecute'#0#0#7'TAction'#16'acSetNotDownload'
-  +#8'Category'#6#5'Files'#7'Caption'#6#14'Don''t download'#18'DisableIfNoHandl'
-  +'er'#9#9'OnExecute'#7#23'acSetNotDownloadExecute'#0#0#7'TAction'#9'acOptions'
-  +#8'Category'#6#5'Tools'#7'Caption'#6#10'Options...'#18'DisableIfNoHandler'#9
-  +#9'OnExecute'#7#16'acOptionsExecute'#0#0#7'TAction'#15'acDaemonOptions'#8'Ca'
-  +'tegory'#6#5'Tools'#7'Caption'#6#23'Transmission options...'#18'DisableIfNoH'
-  +'andler'#9#4'Hint'#6#20'Transmission options'#10'ImageIndex'#2#8#9'OnExecute'
-  +#7#22'acDaemonOptionsExecute'#0#0#7'TAction'#14'acTorrentProps'#8'Category'#6
-  +#7'Torrent'#7'Caption'#6#13'Properties...'#18'DisableIfNoHandler'#9#9'OnExec'
-  +'ute'#7#21'acTorrentPropsExecute'#0#0#7'TAction'#18'acStartAllTorrents'#8'Ca'
-  +'tegory'#6#7'Torrent'#7'Caption'#6#18'Start all torrents'#18'DisableIfNoHand'
-  +'ler'#9#4'Hint'#6#18'Start all torrents'#9'OnExecute'#7#25'acStartAllTorrent'
-  +'sExecute'#0#0#7'TAction'#17'acStopAllTorrents'#8'Category'#6#7'Torrent'#7'C'
-  +'aption'#6#17'Stop all torrents'#18'DisableIfNoHandler'#9#4'Hint'#6#8'Stop a'
-  +'ll'#9'OnExecute'#7#24'acStopAllTorrentsExecute'#0#0#7'TAction'#6'acExit'#7
-  +'Caption'#6#4'Exit'#18'DisableIfNoHandler'#9#9'OnExecute'#7#13'acExitExecute'
-  +#0#0#7'TAction'#13'acResolveHost'#8'Category'#6#5'Peers'#7'Caption'#6#17'Res'
-  +'olve host name'#18'DisableIfNoHandler'#9#9'OnExecute'#7#20'acResolveHostExe'
-  +'cute'#0#0#7'TAction'#16'acResolveCountry'#8'Category'#6#5'Peers'#7'Caption'
-  +#6#15'Resolve country'#18'DisableIfNoHandler'#9#9'OnExecute'#7#23'acResolveC'
-  +'ountryExecute'#0#0#7'TAction'#17'acShowCountryFlag'#8'Category'#6#5'Peers'#7
-  +'Caption'#6#17'Show country flag'#18'DisableIfNoHandler'#9#9'OnExecute'#7#24
-  +'acShowCountryFlagExecute'#0#0#7'TAction'#13'acUpdateGeoIP'#8'Category'#6#5
-  +'Tools'#7'Caption'#6#21'Update GeoIP database'#18'DisableIfNoHandler'#9#9'On'
-  +'Execute'#7#20'acUpdateGeoIPExecute'#0#0#0#6'TTimer'#15'RefreshNowTimer'#7'E'
-  +'nabled'#8#8'Interval'#2'd'#7'OnTimer'#7#20'RefreshNowTimerTimer'#4'left'#3
-  +#253#0#3'top'#2'7'#0#0#11'TOpenDialog'#14'OpenTorrentDlg'#5'Title'#6#25'Sele'
-  +'ct a .torrent to open'#6'Filter'#6'2Torrents (*.torrent)|*.torrent|All file'
-  +'s (*.*)|*.*'#4'left'#3#213#0#3'top'#2'7'#0#0#10'TPopupMenu'#10'pmTorrents'#6
-  +'Images'#7#11'ImageList16'#7'OnPopup'#7#15'pmTorrentsPopup'#4'left'#3#149#0#3
-  +'top'#2'7'#0#9'TMenuItem'#9'MenuItem8'#6'Action'#7#14'acStartTorrent'#11'Bit'
-  +'map.Data'#10':'#4#0#0'6'#4#0#0'BM6'#4#0#0#0#0#0#0'6'#0#0#0'('#0#0#0#16#0#0#0
-  +#16#0#0#0#1#0' '#0#0#0#0#0#0#4#0#0'd'#0#0#0'd'#0#0#0#0#0#0#0#0#0#0#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#25
-  +#255#255#255'F'#255#255#255'f'#255#255#255'f'#255#255#255'S'#255#255#255'&'#0
-  +#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255'&'#155#155#155#140'PPP'
-  ,#207'111'#255'111'#255'AAA'#226'|||'#159#255#255#255'@'#0#0#0#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#12'{{{'#159'000'#255'((('#255'   '#255#30#30#30#255'"""'#255'((('
-  +#255'NNN'#197#255#255#255'&'#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#169#169#169'W---'#255''''''''#255#22
-  +#22#22#175#4#4#4' '#2#2#2#16#9#9#9'P'#21#21#21#191#30#30#30#255']]]'#139#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0'III'#193'***'#255'$$$'#198#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#8#8#8'@'#25#25#25#181#255#255#255#0#255#255#255
-  +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0'222'#236''''''''
-  +#255#11#11#11'@'#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#0#0#0#0#5#5#5'0'#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0'###'#255'%%%'#255#255#255#255#19#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0
-  +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0'   '#243'###'#255#146#146#146'h'#255#255#255#0#255#255#255#0#255
-  +#255#255'@'#255#255#255#6#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#29#29#29#183
-  +#30#30#30#255'BBB'#207#255#255#255'@'#255#255#255#12'HHH'#197#215#215#215']'
-  +#255#255#255#19#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#6#6#6'@'#22#22#22#255#28#28#28#255'II'
-  +'I'#197#195#195#195'y!!!'#255'333'#226#165#165#165'}'#255#255#255'&'#0#0#0#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#7#7#7'`'#18#18#18#255#22#22#22#255#26#26#26#255#30
-  +#30#30#255#29#29#29#255#30#30#30#245'<<<w'#0#0#0#0#255#255#255#0#255#255#255
-  +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#4#4#4'@'#11#11#11#176#18#18#18#255#23#23#23#255#22#22#22#255#18#18
-  +#18#240#7#7#7'`'#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#15#15#15#255#14#14#14#208#3#3#3'0'#0#0#0#0#0#0#0
-  +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#7#7#7#159#1#1#1#16#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#7'OnClick'#7#21'acStartTorrentExecute'#0#0#9'TMenuItem'
-  +#9'MenuItem9'#6'Action'#7#13'acStopTorrent'#11'Bitmap.Data'#10':'#4#0#0'6'#4
-  +#0#0'BM6'#4#0#0#0#0#0#0'6'#0#0#0'('#0#0#0#16#0#0#0#16#0#0#0#1#0' '#0#0#0#0#0
-  +#0#4#0#0'd'#0#0#0'd'#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255'3'#255#255#255'f'#255#255
-  +#255'3'#255#255#255#0#255#255#255#0#255#255#255'3'#255#255#255'f'#255#255#255
-  +'3'#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0'eee'#178'777'#255'eee'#178#255#255#255#0#255#255
-  +#255#0'eee'#178'777'#255'eee'#178#255#255#255#0#255#255#255#0#255#255#255#0#0
-  +#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0'---'#255'666'#255'-'
-  +'--'#255#255#255#255#0#255#255#255#0'---'#255'666'#255'---'#255#255#255#255#0
-  +#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0'+++'#255'333'#255'+++'#255#255#255#255#0#255#255#255#0'+++'#255'3'
-  +'33'#255'+++'#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0'((('#255'000'#255'((('#255#255#255
-  +#255#0#255#255#255#0'((('#255'000'#255'((('#255#255#255#255#0#255#255#255#0
-  +#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0'%%%'
-  +#255',,,'#255'%%%'#255#255#255#255#0#255#255#255#0'%%%'#255',,,'#255'%%%'#255
+  +#255#255#0'((('#255'000'#255'((('#255#255#255#255#0#255#255#255#0'((('#255'0'
+  +'00'#255'((('#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0'%%%'#255',,,'#255'%%%'#255#255#255
+  +#255#0#255#255#255#0'%%%'#255',,,'#255'%%%'#255#255#255#255#0#255#255#255#0
+  +#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0'"""'
+  +#255')))'#255'"""'#255#255#255#255#0#255#255#255#0'"""'#255')))'#255'"""'#255
   +#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0'"""'#255')))'#255'"""'#255#255#255#255#0#255#255#255
-  +#0'"""'#255')))'#255'"""'#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0
-  +#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0'   '#255'&&&'#255'   '
-  +#255#255#255#255#0#255#255#255#0'   '#255'&&&'#255'   '#255#255#255#255#0#255
-  +#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#29#29#29#255'###'#255#29#29#29#255#255#255#255#0#255#255#255#0#29#29
-  ,#29#255'###'#255#29#29#29#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0
-  +#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#27#27#27#255'   '#255#27
-  +#27#27#255#255#255#255#0#255#255#255#0#27#27#27#255'   '#255#27#27#27#255#255
+  +#255#255#0#255#255#255#0'   '#255'&&&'#255'   '#255#255#255#255#0#255#255#255
+  +#0'   '#255'&&&'#255'   '#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0
+  +#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#29#29#29#255'###'#255#29
+  +#29#29#255#255#255#255#0#255#255#255#0#29#29#29#255'###'#255#29#29#29#255#255
   +#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#23#23#23#255#28#28#28#255#23#23#23#255#255#255#255#0#255
-  +#255#255#0#23#23#23#255#28#28#28#255#23#23#23#255#255#255#255#0#255#255#255#0
-  +#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#17
-  +#17#17#255#20#20#20#255#17#17#17#255#255#255#255#0#255#255#255#0#17#17#17#255
-  +#20#20#20#255#17#17#17#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0
-  +#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#6#6#6#128#11#11#11#255#6#6
-  +#6#128#255#255#255#0#255#255#255#0#6#6#6#128#11#11#11#255#6#6#6#128#255#255
-  +#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255
+  +#255#0#255#255#255#0#27#27#27#255'   '#255#27#27#27#255#255#255#255#0#255#255
+  +#255#0#27#27#27#255'   '#255#27#27#27#255#255#255#255#0#255#255#255#0#255#255
+  +#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#23#23#23#255
+  +#28#28#28#255#23#23#23#255#255#255#255#0#255#255#255#0#23#23#23#255#28#28#28
+  +#255#23#23#23#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#17#17#17#255#20#20#20#255#17#17#17
+  +#255#255#255#255#0#255#255#255#0#17#17#17#255#20#20#20#255#17#17#17#255#255
+  +#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#6#6#6#128#11#11#11#255#6#6#6#128#255#255#255#0#255#255
+  +#255#0#6#6#6#128#11#11#11#255#6#6#6#128#255#255#255#0#255#255#255#0#255#255
+  +#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255
   +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
-  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#0#0#0#0#0#0#0#0#7'OnClick'#7#20'acStopTorrentExecute'#0
-  +#0#9'TMenuItem'#10'MenuItem10'#6'Action'#7#15'acRemoveTorrent'#11'Bitmap.Dat'
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0
+  +#0#0#0#7'OnClick'#7#20'acStopTorrentExecute'#0#0#9'TMenuItem'#10'MenuItem23'
+  +#6'Action'#7#17'acStopAllTorrents'#7'OnClick'#7#24'acStopAllTorrentsExecute'
+  +#0#0#9'TMenuItem'#9'MenuItem6'#6'Action'#7#15'acRemoveTorrent'#11'Bitmap.Dat'
   +'a'#10':'#4#0#0'6'#4#0#0'BM6'#4#0#0#0#0#0#0'6'#0#0#0'('#0#0#0#16#0#0#0#16#0#0
   +#0#1#0' '#0#0#0#0#0#0#4#0#0'd'#0#0#0'd'#0#0#0#0#0#0#0#0#0#0#0#255#255#255#0
   +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#6#255#255#255'3'#255
@@ -599,7 +383,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#0#255#255#255#0#255#255#255'&'#221#221#221'iiii'#178'BBB'#226'000'#255
   +'000'#255'AAA'#226'iii'#178#221#221#221'i'#255#255#255'&'#0#0#0#0#0#0#0#0#255
   +#255#255#0#255#255#255#0#255#255#255#0#255#255#255'&~~~'#159':::'#245'111'
-  +#255''''''''#255#30#30#30#255#29#29#29#255'"""'#255')))'#255'555'#245'|||'
+  ,#255''''''''#255#30#30#30#255#29#29#29#255'"""'#255')))'#255'555'#245'|||'
   +#159#255#255#255'&'#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#6'vvv'
   +#155'222'#255'333'#255'@@@'#227'OOOj'#255#255#255#0#255#255#255#0#8#8#8'@'#22
   +#22#22#192'$$$'#255'---'#255'vvv'#155#255#255#255#6#255#255#255#0#255#255#255
@@ -634,26 +418,265 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
   +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
   +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#7'OnClick'#7#22'acRemoveTor'
-  +'rentExecute'#0#0#9'TMenuItem'#10'MenuItem11'#6'Action'#7#15'acVerifyTorrent'
-  +#7'OnClick'#7#22'acVerifyTorrentExecute'#0#0#9'TMenuItem'#10'MenuItem19'#7'C'
-  +'aption'#6#1'-'#0#0#9'TMenuItem'#10'MenuItem20'#6'Action'#7#14'acTorrentProp'
-  +'s'#7'Default'#9#7'OnClick'#7#21'acTorrentPropsExecute'#0#0#0#22'TApplicatio'
-  +'nProperties'#21'ApplicationProperties'#17'CaptureExceptions'#9#9'HintColor'
-  ,#7#8'clInfoBk'#13'HintHidePause'#3#196#9#9'HintPause'#3#244#1#13'HintShortCu'
-  +'ts'#9#8'ShowHint'#9#11'OnException'#7#30'ApplicationPropertiesException'#6
-  +'OnIdle'#7#25'ApplicationPropertiesIdle'#10'OnMinimize'#7#29'ApplicationProp'
-  +'ertiesMinimize'#9'OnRestore'#7#28'ApplicationPropertiesRestore'#4'left'#3'\'
-  +#1#3'top'#2'8'#0#0#10'TPopupMenu'#7'pmFiles'#6'Images'#7#11'ImageList16'#7'O'
-  +'nPopup'#7#12'pmFilesPopup'#4'left'#3#152#2#3'top'#3'h'#1#0#9'TMenuItem'#10
-  +'MenuItem12'#6'Action'#7#17'acSetHighPriority'#7'OnClick'#7#24'acSetHighPrio'
-  +'rityExecute'#0#0#9'TMenuItem'#10'MenuItem13'#6'Action'#7#19'acSetNormalPrio'
-  +'rity'#7'OnClick'#7#26'acSetNormalPriorityExecute'#0#0#9'TMenuItem'#10'MenuI'
-  +'tem14'#6'Action'#7#16'acSetLowPriority'#7'OnClick'#7#23'acSetLowPriorityExe'
-  +'cute'#0#0#9'TMenuItem'#10'MenuItem15'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#10
-  +'MenuItem16'#6'Action'#7#16'acSetNotDownload'#7'OnClick'#7#23'acSetNotDownlo'
-  +'adExecute'#0#0#0#6'TTimer'#10'DummyTimer'#7'Enabled'#8#8'Interval'#2'd'#7'O'
-  +'nTimer'#7#15'DummyTimerTimer'#4'left'#3#199#1#3'top'#2'9'#0#0#10'TImageList'
-  +#11'ImageList16'#4'left'#3#8#2#3'top'#2'<'#6'Bitmap'#10#14'T'#0#0'Li'#21#0#0
+  +'rentExecute'#0#0#9'TMenuItem'#9'MenuItem7'#6'Action'#7#15'acVerifyTorrent'#7
+  +'OnClick'#7#22'acVerifyTorrentExecute'#0#0#9'TMenuItem'#10'MenuItem21'#6'Act'
+  +'ion'#7#14'acTorrentProps'#7'OnClick'#7#21'acTorrentPropsExecute'#0#0#9'TMen'
+  +'uItem'#9'MenuItem1'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#6'miExit'#6'Action'#7
+  +#6'acExit'#7'OnClick'#7#13'acExitExecute'#0#0#0#9'TMenuItem'#7'miTools'#7'Ca'
+  +'ption'#6#5'Tools'#0#9'TMenuItem'#10'MenuItem34'#6'Action'#7#14'acSetupColum'
+  +'ns'#7'OnClick'#7#21'acSetupColumnsExecute'#0#0#9'TMenuItem'#10'MenuItem35'#7
+  +'Caption'#6#1'-'#0#0#9'TMenuItem'#10'MenuItem18'#6'Action'#7#15'acDaemonOpti'
+  +'ons'#11'Bitmap.Data'#10':'#4#0#0'6'#4#0#0'BM6'#4#0#0#0#0#0#0'6'#0#0#0'('#0#0
+  +#0#16#0#0#0#16#0#0#0#1#0' '#0#0#0#0#0#0#4#0#0'd'#0#0#0'd'#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0'))F'#255'U'#134#255'U'#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255
+  +'U'#134#255#191#156#194#255#191#156#194#255#26'G'#217#255#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255#3'#'
+  +#210#255#140#137#230#255#0#26#206#255#131#128#203#255#26'G'#217#255#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255#3'#'
+  +#210#255#147#169#255#255#4'6'#255#255#0#26#206#255#183#180#228#255#26'G'#217
+  +#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255
+  +#3'#'#210#255#147#169#255#255#0'3'#255#255#0#26#206#255#155#167#234#255#26'G'
+  +#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'
+  +#255#3'#'#210#255#147#169#255#255#0'3'#255#255#0#26#206#255#147#163#238#255
+  +#26'G'#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0'))F'#255#3'#'#210#255#147#169#255#255#0'3'#255#255#0#26#206#255#147#163
+  +#238#255#26'G'#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'YYY'
+  +#255'YYY'#255'YYY'#255#3'#'#210#255#147#169#255#255#0'3'#255#255#0#26#206#255
+  +#147#163#238#255#26'G'#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0'YYY'#255'YYY'#255#171#171#171#255#153#153#153#255'z'#131#189#255#0'1'#252
+  +#255#0#26#206#255#147#163#238#255#26'G'#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  ,#0#0#0#0#0#0#0#0#0'YYY'#255'YYY'#255#156#156#156#255#185#185#185#255#196#196
+  +#196#255#168#168#168#255'Ve'#174#255's'#147#238#255#26'G'#217#255#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'YYY'#255#171#171#171#255#205#205
+  +#205#255#199#199#199#255#195#195#195#255#207#207#207#255#167#167#167#255'YYY'
+  +#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'YYY'#255
+  +#222#222#222#255'YYY'#255'YYY'#255#183#183#183#255#214#214#214#255#188#188
+  +#188#255'YYY'#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0'YYY'#255'YYY'#255#0#0#0#0#153#153#153#255'YYY'#255#222#222#222#255#200
+  +#200#200#255'YYY'#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0'YYY'#255#0#0#0#0#153#153#153#255'YYY'#255#212#212#212#255#224#224
+  +#224#255'YYY'#255#153#153#153#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'YYY'#255#203#203#203#255#203#203#203#255
+  +'WWW'#255'YYY'#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#171#171#171#255'YYY'#255'YYY'#255'YYY'#255#153#153#153
+  +#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#7'OnClick'#7#22'acDaemonOptionsExecute'#0#0#9'TMenuItem'#10'MenuIte'
+  +'m17'#6'Action'#7#9'acOptions'#7'OnClick'#7#16'acOptionsExecute'#0#0#9'TMenu'
+  +'Item'#10'MenuItem32'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#10'MenuItem33'#6'Ac'
+  +'tion'#7#13'acUpdateGeoIP'#7'OnClick'#7#20'acUpdateGeoIPExecute'#0#0#0#9'TMe'
+  +'nuItem'#6'miHelp'#7'Caption'#6#4'Help'#0#9'TMenuItem'#7'miAbout'#7'Caption'
+  +#6#8'About...'#7'OnClick'#7#12'miAboutClick'#0#0#0#0#11'TActionList'#10'Acti'
+  +'onList'#4'left'#2'M'#3'top'#2'7'#0#7'TAction'#9'acConnect'#7'Caption'#6#17
+  +'Connect to daemon'#18'DisableIfNoHandler'#9#10'ImageIndex'#2#18#9'OnExecute'
+  +#7#16'acConnectExecute'#0#0#7'TAction'#12'acAddTorrent'#8'Category'#6#7'Torr'
+  +'ent'#7'Caption'#6#14'Add torrent...'#18'DisableIfNoHandler'#9#4'Hint'#6#11
+  +'Add torrent'#10'ImageIndex'#2#0#9'OnExecute'#7#19'acAddTorrentExecute'#8'Sh'
+  +'ortCut'#2'-'#0#0#7'TAction'#14'acStartTorrent'#8'Category'#6#7'Torrent'#7'C'
+  +'aption'#6#5'Start'#18'DisableIfNoHandler'#9#4'Hint'#6#13'Start torrent'#10
+  +'ImageIndex'#2#1#9'OnExecute'#7#21'acStartTorrentExecute'#0#0#7'TAction'#13
+  +'acStopTorrent'#8'Category'#6#7'Torrent'#7'Caption'#6#4'Stop'#18'DisableIfNo'
+  +'Handler'#9#4'Hint'#6#12'Stop torrent'#10'ImageIndex'#2#2#9'OnExecute'#7#20
+  +'acStopTorrentExecute'#0#0#7'TAction'#15'acRemoveTorrent'#8'Category'#6#7'To'
+  +'rrent'#7'Caption'#6#6'Remove'#18'DisableIfNoHandler'#9#4'Hint'#6#14'Remove '
+  +'torrent'#10'ImageIndex'#2#3#9'OnExecute'#7#22'acRemoveTorrentExecute'#8'Sho'
+  +'rtCut'#2'.'#0#0#7'TAction'#15'acVerifyTorrent'#8'Category'#6#7'Torrent'#7'C'
+  +'aption'#6#6'Verify'#18'DisableIfNoHandler'#9#4'Hint'#6#14'Verify torrent'#9
+  +'OnExecute'#7#22'acVerifyTorrentExecute'#0#0#7'TAction'#17'acSetHighPriority'
+  +#8'Category'#6#5'Files'#7'Caption'#6#13'High priority'#18'DisableIfNoHandler'
+  +#9#9'OnExecute'#7#24'acSetHighPriorityExecute'#0#0#7'TAction'#19'acSetNormal'
+  +'Priority'#8'Category'#6#5'Files'#7'Caption'#6#15'Normal priority'#18'Disabl'
+  +'eIfNoHandler'#9#9'OnExecute'#7#26'acSetNormalPriorityExecute'#0#0#7'TAction'
+  +#16'acSetLowPriority'#8'Category'#6#5'Files'#7'Caption'#6#12'Low priority'#18
+  +'DisableIfNoHandler'#9#9'OnExecute'#7#23'acSetLowPriorityExecute'#0#0#7'TAct'
+  +'ion'#16'acSetNotDownload'#8'Category'#6#5'Files'#7'Caption'#6#14'Don''t dow'
+  +'nload'#18'DisableIfNoHandler'#9#9'OnExecute'#7#23'acSetNotDownloadExecute'#0
+  +#0#7'TAction'#9'acOptions'#8'Category'#6#5'Tools'#7'Caption'#6#10'Options...'
+  +#18'DisableIfNoHandler'#9#9'OnExecute'#7#16'acOptionsExecute'#0#0#7'TAction'
+  +#15'acDaemonOptions'#8'Category'#6#5'Tools'#7'Caption'#6#23'Transmission opt'
+  +'ions...'#18'DisableIfNoHandler'#9#4'Hint'#6#20'Transmission options'#10'Ima'
+  +'geIndex'#2#8#9'OnExecute'#7#22'acDaemonOptionsExecute'#0#0#7'TAction'#14'ac'
+  +'TorrentProps'#8'Category'#6#7'Torrent'#7'Caption'#6#13'Properties...'#18'Di'
+  +'sableIfNoHandler'#9#9'OnExecute'#7#21'acTorrentPropsExecute'#0#0#7'TAction'
+  +#18'acStartAllTorrents'#8'Category'#6#7'Torrent'#7'Caption'#6#18'Start all t'
+  +'orrents'#18'DisableIfNoHandler'#9#4'Hint'#6#18'Start all torrents'#9'OnExec'
+  +'ute'#7#25'acStartAllTorrentsExecute'#0#0#7'TAction'#17'acStopAllTorrents'#8
+  +'Category'#6#7'Torrent'#7'Caption'#6#17'Stop all torrents'#18'DisableIfNoHan'
+  +'dler'#9#4'Hint'#6#8'Stop all'#9'OnExecute'#7#24'acStopAllTorrentsExecute'#0
+  +#0#7'TAction'#6'acExit'#7'Caption'#6#4'Exit'#18'DisableIfNoHandler'#9#9'OnEx'
+  +'ecute'#7#13'acExitExecute'#0#0#7'TAction'#13'acResolveHost'#8'Category'#6#5
+  +'Peers'#7'Caption'#6#17'Resolve host name'#18'DisableIfNoHandler'#9#9'OnExec'
+  +'ute'#7#20'acResolveHostExecute'#0#0#7'TAction'#16'acResolveCountry'#8'Categ'
+  +'ory'#6#5'Peers'#7'Caption'#6#15'Resolve country'#18'DisableIfNoHandler'#9#9
+  +'OnExecute'#7#23'acResolveCountryExecute'#0#0#7'TAction'#17'acShowCountryFla'
+  +'g'#8'Category'#6#5'Peers'#7'Caption'#6#17'Show country flag'#18'DisableIfNo'
+  ,'Handler'#9#9'OnExecute'#7#24'acShowCountryFlagExecute'#0#0#7'TAction'#13'ac'
+  +'UpdateGeoIP'#8'Category'#6#5'Tools'#7'Caption'#6#21'Update GeoIP database'
+  +#18'DisableIfNoHandler'#9#9'OnExecute'#7#20'acUpdateGeoIPExecute'#0#0#7'TAct'
+  +'ion'#14'acSetupColumns'#8'Category'#6#7'Torrent'#7'Caption'#6#16'Setup colu'
+  +'mns...'#18'DisableIfNoHandler'#9#9'OnExecute'#7#21'acSetupColumnsExecute'#0
+  +#0#0#6'TTimer'#15'RefreshNowTimer'#7'Enabled'#8#8'Interval'#2'd'#7'OnTimer'#7
+  +#20'RefreshNowTimerTimer'#4'left'#3#253#0#3'top'#2'7'#0#0#11'TOpenDialog'#14
+  +'OpenTorrentDlg'#5'Title'#6#25'Select a .torrent to open'#6'Filter'#6'2Torre'
+  +'nts (*.torrent)|*.torrent|All files (*.*)|*.*'#4'left'#3#213#0#3'top'#2'7'#0
+  +#0#10'TPopupMenu'#10'pmTorrents'#6'Images'#7#11'ImageList16'#7'OnPopup'#7#15
+  +'pmTorrentsPopup'#4'left'#3#149#0#3'top'#2'7'#0#9'TMenuItem'#9'MenuItem8'#6
+  +'Action'#7#14'acStartTorrent'#11'Bitmap.Data'#10':'#4#0#0'6'#4#0#0'BM6'#4#0#0
+  +#0#0#0#0'6'#0#0#0'('#0#0#0#16#0#0#0#16#0#0#0#1#0' '#0#0#0#0#0#0#4#0#0'd'#0#0
+  +#0'd'#0#0#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#25#255#255#255'F'#255#255#255'f'#255#255#255
+  +'f'#255#255#255'S'#255#255#255'&'#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255'&'#155#155#155#140'PPP'#207'111'#255'111'#255'AAA'#226'|||'#159#255
+  +#255#255'@'#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#12'{{{'#159'000'#255'((('#255'   '
+  +#255#30#30#30#255'"""'#255'((('#255'NNN'#197#255#255#255'&'#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#169#169
+  +#169'W---'#255''''''''#255#22#22#22#175#4#4#4' '#2#2#2#16#9#9#9'P'#21#21#21
+  +#191#30#30#30#255']]]'#139#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0'III'#193'***'#255'$$$'#198#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#8#8#8'@'#25#25#25
+  +#181#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#255#255#255#0'222'#236''''''''#255#11#11#11'@'#255#255#255#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#5#5#5'0'#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0'###'#255
+  +'%%%'#255#255#255#255#19#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255
+  +#0#255#255#255#0#255#255#255#0#255#255#255#0'   '#243'###'#255#146#146#146'h'
+  +#255#255#255#0#255#255#255#0#255#255#255'@'#255#255#255#6#255#255#255#0#0#0#0
+  +#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#29#29#29#183#30#30#30#255'BBB'#207#255#255#255'@'#255
+  +#255#255#12'HHH'#197#215#215#215']'#255#255#255#19#0#0#0#0#0#0#0#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#6#6#6'@'#22#22#22#255#28#28#28#255'III'#197#195#195#195'y!!!'#255'333'#226
+  +#165#165#165'}'#255#255#255'&'#0#0#0#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#7#7#7'`'#18#18
+  +#18#255#22#22#22#255#26#26#26#255#30#30#30#255#29#29#29#255#30#30#30#245'<<<'
+  +'w'#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#4#4#4'@'#11#11#11#176#18#18
+  +#18#255#23#23#23#255#22#22#22#255#18#18#18#240#7#7#7'`'#0#0#0#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#15#15#15
+  +#255#14#14#14#208#3#3#3'0'#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#7#7#7#159#1#1#1#16#255#255
+  +#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255
+  +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#7'OnClick'#7
+  +#21'acStartTorrentExecute'#0#0#9'TMenuItem'#9'MenuItem9'#6'Action'#7#13'acSt'
+  +'opTorrent'#11'Bitmap.Data'#10':'#4#0#0'6'#4#0#0'BM6'#4#0#0#0#0#0#0'6'#0#0#0
+  +'('#0#0#0#16#0#0#0#16#0#0#0#1#0' '#0#0#0#0#0#0#4#0#0'd'#0#0#0'd'#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255
+  ,#255#0#255#255#255'3'#255#255#255'f'#255#255#255'3'#255#255#255#0#255#255#255
+  +#0#255#255#255'3'#255#255#255'f'#255#255#255'3'#255#255#255#0#255#255#255#0
+  +#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0'eee'
+  +#178'777'#255'eee'#178#255#255#255#0#255#255#255#0'eee'#178'777'#255'eee'#178
+  +#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0'---'#255'666'#255'---'#255#255#255#255#0#255#255#255
+  +#0'---'#255'666'#255'---'#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0
+  +#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0'+++'#255'333'#255'+++'
+  +#255#255#255#255#0#255#255#255#0'+++'#255'333'#255'+++'#255#255#255#255#0#255
+  +#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0'((('#255'000'#255'((('#255#255#255#255#0#255#255#255#0'((('#255'000'
+  +#255'((('#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0'%%%'#255',,,'#255'%%%'#255#255#255#255
+  +#0#255#255#255#0'%%%'#255',,,'#255'%%%'#255#255#255#255#0#255#255#255#0#255
+  +#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0'"""'#255
+  +')))'#255'"""'#255#255#255#255#0#255#255#255#0'"""'#255')))'#255'"""'#255#255
+  +#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0'   '#255'&&&'#255'   '#255#255#255#255#0#255#255#255#0
+  +'   '#255'&&&'#255'   '#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0
+  +#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#29#29#29#255'###'#255#29
+  +#29#29#255#255#255#255#0#255#255#255#0#29#29#29#255'###'#255#29#29#29#255#255
+  +#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#27#27#27#255'   '#255#27#27#27#255#255#255#255#0#255#255
+  +#255#0#27#27#27#255'   '#255#27#27#27#255#255#255#255#0#255#255#255#0#255#255
+  +#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#23#23#23#255
+  +#28#28#28#255#23#23#23#255#255#255#255#0#255#255#255#0#23#23#23#255#28#28#28
+  +#255#23#23#23#255#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#17#17#17#255#20#20#20#255#17#17#17
+  +#255#255#255#255#0#255#255#255#0#17#17#17#255#20#20#20#255#17#17#17#255#255
+  +#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#6#6#6#128#11#11#11#255#6#6#6#128#255#255#255#0#255#255
+  +#255#0#6#6#6#128#11#11#11#255#6#6#6#128#255#255#255#0#255#255#255#0#255#255
+  +#255#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255
+  +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0#0
+  +#0#0#0#7'OnClick'#7#20'acStopTorrentExecute'#0#0#9'TMenuItem'#10'MenuItem10'
+  +#6'Action'#7#15'acRemoveTorrent'#11'Bitmap.Data'#10':'#4#0#0'6'#4#0#0'BM6'#4
+  +#0#0#0#0#0#0'6'#0#0#0'('#0#0#0#16#0#0#0#16#0#0#0#1#0' '#0#0#0#0#0#0#4#0#0'd'
+  +#0#0#0'd'#0#0#0#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#6#255#255#255'3'#255#255#255'S'#255#255#255'f'#255#255
+  +#255'f'#255#255#255'S'#255#255#255'3'#255#255#255#6#255#255#255#0#0#0#0#0#0#0
+  +#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255'&'
+  +#221#221#221'iiii'#178'BBB'#226'000'#255'000'#255'AAA'#226'iii'#178#221#221
+  +#221'i'#255#255#255'&'#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255'&~~~'#159':::'#245'111'#255''''''''#255#30#30#30#255#29#29
+  +#29#255'"""'#255')))'#255'555'#245'|||'#159#255#255#255'&'#0#0#0#0#255#255
+  +#255#0#255#255#255#0#255#255#255#6'vvv'#155'222'#255'333'#255'@@@'#227'OOOj'
+  +#255#255#255#0#255#255#255#0#8#8#8'@'#22#22#22#192'$$$'#255'---'#255'vvv'#155
+  +#255#255#255#6#255#255#255#0#255#255#255#0#196#196#196'?111'#245'---'#255'..'
+  +'.'#255'///'#255'zzz'#160#255#255#255'&'#255#255#255#0#255#255#255#0#255#255
+  +#255#0#17#17#17#128'%%%'#255'000'#245#196#196#196'?'#255#255#255#0#255#255
+  +#255#0'VVV'#169')))'#255'%%%'#242'###'#255'***'#255'---'#255'zzz'#160#255#255
+  +#255'&'#255#255#255#0#255#255#255#0#255#255#255#0'!!!'#198'((('#255'VVV'#169
+  +#255#255#255#0#255#255#255#0'666'#226'%%%'#255#13#13#13'P'#17#17#17#160#31#31
+  +#31#255'((('#255'***'#255'yyy'#160#255#255#255'&'#255#255#255#0#255#255#255#0
+  +#10#10#10'@%%%'#255'666'#226#255#255#255#0#255#255#255#0'"""'#255'"""'#255
+  +#255#255#255#0#255#255#255#0#16#16#16#160#29#29#29#255'%%%'#255''''''''#255
+  +'www'#160#255#255#255'&'#255#255#255#0#255#255#255#0'###'#255'"""'#255#255
+  +#255#255#0#255#255#255#0#30#30#30#255'!!!'#255#255#255#255#26#255#255#255#0
+  +#255#255#255#0#15#15#15#160#28#28#28#255'###'#255'%%%'#255'vvv'#160#255#255
+  +#255'&'#255#255#255' !!!'#255#30#30#30#255#255#255#255#0#255#255#255#0'!!!'
+  +#217#31#31#31#255#129#129#129'y'#255#255#255#0#255#255#255#0#255#255#255#0#14
+  +#14#14#160#25#25#25#255'   '#255'###'#255'www'#160'zzz'#137#31#31#31#255'!!!'
+  +#217#255#255#255#0#255#255#255#0#18#18#18#130#26#26#26#255'777'#217#255#255
+  ,#255'3'#255#255#255#0#255#255#255#0#255#255#255#0#13#13#13#160#25#25#25#255
+  +#31#31#31#255'!!!'#255'222'#226#26#26#26#255#18#18#18#130#255#255#255#0#255
+  +#255#255#0#1#1#1#16#22#22#22#241#26#26#26#255'[[['#178#255#255#255'L'#255#255
+  +#255#25#255#255#255#0#255#255#255#0'%%%'#172#28#28#28#255#30#30#30#255#26#26
+  +#26#255#22#22#22#241#1#1#1#16#255#255#255#0#255#255#255#0#255#255#255#0#7#7#7
+  +'`'#18#18#18#255#22#22#22#255'333'#217#148#148#148#140#255#255#255'f'#255#255
+  +#255'f'#130#130#130#149#30#30#30#245#22#22#22#255#18#18#18#255#7#7#7'`'#0#0#0
+  +#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#6#6#6'`'#13#13#13
+  +#239#17#17#17#255#20#20#20#255#21#21#21#255#21#21#21#255#20#20#20#255#17#17
+  +#17#255#13#13#13#239#6#6#6'`'#0#0#0#0#0#0#0#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#1#1#1#16#6#6#6#128#10#10#10#207#12#12
+  +#12#255#12#12#12#255#10#10#10#207#6#6#6#128#1#1#1#16#255#255#255#0#0#0#0#0#0
+  +#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#255#255#255#0#7'OnClick'#7#22'acRemoveTorrentExecute'#0#0#9'TMenuItem'
+  +#10'MenuItem11'#6'Action'#7#15'acVerifyTorrent'#7'OnClick'#7#22'acVerifyTorr'
+  +'entExecute'#0#0#9'TMenuItem'#10'MenuItem19'#7'Caption'#6#1'-'#0#0#9'TMenuIt'
+  +'em'#10'MenuItem20'#6'Action'#7#14'acTorrentProps'#7'Default'#9#7'OnClick'#7
+  +#21'acTorrentPropsExecute'#0#0#9'TMenuItem'#10'MenuItem36'#7'Caption'#6#1'-'
+  +#0#0#9'TMenuItem'#10'MenuItem37'#6'Action'#7#14'acSetupColumns'#7'OnClick'#7
+  +#21'acSetupColumnsExecute'#0#0#0#22'TApplicationProperties'#21'ApplicationPr'
+  +'operties'#17'CaptureExceptions'#9#9'HintColor'#7#8'clInfoBk'#13'HintHidePau'
+  +'se'#3#196#9#9'HintPause'#3#244#1#13'HintShortCuts'#9#14'HintShortPause'#2#0
+  +#8'ShowHint'#9#11'OnException'#7#30'ApplicationPropertiesException'#6'OnIdle'
+  +#7#25'ApplicationPropertiesIdle'#10'OnMinimize'#7#29'ApplicationPropertiesMi'
+  +'nimize'#9'OnRestore'#7#28'ApplicationPropertiesRestore'#4'left'#3'\'#1#3'to'
+  +'p'#2'8'#0#0#10'TPopupMenu'#7'pmFiles'#6'Images'#7#11'ImageList16'#7'OnPopup'
+  +#7#12'pmFilesPopup'#4'left'#3#152#2#3'top'#3'h'#1#0#9'TMenuItem'#10'MenuItem'
+  +'12'#6'Action'#7#17'acSetHighPriority'#7'OnClick'#7#24'acSetHighPriorityExec'
+  +'ute'#0#0#9'TMenuItem'#10'MenuItem13'#6'Action'#7#19'acSetNormalPriority'#7
+  +'OnClick'#7#26'acSetNormalPriorityExecute'#0#0#9'TMenuItem'#10'MenuItem14'#6
+  +'Action'#7#16'acSetLowPriority'#7'OnClick'#7#23'acSetLowPriorityExecute'#0#0
+  +#9'TMenuItem'#10'MenuItem15'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#10'MenuItem1'
+  +'6'#6'Action'#7#16'acSetNotDownload'#7'OnClick'#7#23'acSetNotDownloadExecute'
+  +#0#0#0#6'TTimer'#10'DummyTimer'#7'Enabled'#8#8'Interval'#2'd'#7'OnTimer'#7#15
+  +'DummyTimerTimer'#4'left'#3#199#1#3'top'#2'9'#0#0#10'TImageList'#11'ImageLis'
+  +'t16'#6'Masked'#8#4'left'#3#8#2#3'top'#2'<'#6'Bitmap'#10#14'T'#0#0'Li'#21#0#0
   +#0#16#0#0#0#16#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
   +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
   +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0's'#8#255#8'{'#8#255#8
@@ -680,7 +703,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +'s'#8#255#24#165#198#255#0#0#0#0#0#0#0#0#0#0#0#0')'#173#214#255's'#222#247
   +#255')'#173#214#255#156#255#255#255#140#247#255#255#140#247#255#255#140#247
   +#255#255#140#239#255#255#140#239#255#255#140#239#255#255's'#222#247#255's'
-  +#222#247#255#24#165#198#255#0#0#0#0#0#0#0#0#0#0#0#0')'#173#214#255')'#173#214
+  ,#222#247#255#24#165#198#255#0#0#0#0#0#0#0#0#0#0#0#0')'#173#214#255')'#173#214
   +#255#173#222#239#255#148#247#255#255#148#247#255#255#140#239#255#255#140#239
   +#255#255#140#239#255#255#140#239#255#255's'#222#247#255's'#222#247#255'J'#198
   +#239#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0')'#173#214#255'R'#189#231#255#173
@@ -703,7 +726,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#0'Z'#0#255#0'Z'
   +#0#255#0'Z'#0#255#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0
   +#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255
-  ,#0#255#0#255#0#255#0#0's'#0#255'B'#206'B'#255#0's'#0#255#0'Z'#0#255#255#0#255
+  +#0#255#0#255#0#255#0#0's'#0#255'B'#206'B'#255#0's'#0#255#0'Z'#0#255#255#0#255
   +#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0
   +#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#0's'#0#255's'
   +#239's'#255#173#255#173#255#0's'#0#255#0'Z'#0#255#255#0#255#0#255#0#255#0#255
@@ -744,7 +767,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#0#255#0#255#0#255#0#255#0#255#0#255#0'Zs'#239#255'JZ'#231#255'9R'#231
   +#255'1J'#231#255'1J'#231#255')B'#231#255')9'#231#255'!9'#214#255#24'9'#214
   +#255#24'1'#198#255#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255
-  +#0'Zs'#239#255#140#148#239#255'k{'#239#255'Rs'#239#255'Rc'#231#255'Jc'#231
+  ,#0'Zs'#239#255#140#148#239#255'k{'#239#255'Rs'#239#255'Rc'#231#255'Jc'#231
   +#255'JZ'#231#255'BZ'#231#255'9R'#231#255')J'#231#255#16'1'#206#255#24'1'#165
   +#255#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0'Jc'#231#255'k'#132#239
   +#255'Zs'#239#255'Jc'#231#255'BR'#231#255'1R'#231#255'1J'#222#255')B'#222#255
@@ -767,7 +790,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#16'9'#231#255#8'1'#231#255#0'!'#206#255#0#16#156#255#255#0#255#0#255#0
   +#255#0#255#0#255#0#255#0#255#0#0#24#206#255#16'1'#214#255#24'1'#214#255'!9'
   +#231#255')B'#231#255'!B'#231#255#24'B'#231#255#16'9'#231#255#8'1'#231#255#0
-  ,')'#231#255#0#24#206#255#0#16#156#255#255#0#255#0#255#0#255#0#255#0#255#0#255
+  +')'#231#255#0#24#206#255#0#16#156#255#255#0#255#0#255#0#255#0#255#0#255#0#255
   +#0#255#0#16')'#198#255#0#24#198#255#8'!'#198#255#16')'#198#255#16')'#198#255
   +#8')'#206#255#16')'#206#255#16')'#206#255#0'!'#206#255#0#24#206#255#0#16#173
   +#255#16'!'#156#255#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255#0#255
@@ -808,7 +831,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#0#0#0#0#0#0#0#0#0#0'1'#222#255#0'1'#222#255#0#0#0#0#0#0#0#0#0#0#0#0#0'1'#222
   +#255#0'1'#222#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
   +#0#0#0#0#0#0#0#0#0#0#0'1'#222#255#0'1'#222#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
+  ,#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
   +#0#0#0#0#0#0#0#0'1'#222#255#0'1'#222#255#0#0#255#0#0#0#255#0#0#0#255#0#0#0
   +#255#0#0#0#255#0#0#0#255#0#255#196'+'#255#255#196'+'#255#255#196'+'#255#255
   +#196'+'#255#0#0#255#0#0#0#255#0#0#0#255#0#0#0#255#0#0#0#255#0#0#0#255#0#0#0
@@ -831,7 +854,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#251#245#255#255#180'T'#255#255#175'G'#255#255#170'='#255#255#168'8'#255
   +#255#166'3'#255#255#161'0'#255#255#146'+'#255#255#146'+'#255#255#174'S'#255
   +#255#175'T'#255#255#175'T'#255#255#175'T'#255#255#215#169#255#255#205#148#255
-  ,#255#255#255#255#255#249#243#255#255#160'3'#255#255#160'3'#255#255#160'3'#255
+  +#255#255#255#255#255#249#243#255#255#160'3'#255#255#160'3'#255#255#160'3'#255
   +#255#160'3'#255#255#160'3'#255#255#159'2'#255#255#146'+'#255#255#138'+'#255
   +#255#164'K'#255#255#165'L'#255#255#165'L'#255#255#165'L'#255#255#161'D'#255
   +#255#198#142#255#255#255#255#255#255#217#178#255#255#153'3'#255#255#153'3'
@@ -872,7 +895,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#0#153' '#255#255#255#0#255#0#153'3'#255#0#153'@'#255#0#153#15#255#0#153
   +'o'#255#0#153#8#255#255#255#0#255#0#153'G'#255#0#153'/===0'#138#138#138#255
   +#138#138#138#255'===0'#255#0#153'/'#255#0#153'G'#255#255#255#0#255#0#153#8
-  +#255#0#153'o'#255#0#153#15#255#255#255#0#255#0#153'U'#255#0#153'_'#255#255
+  ,#255#0#153'o'#255#0#153#15#255#255#255#0#255#0#153'U'#255#0#153'_'#255#255
   +#255#0#255#255#255#0#255#255#255#0'www'#164#144#144#144#255#144#144#144#255
   +'www'#164#255#255#255#0#255#255#255#0#255#255#255#0#255#0#153'_'#255#0#153'U'
   +#255#255#255#0#255#255#255#0#255#255#255#0#255#0#153#144#255#0#153'o'#255#0
@@ -895,7 +918,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +'X'#255'HHHb'#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
   +#255#0#255#255#255#0'\\\'#212'EEE'#255#144#144#144'n'#255#255#255'@'#255#255
   +#255'@'#255#255#255'@'#255#255#255'@'#144#144#144'nEEE'#255'\\\'#212#255#255
-  ,#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
   +#255#255#255'4'#255#255#255'@'#255#255#255#12#255#255#255#0#255#255#255#0#255
   +#255#255#0#255#255#255#0#255#255#255#12#255#255#255'@'#255#255#255'4'#255#255
   +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
@@ -936,7 +959,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#0#28#0#0#0#28#0#0#0#28#0#0#0#28#0#0#0#28#0#0#0#28#0#0#0#28#0#0#0#28#0#0#0#28
   +#0#0#0#28#0#0#0#28#0#0#0#28#0#0#0#27#0#0#0#18#0#0#0#6#0#0#0#9#0#0#0#9#0#0#0#9
   +#0#0#0#9#0#0#0#9#0#0#0#9#0#0#0#9#0#0#0#9#0#0#0#9#0#0#0#9#0#0#0#9#0#0#0#9#0#0
-  +#0#9#0#0#0#9#0#0#0#6#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#153#153
+  ,#0#9#0#0#0#9#0#0#0#6#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#153#153
   +#153#255#154#154#154#255#154#154#154#255#154#154#154#255#154#154#154#255#154
   +#154#154#255#154#154#154#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
   +#0#0#0#0#0#0#0#0#0#0#0#0#153#153#153#255#250#250#250#255#250#250#250#255#250
@@ -959,7 +982,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#255#255#255#255#255#255#153#153#153#255#197#197#197#255#219#219#219#255
   +#219#219#219#255#153#153#153#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#153#153#153
   +#255#240#240#240#255#240#240#240#255#240#240#240#255#204#204#204#255#204#204
-  ,#204#255#204#204#204#255#153#153#153#255#192#192#192#255#214#214#214#255#214
+  +#204#255#204#204#204#255#153#153#153#255#192#192#192#255#214#214#214#255#214
   +#214#214#255#153#153#153#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#153#153#153#255
   +#235#235#235#255#235#235#235#255#235#235#235#255#235#235#235#255#235#235#235
   +#255#235#235#235#255#153#153#153#255#137#137#137#255#153#153#153#255#153#153
@@ -1000,7 +1023,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255
   +#3'#'#210#255#147#169#255#255#0'3'#255#255#0#26#206#255#147#163#238#255#26'G'
   +#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  +#0#0#0#0#0#0'))F'#255#3'#'#210#255#147#169#255#255#0'3'#255#255#0#26#206#255
+  ,#0#0#0#0#0#0'))F'#255#3'#'#210#255#147#169#255#255#0'3'#255#255#0#26#206#255
   +#147#163#238#255#26'G'#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
   +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0'))F'#255#3'#'#210#255#147#169#255#255#0'3'
   +#255#255#0#26#206#255#155#167#234#255#26'G'#217#255#0#0#0#0#0#0#0#0#0#0#0#0#0
@@ -1023,7 +1046,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +'h'#1#255#251#188'T'#255#253#253#253#0#253#253#253#0#0#0#0#0#253#253#253#0
   +#253#189'V'#255#253#150'3'#255#253#150'3'#255#253#139#29#255#253#139#29#255
   +#244'|'#3#255#245'}'#3#255#244'|'#3#255#207'h'#1#255#207'h'#1#255#207'h'#1
-  ,#255#206'g'#1#255#168'@+'#255#253#253#253#0#0#0#0#0#253#253#253#0#253#189'V'
+  +#255#206'g'#1#255#168'@+'#255#253#253#253#0#0#0#0#0#253#253#253#0#253#189'V'
   +#255#253#150'3'#255#253#150'3'#255#253#139#29#255#253#139#29#255#252#252#252
   +#255#253#253#253#255#252#252#252#255#244'|'#3#255#207'h'#1#255#207'h'#1#255
   +#206'g'#1#255#168'@+'#255#253#253#253#0#0#0#0#0#253#253#253#0#253#189'V'#255
@@ -1064,7 +1087,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#253#253#253#0#253#253#253#0'A'#210'A'#255'A'#210'A'#255'A'#210'A'#255'A'#209
   +'A'#255'A'#210'A'#255'A'#209'A'#255'A'#209'A'#255'A'#209'A'#255'@'#209'@'#255
   +#251#251#251#0#253#253#253#0#253#253#253#0#0#0#0#0#253#253#253#0#253#253#253
-  +#0'A'#210'A'#255#20#176#20#255#20#176#20#255#10#166#10#255#10#166#10#255#1
+  ,#0'A'#210'A'#255#20#176#20#255#20#176#20#255#10#166#10#255#10#166#10#255#1
   +#151#1#255#1#151#1#255#1#128#1#255#1#128#1#255#1#128#1#255'@'#208'@'#255#253
   +#253#253#0#253#253#253#0#0#0#0#0#253#253#253#0'A'#210'A'#255#31#184#31#255#31
   +#184#31#255#20#176#20#255#20#176#20#255#10#166#10#255#10#166#10#255#1#151#1
@@ -1087,7 +1110,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#210'A'#255':'#200':'#255':'#200':'#255#252#252#252#255#253#253#253#255#252
   +#252#252#255#19'o'#19#255#17#144#17#255#19#175#19#255#9#165#9#255#1#128#1#255
   +#253#253#253#0#0#0#0#0#253#253#253#0'A'#210'A'#255'X'#200'X'#255'X'#200'X'
-  ,#255'A'#210'A'#255':'#200':'#255#252#252#252#255#253#253#253#255#252#252#252
+  +#255'A'#210'A'#255':'#200':'#255#252#252#252#255#253#253#253#255#252#252#252
   +#255#19'o'#19#255#31#184#31#255#19#175#19#255#9#165#9#255#1#128#1#255#253#253
   +#253#0#0#0#0#0#253#253#253#0'A'#210'A'#255'X'#200'X'#255'X'#200'X'#255'X'#200
   +'X'#255'A'#210'A'#255':'#200':'#255#27'w'#27#255#27'v'#27#255#19'o'#19#255#31
@@ -1128,7 +1151,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#253#253#253#255#252#252#252#255#253#253#253#255#252#252#252#255#252#252#252
   +#255#23#22#146#255#11#10#205#255#12#11#249#255#2#1#166#255#253#253#253#0#0#0
   +#0#0#253#253#253#0'hg'#251#255'qp'#251#255'hg'#251#255'ba'#251#255'HG'#205
-  +#255#252#252#252#255#253#253#253#255#252#252#252#255#23#22#146#255#23#22#146
+  ,#255#252#252#252#255#253#253#253#255#252#252#252#255#23#22#146#255#23#22#146
   +#255#11#11#205#255#21#20#249#255#2#1#166#255#253#253#253#0#0#0#0#0#253#253
   +#253#0'hg'#251#255'ut'#251#255'qp'#251#255'hg'#251#255'ba'#251#255'HG'#205
   +#255#253#253#253#255'..'#146#255'..'#146#255'54'#205#255'-,'#250#255'"!'#249
@@ -1151,7 +1174,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#253#253#253#0#253#253#253#0'gg'#253#255'gg'#253#255'gg'#253#255'ff'#252#255
   +'gg'#253#255'ff'#252#255'ff'#252#255'ff'#252#255'ff'#252#255#251#251#251#0
   +#253#253#253#0#253#253#253#0#0#0#0#0#253#253#253#0#253#253#253#0'gg'#253#255
-  ,'--'#253#255'""'#253#255'""'#253#255#21#21#252#255#12#12#253#255#1#1#247#255
+  +'--'#253#255'""'#253#255'""'#253#255#21#21#252#255#12#12#253#255#1#1#247#255
   +#1#1#227#255#11#11#208#255#1#1#190#255'ee'#251#255#253#253#253#0#253#253#253
   +#0#0#0#0#0#253#253#253#0'gg'#253#255'EE'#253#255'88'#253#255'--'#253#255'""'
   +#253#255'""'#252#255#21#21#253#255#12#12#252#255#1#1#247#255#1#1#227#255#10
@@ -1192,7 +1215,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#252#251#0#251#252#251#0#251#251#251#0#251#251#251#0#251#251#251#0#251#251
   +#251#0#251#251#251#0#251#251#251#0#0#0#0#0#253#253#253#0#253#253#253#0#253
   +#253#253#0'gg'#252#255'ff'#251#255'ff'#251#255'ff'#251#255'ff'#251#255'ff'
-  +#251#255'ff'#251#255'ef'#251#255'ef'#251#255#251#251#251#0#251#251#251#0#251
+  ,#251#255'ff'#251#255'ef'#251#255'ef'#251#255#251#251#251#0#251#251#251#0#251
   +#251#251#0#0#0#0#0#253#253#253#0#253#253#253#0'gg'#252#255'--'#252#255'""'
   +#251#255'!!'#251#255#20#21#251#255#11#12#251#255#1#1#246#255#1#1#226#255#10
   +#10#206#255#1#1#189#255'ef'#251#255#253#253#253#0#253#253#253#0#0#0#0#0#252
@@ -1215,7 +1238,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#21#21#252#255#12#12#252#255#1#1#167#255#252#252#252#0#0#0#0#0#252#252
   +#252#0'ff'#252#255'oo'#252#255'ff'#252#255#252#252#252#255#252#252#252#255
   +#252#252#252#255'..'#148#255#252#252#252#255#252#252#252#255#252#252#252#255
-  ,#11#11#208#255#21#21#252#255#1#1#167#255#252#252#252#0#0#0#0#0#253#253#253#0
+  +#11#11#208#255#21#21#252#255#1#1#167#255#252#252#252#0#0#0#0#0#253#253#253#0
   +'gg'#252#255'tt'#252#255'pp'#252#255#252#252#252#255#252#252#252#255'..'#148
   +#255'..'#148#255'44'#207#255#252#252#252#255#252#252#252#255#22#22#148#255'"'
   +'"'#252#255#1#1#167#255#253#253#253#0#0#0#0#0#252#252#252#0'ff'#252#255'ss'
@@ -1256,7 +1279,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255'\p$'#255'<I'#24#255#253#253#253#0#0#0#0#0#253#253#253#0#165#198'M'#255
   +#153#175'_'#255#145#167'W'#255#253#253#253#255#253#253#253#255#253#253#253
   +#255#253#253#253#255#253#253#253#255'MZ)'#255'\p$'#255'o'#129'3'#255'f{*'#255
-  +'<I'#24#255#253#253#253#0#0#0#0#0#253#253#253#0#165#198'M'#255#153#175'_'#255
+  ,'<I'#24#255#253#253#253#0#0#0#0#0#253#253#253#0#165#198'M'#255#153#175'_'#255
   +#153#175'_'#255#145#167'W'#255#253#253#253#255#253#253#253#255#253#253#253
   +#255'MZ)'#255'f{*'#255'w'#137';'#255'o'#129'3'#255'o'#129'3'#255'<I'#24#255
   +#253#253#253#0#0#0#0#0#253#253#253#0#165#198'M'#255#159#179'm'#255#153#175'_'
@@ -1279,7 +1302,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#253#253#253#0#253#253#253#0#253#253#253#0#253#253#253#0#253#253#253#0#253
   +#253#253#0#253#253#253#0#253#253#253#0#253#253#253#0#253#253#253#0#0#0#0#0
   +#253#253#253#0#253#253#253#0#253#253#253#0'{{{'#255'{{{'#255'{{{'#255'{{{'
-  ,#255'{{{'#255'{{{'#255'{{{'#255'{{{'#255'{{{'#255#253#253#253#0#253#253#253#0
+  +#255'{{{'#255'{{{'#255'{{{'#255'{{{'#255'{{{'#255#253#253#253#0#253#253#253#0
   +#253#253#253#0#0#0#0#0#253#253#253#0#253#253#253#0'{{{'#255's]s'#255's]s'#255
   +'kUk'#255'dNd'#255'\F\'#255'\F\'#255'S=S'#255'K7K'#255'K7K'#255'{{{'#255#253
   +#253#253#0#253#253#253#0#0#0#0#0#253#253#253#0'{{{'#255#128'm'#128#255'{e{'
@@ -1320,7 +1343,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#0#0#0#0
   +#255#255#255#0#255#255#255#0#255#255#255#0#189#189#189#255#189#189#189#255
   +#189#189#189#255#189#189#189#255#189#189#189#255#189#189#189#255#189#189#189
-  +#255#189#189#189#255#189#189#189#255#255#255#255#0#255#255#255#0#255#255#255
+  ,#255#189#189#189#255#189#189#189#255#255#255#255#0#255#255#255#0#255#255#255
   +#0#0#0#0#0#255#255#255#0#255#255#255#0#189#189#189#255#133#133#133#255#128
   +#128#128#255'{{{'#255'uuu'#255'ppp'#255'kkk'#255'ddd'#255'___'#255'WWW'#255
   +#189#189#189#255#255#255#255#0#255#255#255#0#0#0#0#0#255#255#255#0#189#189
@@ -1343,7 +1366,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#255#255#255#0#0#0#0#0#255#255#255#0#189#189#189#255#172#172#172#255#167
   +#167#167#255#162#162#162#255#157#157#157#255#255#255#255#255#255#255#255#255
   +#255#255#255#255'WWW'#255'LHL'#255#128#128#128#255'zzz'#255'V`V'#255#255#255
-  ,#255#0#0#0#0#0#255#255#255#0#189#189#189#255#172#172#172#255#172#172#172#255
+  +#255#0#0#0#0#0#255#255#255#0#189#189#189#255#172#172#172#255#172#172#172#255
   +#167#167#167#255#162#162#162#255#157#157#157#255#255#255#255#255'WWW'#255'WW'
   +'W'#255#140#140#140#255#133#133#133#255#128#128#128#255'V`V'#255#255#255#255
   +#0#0#0#0#0#255#255#255#0#189#189#189#255#179#179#179#255#172#172#172#255#172
@@ -1384,7 +1407,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +'`V'#255#255#255#255#0#0#0#0#0#255#255#255#0#189#189#189#255#167#167#167#255
   +#162#162#162#255#157#157#157#255#128#128#128#255#255#255#255#255#255#255#255
   +#255#255#255#255#255'LHL'#255'LHL'#255'ddd'#255'uuu'#255'V`V'#255#255#255#255
-  +#0#0#0#0#0#255#255#255#0#189#189#189#255#172#172#172#255#167#167#167#255#162
+  ,#0#0#0#0#0#255#255#255#0#189#189#189#255#172#172#172#255#167#167#167#255#162
   +#162#162#255#157#157#157#255#255#255#255#255#255#255#255#255#255#255#255#255
   +'WWW'#255'kkk'#255#128#128#128#255'zzz'#255'V`V'#255#255#255#255#0#0#0#0#0
   +#255#255#255#0#189#189#189#255#172#172#172#255#172#172#172#255#167#167#167
@@ -1407,7 +1430,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#255#134#134
   +#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#134#134#134#255#134#134#134#255#204
   +#204#204#255#134#134#134#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0
-  ,#0#0#0#0#0#0#0#255#134#134#134#255#0#0#0#0#134#134#134#255#134#134#134#255
+  +#0#0#0#0#0#0#0#255#134#134#134#255#0#0#0#0#134#134#134#255#134#134#134#255
   +#204#204#204#255#204#204#204#255#192#192#192#255#192#192#192#255#134#134#134
   +#255#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#134#134#134#255
   +#134#134#134#255#221#221#221#255#204#204#204#255#204#204#204#255#192#192#192
@@ -1448,7 +1471,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
   +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#229#229#229#255#229
   +#229#229#255#229#229#229#255#229#229#229#255#229#229#229#255#229#229#229#255
-  +#229#229#229#255#229#229#229#255#229#229#229#255#255#255#255#0#255#255#255#0
+  ,#229#229#229#255#229#229#229#255#229#229#229#255#255#255#255#0#255#255#255#0
   +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#229#229#229#255#204
   +#204#204#255#197#197#197#255#197#197#197#255#193#193#193#255#189#189#189#255
   +#186#186#186#255#186#186#186#255#182#182#182#255#179#179#179#255#229#229#229
@@ -1471,7 +1494,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#0#229#229#229#255#219#219#219#255#212#212#212#255#212#212#212#255#0#0#0
   +#255#0#0#0#255#0#0#0#255#0#0#0#255#0#0#0#255#197#197#197#255#197#197#197#255
   +#193#193#193#255#179#179#179#255#255#255#255#0#255#255#255#0#255#255#255#0
-  ,#229#229#229#255#219#219#219#255#219#219#219#255#212#212#212#255#0#0#0#255'j'
+  +#229#229#229#255#219#219#219#255#219#219#219#255#212#212#212#255#0#0#0#255'j'
   +'jj'#255#0#0#0#255'ccc'#255#0#0#0#255'ccc'#255#197#197#197#255#193#193#193
   +#255#179#179#179#255#255#255#255#0#255#255#255#0#255#255#255#0#229#229#229
   +#255#219#219#219#255#219#219#219#255#219#219#219#255#212#212#212#255'jjj'#255
@@ -1512,7 +1535,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#255#255#255#255#9'8m'#255#9'8m'#255#9'8m'#255#255#255#255#255#9'8m'#255
   +#0'V'#183#255#0'V'#183#255#0'5'#170#255#0#255#0#0#0#255#0#0#0#255#0#0'W'#144
   +#212#255'E'#145#231#255','#131#231#255','#131#231#255#255#255#255#255#9'8m'
-  +#255'''X'#143#255#14'p'#225#255#255#255#255#255#9'8m'#255#0'`'#204#255#0'V'
+  ,#255'''X'#143#255#14'p'#225#255#255#255#255#255#9'8m'#255#0'`'#204#255#0'V'
   +#183#255#0'5'#170#255#0#255#0#0#0#255#0#0#0#255#0#0'W'#144#212#255'E'#145#231
   +#255'E'#145#231#255','#131#231#255#255#255#255#255#9'8m'#255#14'p'#225#255#14
   +'p'#225#255#255#255#255#255#9'8m'#255#0'`'#204#255#0'`'#204#255#0'5'#170#255
@@ -1535,7 +1558,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#0#0#0#255#0#0#0#255#0#0#0#255#0#0#0#255#0#0#0#255#0#0#0#255#0#0#0#255#0
   +#0#0#255#0#0#0#255#0#0#0#255#0#0#0#255#0#0#0#255#0#0#0#255#0#0#0#255#0#0#0
   +#255#0#0#0#255#0#0#0#0#10'TPopupMenu'#8'pmLabels'#4'left'#3't'#2#3'top'#3'h'
-  ,#1#0#9'TMenuItem'#11'miCopyLabel'#7'Caption'#6#4'Copy'#7'OnClick'#7#16'miCop'
+  +#1#0#9'TMenuItem'#11'miCopyLabel'#7'Caption'#6#4'Copy'#7'OnClick'#7#16'miCop'
   +'yLabelClick'#0#0#0#9'TTrayIcon'#8'TrayIcon'#12'BalloonFlags'#7#6'bfInfo'#14
   +'BalloonTimeout'#3#16''''#9'PopUpMenu'#7#6'pmTray'#10'OnDblClick'#7#16'TrayI'
   +'conDblClick'#4'left'#3'P'#2#3'top'#2'<'#0#0#10'TPopupMenu'#6'pmTray'#4'left'
@@ -1546,9 +1569,8 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +'cStopAllTorrents'#7'OnClick'#7#24'acStopAllTorrentsExecute'#0#0#9'TMenuItem'
   +#10'MenuItem28'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#10'MenuItem24'#6'Action'#7
   +#6'acExit'#7'OnClick'#7#13'acExitExecute'#0#0#0#10'TImageList'#8'imgFlags'#6
-  +'Height'#2#12#5'Width'#2#18#4'left'#3#245#0#3'top'#3#7#1#6'Bitmap'#10'n'#3#0
-  +#0'Li'#1#0#0#0#18#0#0#0#12#0#0#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +'Height'#2#12#6'Masked'#8#5'Width'#2#18#4'left'#3#245#0#3'top'#3#7#1#6'Bitma'
+  +'p'#10'n'#3#0#0'Li'#1#0#0#0#18#0#0#0#12#0#0#0#255#255#255#0#255#255#255#0#255
   +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
   +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
   +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
@@ -1577,7 +1599,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
   +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
   +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
-  +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
+  ,#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
   +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
   +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
   +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
@@ -1587,10 +1609,12 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
   +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
   +#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0
-  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#0#0#10
-  +'TPopupMenu'#7'pmPeers'#4'left'#3#188#2#3'top'#3'h'#1#0#9'TMenuItem'#10'Menu'
-  +'Item29'#6'Action'#7#13'acResolveHost'#7'OnClick'#7#20'acResolveHostExecute'
-  +#0#0#9'TMenuItem'#10'MenuItem30'#6'Action'#7#16'acResolveCountry'#7'OnClick'
-  +#7#23'acResolveCountryExecute'#0#0#9'TMenuItem'#10'MenuItem31'#6'Action'#7#17
-  +'acShowCountryFlag'#7'OnClick'#7#24'acShowCountryFlagExecute'#0#0#0#0
+  +#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255
+  +#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255#255#0#255#255
+  +#255#0#0#0#10'TPopupMenu'#7'pmPeers'#4'left'#3#188#2#3'top'#3'h'#1#0#9'TMenu'
+  +'Item'#10'MenuItem29'#6'Action'#7#13'acResolveHost'#7'OnClick'#7#20'acResolv'
+  +'eHostExecute'#0#0#9'TMenuItem'#10'MenuItem30'#6'Action'#7#16'acResolveCount'
+  +'ry'#7'OnClick'#7#23'acResolveCountryExecute'#0#0#9'TMenuItem'#10'MenuItem31'
+  +#6'Action'#7#17'acShowCountryFlag'#7'OnClick'#7#24'acShowCountryFlagExecute'
+  +#0#0#0#0
 ]);

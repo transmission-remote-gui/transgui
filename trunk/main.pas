@@ -66,6 +66,7 @@ type
     acResolveHost: TAction;
     acResolveCountry: TAction;
     acShowCountryFlag: TAction;
+    acSetupColumns: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
     acVerifyTorrent: TAction;
@@ -89,6 +90,10 @@ type
     MenuItem31: TMenuItem;
     MenuItem32: TMenuItem;
     MenuItem33: TMenuItem;
+    MenuItem34: TMenuItem;
+    MenuItem35: TMenuItem;
+    MenuItem36: TMenuItem;
+    MenuItem37: TMenuItem;
     miToggleApp: TMenuItem;
     miAbout: TMenuItem;
     miHelp: TMenuItem;
@@ -209,6 +214,7 @@ type
     procedure acSetLowPriorityExecute(Sender: TObject);
     procedure acSetNormalPriorityExecute(Sender: TObject);
     procedure acSetNotDownloadExecute(Sender: TObject);
+    procedure acSetupColumnsExecute(Sender: TObject);
     procedure acShowCountryFlagExecute(Sender: TObject);
     procedure acStartAllTorrentsExecute(Sender: TObject);
     procedure acStartTorrentExecute(Sender: TObject);
@@ -256,8 +262,8 @@ type
     procedure DoDisconnect;
     procedure UpdateUI;
     function ShowConnOptions: boolean;
-    procedure SaveColumns(LV: TListView; const AName: string);
-    procedure LoadColumns(LV: TListView; const AName: string);
+    procedure SaveColumns(LV: TListView; const AName: string; FullInfo: boolean = False);
+    procedure LoadColumns(LV: TListView; const AName: string; FullInfo: boolean = False);
     function GetTorrentError(t: TJSONObject): string;
     function SecondsToString(j: integer): string;
     procedure DoAddTorrent(const FileName: Utf8String);
@@ -303,15 +309,23 @@ const
   idxUpSpeed = 7;
   idxETA = 8;
   idxRatio = 9;
-  idxTorrentId = 10;
-  idxTag = 11;
-  idxSeedsTotal = 12;
-  idxLeechers = 13;
-  idxPeersTotal = 14;
-  idxStateImg = 15;
-  idxTracker = 16;
+  idxDownloaded = 10;
+  idxUploaded = 11;
+  idxTracker = 12;
+  idxTrackerStatus = 13;
+  idxAddedOn = 14;
+  idxCompletedOn = 15;
+  idxLastActive = 16;
 
-  idxTorrentColCount = 17;
+  idxLastVisible = 16;
+  idxTorrentId = idxLastVisible + 1;
+  idxTag = idxLastVisible + 2;
+  idxSeedsTotal = idxLastVisible + 3;
+  idxLeechers = idxLastVisible + 4;
+  idxPeersTotal = idxLastVisible + 5;
+  idxStateImg = idxLastVisible + 6;
+
+  idxTorrentColCount = idxStateImg + 1;
 
   // Peers list
   idxPeerIP = 0;
@@ -351,11 +365,16 @@ const
 
   StatusFiltersCount = 5;
 
+  TorrentFields: array[idxName..idxLastActive] of string =
+    ('name', 'totalSize', 'leftUntilDone,sizeWhenDone,recheckProgress', 'status', 'peersSendingToUs,seeders',
+     'peersGettingFromUs,leechers,peersKnown', 'rateDownload', 'rateUpload', 'eta', 'uploadRatio',
+     'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate');
+
 implementation
 
 uses
   AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, tz, TorrProps, DaemonOptions, About,
-  ToolWin, download;
+  ToolWin, download, ColSetup;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -563,7 +582,7 @@ begin
       WindowState:=wsMaximized;
   end;
 
-  LoadColumns(lvTorrents, 'TorrentsList');
+  LoadColumns(lvTorrents, 'TorrentsList', True);
   LoadColumns(lvFiles, 'FilesList');
   LoadColumns(lvPeers, 'PeersList');
 
@@ -1040,7 +1059,7 @@ begin
   FIni.WriteInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition);
   FIni.WriteInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition);
 
-  SaveColumns(lvTorrents, 'TorrentsList');
+  SaveColumns(lvTorrents, 'TorrentsList', True);
   SaveColumns(lvFiles, 'FilesList');
   SaveColumns(lvPeers, 'PeersList');
 
@@ -1246,6 +1265,12 @@ end;
 procedure TMainForm.acSetNotDownloadExecute(Sender: TObject);
 begin
   SetCurrentFilePriority('skip');
+end;
+
+procedure TMainForm.acSetupColumnsExecute(Sender: TObject);
+begin
+  if not SetupColumns(lvTorrents) then exit;
+  RpcObj.RefreshNow:=True;
 end;
 
 procedure TMainForm.acShowCountryFlagExecute(Sender: TObject);
@@ -1611,6 +1636,7 @@ begin
   acSetNormalPriority.Enabled:=acSetHighPriority.Enabled;
   acSetLowPriority.Enabled:=acSetHighPriority.Enabled;
   acSetNotDownload.Enabled:=acSetHighPriority.Enabled;
+  acSetupColumns.Enabled:=RpcObj.Connected;
 end;
 
 function TMainForm.ShowConnOptions: boolean;
@@ -1663,19 +1689,26 @@ begin
   end;
 end;
 
-procedure TMainForm.SaveColumns(LV: TListView; const AName: string);
+procedure TMainForm.SaveColumns(LV: TListView; const AName: string; FullInfo: boolean);
 var
-  i: integer;
+  i, j: integer;
 begin
   for i:=0 to LV.Columns.Count - 1 do
     with LV.Columns[i] do begin
       FIni.WriteInteger(AName, Format('Id%d', [i]), ID);
-      FIni.WriteInteger(AName, Format('Index%d', [i]), Index);
-      FIni.WriteInteger(AName, Format('Width%d', [i]), Width);
+      if Visible then
+        j:=Width
+      else
+        j:=Tag;
+      FIni.WriteInteger(AName, Format('Width%d', [i]), j);
+      if FullInfo then begin
+        FIni.WriteInteger(AName, Format('Index%d', [i]), Index);
+        FIni.WriteBool(AName, Format('Visible%d', [i]), Visible);
+      end;
     end;
 end;
 
-procedure TMainForm.LoadColumns(LV: TListView; const AName: string);
+procedure TMainForm.LoadColumns(LV: TListView; const AName: string; FullInfo: boolean);
 var
   i, j, ColId: integer;
 begin
@@ -1687,8 +1720,12 @@ begin
       for j:=0 to LV.Columns.Count - 1 do
         with LV.Columns[j] do
           if ID = ColId then begin
-            Index:=FIni.ReadInteger(AName, Format('Index%d', [i]), Index);
-            Width:=FIni.ReadInteger(AName, Format('Width%d', [i]), Width);
+            if FullInfo then begin
+              Index:=FIni.ReadInteger(AName, Format('Index%d', [i]), Index);
+              Visible:=FIni.ReadBool(AName, Format('Visible%d', [i]), Visible);
+            end;
+            Tag:=FIni.ReadInteger(AName, Format('Width%d', [i]), Width);
+            Width:=Tag;
             break;
           end;
     end;
@@ -1854,15 +1891,24 @@ procedure TMainForm.UpdateTorrentsList;
 var
   it: TListItem;
 
-  procedure SetSubItem(idx: integer; const s: string);
+  procedure SetSubItem(ID: integer; const s: string);
+  var
+    idx: integer;
   begin
-    if it.SubItems.Count < idx then begin
-      while it.SubItems.Count < idx - 1 do
-        it.SubItems.Add('');
-      it.SubItems.Add(s);
-    end
-    else
-      it.SubItems[idx-1]:=s;
+    for idx:=0 to lvTorrents.Columns.Count - 1 do
+      if lvTorrents.Columns[idx].ID = ID then begin
+        if idx = 0 then
+          it.Caption:=s
+        else
+          if it.SubItems.Count < idx then begin
+            while it.SubItems.Count < idx - 1 do
+              it.SubItems.Add('');
+            it.SubItems.Add(s);
+          end
+          else
+            it.SubItems[idx-1]:=s;
+        break;
+      end;
   end;
 
 var
@@ -1955,9 +2001,7 @@ begin
       else
         it:=lvTorrents.Items[Cnt];
 
-      it.Caption:=FTorrents[idxName, i];
-      it.ImageIndex:=FTorrents[idxStateImg, i];
-
+      SetSubItem(idxName, FTorrents[idxName, i]);
       SetSubItem(idxSize, GetHumanSize(FTorrents[idxSize, i], 0));
 
       case integer(FTorrents[idxStatus, i]) of
@@ -2041,6 +2085,7 @@ begin
       DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, i];
       UpSpeed:=UpSpeed + FTorrents[idxUpSpeed, i];
 
+      it.ImageIndex:=FTorrents[idxStateImg, i];
       it.Data:=pointer(ptruint(j));
       Inc(Cnt);
     end;
