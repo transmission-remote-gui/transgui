@@ -1,3 +1,5 @@
+{ This is an automatically generated lazarus resource file }
+
 LazarusResources.Add('TMainForm','FORMDATA',[
   'TPF0'#9'TMainForm'#8'MainForm'#4'Left'#3#181#252#6'Height'#3#215#1#3'Top'#3
   +#146#0#5'Width'#3#12#3#18'HorzScrollBar.Page'#3#228#2#18'VertScrollBar.Page'
@@ -24,9 +26,9 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +'aRightJustify'#8'AutoSize'#8#7'Caption'#6#8'Uploaded'#7'Visible'#8#5'Width'
   +#2'<'#0#1#8'AutoSize'#8#7'Caption'#6#7'Tracker'#7'Visible'#8#5'Width'#2'd'#0
   +#1#8'AutoSize'#8#7'Caption'#6#14'Tracker status'#7'Visible'#8#5'Width'#2'd'#0
-  +#1#8'AutoSize'#8#7'Caption'#6#8'Added on'#7'Visible'#8#5'Width'#2'F'#0#1#8'A'
-  +'utoSize'#8#7'Caption'#6#12'Completed on'#7'Visible'#8#5'Width'#2'F'#0#1#8'A'
-  +'utoSize'#8#7'Caption'#6#11'Last active'#7'Visible'#8#5'Width'#2'F'#0#0#21'C'
+  +#1#8'AutoSize'#8#7'Caption'#6#8'Added on'#7'Visible'#8#5'Width'#2'x'#0#1#8'A'
+  +'utoSize'#8#7'Caption'#6#12'Completed on'#7'Visible'#8#5'Width'#2'x'#0#1#8'A'
+  +'utoSize'#8#7'Caption'#6#11'Last active'#7'Visible'#8#5'Width'#2'x'#0#0#21'C'
   +'onstraints.MinHeight'#2'2'#20'Constraints.MinWidth'#2'2'#13'HideSelection'#8
   +#9'PopupMenu'#7#10'pmTorrents'#8'ReadOnly'#9#9'RowSelect'#9#11'SmallImages'#7
   +#11'ImageList16'#10'SortColumn'#2#0#8'SortType'#7#6'stData'#8'TabOrder'#2#0#9
@@ -45,27 +47,27 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#172#1#5'Width'#3#12#3#6'Panels'#14#1#5'Width'#3','#1#0#1#5'Width'#2'd'#0#1#5
   +'Width'#2'd'#0#1#5'Width'#2'2'#0#0#11'SimplePanel'#8#0#0#12'TPageControl'#8
   +'PageInfo'#4'Left'#2#0#6'Height'#3#253#0#3'Top'#3#175#0#5'Width'#3#12#3#10'A'
-  +'ctivePage'#7#8'tabPeers'#5'Align'#7#8'alBottom'#21'Constraints.MinHeight'#2
-  +'2'#6'Images'#7#11'ImageList16'#8'TabIndex'#2#1#8'TabOrder'#2#0#8'OnChange'#7
-  +#14'PageInfoChange'#13'OnPageChanged'#7#14'PageInfoChange'#0#9'TTabSheet'#10
-  +'tabGeneral'#7'Caption'#6#7'General'#12'ClientHeight'#3#226#0#11'ClientWidth'
-  +#3#4#3#10'ImageIndex'#2#4#0#10'TScrollBox'#9'sbGenInfo'#4'Left'#2#0#6'Height'
-  +#3#200#0#3'Top'#2#26#5'Width'#3#4#3#5'Align'#7#8'alClient'#5'Ctl3D'#8#8'TabO'
-  +'rder'#2#0#8'OnResize'#7#15'sbGenInfoResize'#0#6'TPanel'#14'panGeneralInfo'#4
-  +'Left'#2#0#6'Height'#2':'#3'Top'#3#136#0#5'Width'#3#0#3#5'Align'#7#5'alTop'
-  +#10'BevelOuter'#7#6'bvNone'#28'ChildSizing.LeftRightSpacing'#2#4#28'ChildSiz'
-  +'ing.TopBottomSpacing'#2#4#29'ChildSizing.HorizontalSpacing'#2#16#27'ChildSi'
-  +'zing.VerticalSpacing'#2#4#29'ChildSizing.EnlargeHorizontal'#7#24'crsHomogen'
-  +'ousChildResize'#27'ChildSizing.ControlsPerLine'#2#4#12'ClientHeight'#2':'#11
-  +'ClientWidth'#3#0#3#8'TabOrder'#2#0#0#6'TLabel'#18'txTorrentNameLabel'#4'Lef'
-  +'t'#2#4#6'Height'#2#14#3'Top'#2#4#5'Width'#2' '#7'Caption'#6#5'Name:'#11'Par'
-  +'entColor'#8#0#0#6'TLabel'#13'txTorrentName'#4'Left'#3#179#0#6'Height'#2#14#3
-  +'Top'#2#4#5'Width'#2'J'#7'Caption'#6#13'txTorrentName'#11'ParentColor'#8#0#0
-  +#6'TLabel'#14'txCreatedLabel'#4'Left'#3'z'#1#6'Height'#2#14#3'Top'#2#4#5'Wid'
-  +'th'#2';'#7'Caption'#6#11'Created on:'#11'ParentColor'#8#0#0#6'TLabel'#9'txC'
-  ,'reated'#4'Left'#3'2'#2#6'Height'#2#14#3'Top'#2#4#5'Width'#2'2'#7'Caption'#6
-  +#9'txCreated'#11'ParentColor'#8#0#0#6'TLabel'#16'txTotalSizeLabel'#4'Left'#2
-  +#4#6'Height'#2#14#3'Top'#2#22#5'Width'#2'2'#7'Caption'#6#11'Total size:'#11
+  +'ctivePage'#7#10'tabGeneral'#5'Align'#7#8'alBottom'#21'Constraints.MinHeight'
+  +#2'2'#6'Images'#7#11'ImageList16'#8'TabIndex'#2#0#8'TabOrder'#2#0#8'OnChange'
+  +#7#14'PageInfoChange'#13'OnPageChanged'#7#14'PageInfoChange'#0#9'TTabSheet'
+  +#10'tabGeneral'#7'Caption'#6#7'General'#12'ClientHeight'#3#226#0#11'ClientWi'
+  +'dth'#3#4#3#10'ImageIndex'#2#4#0#10'TScrollBox'#9'sbGenInfo'#4'Left'#2#0#6'H'
+  +'eight'#3#200#0#3'Top'#2#26#5'Width'#3#4#3#5'Align'#7#8'alClient'#5'Ctl3D'#8
+  +#8'TabOrder'#2#0#8'OnResize'#7#15'sbGenInfoResize'#0#6'TPanel'#14'panGeneral'
+  +'Info'#4'Left'#2#0#6'Height'#2':'#3'Top'#3#136#0#5'Width'#3#0#3#5'Align'#7#5
+  +'alTop'#10'BevelOuter'#7#6'bvNone'#28'ChildSizing.LeftRightSpacing'#2#4#28'C'
+  +'hildSizing.TopBottomSpacing'#2#4#29'ChildSizing.HorizontalSpacing'#2#16#27
+  +'ChildSizing.VerticalSpacing'#2#4#29'ChildSizing.EnlargeHorizontal'#7#24'crs'
+  +'HomogenousChildResize'#27'ChildSizing.ControlsPerLine'#2#4#12'ClientHeight'
+  +#2':'#11'ClientWidth'#3#0#3#8'TabOrder'#2#0#0#6'TLabel'#18'txTorrentNameLabe'
+  +'l'#4'Left'#2#4#6'Height'#2#14#3'Top'#2#4#5'Width'#2' '#7'Caption'#6#5'Name:'
+  +#11'ParentColor'#8#0#0#6'TLabel'#13'txTorrentName'#4'Left'#3#179#0#6'Height'
+  +#2#14#3'Top'#2#4#5'Width'#2'J'#7'Caption'#6#13'txTorrentName'#11'ParentColor'
+  +#8#0#0#6'TLabel'#14'txCreatedLabel'#4'Left'#3'z'#1#6'Height'#2#14#3'Top'#2#4
+  +#5'Width'#2';'#7'Caption'#6#11'Created on:'#11'ParentColor'#8#0#0#6'TLabel'#9
+  ,'txCreated'#4'Left'#3'2'#2#6'Height'#2#14#3'Top'#2#4#5'Width'#2'2'#7'Caption'
+  +#6#9'txCreated'#11'ParentColor'#8#0#0#6'TLabel'#16'txTotalSizeLabel'#4'Left'
+  +#2#4#6'Height'#2#14#3'Top'#2#22#5'Width'#2'2'#7'Caption'#6#11'Total size:'#11
   +'ParentColor'#8#0#0#6'TLabel'#11'txTotalSize'#4'Left'#3#179#0#6'Height'#2#14
   +#3'Top'#2#22#5'Width'#2'6'#7'Caption'#6#11'txTotalSize'#11'ParentColor'#8#0#0
   +#6'TLabel'#13'txPiecesLabel'#4'Left'#3'z'#1#6'Height'#2#14#3'Top'#2#22#5'Wid'

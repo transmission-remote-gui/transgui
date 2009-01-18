@@ -64,7 +64,7 @@ begin
         if Width = 0 then
           Visible:=False;
         lstColumns.Checked[j]:=Visible;
-        if Visible then
+        if Visible or (Width <> 0) then
           Tag:=Width;
       end;
     UpdateUI;

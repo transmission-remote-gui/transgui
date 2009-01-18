@@ -74,12 +74,15 @@ type
     FStatus: string;
     FInfoStatus: string;
     FConnected: boolean;
+    FTorrentFields: string;
 
     function GetConnected: boolean;
     function GetInfoStatus: string;
     function GetStatus: string;
+    function GetTorrentFields: string;
     procedure SetInfoStatus(const AValue: string);
     procedure SetStatus(const AValue: string);
+    procedure SetTorrentFields(const AValue: string);
   public
     Http: THTTPSend;
     HttpLock: TCriticalSection;
@@ -107,6 +110,7 @@ type
     property Status: string read GetStatus write SetStatus;
     property InfoStatus: string read GetInfoStatus write SetInfoStatus;
     property Connected: boolean read GetConnected;
+    property TorrentFields: string read GetTorrentFields write SetTorrentFields;
   end;
 
 implementation
@@ -237,18 +241,35 @@ function TRpcThread.GetTorrents: boolean;
 var
   args: TJSONObject;
   ExtraFields: array of string;
+  sl: TStringList;
+  i: integer;
 begin
   Result:=False;
-  ExtraFields:=nil;
-  if FRpc.RequestFullInfo then begin
-    SetLength(ExtraFields, 1);
-    ExtraFields[0]:='trackers';
+  sl:=TStringList.Create;
+  try
+    FRpc.Lock;
+    try
+      sl.CommaText:=FRpc.FTorrentFields;
+    finally
+      FRpc.Unlock;
+    end;
+    i:=sl.IndexOf('trackers');
+    if FRpc.RequestFullInfo then begin
+      if i < 0 then
+        sl.Add('trackers');
+    end
+    else
+      if i >= 0 then
+        sl.Delete(i);
+    SetLength(ExtraFields, sl.Count);
+    for i:=0 to sl.Count - 1 do
+      ExtraFields[i]:=sl[i];
+  finally
+    sl.Free;
   end;
-  args:=FRpc.RequestInfo(0, ['id', 'name', 'totalSize', 'rateDownload', 'rateUpload', 'seeders',
-                        'eta', 'peersConnected', 'peersGettingFromUs', 'peersSendingToUs',
-                        'leftUntilDone', 'sizeWhenDone', 'status', 'leechers', 'peersKnown',
-                        'recheckProgress', 'uploadRatio', 'errorString', 'announceResponse'],
-                        ExtraFields);
+
+  args:=FRpc.RequestInfo(0, ['id', 'name', 'status', 'errorString', 'announceResponse', 'recheckProgress',
+                             'sizeWhenDone', 'leftUntilDone', 'rateDownload', 'rateUpload'], ExtraFields);
   try
     if (args <> nil) and not Terminated then begin
       FRpc.RequestFullInfo:=False;
@@ -311,7 +332,8 @@ begin
   args:=FRpc.RequestInfo(TorrentId, ['totalSize', 'sizeWhenDone', 'leftUntilDone', 'pieceCount', 'pieceSize', 'haveValid',
                                      'hashString', 'comment', 'downloadedEver', 'uploadedEver', 'corruptEver', 'errorString',
                                      'announceResponse', 'downloadLimit', 'downloadLimitMode', 'uploadLimit', 'uploadLimitMode',
-                                     'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator']);
+                                     'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
+                                     'seeders','peersGettingFromUs','leechers','peersKnown', 'uploadRatio']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
@@ -516,6 +538,17 @@ begin
   end;
 end;
 
+function TRpc.GetTorrentFields: string;
+begin
+  Lock;
+  try
+    Result:=FTorrentFields;
+    UniqueString(Result);
+  finally
+    Unlock;
+  end;
+end;
+
 procedure TRpc.SetInfoStatus(const AValue: string);
 begin
   Lock;
@@ -549,6 +582,17 @@ begin
   try
     FStatus:=AValue;
     UniqueString(FStatus);
+  finally
+    Unlock;
+  end;
+end;
+
+procedure TRpc.SetTorrentFields(const AValue: string);
+begin
+  Lock;
+  try
+    FTorrentFields:=AValue;
+    UniqueString(FTorrentFields);
   finally
     Unlock;
   end;

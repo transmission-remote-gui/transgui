@@ -119,19 +119,19 @@ object MainForm: TMainForm
           AutoSize = False
           Caption = 'Added on'
           Visible = False
-          Width = 70
+          Width = 120
         end      
         item
           AutoSize = False
           Caption = 'Completed on'
           Visible = False
-          Width = 70
+          Width = 120
         end      
         item
           AutoSize = False
           Caption = 'Last active'
           Visible = False
-          Width = 70
+          Width = 120
         end>
       Constraints.MinHeight = 50
       Constraints.MinWidth = 50
@@ -209,11 +209,11 @@ object MainForm: TMainForm
     Height = 253
     Top = 175
     Width = 780
-    ActivePage = tabPeers
+    ActivePage = tabGeneral
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -2291,7 +2291,7 @@ object MainForm: TMainForm
     end
   end
 end
- = acShowCountryFlagExecute
+ShowCountryFlagExecute
     end
   end
 end
