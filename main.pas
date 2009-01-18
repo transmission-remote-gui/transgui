@@ -292,7 +292,7 @@ type
     procedure FillGeneralInfo(t: TJSONObject);
     procedure CheckStatus(Fatal: boolean = True);
     function TorrentAction(TorrentId: integer; const AAction: string): boolean;
-    function SetFilePriority(TorrentId, FileIdx: integer; const APriority: string): boolean;
+    function SetFilePriority(TorrentId: integer; const Files: array of integer; const APriority: string): boolean;
     function SetCurrentFilePriority(const APriority: string): boolean;
     procedure ClearDetailsInfo;
   end;
@@ -2635,7 +2635,17 @@ begin
   AppNormal;
 end;
 
-function TMainForm.SetFilePriority(TorrentId, FileIdx: integer; const APriority: string): boolean;
+function TMainForm.SetFilePriority(TorrentId: integer; const Files: array of integer; const APriority: string): boolean;
+
+  function CreateFilesArray: TJSONArray;
+  var
+    i: integer;
+  begin
+    Result:=TJSONArray.Create;
+    for i:=Low(Files) to High(Files) do
+      Result.Add(Files[i]);
+  end;
+
 var
   req, args: TJSONObject;
 begin
@@ -2646,21 +2656,11 @@ begin
     args:=TJSONObject.Create;
     if TorrentId <> 0 then
       args.Add('ids', TJSONArray.Create([TorrentId]));
-    if APriority = 'skip' then begin
-      if FileIdx <> -1 then
-        args.Add('files-unwanted', TJSONArray.Create([FileIdx]))
-      else
-        args.Add('files-unwanted', TJSONArray.Create);
-    end
+    if APriority = 'skip' then
+      args.Add('files-unwanted', CreateFilesArray)
     else begin
-      if FileIdx <> -1 then begin
-        args.Add('files-wanted', TJSONArray.Create([FileIdx]));
-        args.Add('priority-' + APriority, TJSONArray.Create([FileIdx]));
-      end
-      else begin
-        args.Add('files-wanted', TJSONArray.Create);
-        args.Add('priority-' + APriority, TJSONArray.Create);
-      end;
+      args.Add('files-wanted', CreateFilesArray);
+      args.Add('priority-' + APriority, CreateFilesArray);
     end;
     req.Add('arguments', args);
     args:=RpcObj.SendRequest(req, False);
@@ -2677,9 +2677,22 @@ begin
 end;
 
 function TMainForm.SetCurrentFilePriority(const APriority: string): boolean;
+var
+  Files: array of integer;
+  i, j: integer;
 begin
-  if (lvTorrents.Selected = nil) or (lvFiles.Selected = nil) or (PageInfo.ActivePage <> tabFiles) then exit;
-  Result:=SetFilePriority(PtrUInt(lvTorrents.Selected.Data), PtrUInt(lvFiles.Selected.Data) - 1, APriority);
+  if (lvTorrents.Selected = nil) or (PageInfo.ActivePage <> tabFiles) then exit;
+  SetLength(Files, lvFiles.Items.Count);
+  j:=0;
+  for i:=0 to lvFiles.Items.Count - 1 do
+    with lvFiles.Items[i] do
+      if Selected then begin
+        Files[j]:=PtrUInt(Data) - 1;
+        Inc(j);
+      end;
+  if j = 0 then exit;
+  SetLength(Files, j);
+  Result:=SetFilePriority(PtrUInt(lvTorrents.Selected.Data), Files, APriority);
 end;
 
 initialization
@@ -2695,6 +2708,15 @@ ata) - 1, APriority);
 end;
 
 initialization
+  {$I main.lrs}
+
+end.
+
+{$I main.lrs}
+
+end.
+
+tion
   {$I main.lrs}
 
 end.
