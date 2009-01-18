@@ -46,12 +46,12 @@ LazarusResources.Add('TDaemonOptionsForm','FORMDATA',[
   +'der'#2#1#5'Value'#3'90'#0#0#9'TComboBox'#12'cbEncryption'#4'Left'#2'r'#6'He'
   +'ight'#2#21#3'Top'#2'='#5'Width'#3#12#1#7'Anchors'#11#5'akTop'#6'akLeft'#7'a'
   +'kRight'#0#12'AutoComplete'#8#5'Ctl3D'#8#10'ItemHeight'#2#13#13'Items.String'
-  +'s'#1#6#17'Outgoing disabled'#6#18'Outgoing preferred'#6#29'Require outgoing'
-  +' and incoming'#0#9'ItemWidth'#2#0#5'Style'#7#14'csDropDownList'#8'TabOrder'
-  +#2#3#0#0#9'TCheckBox'#16'cbPortForwarding'#4'Left'#3#194#0#6'Height'#2#17#3
-  +'Top'#2'!'#5'Width'#2'|'#7'Caption'#6#22'Enable port forwarding'#8'TabOrder'
-  +#2#2#0#0#9'TCheckBox'#5'cbPEX'#4'Left'#2'r'#6'Height'#2#17#3'Top'#2'X'#5'Wid'
-  +'th'#2''#7'Caption'#6#20'Enable Peer Exchange'#8'TabOrder'#2#4#0#0#9'TSpinE'
-  +'dit'#10'edMaxPeers'#4'Left'#2'r'#6'Height'#2#23#3'Top'#2'p'#5'Width'#2'B'#8
-  +'MaxValue'#4#159#134#1#0#8'MinValue'#2#1#8'TabOrder'#2#5#5'Value'#2#1#0#0#0#0
+  +'s'#1#6#8'Disabled'#6#7'Enabled'#6#8'Required'#0#9'ItemWidth'#2#0#5'Style'#7
+  +#14'csDropDownList'#8'TabOrder'#2#3#0#0#9'TCheckBox'#16'cbPortForwarding'#4
+  +'Left'#3#194#0#6'Height'#2#17#3'Top'#2'!'#5'Width'#2'|'#7'Caption'#6#22'Enab'
+  +'le port forwarding'#8'TabOrder'#2#2#0#0#9'TCheckBox'#5'cbPEX'#4'Left'#2'r'#6
+  +'Height'#2#17#3'Top'#2'X'#5'Width'#2''#7'Caption'#6#20'Enable Peer Exchange'
+  +#8'TabOrder'#2#4#0#0#9'TSpinEdit'#10'edMaxPeers'#4'Left'#2'r'#6'Height'#2#23
+  +#3'Top'#2'p'#5'Width'#2'B'#8'MaxValue'#4#159#134#1#0#8'MinValue'#2#1#8'TabOr'
+  +'der'#2#5#5'Value'#2#1#0#0#0#0
 ]);

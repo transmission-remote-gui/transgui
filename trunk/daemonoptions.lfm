@@ -176,9 +176,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Ctl3D = False
       ItemHeight = 13
       Items.Strings = (
-        'Outgoing disabled'
-        'Outgoing preferred'
-        'Require outgoing and incoming'
+        'Disabled'
+        'Enabled'
+        'Required'
       )
       ItemWidth = 0
       Style = csDropDownList
