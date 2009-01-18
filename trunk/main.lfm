@@ -2292,6 +2292,3 @@ object MainForm: TMainForm
     end
   end
 end
-  end
-  end
-end

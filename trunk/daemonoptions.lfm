@@ -25,6 +25,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Caption = 'Global bandwidth settings'
     ClientHeight = 68
     ClientWidth = 390
+    Ctl3D = False
     TabOrder = 3
     object Label1: TLabel
       Left = 360
@@ -46,9 +47,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object cbMaxDown: TCheckBox
       Left = 6
-      Height = 19
+      Height = 17
       Top = 6
-      Width = 155
+      Width = 146
       Caption = 'Maximum download speed:'
       OnClick = cbMaxDownClick
       TabOrder = 0
@@ -65,9 +66,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object cbMaxUp: TCheckBox
       Left = 6
-      Height = 19
+      Height = 17
       Top = 38
-      Width = 141
+      Width = 132
       Caption = 'Maximum upload speed:'
       OnClick = cbMaxUpClick
       TabOrder = 2
@@ -113,6 +114,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 147
     ClientWidth = 390
+    Ctl3D = False
     TabOrder = 2
     object txDownloadDir: TLabel
       Left = 6
@@ -149,6 +151,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     object edDownloadDir: TEdit
       Left = 114
       Height = 23
+      Top = 0
       Width = 268
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 0
@@ -169,28 +172,31 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Top = 61
       Width = 268
       Anchors = [akTop, akLeft, akRight]
+      AutoComplete = False
+      Ctl3D = False
       ItemHeight = 13
       Items.Strings = (
         'Outgoing disabled'
         'Outgoing preferred'
         'Require outgoing and incoming'
       )
+      ItemWidth = 0
       Style = csDropDownList
       TabOrder = 3
     end
     object cbPortForwarding: TCheckBox
       Left = 194
-      Height = 19
+      Height = 17
       Top = 33
-      Width = 136
+      Width = 124
       Caption = 'Enable port forwarding'
       TabOrder = 2
     end
     object cbPEX: TCheckBox
       Left = 114
-      Height = 19
+      Height = 17
       Top = 88
-      Width = 133
+      Width = 127
       Caption = 'Enable Peer Exchange'
       TabOrder = 4
     end
