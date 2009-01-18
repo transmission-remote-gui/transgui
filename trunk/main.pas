@@ -1629,18 +1629,12 @@ begin
 end;
 
 procedure TMainForm.DoConnect;
-var
-  auth, p: string;
 begin
   DoDisconnect;
-  auth:=FIni.ReadString('Connection', 'UserName', '');
-  if auth <> '' then begin
-    p:=DecodeBase64(FIni.ReadString('Connection', 'Password', ''));
-    if p <> '' then
-      auth:=auth + ':' + p;
-    auth:=auth + '@';
-  end;
-  RpcObj.Url:=Format('http://%s%s:%d/transmission/rpc', [auth, FIni.ReadString('Connection', 'Host', 'localhost'), FIni.ReadInteger('Connection', 'Port', 9091)]);
+  RpcObj.Http.UserName:=FIni.ReadString('Connection', 'UserName', '');
+  RpcObj.Http.Password:=DecodeBase64(FIni.ReadString('Connection', 'Password', ''));
+  RpcObj.Url:=Format('http://%s:%d/transmission/rpc', [FIni.ReadString('Connection', 'Host', 'localhost'), FIni.ReadInteger('Connection', 'Port', 9091)]);
+
   RpcObj.RefreshInterval:=FIni.ReadInteger('Connection', 'RefreshInterval', 5);
   if RpcObj.RefreshInterval < 1 then
     RpcObj.RefreshInterval:=1;
@@ -2699,29 +2693,3 @@ initialization
   {$I main.lrs}
 
 end.
-
-{$I main.lrs}
-
-end.
-
-ata) - 1, APriority);
-end;
-
-initialization
-  {$I main.lrs}
-
-end.
-
-{$I main.lrs}
-
-end.
-
-tion
-  {$I main.lrs}
-
-end.
-
-{$I main.lrs}
-
-end.
-
