@@ -24,7 +24,7 @@ unit utils;
 interface
 
 uses
-  SysUtils,
+  SysUtils, Controls, Forms,
 {$ifdef windows}
   Windows, win32int, InterfaceBase
 {$endif}
@@ -37,6 +37,12 @@ function GetTimeZoneDelta: TDateTime;
 
 procedure ShowTaskbarButton;
 procedure HideTaskbarButton;
+
+function OpenURL(const URL: string): boolean;
+
+procedure AppBusy;
+procedure AppNormal;
+procedure ForceAppNormal;
 
 implementation
 
@@ -75,6 +81,91 @@ begin
 {$ifdef mswindows}
   ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_HIDE);
 {$endif mswindows}
+end;
+
+{$ifdef unix}
+type
+  TipoDeskMang = (dmUnknown, dmGnome, dmKde);
+
+function  DeterminaDesktopManager:TipoDeskMang;
+begin
+  Result:=dmUnknown; //Desktop Manager sconosciuto
+
+  if (GetEnvironmentVariable('GNOME_DESKTOP_SESSION_ID') <> '') or
+     (GetEnvironmentVariable('DESKTOP_SESSION') = 'gnome') then begin
+    Result:=dmGnome;
+  end else begin
+    if (GetEnvironmentVariable('KDE_FULL_SESSION') <> '') or
+       (GetEnvironmentVariable('DESKTOP_SESSION') = 'kde') then begin
+      Result:=dmKde;
+    end;
+  end;
+end;
+
+function UnixOpenURL(const NomeFile: String):Integer;
+var
+  WrkProcess:TProcess;
+  Comando:String;
+begin
+  Result:=-1;
+  Comando:='';
+  DesktopManager:=;
+  case DeterminaDesktopManager of
+    dmGnome:
+      Comando:='gnome-open';
+    dmKde:
+      Comando:='kfmclient exec';
+  end;
+
+  if Comando = '' then
+    exit;
+
+  WrkProcess:=TProcess.Create(nil);
+  try
+    WrkProcess.Options:=[poNoConsole];
+    WrkProcess.CommandLine:=Comando +
+                            ' ' +
+                            NomeFile;
+    WrkProcess.Execute;
+    Result:=WrkProcess.ExitStatus;
+  finally
+    WrkProcess.Free;
+  end;
+end;
+{$endif unix}
+
+function OpenURL(const URL: string): boolean;
+begin
+{$ifdef mswindows}
+  Result:=ShellExecute(0, 'open', PChar(URL), nil, nil, SW_SHOWNORMAL) > 32;
+{$endif mswindows}
+{$ifdef unix}
+  Result:=UnixOpenURL(URL) = 0;
+{$endif unix}
+end;
+
+var
+  BusyCount: integer = 0;
+
+procedure AppBusy;
+begin
+  Inc(BusyCount);
+  Screen.Cursor:=crHourGlass;
+end;
+
+procedure AppNormal;
+begin
+  Dec(BusyCount);
+  if BusyCount <= 0 then begin
+    BusyCount:=0;
+    Screen.Cursor:=crDefault;
+  end;
+end;
+
+procedure ForceAppNormal;
+begin
+  BusyCount:=0;
+  AppNormal;
 end;
 
 end.
