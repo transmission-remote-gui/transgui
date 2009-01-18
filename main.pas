@@ -894,7 +894,7 @@ begin
 
           files:=TJSONArray.Create;
           for i:=0 to lvFiles.Items.Count - 1 do
-            if not lvFiles.Items[0].Checked then
+            if not lvFiles.Items[i].Checked then
               files.Add(i);
           if files.Count > 0 then
             args.Add('files-unwanted', files)
