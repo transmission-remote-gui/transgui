@@ -93,45 +93,52 @@ object MainForm: TMainForm
           Alignment = taRightJustify
           AutoSize = False
           Caption = 'Downloaded'
+          Tag = 60
           Visible = False
-          Width = 60
+          Width = 0
         end      
         item
           Alignment = taRightJustify
           AutoSize = False
           Caption = 'Uploaded'
+          Tag = 60
           Visible = False
-          Width = 60
+          Width = 0
         end      
         item
           AutoSize = False
           Caption = 'Tracker'
+          Tag = 120
           Visible = False
-          Width = 100
+          Width = 0
         end      
         item
           AutoSize = False
           Caption = 'Tracker status'
+          Tag = 100
           Visible = False
-          Width = 100
+          Width = 0
         end      
         item
           AutoSize = False
           Caption = 'Added on'
+          Tag = 120
           Visible = False
-          Width = 120
+          Width = 0
         end      
         item
           AutoSize = False
           Caption = 'Completed on'
+          Tag = 120
           Visible = False
-          Width = 120
+          Width = 0
         end      
         item
           AutoSize = False
           Caption = 'Last active'
+          Tag = 120
           Visible = False
-          Width = 120
+          Width = 0
         end>
       Constraints.MinHeight = 50
       Constraints.MinWidth = 50
@@ -765,12 +772,12 @@ object MainForm: TMainForm
     end
     object tabPeers: TTabSheet
       Caption = 'Peers'
-      ClientHeight = 226
+      ClientHeight = 252
       ClientWidth = 772
       ImageIndex = 6
       object lvPeers: TListView
         Left = 0
-        Height = 226
+        Height = 252
         Top = 0
         Width = 772
         Align = alClient
@@ -824,12 +831,12 @@ object MainForm: TMainForm
     end
     object tabFiles: TTabSheet
       Caption = 'Files'
-      ClientHeight = 226
+      ClientHeight = 252
       ClientWidth = 772
       ImageIndex = 7
       object lvFiles: TListView
         Left = 0
-        Height = 226
+        Height = 252
         Top = 0
         Width = 772
         Align = alClient
