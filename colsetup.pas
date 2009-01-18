@@ -152,9 +152,3 @@ initialization
 
 end.
 
- {$I colsetup.lrs}
-
-end.
-
-nd.
-
