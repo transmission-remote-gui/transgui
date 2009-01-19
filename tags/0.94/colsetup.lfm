@@ -1,0 +1,70 @@
+object ColSetupForm: TColSetupForm
+  Left = 423
+  Height = 239
+  Top = 195
+  Width = 267
+  HorzScrollBar.Page = 399
+  VertScrollBar.Page = 299
+  AutoScroll = False
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Setup columns'
+  ClientHeight = 239
+  ClientWidth = 267
+  Constraints.MinHeight = 200
+  Constraints.MinWidth = 260
+  Position = poMainFormCenter
+  LCLVersion = '0.9.27'
+  object lstColumns: TCheckListBox
+    Left = 8
+    Height = 221
+    Top = 8
+    Width = 170
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ItemHeight = 0
+    OnClick = lstColumnsClick
+    TabOrder = 0
+  end
+  object btUp: TButton
+    Left = 186
+    Height = 23
+    Top = 8
+    Width = 75
+    Anchors = [akTop, akRight]
+    Caption = 'Up'
+    OnClick = btUpClick
+    TabOrder = 1
+  end
+  object btDown: TButton
+    Left = 186
+    Height = 23
+    Top = 36
+    Width = 75
+    Anchors = [akTop, akRight]
+    Caption = 'Down'
+    OnClick = btDownClick
+    TabOrder = 2
+  end
+  object btOk: TButton
+    Left = 186
+    Height = 23
+    Top = 178
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = 'OK'
+    Default = True
+    OnClick = btOkClick
+    TabOrder = 3
+  end
+  object btCancel: TButton
+    Left = 186
+    Height = 23
+    Top = 206
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Cancel = True
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 4
+  end
+end

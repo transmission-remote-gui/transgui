@@ -1,0 +1,105 @@
+{*************************************************************************************
+  This file is part of Transmission Remote GUI.
+  Copyright (c) 2008-2009 by Yury Sidorov.
+
+  Transmission Remote GUI is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  Transmission Remote GUI is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Transmission Remote GUI; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*************************************************************************************}
+
+unit About;
+
+{$mode objfpc}{$H+}
+
+interface
+
+uses
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, ExtCtrls;
+
+type
+
+  { TAboutForm }
+
+  TAboutForm = class(TForm)
+    Bevel1: TBevel;
+    btOK: TButton;
+    edLicense: TMemo;
+    imgDonate: TImage;
+    imgTransmission: TImage;
+    imgSynapse: TImage;
+    imgLazarus: TImage;
+    Label1: TLabel;
+    txHomePage: TLabel;
+    txAuthor: TLabel;
+    txVersion: TLabel;
+    txAppName: TLabel;
+    Page: TPageControl;
+    tabAbout: TTabSheet;
+    tabLicense: TTabSheet;
+    procedure FormCreate(Sender: TObject);
+    procedure imgDonateClick(Sender: TObject);
+    procedure imgLazarusClick(Sender: TObject);
+    procedure imgSynapseClick(Sender: TObject);
+    procedure txHomePageClick(Sender: TObject);
+  private
+    { private declarations }
+  public
+    { public declarations }
+  end; 
+
+implementation
+
+uses Main, utils;
+
+{ TAboutForm }
+
+procedure TAboutForm.imgSynapseClick(Sender: TObject);
+begin
+  AppBusy;
+  OpenURL('http://synapse.ararat.cz');
+  AppNormal;
+end;
+
+procedure TAboutForm.txHomePageClick(Sender: TObject);
+begin
+  AppBusy;
+  OpenURL(txHomePage.Caption);
+  AppNormal;
+end;
+
+procedure TAboutForm.FormCreate(Sender: TObject);
+begin
+  txAppName.Caption:=AppName;
+  txVersion.Caption:=Format(txVersion.Caption, [AppVersion]);
+  Page.ActivePageIndex:=0;
+end;
+
+procedure TAboutForm.imgDonateClick(Sender: TObject);
+begin
+  AppBusy;
+  OpenURL('https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=5FX6RCAGXP6GN&lc=GB&item_name=Transmission%20Remote%20GUI&item_number=2&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted');
+  AppNormal;
+end;
+
+procedure TAboutForm.imgLazarusClick(Sender: TObject);
+begin
+  AppBusy;
+  OpenURL('http://www.lazarus.freepascal.org');
+  AppNormal;
+end;
+
+initialization
+  {$I about.lrs}
+
+end.
+
