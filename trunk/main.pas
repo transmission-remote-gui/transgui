@@ -2302,7 +2302,10 @@ begin
         s:=hostinfo^.HostName
       else
         s:=ip;
-      port:=p.Integers['port'];
+      if p.IndexOfName('port') >= 0 then
+        port:=p.Integers['port']
+      else
+        port:=0;
       it:=nil;
       for j:=0 to High(ports) do
         if (port = ptruint(ports[j])) and ((lvPeers.Items[j].Caption = s) or (lvPeers.Items[j].Caption = ip)) then begin
