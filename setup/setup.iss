@@ -19,6 +19,7 @@
 AppId=transgui
 AppName={#MyAppName}
 AppVerName={#MyAppVerName}
+AppCopyright=Copyright (c) 2008-2009 by Yury Sidorov
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}

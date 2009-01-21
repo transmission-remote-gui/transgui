@@ -1,25 +1,26 @@
 object OptionsForm: TOptionsForm
   Left = 384
-  Height = 239
+  Height = 334
   Top = 185
-  Width = 367
+  Width = 376
   HorzScrollBar.Page = 349
   VertScrollBar.Page = 238
   AutoScroll = False
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 239
-  ClientWidth = 367
-  Constraints.MinHeight = 239
+  ClientHeight = 334
+  ClientWidth = 376
+  Constraints.MinHeight = 334
   Constraints.MinWidth = 300
   OnCreate = FormCreate
+  OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '0.9.27'
   object btOK: TButton
-    Left = 205
+    Left = 214
     Height = 23
-    Top = 210
+    Top = 305
     Width = 75
     Anchors = [akRight, akBottom]
     Caption = 'OK'
@@ -28,9 +29,9 @@ object OptionsForm: TOptionsForm
     TabOrder = 1
   end
   object btCancel: TButton
-    Left = 285
+    Left = 294
     Height = 23
-    Top = 210
+    Top = 305
     Width = 75
     Anchors = [akRight, akBottom]
     Cancel = True
@@ -40,21 +41,21 @@ object OptionsForm: TOptionsForm
   end
   object Page: TPageControl
     Left = 8
-    Height = 195
+    Height = 290
     Top = 8
-    Width = 352
+    Width = 361
     ActivePage = tabConnection
     Anchors = [akTop, akLeft, akRight, akBottom]
     TabIndex = 0
     TabOrder = 0
     object tabConnection: TTabSheet
       Caption = 'Connection'
-      ClientHeight = 169
-      ClientWidth = 344
+      ClientHeight = 264
+      ClientWidth = 353
       object txPassword: TLabel
         Left = 8
         Height = 14
-        Top = 110
+        Top = 98
         Width = 51
         Caption = 'Password:'
         ParentColor = False
@@ -62,7 +63,7 @@ object OptionsForm: TOptionsForm
       object txUserName: TLabel
         Left = 8
         Height = 14
-        Top = 78
+        Top = 70
         Width = 56
         Caption = 'User name:'
         ParentColor = False
@@ -70,7 +71,7 @@ object OptionsForm: TOptionsForm
       object txPort: TLabel
         Left = 8
         Height = 14
-        Top = 46
+        Top = 42
         Width = 25
         Caption = 'Port:'
         ParentColor = False
@@ -83,49 +84,125 @@ object OptionsForm: TOptionsForm
         Caption = 'Remote host:'
         ParentColor = False
       end
+      object txProxy: TLabel
+        Left = 25
+        Height = 14
+        Top = 150
+        Width = 67
+        Caption = 'Proxy server:'
+        ParentColor = False
+      end
+      object txProxyPort: TLabel
+        Left = 25
+        Height = 14
+        Top = 178
+        Width = 56
+        Caption = 'Proxy port:'
+        ParentColor = False
+      end
+      object txProxyUserName: TLabel
+        Left = 25
+        Height = 14
+        Top = 206
+        Width = 86
+        Caption = 'Proxy user name:'
+        ParentColor = False
+      end
+      object txProxyPassword: TLabel
+        Left = 25
+        Height = 14
+        Top = 234
+        Width = 82
+        Caption = 'Proxy password:'
+        ParentColor = False
+      end
       object edPassword: TEdit
-        Left = 136
+        Left = 148
         Height = 23
-        Top = 106
-        Width = 199
+        Top = 94
+        Width = 196
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword
         PasswordChar = '*'
         TabOrder = 3
       end
       object edUserName: TEdit
-        Left = 136
+        Left = 148
         Height = 23
-        Top = 74
-        Width = 199
+        Top = 66
+        Width = 196
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 2
       end
       object edPort: TSpinEdit
-        Left = 136
+        Left = 148
         Height = 23
-        Top = 42
-        Width = 98
+        Top = 38
+        Width = 70
         MaxValue = 65535
         MinValue = 1
         TabOrder = 1
-        Value = 1
+        Value = 65535
       end
       object edHost: TEdit
-        Left = 136
+        Left = 148
         Height = 23
         Top = 10
-        Width = 199
+        Width = 196
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 0
+      end
+      object cbUseProxy: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 122
+        Width = 97
+        Caption = 'Use proxy server'
+        OnClick = cbUseProxyClick
+        TabOrder = 4
+      end
+      object edProxy: TEdit
+        Left = 148
+        Height = 23
+        Top = 146
+        Width = 187
+        TabOrder = 5
+      end
+      object edProxyPort: TSpinEdit
+        Left = 148
+        Height = 23
+        Top = 174
+        Width = 70
+        MaxValue = 65535
+        MinValue = 1
+        TabOrder = 6
+        Value = 65535
+      end
+      object edProxyUserName: TEdit
+        Left = 148
+        Height = 23
+        Top = 202
+        Width = 196
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 7
+      end
+      object edProxyPassword: TEdit
+        Left = 148
+        Height = 23
+        Top = 230
+        Width = 196
+        Anchors = [akTop, akLeft, akRight]
+        EchoMode = emPassword
+        PasswordChar = '*'
+        TabOrder = 8
       end
     end
     object tabInterface: TTabSheet
       Caption = 'Interface'
-      ClientHeight = 169
-      ClientWidth = 344
+      ClientHeight = 264
+      ClientWidth = 353
       object txSeconds: TLabel
-        Left = 236
+        Left = 224
         Height = 14
         Top = 14
         Width = 40
@@ -141,10 +218,10 @@ object OptionsForm: TOptionsForm
         ParentColor = False
       end
       object edRefreshInterval: TSpinEdit
-        Left = 128
+        Left = 144
         Height = 23
         Top = 10
-        Width = 98
+        Width = 70
         MaxValue = 999
         MinValue = 1
         TabOrder = 0
@@ -154,34 +231,34 @@ object OptionsForm: TOptionsForm
         Left = 8
         Height = 85
         Top = 42
-        Width = 327
+        Width = 336
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Tray icon'
         ClientHeight = 67
-        ClientWidth = 323
+        ClientWidth = 332
         Ctl3D = False
         TabOrder = 1
         object cbTrayIconAlways: TCheckBox
           Left = 10
-          Height = 19
+          Height = 17
           Top = 40
-          Width = 138
+          Width = 129
           Caption = 'Tray icon always visible'
           TabOrder = 2
         end
         object cbTrayMinimize: TCheckBox
           Left = 10
-          Height = 19
+          Height = 17
           Top = 0
-          Width = 101
+          Width = 90
           Caption = 'Minimize to tray'
           TabOrder = 0
         end
         object cbTrayClose: TCheckBox
           Left = 10
-          Height = 19
+          Height = 17
           Top = 20
-          Width = 88
+          Width = 76
           Caption = 'Close to tray'
           TabOrder = 1
         end
