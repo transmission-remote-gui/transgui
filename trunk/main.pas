@@ -291,6 +291,7 @@ type
     function GetPeersText(Peers, PeersTotal, Leechers: integer): string;
     function RatioToString(Ratio: double): string;
     function TorrentDateTimeToString(d: Int64): string;
+    procedure UpdateSortColumn(LV: TListView; ColumnID: integer; SortDescending: boolean);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -579,6 +580,7 @@ begin
 
   FTorrentsSortColumn:=FIni.ReadInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
   FTorrentsSortDesc:=FIni.ReadBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
+  UpdateSortColumn(lvTorrents, FTorrentsSortColumn, FTorrentsSortDesc);
 
   acResolveHost.Checked:=FIni.ReadBool('PeersList', 'ResolveHost', True);
   acResolveCountry.Checked:=FIni.ReadBool('PeersList', 'ResolveCountry', True) and (GetGeoIpDatabase <> '');
@@ -652,6 +654,7 @@ begin
     FTorrentsSortColumn:=Column.ID;
     FTorrentsSortDesc:=False;
   end;
+  UpdateSortColumn(lvTorrents, FTorrentsSortColumn, FTorrentsSortDesc);
   UpdateTorrentsList;
 end;
 
@@ -1198,6 +1201,30 @@ begin
     Result:=DateTimeToStr(UnixToDateTime(d) + GetTimeZoneDelta);
 end;
 
+procedure TMainForm.UpdateSortColumn(LV: TListView; ColumnID: integer; SortDescending: boolean);
+var
+  i: integer;
+  s, Asc, Desc: string;
+begin
+  Asc:=UTF8Encode('^ ');
+  Desc:=UTF8Encode('v ');
+  for i:=0 to LV.Columns.Count - 1 do
+    with LV.Columns[i] do begin
+      s:=Caption;
+      if Copy(s, 1, Length(Asc)) = Asc then
+        System.Delete(s, 1, Length(Asc))
+      else
+        if Copy(s, 1, Length(Desc)) = Desc then
+          System.Delete(s, 1, Length(Desc));
+      if ID = ColumnID then
+        if SortDescending then
+          s:=Desc + s
+        else
+          s:=Asc + s;
+      Caption:=s;
+    end;
+end;
+
 procedure TMainForm.acDisconnectExecute(Sender: TObject);
 begin
   DoDisconnect;
@@ -1344,7 +1371,12 @@ end;
 
 procedure TMainForm.acSetupColumnsExecute(Sender: TObject);
 begin
-  if not SetupColumns(lvTorrents) then exit;
+  UpdateSortColumn(lvTorrents, -1, False);
+  try
+    if not SetupColumns(lvTorrents) then exit;
+  finally
+    UpdateSortColumn(lvTorrents, FTorrentsSortColumn, FTorrentsSortDesc);
+  end;
   TorrentColumnsChanged;
 end;
 
