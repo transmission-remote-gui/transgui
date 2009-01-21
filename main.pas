@@ -2129,8 +2129,10 @@ begin
             Inc(CompletedCnt);
           end;
         TR_STATUS_STOPPED:
-          if FTorrents[idxStateImg, i] = imgDone then
+          if FTorrents[idxStateImg, i] = imgDone then begin
             s:='Finished';
+            Inc(CompletedCnt);
+          end;
       end;
 
       if not VarIsEmpty(FTorrents[idxTracker, i]) then begin
