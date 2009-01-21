@@ -36,11 +36,19 @@ type
     cbTrayIconAlways: TCheckBox;
     cbTrayMinimize: TCheckBox;
     cbTrayClose: TCheckBox;
+    cbUseProxy: TCheckBox;
     edHost: TEdit;
+    edProxyPassword: TEdit;
+    edProxyPort: TSpinEdit;
+    edProxy: TEdit;
     edRefreshInterval: TSpinEdit;
     edUserName: TEdit;
     edPassword: TEdit;
+    edProxyUserName: TEdit;
     gbTray: TGroupBox;
+    txProxyPassword: TLabel;
+    txProxyPort: TLabel;
+    txProxy: TLabel;
     Page: TPageControl;
     tabConnection: TTabSheet;
     tabInterface: TTabSheet;
@@ -51,8 +59,11 @@ type
     edPort: TSpinEdit;
     txHost: TLabel;
     txPassword: TLabel;
+    txProxyUserName: TLabel;
     procedure btOKClick(Sender: TObject);
+    procedure cbUseProxyClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { private declarations }
   public
@@ -72,13 +83,33 @@ begin
     MessageDlg('No host name specified.', mtError, [mbOK], 0);
     exit;
   end;
+  edProxy.Text:=Trim(edProxy.Text);
+  if cbUseProxy.Checked and (edProxy.Text = '') then begin
+    Page.ActivePage:=tabConnection;
+    edProxy.SetFocus;
+    MessageDlg('No proxy server specified.', mtError, [mbOK], 0);
+    exit;
+  end;
   ModalResult:=mrOk;
+end;
+
+procedure TOptionsForm.cbUseProxyClick(Sender: TObject);
+begin
+  edProxy.Enabled:=cbUseProxy.Checked;
+  edProxyPort.Enabled:=cbUseProxy.Checked;
+  edProxyUserName.Enabled:=cbUseProxy.Checked;
+  edProxyPassword.Enabled:=cbUseProxy.Checked;
 end;
 
 procedure TOptionsForm.FormCreate(Sender: TObject);
 begin
   Page.ActivePageIndex:=0;
   ActiveControl:=edHost;
+end;
+
+procedure TOptionsForm.FormShow(Sender: TObject);
+begin
+  cbUseProxyClick(nil);
 end;
 
 initialization

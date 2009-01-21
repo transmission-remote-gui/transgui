@@ -1614,6 +1614,18 @@ begin
   DoDisconnect;
   RpcObj.Http.UserName:=FIni.ReadString('Connection', 'UserName', '');
   RpcObj.Http.Password:=DecodeBase64(FIni.ReadString('Connection', 'Password', ''));
+  if FIni.ReadBool('Connection', 'UseProxy', False) then begin
+    RpcObj.Http.ProxyHost:=FIni.ReadString('Connection', 'ProxyHost', '');
+    RpcObj.Http.ProxyPort:=IntToStr(FIni.ReadInteger('Connection', 'ProxyPort', 8080));
+    RpcObj.Http.ProxyUser:=FIni.ReadString('Connection', 'ProxyUser', '');
+    RpcObj.Http.ProxyPass:=DecodeBase64(FIni.ReadString('Connection', 'ProxyPass', ''));
+  end
+  else begin
+    RpcObj.Http.ProxyHost:='';
+    RpcObj.Http.ProxyPort:='';
+    RpcObj.Http.ProxyUser:='';
+    RpcObj.Http.ProxyPass:='';
+  end;
   RpcObj.Url:=Format('http://%s:%d/transmission/rpc', [FIni.ReadString('Connection', 'Host', 'localhost'), FIni.ReadInteger('Connection', 'Port', 9091)]);
 
   RpcObj.RefreshInterval:=FIni.ReadInteger('Connection', 'RefreshInterval', 5);
@@ -1718,8 +1730,14 @@ begin
     edUserName.Text:=FIni.ReadString('Connection', 'UserName', '');
     if FIni.ReadString('Connection', 'Password', '') <> '' then
       edPassword.Text:='******';
-    edRefreshInterval.Value:=FIni.ReadInteger('Connection', 'RefreshInterval', 5);
+    cbUseProxy.Checked:=FIni.ReadBool('Connection', 'UseProxy', False);
+    edProxy.Text:=FIni.ReadString('Connection', 'ProxyHost', '');
+    edProxyPort.Value:=FIni.ReadInteger('Connection', 'ProxyPort', 8080);
+    edProxyUserName.Text:=FIni.ReadString('Connection', 'ProxyUser', '');
+    if FIni.ReadString('Connection', 'ProxyPass', '') <> '' then
+      edProxyPassword.Text:='******';
 
+    edRefreshInterval.Value:=FIni.ReadInteger('Connection', 'RefreshInterval', 5);
     cbTrayClose.Checked:=FIni.ReadBool('Interface', 'TrayClose', False);
 {$ifdef windows}
     cbTrayMinimize.Checked:=FIni.ReadBool('Interface', 'TrayMinimize', True);
@@ -1730,7 +1748,10 @@ begin
 
     if ShowModal = mrOK then begin
       if (edHost.Text <> FIni.ReadString('Connection', 'Host', 'localhost')) or
-         (edPort.Value <> FIni.ReadInteger('Connection', 'Port', 9091))
+         (edPort.Value <> FIni.ReadInteger('Connection', 'Port', 9091)) or
+         (edProxy.Text <> FIni.ReadString('Connection', 'ProxyHost', '')) or
+         (edProxyPort.Value <> FIni.ReadInteger('Connection', 'ProxyPort', 8080)) or
+         (cbUseProxy.Checked <> FIni.ReadBool('Connection', 'UseProxy', False))
       then
         DoDisconnect;
 
@@ -1739,8 +1760,14 @@ begin
       FIni.WriteString('Connection', 'UserName', edUserName.Text);
       if edPassword.Text <> '******' then
         FIni.WriteString('Connection', 'Password', EncodeBase64(edPassword.Text));
-      FIni.WriteInteger('Connection', 'RefreshInterval', edRefreshInterval.Value);
+      FIni.WriteBool('Connection', 'UseProxy', cbUseProxy.Checked);
+      FIni.WriteString('Connection', 'ProxyHost', edProxy.Text);
+      FIni.WriteInteger('Connection', 'ProxyPort', edProxyPort.Value);
+      FIni.WriteString('Connection', 'ProxyUser', edProxyUserName.Text);
+      if edProxyPassword.Text <> '******' then
+        FIni.WriteString('Connection', 'ProxyPass', EncodeBase64(edProxyPassword.Text));
 
+      FIni.WriteInteger('Connection', 'RefreshInterval', edRefreshInterval.Value);
       FIni.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
 {$ifdef windows}
       FIni.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
