@@ -1,5 +1,5 @@
 #summary Version 0.94 beta released
-#labels Featured
+#labels Deprecated
 
 <pre>
 [+] Columns setup for torrents list.
