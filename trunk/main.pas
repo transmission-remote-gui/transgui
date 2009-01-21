@@ -1530,7 +1530,7 @@ begin
     end;
 
     if FileExists(FIPCFileName) then begin
-      s:=ReadFileToString(FIPCFileName);
+      s:=ReadFileToString(UTF8Encode(FIPCFileName));
       DeleteFile(FIPCFileName);
       ShowApp;
 
