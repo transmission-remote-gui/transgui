@@ -646,10 +646,10 @@ end;
 
 procedure TMainForm.lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
 begin
-  if FTorrentsSortColumn = Column.Index then
+  if FTorrentsSortColumn = Column.ID then
     FTorrentsSortDesc:=not FTorrentsSortDesc
   else begin
-    FTorrentsSortColumn:=Column.Index;
+    FTorrentsSortColumn:=Column.ID;
     FTorrentsSortDesc:=False;
   end;
   UpdateTorrentsList;
