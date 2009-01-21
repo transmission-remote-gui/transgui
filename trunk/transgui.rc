@@ -1,3 +1,29 @@
+1 VERSIONINFO
+FILEVERSION 0,95,0,0
+PRODUCTVERSION 0,95,0,0
+{
+ BLOCK "StringFileInfo"
+ {
+  BLOCK "040904E4"
+  {
+   VALUE "Comments", "\000"
+   VALUE "CompanyName", "\000"
+   VALUE "FileDescription", "Transmission Remote GUI\000"
+   VALUE "FileVersion", "0.95.0.0\000"
+   VALUE "InternalName", "\000"
+   VALUE "LegalCopyright", "Copyright (c) 2008-2009 by Yury Sidorov\000"
+   VALUE "LegalTrademarks", "\000"
+   VALUE "OriginalFilename", "\000"
+   VALUE "ProductName", "\000"
+   VALUE "ProductVersion", "0.95.0.0\000"
+  }
+ }
+ BLOCK "VarFileInfo"
+ {
+  VALUE "Translation", 0x0409, 0x04E4
+ }
+}
+
 #define RT_MANIFEST  24
 #define CREATEPROCESS_MANIFEST_RESOURCE_ID 1
 #define ISOLATIONAWARE_MANIFEST_RESOURCE_ID 2
