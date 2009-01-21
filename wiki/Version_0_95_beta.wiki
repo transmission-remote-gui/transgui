@@ -1,6 +1,7 @@
 #summary Version 0.95 beta released
 #labels Featured
 
+<pre>
 [+] Proxy support.
 [+] Show column's sort direction.
 [`*`] Resolve peer's country in real time since it is quick.
@@ -10,3 +11,4 @@
 [-] Splitter positions were reset after restoring from tray icon. Bug #16.
 [-] Enumeration of completed torrents. Bug #20.
 [-] Peers view for Transmission 1.40.
+</pre>
