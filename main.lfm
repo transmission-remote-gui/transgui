@@ -216,11 +216,11 @@ object MainForm: TMainForm
     Height = 279
     Top = 149
     Width = 780
-    ActivePage = tabGeneral
+    ActivePage = tabFiles
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -819,6 +819,7 @@ object MainForm: TMainForm
             Caption = 'Down speed'
             Width = 80
           end>
+        ColumnClick = False
         PopupMenu = pmPeers
         ReadOnly = True
         RowSelect = True

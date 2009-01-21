@@ -70,7 +70,7 @@ begin
     UpdateUI;
     Result:=ShowModal = mrOk;
     if Result then begin
-      LV.Columns.BeginUpdate;
+      LV.BeginUpdate;
       try
         for i:=0 to lstColumns.Items.Count - 1 do
           for j:=0 to LV.Columns.Count - 1 do
@@ -88,10 +88,12 @@ begin
                 end
                 else
                   Visible:=lstColumns.Checked[i];
+                ImageIndex:=0;
+                ImageIndex:=-1;
                 break;
               end;
       finally
-        LV.Columns.EndUpdate;
+        LV.EndUpdate;
       end;
     end;
   finally
