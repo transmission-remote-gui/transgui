@@ -52,6 +52,8 @@ type
     FGeoIpCounryDB: string;
   protected
     procedure Execute; override;
+    function NewEntry(const IpAddress: string): PHostEntry;
+    function FindEntry(const IpAddress: string): PHostEntry;
   public
     constructor Create(const GeoIpCounryDB: string; AOptions: TResolverOptions); reintroduce;
     destructor Destroy; override;
@@ -68,7 +70,6 @@ procedure TIpResolver.Execute;
 var
   ip, s: string;
   c: PHostEntry;
-  GeoCountry: TGeoIPCountry;
 begin
   try
     while not Terminated do begin
@@ -91,20 +92,9 @@ begin
           if ip = '' then
             break;
 
-          FLock.Enter;
-          try
-            New(c);
-            c^.ImageIndex:=0;
-            c^.IP:=ip;
-            UniqueString(c^.IP);
-            c^.HostName:=c^.IP;
-            FCache.Add(c);
-          finally
-            FLock.Leave;
-          end;
-
           if roResolveIP in FOptions then begin
             s:=synsock.ResolveIPToName(ip, AF_INET, IPPROTO_IP, 0);
+            c:=FindEntry(ip);
             FLock.Enter;
             try
               c^.HostName:=s;
@@ -113,24 +103,6 @@ begin
               FLock.Leave;
             end;
           end;
-
-          if FGeoIp <> nil then
-          try
-            if FGeoIp.GetCountry(ip, GeoCountry) = GEOIP_SUCCESS then begin
-              FLock.Enter;
-              try
-                c^.CountryName:=GeoCountry.CountryName;
-                UniqueString(c^.CountryName);
-                c^.CountryCode:=AnsiLowerCase(GeoCountry.CountryCode);
-                UniqueString(c^.CountryCode);
-              finally
-                FLock.Leave;
-              end;
-            end;
-          except
-            FreeAndNil(FGeoIp);
-            DeleteFile(FGeoIpCounryDB);
-          end;
         end;
 
       end;
@@ -138,6 +110,39 @@ begin
   except
   end;
   Sleep(20);
+end;
+
+function TIpResolver.NewEntry(const IpAddress: string): PHostEntry;
+begin
+  FLock.Enter;
+  try
+    New(Result);
+    Result^.ImageIndex:=0;
+    Result^.IP:=IpAddress;
+    UniqueString(Result^.IP);
+    Result^.HostName:=IpAddress;
+    UniqueString(Result^.HostName);
+    FCache.Add(Result);
+  finally
+    FLock.Leave;
+  end;
+end;
+
+function TIpResolver.FindEntry(const IpAddress: string): PHostEntry;
+var
+  i: integer;
+begin
+  FLock.Enter;
+  try
+    for i:=0 to FCache.Count - 1 do begin
+      Result:=FCache[i];
+      if Result^.IP = IpAddress then
+        exit;
+    end;
+    Result:=nil;
+  finally
+    FLock.Leave;
+  end;
 end;
 
 constructor TIpResolver.Create(const GeoIpCounryDB: string; AOptions: TResolverOptions);
@@ -150,7 +155,7 @@ begin
   FGeoIpCounryDB:=GeoIpCounryDB;
   if (roResolveCountry in FOptions) and (FGeoIpCounryDB <> '') then
     FGeoIp:=TGeoIP.Create(GeoIpCounryDB);
-  inherited Create(False);
+  inherited Create(not (roResolveIP in FOptions));
 end;
 
 destructor TIpResolver.Destroy;
@@ -158,7 +163,8 @@ var
   i: integer;
 begin
   Terminate;
-  WaitFor;
+  if not Suspended then
+    WaitFor;
   FResolveIp.Free;
   FResolveEvent.Free;
   FLock.Free;
@@ -171,23 +177,43 @@ end;
 
 function TIpResolver.Resolve(const IpAddress: string): PHostEntry;
 var
-  i: integer;
+  GeoCountry: TGeoIPCountry;
 begin
-  FLock.Enter;
-  try
-    for i:=0 to FCache.Count - 1 do begin
-      Result:=FCache[i];
-      if Result^.IP = IpAddress then
-        exit;
+  Result:=FindEntry(IpAddress);
+  if Result <> nil then
+    exit;
+
+  Result:=NewEntry(IpAddress);
+  if roResolveIP in FOptions then begin
+    FLock.Enter;
+    try
+      if FResolveIp.IndexOf(IpAddress) < 0 then begin
+        FResolveIp.Add(IpAddress);
+        FResolveEvent.SetEvent;
+      end;
+    finally
+      FLock.Leave;
     end;
-    if FResolveIp.IndexOf(IpAddress) < 0 then begin
-      FResolveIp.Add(IpAddress);
-      FResolveEvent.SetEvent;
-    end;
-  finally
-    FLock.Leave;
   end;
-  Result:=nil;
+
+  if FGeoIp <> nil then
+  try
+    if FGeoIp.GetCountry(IpAddress, GeoCountry) = GEOIP_SUCCESS then begin
+      FLock.Enter;
+      try
+        Result^.CountryName:=GeoCountry.CountryName;
+        UniqueString(Result^.CountryName);
+        Result^.CountryCode:=AnsiLowerCase(GeoCountry.CountryCode);
+        UniqueString(Result^.CountryCode);
+      finally
+        FLock.Leave;
+      end;
+    end;
+  except
+    FreeAndNil(FGeoIp);
+    DeleteFile(FGeoIpCounryDB);
+    Result:=nil;
+  end;
 end;
 
 end.

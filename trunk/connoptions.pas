@@ -78,6 +78,7 @@ end;
 procedure TOptionsForm.FormCreate(Sender: TObject);
 begin
   Page.ActivePageIndex:=0;
+  ActiveControl:=edHost;
 end;
 
 initialization
