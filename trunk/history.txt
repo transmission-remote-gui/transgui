@@ -1,3 +1,15 @@
+0.95 beta (Jan 21, 2009)
+------------------------
+[+] Proxy support.
+[+] Show column's sort direction.
+[*] Resolve peer's country in real time since it is quick.
+[-] Fixed .torrent association if user home path contains non English letters. Bug #12.
+[-] Some images were displayed on list header after column moving on Vista. Bug #14.
+[-] Wrong sorting after columns were moved. Bug #15.
+[-] Splitter positions were reset after restoring from tray icon. Bug #16.
+[-] Enumeration of completed torrents. Bug #20.
+[-] Peers view for Transmission 1.40.
+
 0.94 beta (Jan 18, 2009)
 ------------------------
 [+] Columns setup for torrents list.
