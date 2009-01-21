@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '0.94 beta';
+  AppVersion = '0.95 beta';
 
 resourcestring
   SShowApp = 'Show';
@@ -599,9 +599,11 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
-  HSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
-  DummyTimer.Enabled:=True;
+  if not FStarted then begin
+    VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
+    HSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
+    DummyTimer.Enabled:=True;
+  end;
   UpdateTray;
 end;
 
