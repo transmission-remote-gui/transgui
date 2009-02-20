@@ -1,0 +1,12 @@
+#labels Featured
+#Building Transmission Remote GUI from sources
+
+Make sure you have working [http://lazarus.freepascal.org Lazarus] and [http://www.freepascal.org Free Pascal] compiler installed. Lazarus 0.9.26 or later is required.
+
+Download sources archive and extract it to some folder or perform svn checkout.
+
+Run Lazarus IDE, open transgui project and build it.
+
+Or to build from command line:
+  * Open terminal/command line prompt and cd to sources folder
+  * Execute {{{lazbuild transgui.lpi}}} command to build the application
