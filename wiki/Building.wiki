@@ -1,7 +1,9 @@
 #labels Featured
 #Building Transmission Remote GUI from sources
 
-Make sure you have working [http://lazarus.freepascal.org Lazarus] and [http://www.freepascal.org Free Pascal] compiler installed. Lazarus 0.9.26 or later is required.
+Make sure you have working [http://lazarus.freepascal.org Lazarus] and [http://www.freepascal.org Free Pascal] compiler installed. 
+
+Lazarus 0.9.26 or later is required. It is recommended to use the latest development version of Lazarus. The latest snapshots can be found [http://www.hu.freepascal.org/lazarus here].
 
 Download sources archive and extract it to some folder or perform svn checkout.
 
