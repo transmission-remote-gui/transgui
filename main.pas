@@ -2641,21 +2641,23 @@ var
   s: string;
   i: integer;
 begin
-  s:=RpcObj.Status;
-  if s <> '' then begin
-    RpcObj.Status:='';
-    if Fatal then
-      DoDisconnect;
-    ForceAppNormal;
-    MessageDlg(s, mtError, [mbOK], 0);
+  with MainForm do begin
+    s:=RpcObj.Status;
+    if s <> '' then begin
+      RpcObj.Status:='';
+      if Fatal then
+        DoDisconnect;
+      ForceAppNormal;
+      MessageDlg(s, mtError, [mbOK], 0);
+    end;
+    if StatusBar.Panels[0].Text <> RpcObj.InfoStatus then begin
+      StatusBar.Panels[0].Text:=RpcObj.InfoStatus;
+      TrayIcon.Hint:=RpcObj.InfoStatus;
+    end;
+    if not RpcObj.Connected then
+      for i:=1 to StatusBar.Panels.Count - 1 do
+        StatusBar.Panels[i].Text:='';
   end;
-  if StatusBar.Panels[0].Text <> RpcObj.InfoStatus then begin
-    StatusBar.Panels[0].Text:=RpcObj.InfoStatus;
-    TrayIcon.Hint:=RpcObj.InfoStatus;
-  end;
-  if not RpcObj.Connected then
-    for i:=1 to StatusBar.Panels.Count - 1 do
-      StatusBar.Panels[i].Text:='';
 end;
 
 function TMainForm.TorrentAction(TorrentId: integer; const AAction: string): boolean;
