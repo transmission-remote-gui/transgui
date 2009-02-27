@@ -28,6 +28,7 @@ uses
 
 type
   TAdvInfoType = (aiNone, aiGeneral, aiFiles, aiPeers);
+  TRefreshType = (rtNone, rtAll, rtDetails);
 
   TRpc = class;
 
@@ -91,7 +92,7 @@ type
     RefreshInterval: TDateTime;
     CurTorrentId: cardinal;
     AdvInfo: TAdvInfoType;
-    RefreshNow: boolean;
+    RefreshNow: TRefreshType;
     RequestFullInfo: boolean;
 
     constructor Create;
@@ -122,6 +123,7 @@ uses Main;
 procedure TRpcThread.Execute;
 var
   t: TDateTime;
+  r: TRefreshType;
 begin
   try
     GetStatusInfo;
@@ -133,10 +135,11 @@ begin
 
     t:=Now - 1;
     while not Terminated do begin
-      if (Now - t >= RefreshInterval) or FRpc.RefreshNow then begin
-        FRpc.RefreshNow:=False;
-        if GetTorrents then
-          if not Terminated and (CurTorrentId <> 0) then
+      if (Now - t >= RefreshInterval) or (FRpc.RefreshNow <> rtNone) then begin
+        r:=FRpc.RefreshNow;
+        FRpc.RefreshNow:=rtNone;
+        if (r = rtDetails) or GetTorrents then
+          if not Terminated and (CurTorrentId <> 0) then begin
             case AdvInfo of
               aiGeneral:
                 GetInfo(CurTorrentId);
@@ -145,6 +148,9 @@ begin
               aiFiles:
                 GetFiles(CurTorrentId);
             end;
+            if FRpc.RefreshNow = rtDetails then
+              FRpc.RefreshNow:=rtNone;
+          end;
 
         NotifyCheckStatus;
         t:=Now;
@@ -394,6 +400,7 @@ begin
   HttpLock:=TCriticalSection.Create;
   Http:=THTTPSend.Create;
   Http.Protocol:='1.1';
+  RefreshNow:=rtNone;
 end;
 
 destructor TRpc.Destroy;
