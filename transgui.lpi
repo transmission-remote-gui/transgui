@@ -17,10 +17,13 @@
     </General>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <CurrentMajorRevNr Value="95"/>
-      <ProjectVersion Value="0.95.0.0"/>
+      <CurrentVersionNr Value="1"/>
+      <CompanyName Value="Yury Sidorov"/>
       <FileDescription Value="Transmission Remote GUI"/>
+      <InternalName Value="transgui"/>
       <LegalCopyright Value="Copyright (c) 2008-2009 by Yury Sidorov"/>
+      <OriginalFilename Value="transgui.exe"/>
+      <ProductName Value="Transmission Remote GUI"/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>

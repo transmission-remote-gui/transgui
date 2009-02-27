@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '0.95 beta';
+  AppVersion = '1.0';
 
 resourcestring
   SShowApp = 'Show';
@@ -1569,8 +1569,10 @@ begin
       if s = '' then
         exit;
 
-      if FileExistsUTF8(s) then
+      if FileExistsUTF8(s) then begin
+        DummyTimer.Enabled:=True;
         DoAddTorrent(s);
+      end;
     end;
   finally
     DummyTimer.Enabled:=True;
