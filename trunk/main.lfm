@@ -235,7 +235,6 @@ object MainForm: TMainForm
         Top = 26
         Width = 772
         Align = alClient
-        Ctl3D = False
         TabOrder = 0
         OnResize = sbGenInfoResize
         object panGeneralInfo: TPanel
@@ -900,7 +899,6 @@ object MainForm: TMainForm
     Width = 780
     AutoSize = True
     Caption = 'MainToolBar'
-    Ctl3D = False
     Images = ImageList16
     ParentShowHint = False
     ShowHint = True

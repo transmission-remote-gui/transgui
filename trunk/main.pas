@@ -2560,7 +2560,7 @@ begin
     exit;
   end;
 
-  pbDownloaded.Position:=Round(FTorrents[idxDone, idx]*10);
+  pbDownloaded.Position:=Round(double(FTorrents[idxDone, idx])*10.0);
   txDownProgress.Caption:=Format('%.1f%%', [double(FTorrents[idxDone, idx])]);
   txDownProgress.AutoSize:=True;
 
