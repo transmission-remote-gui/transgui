@@ -1396,10 +1396,10 @@ object MainForm: TMainForm
       OnExecute = acSetupColumnsExecute
     end
   end
-  object RefreshNowTimer: TTimer
+  object TorrentsListTimer: TTimer
     Enabled = False
     Interval = 100
-    OnTimer = RefreshNowTimerTimer
+    OnTimer = TorrentsListTimerTimer
     left = 253
     top = 55
   end
@@ -2375,5 +2375,11 @@ object MainForm: TMainForm
       Action = acShowCountryFlag
       OnClick = acShowCountryFlagExecute
     end
+  end
+  object FilterTimer: TTimer
+    Interval = 100
+    OnTimer = FilterTimerTimer
+    left = 36
+    top = 96
   end
 end

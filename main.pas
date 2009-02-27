@@ -71,6 +71,7 @@ type
     ApplicationProperties: TApplicationProperties;
     imgFlags: TImageList;
     ImageList16: TImageList;
+    FilterTimer: TTimer;
     txLastActive: TLabel;
     txLastActiveLabel: TLabel;
     txTracker: TLabel;
@@ -206,7 +207,7 @@ type
     StatusBar: TStatusBar;
     tabPeers: TTabSheet;
     tabGeneral: TTabSheet;
-    RefreshNowTimer: TTimer;
+    TorrentsListTimer: TTimer;
     tabFiles: TTabSheet;
     procedure acAddTorrentExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
@@ -235,6 +236,7 @@ type
     procedure ApplicationPropertiesMinimize(Sender: TObject);
     procedure ApplicationPropertiesRestore(Sender: TObject);
     procedure DummyTimerTimer(Sender: TObject);
+    procedure FilterTimerTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -250,7 +252,7 @@ type
     procedure miCopyLabelClick(Sender: TObject);
     procedure miToggleAppClick(Sender: TObject);
     procedure PageInfoChange(Sender: TObject);
-    procedure RefreshNowTimerTimer(Sender: TObject);
+    procedure TorrentsListTimerTimer(Sender: TObject);
     procedure pmFilesPopup(Sender: TObject);
     procedure pmTorrentsPopup(Sender: TObject);
     procedure sbGenInfoResize(Sender: TObject);
@@ -292,6 +294,7 @@ type
     function RatioToString(Ratio: double): string;
     function TorrentDateTimeToString(d: Int64): string;
     procedure UpdateSortColumn(LV: TListView; ColumnID: integer; SortDescending: boolean);
+    procedure DoRefresh(All: boolean = False);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -642,8 +645,8 @@ begin
     Application.QueueAsyncCall(@SelectFilterItem, Item.Index - 1);
     exit;
   end;
-  RefreshNowTimer.Enabled:=False;
-  RefreshNowTimer.Enabled:=True;
+  FilterTimer.Enabled:=False;
+  FilterTimer.Enabled:=True;
 end;
 
 procedure TMainForm.lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
@@ -686,8 +689,8 @@ begin
 
   ClearDetailsInfo;
 
-  RefreshNowTimer.Enabled:=False;
-  RefreshNowTimer.Enabled:=True;
+  TorrentsListTimer.Enabled:=False;
+  TorrentsListTimer.Enabled:=True;
 end;
 
 procedure TMainForm.miAboutClick(Sender: TObject);
@@ -819,7 +822,7 @@ begin
       if id = 0 then
         exit;
 
-      RpcObj.RefreshNow:=True;
+      DoRefresh(True);
 
       args:=RpcObj.RequestInfo(id, ['files', 'maxConnectedPeers']);
       if args = nil then begin
@@ -860,7 +863,7 @@ begin
           id:=_AddTorrent(args);
           if id = 0 then
             exit;
-          RpcObj.RefreshNow:=True;
+          DoRefresh(True);
           Application.ProcessMessages;
         end;
 
@@ -1129,7 +1132,7 @@ begin
         s:=s + TorrentFieldsMap[ID];
       end;
   RpcObj.TorrentFields:=s;
-  RpcObj.RefreshNow:=True;
+  DoRefresh(True);
 end;
 
 function TMainForm.EtaToString(ETA: integer): string;
@@ -1223,6 +1226,15 @@ begin
           s:=Asc + s;
       Caption:=s;
     end;
+end;
+
+procedure TMainForm.DoRefresh(All: boolean);
+begin
+  if All then
+    RpcObj.RefreshNow:=rtAll
+  else
+    if RpcObj.RefreshNow <> rtAll then
+      RpcObj.RefreshNow:=rtDetails;
 end;
 
 procedure TMainForm.acDisconnectExecute(Sender: TObject);
@@ -1338,7 +1350,7 @@ begin
 
   acResolveCountry.Checked:=not acResolveCountry.Checked;
   FreeAndNil(FResolver);
-  RpcObj.RefreshNow:=True;
+  DoRefresh;
   acShowCountryFlag.Enabled:=acResolveCountry.Checked;
 end;
 
@@ -1346,7 +1358,7 @@ procedure TMainForm.acResolveHostExecute(Sender: TObject);
 begin
   acResolveHost.Checked:=not acResolveHost.Checked;
   FreeAndNil(FResolver);
-  RpcObj.RefreshNow:=True;
+  DoRefresh;
 end;
 
 procedure TMainForm.acSetHighPriorityExecute(Sender: TObject);
@@ -1392,7 +1404,7 @@ begin
         exit;
     end;
   acShowCountryFlag.Checked:=not acShowCountryFlag.Checked;
-  RpcObj.RefreshNow:=True;
+  DoRefresh;
 end;
 
 procedure TMainForm.acStartAllTorrentsExecute(Sender: TObject);
@@ -1485,7 +1497,7 @@ begin
       finally
         req.Free;
       end;
-      RpcObj.RefreshNow:=True;
+      DoRefresh;
       AppNormal;
     end;
   finally
@@ -1579,6 +1591,12 @@ begin
   end;
 end;
 
+procedure TMainForm.FilterTimerTimer(Sender: TObject);
+begin
+  FilterTimer.Enabled:=False;
+  DoRefresh(True);
+end;
+
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   if FIni.ReadBool('Interface', 'TrayClose', False) then begin
@@ -1611,16 +1629,16 @@ begin
     else
     if PageInfo.ActivePage = tabFiles then
       RpcObj.AdvInfo:=aiFiles;
-    RpcObj.RefreshNow:=True;
+    DoRefresh;
   finally
     RpcObj.Unlock;
   end;
 end;
 
-procedure TMainForm.RefreshNowTimerTimer(Sender: TObject);
+procedure TMainForm.TorrentsListTimerTimer(Sender: TObject);
 begin
-  RefreshNowTimer.Enabled:=False;
-  RpcObj.RefreshNow:=True;
+  TorrentsListTimer.Enabled:=False;
+  DoRefresh;
 end;
 
 procedure TMainForm.pmFilesPopup(Sender: TObject);
@@ -1675,7 +1693,8 @@ end;
 procedure TMainForm.DoDisconnect;
 
 begin
-  RefreshNowTimer.Enabled:=False;
+  TorrentsListTimer.Enabled:=False;
+  FilterTimer.Enabled:=False;
   ClearDetailsInfo;
   lvTorrents.Clear;
   lvTorrents.Enabled:=False;
@@ -1703,7 +1722,8 @@ begin
   lvFilter.Items[0].Selected:=True;
   while lvFilter.Items.Count > StatusFiltersCount do
     lvFilter.Items.Delete(lvFilter.Items.Count - 1);
-  RefreshNowTimer.Enabled:=False;
+  TorrentsListTimer.Enabled:=False;
+  FilterTimer.Enabled:=False;
 end;
 
 procedure TMainForm.ClearDetailsInfo;
@@ -2683,7 +2703,7 @@ begin
   if not Result then
     CheckStatus(False)
   else
-    RpcObj.RefreshNow:=True;
+    DoRefresh(True);
   AppNormal;
 end;
 
@@ -2724,7 +2744,7 @@ begin
   if not Result then
     CheckStatus(False)
   else
-    RpcObj.RefreshNow:=True;
+    DoRefresh;
   AppNormal;
 end;
 
