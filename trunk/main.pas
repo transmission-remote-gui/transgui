@@ -1349,7 +1349,7 @@ end;
 procedure TMainForm.acRemoveTorrentExecute(Sender: TObject);
 begin
   if lvTorrents.Selected = nil then exit;
-  if MessageDlg('', Format('Are you sure to remove torrent ''%s''?', [lvTorrents.Selected.Caption]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
+  if MessageDlg('', Format('Are you sure to remove torrent ''%s''?', [string(FTorrents[idxName, lvTorrents.Selected.Index])]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
   TorrentAction(PtrUInt(lvTorrents.Selected.Data), 'remove');
 end;
 
