@@ -38,6 +38,7 @@ type
   private
     ResultData: TJSONData;
     FRpc: TRpc;
+    FRPCVersion: integer;
 
     function GetAdvInfo: TAdvInfoType;
     function GetCurTorrentId: cardinal;
@@ -79,6 +80,7 @@ type
 
     function GetConnected: boolean;
     function GetInfoStatus: string;
+    function GetRPCVersion: integer;
     function GetStatus: string;
     function GetTorrentFields: string;
     procedure SetInfoStatus(const AValue: string);
@@ -112,6 +114,7 @@ type
     property InfoStatus: string read GetInfoStatus write SetInfoStatus;
     property Connected: boolean read GetConnected;
     property TorrentFields: string read GetTorrentFields write SetTorrentFields;
+    property RPCVersion: integer read GetRPCVersion;
   end;
 
 implementation
@@ -230,6 +233,10 @@ begin
     args:=FRpc.SendRequest(req);
     if args <> nil then
     try
+      if args.IndexOfName('rpc-version') >= 0 then
+        FRPCVersion := args.Integers['rpc-version']
+      else
+        FRPCVersion := -1;
       if args.IndexOfName('version') >= 0 then
         s:=' ' + args.Strings['version']
       else
@@ -340,7 +347,7 @@ begin
                                      'announceResponse', 'downloadLimit', 'downloadLimitMode', 'uploadLimit', 'uploadLimitMode',
                                      'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
                                      'seeders','peersGettingFromUs','leechers','peersKnown', 'uploadRatio', 'addedDate', 'doneDate',
-                                     'activityDate']);
+                                     'activityDate', 'downloadLimited', 'uploadLimited']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
@@ -582,6 +589,14 @@ begin
   finally
     Unlock;
   end;
+end;
+
+function TRpc.GetRPCVersion: integer;
+begin
+  if Assigned(RpcThread) then
+    Result:=RpcThread.FRPCVersion
+  else
+    Result:=-1;
 end;
 
 procedure TRpc.SetStatus(const AValue: string);

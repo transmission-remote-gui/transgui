@@ -1263,9 +1263,21 @@ begin
       if args <> nil then
         try
           edDownloadDir.Text:=UTF8Encode(args.Strings['download-dir']);
-          edPort.Value:=args.Integers['port'];
+          if RpcObj.RPCVersion < 5 then
+          begin
+            // RPC versions prior to v5
+            edPort.Value:=args.Integers['port'];
+            cbPEX.Checked:=args.Integers['pex-allowed'] <> 0;
+            edMaxPeers.Value:=args.Integers['peer-limit'];
+          end else begin
+            // RPC version 5
+            edPort.Value:=args.Integers['peer-port'];
+            cbPEX.Checked:=args.Integers['pex-enabled'] <> 0;
+            edMaxPeers.Value:=args.Integers['peer-limit-global'];
+          end;
+
           cbPortForwarding.Checked:=args.Integers['port-forwarding-enabled'] <> 0;
-          cbPEX.Checked:=args.Integers['pex-allowed'] <> 0;
+
           s:=args.Strings['encryption'];
           if s = 'preferred' then
             cbEncryption.ItemIndex:=1
@@ -1274,7 +1286,7 @@ begin
             cbEncryption.ItemIndex:=2
           else
             cbEncryption.ItemIndex:=0;
-          edMaxPeers.Value:=args.Integers['peer-limit'];
+
           cbMaxDown.Checked:=args.Integers['speed-limit-down-enabled'] <> 0;
           edMaxDown.Value:=args.Integers['speed-limit-down'];
           cbMaxUp.Checked:=args.Integers['speed-limit-up-enabled'] <> 0;
@@ -1438,8 +1450,9 @@ begin
   id:=RpcObj.CurTorrentId;
   with TTorrPropsForm.Create(Self) do
   try
-    args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode',
-                                  'uploadLimit', 'uploadLimitMode', 'name', 'maxConnectedPeers']);
+    args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited',
+                                  'uploadLimit', 'uploadLimitMode', 'uploadLimited',
+                                  'name', 'maxConnectedPeers']);
     if args = nil then begin
       CheckStatus(False);
       exit;
@@ -1448,22 +1461,40 @@ begin
       t:=args.Arrays['torrents'].Objects[0];
 
       txName.Caption:=txName.Caption + ' ' + UTF8Encode(t.Strings['name']);
+      if RpcObj.RPCVersion<5 then
+      begin
+        // RPC versions prior to v5
+        j:=t.Integers['downloadLimitMode'];
+        cbMaxDown.Checked:=j = TR_SPEEDLIMIT_SINGLE;
+        i:=t.Integers['downloadLimit'];
+        if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
+          edMaxDown.ValueEmpty:=True
+        else
+          edMaxDown.Value:=i;
 
-      j:=t.Integers['downloadLimitMode'];
-      cbMaxDown.Checked:=j = TR_SPEEDLIMIT_SINGLE;
-      i:=t.Integers['downloadLimit'];
-      if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
-        edMaxDown.ValueEmpty:=True
-      else
-        edMaxDown.Value:=i;
+        j:=t.Integers['uploadLimitMode'];
+        cbMaxUp.Checked:=j = TR_SPEEDLIMIT_SINGLE;
+        i:=t.Integers['uploadLimit'];
+        if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
+          edMaxUp.ValueEmpty:=True
+        else
+          edMaxUp.Value:=i;
+      end else begin
+        // RPC version 5
+        cbMaxDown.Checked:=t.Booleans['downloadLimited'];
+        i:=t.Integers['downloadLimit'];
+        if i < 0 then
+          edMaxDown.ValueEmpty:=True
+        else
+          edMaxDown.Value:=i;
 
-      j:=t.Integers['uploadLimitMode'];
-      cbMaxUp.Checked:=j = TR_SPEEDLIMIT_SINGLE;
-      i:=t.Integers['uploadLimit'];
-      if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
-        edMaxUp.ValueEmpty:=True
-      else
-        edMaxUp.Value:=i;
+        cbMaxUp.Checked:=t.Booleans['uploadLimited'];
+        i:=t.Integers['uploadLimit'];
+        if i < 0 then
+          edMaxUp.ValueEmpty:=True
+        else
+          edMaxUp.Value:=i;
+      end;
       edPeerLimit.Value:=t.Integers['maxConnectedPeers'];
     finally
       args.Free;
@@ -1479,12 +1510,25 @@ begin
         req.Add('method', 'torrent-set');
         args:=TJSONObject.Create;
         args.Add('ids', TJSONArray.Create([id]));
-        args.Add('speed-limit-down-enabled', TJSONIntegerNumber.Create(integer(cbMaxDown.Checked) and 1));
-        if cbMaxDown.Checked then
-          args.Add('speed-limit-down', TJSONIntegerNumber.Create(edMaxDown.Value));
-        args.Add('speed-limit-up-enabled', TJSONIntegerNumber.Create(integer(cbMaxUp.Checked) and 1));
-        if cbMaxUp.Checked then
-          args.Add('speed-limit-up', TJSONIntegerNumber.Create(edMaxUp.Value));
+
+        if RpcObj.RPCVersion < 5 then
+        begin
+          // RPC versions prior to v5
+          args.Add('speed-limit-down-enabled', TJSONIntegerNumber.Create(integer(cbMaxDown.Checked) and 1));
+          args.Add('speed-limit-up-enabled', TJSONIntegerNumber.Create(integer(cbMaxUp.Checked) and 1));
+          if cbMaxDown.Checked then
+            args.Add('speed-limit-down', TJSONIntegerNumber.Create(edMaxDown.Value));
+          if cbMaxUp.Checked then
+            args.Add('speed-limit-up', TJSONIntegerNumber.Create(edMaxUp.Value));
+        end else begin
+          // RPC version 5
+          args.Add('downloadLimited', TJSONIntegerNumber.Create(integer(cbMaxDown.Checked) and 1));
+          args.Add('uploadLimited', TJSONIntegerNumber.Create(integer(cbMaxUp.Checked) and 1));
+          if cbMaxDown.Checked then
+            args.Add('downloadLimit', TJSONIntegerNumber.Create(edMaxDown.Value));
+          if cbMaxUp.Checked then
+            args.Add('uploadLimit', TJSONIntegerNumber.Create(edMaxUp.Value));
+        end;
         args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
         req.Add('arguments', args);
         args:=nil;
@@ -2597,29 +2641,53 @@ begin
   txUpSpeed.Caption:=GetHumanSize(FTorrents[idxUpSpeed, idx], 1)+'/s';
   txRatio.Caption:=RatioToString(t.Floats['uploadRatio']);
 
-  j:=t.Integers['downloadLimitMode'];
-  if j = TR_SPEEDLIMIT_GLOBAL then
-    s:='-'
-  else begin
-    i:=t.Integers['downloadLimit'];
-    if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
-      s:=Utf8Encode(WideChar($221E))
-    else
-      s:=GetHumanSize(i*1024)+'/s';
-  end;
-  txDownLimit.Caption:=s;
+  if RpcObj.RPCVersion < 5 then
+  begin
+    // RPC versions prior to v5
+    j:=t.Integers['downloadLimitMode'];
+    if j = TR_SPEEDLIMIT_GLOBAL then
+      s:='-'
+    else begin
+      i:=t.Integers['downloadLimit'];
+      if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
+        s:=Utf8Encode(WideChar($221E))
+      else
+        s:=GetHumanSize(i*1024)+'/s';
+    end;
+    txDownLimit.Caption:=s;
+    j:=t.Integers['uploadLimitMode'];
+    if j = TR_SPEEDLIMIT_GLOBAL then
+      s:='-'
+    else begin
+      i:=t.Integers['uploadLimit'];
+      if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
+        s:=Utf8Encode(WideChar($221E))
+      else
+        s:=GetHumanSize(i*1024)+'/s';
+    end;
+    txUpLimit.Caption:=s;
+  end else begin
+    // RPC version 5
+    if t.Booleans['downloadLimited'] then
+    begin
+      i:=t.Integers['downloadLimit'];
+      if i < 0 then
+        s:=Utf8Encode(WideChar($221E))
+      else
+        s:=GetHumanSize(i*1024)+'/s';
+    end else s:='-';
+    txDownLimit.Caption:=s;
 
-  j:=t.Integers['uploadLimitMode'];
-  if j = TR_SPEEDLIMIT_GLOBAL then
-    s:='-'
-  else begin
-    i:=t.Integers['uploadLimit'];
-    if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
-      s:=Utf8Encode(WideChar($221E))
-    else
-      s:=GetHumanSize(i*1024)+'/s';
+    if t.Booleans['uploadLimited'] then
+    begin
+      i:=t.Integers['uploadLimit'];
+      if i < 0 then
+        s:=Utf8Encode(WideChar($221E))
+      else
+        s:=GetHumanSize(i*1024)+'/s';
+    end else s:='-';
+    txUpLimit.Caption:=s;
   end;
-  txUpLimit.Caption:=s;
 
   f:=t.Floats['nextAnnounceTime'];
   if f = 0 then
