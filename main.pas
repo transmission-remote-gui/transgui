@@ -817,7 +817,7 @@ begin
       i:=FIni.ReadInteger(IniSec, 'PeerLimit', 0);
       if i <> 0 then
         args.Add('peer-limit', TJSONIntegerNumber.Create(i));
-      args.Add('download-dir', TJSONString.Create(UTF8Decode(cbDestFolder.Text)));
+      args.Add('download-dir', TJSONString.Create(cbDestFolder.Text));
       id:=_AddTorrent(args);
       if id = 0 then
         exit;
@@ -859,7 +859,7 @@ begin
           args:=TJSONObject.Create;
           args.Add('paused', TJSONIntegerNumber.Create(1));
           args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
-          args.Add('download-dir', TJSONString.Create(UTF8Decode(cbDestFolder.Text)));
+          args.Add('download-dir', TJSONString.Create(cbDestFolder.Text));
           id:=_AddTorrent(args);
           if id = 0 then
             exit;
@@ -1312,7 +1312,7 @@ begin
       try
         req.Add('method', 'session-set');
         args:=TJSONObject.Create;
-        args.Add('download-dir', TJSONString.Create(UTF8Decode(edDownloadDir.Text)));
+        args.Add('download-dir', TJSONString.Create(edDownloadDir.Text));
         args.Add('port', TJSONIntegerNumber.Create(edPort.Value));
         args.Add('port-forwarding-enabled', TJSONIntegerNumber.Create(integer(cbPortForwarding.Checked) and 1));
         args.Add('pex-allowed', TJSONIntegerNumber.Create(integer(cbPEX.Checked) and 1));
