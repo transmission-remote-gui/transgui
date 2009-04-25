@@ -33,7 +33,7 @@ Type
     procedure DoError(Msg: String);
     function DoParse(AtCurrent,AllowEOF: Boolean): TJSONData;
     function GetNextToken: TJSONToken;
-    function CurrentTokenString: String;
+    function CurrentTokenString: TJSONStringType;
     function CurrentToken: TJSONToken;
     function ParseArray: TJSONArray;
     function ParseObject: TJSONObject;
@@ -79,7 +79,7 @@ begin
   Result:=FScanner.CurToken;
 end;
 
-Function TJSONParser.CurrentTokenString : String;
+Function TJSONParser.CurrentTokenString : TJSONStringType;
 
 begin
   If CurrentToken in [tkString,tkNumber] then
@@ -128,7 +128,7 @@ Function TJSONParser.ParseNumber : TJSONNumber;
 Var
   I : Integer;
   F : TJSONFloat;
-  S : String;
+  S : TJSONStringType;
 
 begin
   S:=CurrentTokenString;
@@ -151,7 +151,7 @@ Function TJSONParser.ParseObject : TJSONObject;
 Var
   T : TJSONtoken;
   E : TJSONData;
-  N : String;
+  N : TJSONStringType;
   
 begin
   Result:=TJSONObject.Create;
@@ -226,7 +226,7 @@ end;
 Procedure TJSONParser.DoError(Msg : String);
 
 Var
-  S : String;
+  S : TJSONStringType;
 
 begin
   S:=Format(Msg,[CurrentTokenString]);

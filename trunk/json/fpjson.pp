@@ -240,7 +240,7 @@ type
     Procedure Clear;  override;
     function Add(Item : TJSONData): Integer;
     function Add(I : Integer): Integer;
-    function Add(S : String): Integer;
+    function Add(S : TJSONStringType): Integer;
     function Add: Integer;
     function Add(F : TJSONFloat): Integer;
     function Add(B : Boolean): Integer;
@@ -392,7 +392,14 @@ begin
         #13 : Result:=Result+'\r';
       end;
       J:=I+1;
-      end;
+      end
+    else
+      if Ord(P^) >= $80 then
+        begin
+          Result:=Result+Copy(S,J,I-J);
+          Result:=Result+'\u' + hexStr(Ord(P^), 4);
+          J:=I+1;
+        end;
     Inc(I);
     Inc(P);
     end;
@@ -1147,7 +1154,7 @@ begin
   Result:=Add(TJSONIntegerNumber.Create(I));
 end;
 
-function TJSONArray.Add(S: String): Integer;
+function TJSONArray.Add(S: TJSONStringType): Integer;
 begin
   Result:=Add(TJSONString.Create(S));
 end;
