@@ -87,7 +87,7 @@ end;
 procedure TAboutForm.imgDonateClick(Sender: TObject);
 begin
   AppBusy;
-  OpenURL('https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=5FX6RCAGXP6GN&lc=GB&item_name=Transmission%20Remote%20GUI&item_number=2&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted');
+  OpenURL('https://www.plimus.com/jsp/buynow.jsp?contractId=2343710');
   AppNormal;
 end;
 
