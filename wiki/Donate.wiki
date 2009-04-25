@@ -2,6 +2,6 @@
 #labels Featured
 Donate to support further development of Transmission Remote GUI.
 
-[https://www.plimus.com/jsp/buynow.jsp?contractId=2343710 https://www.paypal.com/en_GB/i/btn/btn_donate_LG.gif]
+[https://www.plimus.com/jsp/buynow.jsp?contractId=2343710 http://transmisson-remote-gui.googlecode.com/svn/wiki/plimus-donate.png]
 
 Any amount is welcome, and greatly appreciated.
