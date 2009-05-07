@@ -768,6 +768,7 @@ var
   fs: TFileStream;
   s, OldDownloadDir, IniSec: string;
   tt: TDateTime;
+  ok: boolean;
 begin
   AppBusy;
   id:=0;
@@ -849,7 +850,13 @@ begin
       OldDownloadDir:=cbDestFolder.Text;
       AppNormal;
 
-      if ShowModal = mrOk then begin
+      ok:=not FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
+      if ok then
+        btSelectAllClick(nil)
+      else
+        ok:=ShowModal = mrOk;
+
+      if ok then begin
         AppBusy;
         Self.Update;
 
@@ -1844,6 +1851,8 @@ begin
 {$endif}
     cbTrayIconAlways.Checked:=FIni.ReadBool('Interface', 'TrayIconAlways', True);
 
+    chShowAddTorrentWindow.Checked:=FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
+
     if ShowModal = mrOK then begin
       if (edHost.Text <> FIni.ReadString('Connection', 'Host', 'localhost')) or
          (edPort.Value <> FIni.ReadInteger('Connection', 'Port', 9091)) or
@@ -1871,6 +1880,8 @@ begin
       FIni.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
 {$endif}
       FIni.WriteBool('Interface', 'TrayIconAlways', cbTrayIconAlways.Checked);
+
+      FIni.WriteBool('Interface', 'ShowAddTorrentWindow', chShowAddTorrentWindow.Checked);
 
       if not RpcObj.Connected then
         DoConnect;
