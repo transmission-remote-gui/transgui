@@ -126,14 +126,14 @@ end;
 Function TJSONParser.ParseNumber : TJSONNumber;
 
 Var
-  I : Integer;
+  I : Int64;
   F : TJSONFloat;
   S : TJSONStringType;
 
 begin
   S:=CurrentTokenString;
   I:=0;
-  If TryStrToInt(S,I) then
+  If TryStrToInt64(S,I) and (I >= Low(LongInt)) and (I <= High(LongInt)) then
     Result:=TJSONIntegerNumber.Create(I)
   else
     begin
