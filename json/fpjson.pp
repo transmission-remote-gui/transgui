@@ -1082,6 +1082,7 @@ begin
                        Result:=TJSONNull.Create;
       vtCurrency   : Result:=TJSONFloatNumber.Create(vCurrency^);
       vtInt64      : Result:=TJSONFloatNumber.Create(vInt64^);
+      vtQWord      : Result:=TJSONFloatNumber.Create(VQWord^);
       vtObject     : if (VObject is TJSONData) then
                        Result:=TJSONData(VObject)
                      else
