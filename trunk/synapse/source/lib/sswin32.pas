@@ -44,7 +44,7 @@
 
 {:@exclude}
 
-{$IFDEF WIN32}
+{$IFDEF WINDOWS}
 
 //{$DEFINE WINSOCK1}
 {Note about define WINSOCK1:
@@ -261,7 +261,7 @@ type
   u_long = Longint;
   pu_long = ^u_long;
   pu_short = ^u_short;
-  TSocket = u_int;
+  TSocket = {$ifdef FPC} uint_ptr {$else} u_int {$endif};
   TAddrFamily = integer;
 
   TMemory = pointer;
@@ -287,7 +287,7 @@ const
   FD_SETSIZE     =   64;
 type
   PFDSet = ^TFDSet;
-  TFDSet = packed record
+  TFDSet = record
     fd_count: u_int;
     fd_array: array[0..FD_SETSIZE-1] of TSocket;
   end;
@@ -299,7 +299,7 @@ const
 
 type
   PTimeVal = ^TTimeVal;
-  TTimeVal = packed record
+  TTimeVal = record
     tv_sec: Longint;
     tv_usec: Longint;
   end;
@@ -319,14 +319,14 @@ const
 type
 
   PInAddr = ^TInAddr;
-  TInAddr = packed record
+  TInAddr = record
     case integer of
       0: (S_bytes: packed array [0..3] of byte);
       1: (S_addr: u_long);
   end;
 
   PSockAddrIn = ^TSockAddrIn;
-  TSockAddrIn = packed record
+  TSockAddrIn = record
     case Integer of
       0: (sin_family: u_short;
           sin_port: u_short;
@@ -342,7 +342,7 @@ type
   end;
 
   PInAddr6 = ^TInAddr6;
-  TInAddr6 = packed record
+  TInAddr6 = record
     case integer of
       0: (S6_addr: packed array [0..15] of byte);
       1: (u6_addr8: packed array [0..15] of byte);
@@ -351,7 +351,7 @@ type
   end;
 
   PSockAddrIn6 = ^TSockAddrIn6;
-  TSockAddrIn6 = packed record
+  TSockAddrIn6 = record
 		sin6_family:   u_short;     // AF_INET6
 		sin6_port:     u_short;     // Transport level port number
 		sin6_flowinfo: u_long;	    // IPv6 flow information
@@ -367,7 +367,7 @@ type
   end;
 
   PHostEnt = ^THostEnt;
-  THostEnt = packed record
+  THostEnt = record
     h_name: PChar;
     h_aliases: ^PChar;
     h_addrtype: Smallint;
@@ -378,7 +378,7 @@ type
   end;
 
   PNetEnt = ^TNetEnt;
-  TNetEnt = packed record
+  TNetEnt = record
     n_name: PChar;
     n_aliases: ^PChar;
     n_addrtype: Smallint;
@@ -386,15 +386,20 @@ type
   end;
 
   PServEnt = ^TServEnt;
-  TServEnt = packed record
+  TServEnt = record
     s_name: PChar;
     s_aliases: ^PChar;
+{$ifdef WIN64}
+    s_proto: PChar;
+    s_port: Smallint;
+{$else WIN64}
     s_port: Smallint;
     s_proto: PChar;
+{$endif WIN64}
   end;
 
   PProtoEnt = ^TProtoEnt;
-  TProtoEnt = packed record
+  TProtoEnt = record
     p_name: PChar;
     p_aliases: ^Pchar;
     p_proto: Smallint;
@@ -527,7 +532,7 @@ type
 
   { Structure used by kernel to pass protocol information in raw sockets. }
   PSockProto = ^TSockProto;
-  TSockProto = packed record
+  TSockProto = record
     sp_family: u_short;
     sp_protocol: u_short;
   end;
@@ -554,7 +559,7 @@ const
 type
 { Structure used for manipulating linger option. }
   PLinger = ^TLinger;
-  TLinger = packed record
+  TLinger = record
     l_onoff: u_short;
     l_linger: u_short;
   end;
@@ -716,14 +721,22 @@ const
   WSASYS_STATUS_LEN      =   128;
 type
   PWSAData = ^TWSAData;
-  TWSAData = packed record
+  TWSAData = record
     wVersion: Word;
     wHighVersion: Word;
+{$ifdef win64}
+     iMaxSockets : word;
+     iMaxUdpDg : word;
+     lpVendorInfo : pchar;
+     szDescription : array[0..WSADESCRIPTION_LEN] of char;
+     szSystemStatus : array[0..WSASYS_STATUS_LEN] of char;
+{$else win64}
     szDescription: array[0..WSADESCRIPTION_LEN] of Char;
     szSystemStatus: array[0..WSASYS_STATUS_LEN] of Char;
     iMaxSockets: Word;
     iMaxUdpDg: Word;
     lpVendorInfo: PChar;
+{$endif win64}
   end;
 
   function IN6_IS_ADDR_UNSPECIFIED(const a: PInAddr6): boolean;
@@ -884,7 +897,7 @@ var
   SockWship6Api: Boolean;
 
 type
-  TVarSin = packed record
+  TVarSin = record
     case integer of
       0: (AddressFamily: u_short);
       1: (
