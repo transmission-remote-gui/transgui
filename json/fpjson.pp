@@ -362,6 +362,7 @@ Resourcestring
   SErrPointerNotNil = 'Cannot add non-nil pointer to JSON%s';
   SErrOddNumber = 'TJSONObject must be constructed with name,value pairs';
   SErrNameMustBeString = 'TJSONObject constructor element name at pos %d is not a string';
+  SErrElementNotFound = 'JSON element ''%s'' not found.';
   
   
 Function StringToJSONString(S : TJSONStringType) : TJSONStringType;
@@ -1214,6 +1215,8 @@ end;
 function TJSONObject.GetElements(AName: string): TJSONData;
 begin
   Result:=TJSONData(FHash.Find(AName));
+  if Result = nil then
+    Raise EJSON.CreateFmt(SErrElementNotFound, [AName]);
 end;
 
 function TJSONObject.GetFloats(AName : String): TJSONFloat;
