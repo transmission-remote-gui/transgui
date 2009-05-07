@@ -129,6 +129,7 @@ Var
   I : Int64;
   F : TJSONFloat;
   S : TJSONStringType;
+  Error : word;
 
 begin
   S:=CurrentTokenString;
@@ -138,8 +139,8 @@ begin
   else
     begin
     I:=0;
-    Val(S,F,I);
-    If (I<>0) then
+    Val(S,F,Error);
+    If (Error<>0) then
       DoError(SErrInvalidNumber);
     Result:=TJSONFloatNumber.Create(F);
     end;
