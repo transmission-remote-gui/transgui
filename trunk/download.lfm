@@ -51,8 +51,10 @@ object DownloadForm: TDownloadForm
     Height = 23
     Top = 72
     Width = 75
+    AutoSize = True
     Cancel = True
     Caption = 'Cancel'
+    Constraints.MinWidth = 75
     Default = True
     OnClick = btCancelClick
     TabOrder = 0

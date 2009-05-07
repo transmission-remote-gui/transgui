@@ -36,62 +36,51 @@ object MainForm: TMainForm
       Align = alClient
       Columns = <      
         item
-          AutoSize = False
           Caption = 'Name'
           Width = 200
         end      
         item
           Alignment = taRightJustify
-          AutoSize = False
           Caption = 'Size'
           Width = 60
         end      
         item
           Alignment = taCenter
-          AutoSize = False
           Caption = 'Done'
         end      
         item
-          AutoSize = False
           Caption = 'Status'
           Width = 70
         end      
         item
           Alignment = taRightJustify
-          AutoSize = False
           Caption = 'Seeds'
           Width = 55
         end      
         item
           Alignment = taRightJustify
-          AutoSize = False
           Caption = 'Peers'
           Width = 55
         end      
         item
           Alignment = taRightJustify
-          AutoSize = False
           Caption = 'Down speed'
           Width = 75
         end      
         item
           Alignment = taRightJustify
-          AutoSize = False
           Caption = 'Up speed'
           Width = 75
         end      
         item
-          AutoSize = False
           Caption = 'ETA'
           Width = 80
         end      
         item
-          AutoSize = False
           Caption = 'Ratio'
         end      
         item
           Alignment = taRightJustify
-          AutoSize = False
           Caption = 'Downloaded'
           Tag = 60
           Visible = False
@@ -99,42 +88,36 @@ object MainForm: TMainForm
         end      
         item
           Alignment = taRightJustify
-          AutoSize = False
           Caption = 'Uploaded'
           Tag = 60
           Visible = False
           Width = 0
         end      
         item
-          AutoSize = False
           Caption = 'Tracker'
           Tag = 120
           Visible = False
           Width = 0
         end      
         item
-          AutoSize = False
           Caption = 'Tracker status'
           Tag = 100
           Visible = False
           Width = 0
         end      
         item
-          AutoSize = False
           Caption = 'Added on'
           Tag = 120
           Visible = False
           Width = 0
         end      
         item
-          AutoSize = False
           Caption = 'Completed on'
           Tag = 120
           Visible = False
           Width = 0
         end      
         item
-          AutoSize = False
           Caption = 'Last active'
           Tag = 120
           Visible = False
@@ -147,7 +130,6 @@ object MainForm: TMainForm
       ReadOnly = True
       RowSelect = True
       SmallImages = ImageList16
-      SortColumn = 0
       SortType = stData
       TabOrder = 0
       ViewStyle = vsReport
@@ -164,7 +146,6 @@ object MainForm: TMainForm
       Align = alLeft
       Columns = <      
         item
-          AutoSize = False
           Width = 10
         end>
       Constraints.MinWidth = 50
@@ -174,8 +155,6 @@ object MainForm: TMainForm
       ScrollBars = ssVertical
       ShowColumnHeaders = False
       SmallImages = ImageList16
-      SortColumn = 0
-      SortType = stNone
       TabOrder = 1
       ViewStyle = vsReport
       OnCustomDrawItem = lvFilterCustomDrawItem
@@ -235,6 +214,8 @@ object MainForm: TMainForm
         Top = 26
         Width = 772
         Align = alClient
+        ClientHeight = 222
+        ClientWidth = 751
         TabOrder = 0
         OnResize = sbGenInfoResize
         object panGeneralInfo: TPanel
@@ -782,39 +763,32 @@ object MainForm: TMainForm
         Align = alClient
         Columns = <        
           item
-            AutoSize = False
             Caption = 'Host'
             Width = 150
           end        
           item
-            AutoSize = False
             Caption = 'Country'
             Width = 100
           end        
           item
-            AutoSize = False
             Caption = 'Client'
             Width = 150
           end        
           item
-            AutoSize = False
             Caption = 'Flags'
             Width = 70
           end        
           item
             Alignment = taRightJustify
-            AutoSize = False
             Caption = 'Have'
           end        
           item
             Alignment = taRightJustify
-            AutoSize = False
             Caption = 'Up speed'
             Width = 80
           end        
           item
             Alignment = taRightJustify
-            AutoSize = False
             Caption = 'Down speed'
             Width = 80
           end>
@@ -823,8 +797,6 @@ object MainForm: TMainForm
         ReadOnly = True
         RowSelect = True
         SmallImages = imgFlags
-        SortColumn = 0
-        SortType = stNone
         TabOrder = 0
         ViewStyle = vsReport
       end
@@ -842,30 +814,25 @@ object MainForm: TMainForm
         Align = alClient
         Columns = <        
           item
-            AutoSize = False
             Caption = 'File name'
             Width = 350
           end        
           item
             Alignment = taRightJustify
-            AutoSize = False
             Caption = 'Size'
             Width = 80
           end        
           item
             Alignment = taCenter
-            AutoSize = False
             Caption = 'Done'
             Width = 70
           end        
           item
             Alignment = taCenter
-            AutoSize = False
             Caption = '%'
             Width = 70
           end        
           item
-            AutoSize = False
             Caption = 'Priority'
             Width = 100
           end>
@@ -874,8 +841,6 @@ object MainForm: TMainForm
         PopupMenu = pmFiles
         ReadOnly = True
         RowSelect = True
-        SortColumn = 0
-        SortType = stNone
         TabOrder = 0
         ViewStyle = vsReport
       end
@@ -1257,14 +1222,12 @@ object MainForm: TMainForm
     top = 55
     object acConnect: TAction
       Caption = 'Connect to daemon'
-      DisableIfNoHandler = True
       ImageIndex = 18
       OnExecute = acConnectExecute
     end
     object acAddTorrent: TAction
       Category = 'Torrent'
       Caption = 'Add torrent...'
-      DisableIfNoHandler = True
       Hint = 'Add torrent'
       ImageIndex = 0
       OnExecute = acAddTorrentExecute
@@ -1273,7 +1236,6 @@ object MainForm: TMainForm
     object acStartTorrent: TAction
       Category = 'Torrent'
       Caption = 'Start'
-      DisableIfNoHandler = True
       Hint = 'Start torrent'
       ImageIndex = 1
       OnExecute = acStartTorrentExecute
@@ -1281,7 +1243,6 @@ object MainForm: TMainForm
     object acStopTorrent: TAction
       Category = 'Torrent'
       Caption = 'Stop'
-      DisableIfNoHandler = True
       Hint = 'Stop torrent'
       ImageIndex = 2
       OnExecute = acStopTorrentExecute
@@ -1289,7 +1250,6 @@ object MainForm: TMainForm
     object acRemoveTorrent: TAction
       Category = 'Torrent'
       Caption = 'Remove'
-      DisableIfNoHandler = True
       Hint = 'Remove torrent'
       ImageIndex = 3
       OnExecute = acRemoveTorrentExecute
@@ -1298,44 +1258,37 @@ object MainForm: TMainForm
     object acVerifyTorrent: TAction
       Category = 'Torrent'
       Caption = 'Verify'
-      DisableIfNoHandler = True
       Hint = 'Verify torrent'
       OnExecute = acVerifyTorrentExecute
     end
     object acSetHighPriority: TAction
       Category = 'Files'
       Caption = 'High priority'
-      DisableIfNoHandler = True
       OnExecute = acSetHighPriorityExecute
     end
     object acSetNormalPriority: TAction
       Category = 'Files'
       Caption = 'Normal priority'
-      DisableIfNoHandler = True
       OnExecute = acSetNormalPriorityExecute
     end
     object acSetLowPriority: TAction
       Category = 'Files'
       Caption = 'Low priority'
-      DisableIfNoHandler = True
       OnExecute = acSetLowPriorityExecute
     end
     object acSetNotDownload: TAction
       Category = 'Files'
       Caption = 'Don''t download'
-      DisableIfNoHandler = True
       OnExecute = acSetNotDownloadExecute
     end
     object acOptions: TAction
       Category = 'Tools'
       Caption = 'Options...'
-      DisableIfNoHandler = True
       OnExecute = acOptionsExecute
     end
     object acDaemonOptions: TAction
       Category = 'Tools'
       Caption = 'Transmission options...'
-      DisableIfNoHandler = True
       Hint = 'Transmission options'
       ImageIndex = 8
       OnExecute = acDaemonOptionsExecute
@@ -1343,56 +1296,47 @@ object MainForm: TMainForm
     object acTorrentProps: TAction
       Category = 'Torrent'
       Caption = 'Properties...'
-      DisableIfNoHandler = True
       OnExecute = acTorrentPropsExecute
     end
     object acStartAllTorrents: TAction
       Category = 'Torrent'
       Caption = 'Start all torrents'
-      DisableIfNoHandler = True
       Hint = 'Start all torrents'
       OnExecute = acStartAllTorrentsExecute
     end
     object acStopAllTorrents: TAction
       Category = 'Torrent'
       Caption = 'Stop all torrents'
-      DisableIfNoHandler = True
       Hint = 'Stop all'
       OnExecute = acStopAllTorrentsExecute
     end
     object acExit: TAction
       Caption = 'Exit'
-      DisableIfNoHandler = True
       OnExecute = acExitExecute
     end
     object acResolveHost: TAction
       Category = 'Peers'
       Caption = 'Resolve host name'
-      DisableIfNoHandler = True
       OnExecute = acResolveHostExecute
     end
     object acResolveCountry: TAction
       Category = 'Peers'
       Caption = 'Resolve country'
-      DisableIfNoHandler = True
       OnExecute = acResolveCountryExecute
     end
     object acShowCountryFlag: TAction
       Category = 'Peers'
       Caption = 'Show country flag'
-      DisableIfNoHandler = True
       OnExecute = acShowCountryFlagExecute
     end
     object acUpdateGeoIP: TAction
       Category = 'Tools'
       Caption = 'Update GeoIP database'
-      DisableIfNoHandler = True
       OnExecute = acUpdateGeoIPExecute
     end
     object acSetupColumns: TAction
       Category = 'Torrent'
       Caption = 'Setup columns...'
-      DisableIfNoHandler = True
       OnExecute = acSetupColumnsExecute
     end
   end
@@ -1602,7 +1546,6 @@ object MainForm: TMainForm
     top = 57
   end
   object ImageList16: TImageList
-    Masked = False
     left = 520
     top = 60
     Bitmap = {
@@ -2325,7 +2268,6 @@ object MainForm: TMainForm
   end
   object imgFlags: TImageList
     Height = 12
-    Masked = False
     Width = 18
     left = 144
     top = 92

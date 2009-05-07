@@ -31,7 +31,9 @@ object ColSetupForm: TColSetupForm
     Top = 8
     Width = 75
     Anchors = [akTop, akRight]
+    AutoSize = True
     Caption = 'Up'
+    Constraints.MinWidth = 75
     OnClick = btUpClick
     TabOrder = 1
   end
@@ -41,7 +43,9 @@ object ColSetupForm: TColSetupForm
     Top = 36
     Width = 75
     Anchors = [akTop, akRight]
+    AutoSize = True
     Caption = 'Down'
+    Constraints.MinWidth = 75
     OnClick = btDownClick
     TabOrder = 2
   end
@@ -51,7 +55,9 @@ object ColSetupForm: TColSetupForm
     Top = 178
     Width = 75
     Anchors = [akRight, akBottom]
+    AutoSize = True
     Caption = 'OK'
+    Constraints.MinWidth = 75
     Default = True
     OnClick = btOkClick
     TabOrder = 3
@@ -62,8 +68,10 @@ object ColSetupForm: TColSetupForm
     Top = 206
     Width = 75
     Anchors = [akRight, akBottom]
+    AutoSize = True
     Cancel = True
     Caption = 'Cancel'
+    Constraints.MinWidth = 75
     ModalResult = 2
     TabOrder = 4
   end

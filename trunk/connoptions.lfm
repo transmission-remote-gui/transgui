@@ -23,7 +23,9 @@ object OptionsForm: TOptionsForm
     Top = 305
     Width = 75
     Anchors = [akRight, akBottom]
+    AutoSize = True
     Caption = 'OK'
+    Constraints.MinWidth = 75
     Default = True
     OnClick = btOKClick
     TabOrder = 1
@@ -34,8 +36,10 @@ object OptionsForm: TOptionsForm
     Top = 305
     Width = 75
     Anchors = [akRight, akBottom]
+    AutoSize = True
     Cancel = True
     Caption = 'Cancel'
+    Constraints.MinWidth = 75
     ModalResult = 2
     TabOrder = 2
   end
@@ -44,9 +48,9 @@ object OptionsForm: TOptionsForm
     Height = 290
     Top = 8
     Width = 361
-    ActivePage = tabConnection
+    ActivePage = tabInterface
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object tabConnection: TTabSheet
       Caption = 'Connection'
@@ -122,6 +126,7 @@ object OptionsForm: TOptionsForm
         Top = 94
         Width = 196
         Anchors = [akTop, akLeft, akRight]
+        AutoSize = True
         EchoMode = emPassword
         PasswordChar = '*'
         TabOrder = 3
@@ -132,6 +137,7 @@ object OptionsForm: TOptionsForm
         Top = 66
         Width = 196
         Anchors = [akTop, akLeft, akRight]
+        AutoSize = True
         TabOrder = 2
       end
       object edPort: TSpinEdit
@@ -139,6 +145,7 @@ object OptionsForm: TOptionsForm
         Height = 23
         Top = 38
         Width = 70
+        AutoSize = True
         MaxValue = 65535
         MinValue = 1
         TabOrder = 1
@@ -150,6 +157,7 @@ object OptionsForm: TOptionsForm
         Top = 10
         Width = 196
         Anchors = [akTop, akLeft, akRight]
+        AutoSize = True
         TabOrder = 0
       end
       object cbUseProxy: TCheckBox
@@ -165,7 +173,8 @@ object OptionsForm: TOptionsForm
         Left = 148
         Height = 23
         Top = 146
-        Width = 187
+        Width = 196
+        AutoSize = True
         TabOrder = 5
       end
       object edProxyPort: TSpinEdit
@@ -173,6 +182,7 @@ object OptionsForm: TOptionsForm
         Height = 23
         Top = 174
         Width = 70
+        AutoSize = True
         MaxValue = 65535
         MinValue = 1
         TabOrder = 6
@@ -184,6 +194,7 @@ object OptionsForm: TOptionsForm
         Top = 202
         Width = 196
         Anchors = [akTop, akLeft, akRight]
+        AutoSize = True
         TabOrder = 7
       end
       object edProxyPassword: TEdit
@@ -192,6 +203,7 @@ object OptionsForm: TOptionsForm
         Top = 230
         Width = 196
         Anchors = [akTop, akLeft, akRight]
+        AutoSize = True
         EchoMode = emPassword
         PasswordChar = '*'
         TabOrder = 8
@@ -222,6 +234,7 @@ object OptionsForm: TOptionsForm
         Height = 23
         Top = 10
         Width = 70
+        AutoSize = True
         MaxValue = 999
         MinValue = 1
         TabOrder = 0
@@ -236,7 +249,6 @@ object OptionsForm: TOptionsForm
         Caption = 'Tray icon'
         ClientHeight = 67
         ClientWidth = 332
-        Ctl3D = False
         TabOrder = 1
         object cbTrayIconAlways: TCheckBox
           Left = 10
