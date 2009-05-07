@@ -52,7 +52,7 @@ unit synsock;
   {$I ssdotnet.pas}
 {$ENDIF}
 
-{$IFDEF WIN32}
+{$IFDEF WINDOWS}
   {$I sswin32.pas}
 {$ELSE}
   {$IFDEF FPC}

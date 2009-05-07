@@ -58,7 +58,7 @@ unit synautil;
 interface
 
 uses
-{$IFDEF WIN32}
+{$IFDEF WINDOWS}
   Windows,
 {$ELSE}
   {$IFDEF FPC}
@@ -340,7 +340,7 @@ var
 {==============================================================================}
 
 function TimeZoneBias: integer;
-{$IFNDEF WIN32}
+{$IFNDEF WINDOWS}
 {$IFNDEF FPC}
 var
   t: TTime_T;
@@ -691,7 +691,7 @@ end;
 {==============================================================================}
 
 function GetUTTime: TDateTime;
-{$IFDEF WIN32}
+{$IFDEF WINDOWS}
 {$IFNDEF FPC}
 var
   st: TSystemTime;
@@ -733,7 +733,7 @@ end;
 {==============================================================================}
 
 function SetUTTime(Newdt: TDateTime): Boolean;
-{$IFDEF WIN32}
+{$IFDEF WINDOWS}
 {$IFNDEF FPC}
 var
   st: TSystemTime;
