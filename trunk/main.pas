@@ -295,6 +295,7 @@ type
     function TorrentDateTimeToString(d: Int64): string;
     procedure UpdateSortColumn(LV: TListView; ColumnID: integer; SortDescending: boolean);
     procedure DoRefresh(All: boolean = False);
+    function GetFilesCommonPath(files: TJSONArray): string;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -766,7 +767,7 @@ var
   t, files: TJSONArray;
   i, j: integer;
   fs: TFileStream;
-  s, OldDownloadDir, IniSec: string;
+  s, OldDownloadDir, IniSec, path: string;
   tt: TDateTime;
   ok: boolean;
 begin
@@ -836,10 +837,14 @@ begin
           raise Exception.Create('Unable to get files list');
         edPeerLimit.Value:=t.Objects[0].Integers['maxConnectedPeers'];
         files:=t.Objects[0].Arrays['files'];
+        path:=GetFilesCommonPath(files);
         for i:=0 to files.Count - 1 do begin
           res:=files.Objects[i];
+          s:=UTF8Encode(res.Strings['name']);
+          if (path <> '') and (Copy(s, 1, Length(path)) = path) then
+            s:=Copy(s, Length(path) + 1, MaxInt);
           with lvFiles.Items.Add do begin
-            Caption:=UTF8Encode(res.Strings['name']);
+            Caption:=s;
             SubItems.Add(GetHumanSize(res.Floats['length']));
           end;
         end;
@@ -2518,6 +2523,36 @@ begin
   end;
 end;
 
+function TMainForm.GetFilesCommonPath(files: TJSONArray): string;
+var
+  i: integer;
+  d: TJSONData;
+  f: TJSONObject;
+  s: string;
+begin
+  Result:='';
+  for i:=0 to files.Count - 1 do begin
+    d:=files[i];
+    if not (d is TJSONObject) then continue;
+    f:=d as TJSONObject;
+    s:=UTF8Encode(f.Strings['name']);
+    if i = 0 then
+      Result:=ExtractFilePath(s)
+    else begin
+      while True do begin
+        if Result = '' then
+          exit;
+        if Copy(s, 1, Length(Result)) <> Result then begin
+          SetLength(Result, Length(Result) - 1);
+          Result:=ExtractFilePath(Result);
+        end
+        else
+          break;
+      end;
+    end;
+  end;
+end;
+
 procedure TMainForm.FillFilesList(list, priorities, wanted: TJSONArray);
 const
   TR_PRI_LOW    = -1;
@@ -2542,7 +2577,7 @@ var
   i, j: integer;
   d: TJSONData;
   f: TJSONObject;
-  s: string;
+  s, path: string;
   ff: double;
 
 begin
@@ -2562,12 +2597,15 @@ begin
     for i:=0 to lvFiles.Items.Count - 1 do
       lvFiles.Items[i].Data:=nil;
 
+    path:=GetFilesCommonPath(list);
+
     for i:=0 to list.Count - 1 do begin
       d:=list[i];
       if not (d is TJSONObject) then continue;
       f:=d as TJSONObject;
       s:=UTF8Encode(f.Strings['name']);
-      s:=ExtractFileName(s);
+      if (path <> '') and (Copy(s, 1, Length(path)) = path) then
+        s:=Copy(s, Length(path) + 1, MaxInt);
       it:=nil;
       for j:=0 to lvFiles.Items.Count - 1 do
         if lvFiles.Items[j].Caption = s then begin
