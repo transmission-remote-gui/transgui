@@ -275,6 +275,14 @@ object OptionsForm: TOptionsForm
           TabOrder = 1
         end
       end
+      object chShowAddTorrentWindow: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 138
+        Width = 268
+        Caption = 'Show parameters window when adding a new torrent'
+        TabOrder = 2
+      end
     end
   end
 end
