@@ -2080,8 +2080,8 @@ begin
     else
       FTorrents[idxRatio, row]:=NULL;
 
-    trackers:=t.Arrays['trackers'];
-    if trackers <> nil then begin
+    if t.IndexOfName('trackers') >= 0 then begin
+      trackers:=t.Arrays['trackers'];
       tracker:=trackers.Objects[0];
       if tracker <> nil then begin
         s:=UTF8Encode(tracker.Strings['announce']);
