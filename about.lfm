@@ -21,8 +21,10 @@ object AboutForm: TAboutForm
     Top = 302
     Width = 75
     Anchors = [akRight, akBottom]
+    AutoSize = True
     Cancel = True
     Caption = 'OK'
+    Constraints.MinWidth = 75
     Default = True
     ModalResult = 1
     TabOrder = 0
@@ -595,11 +597,11 @@ object AboutForm: TAboutForm
     end
     object tabLicense: TTabSheet
       Caption = 'License'
-      ClientHeight = 283
+      ClientHeight = 263
       ClientWidth = 401
       object edLicense: TMemo
         Left = 4
-        Height = 275
+        Height = 255
         Top = 4
         Width = 393
         Align = alClient

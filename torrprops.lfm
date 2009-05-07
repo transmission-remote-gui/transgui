@@ -25,7 +25,6 @@ object TorrPropsForm: TTorrPropsForm
     Anchors = [akTop, akLeft, akRight, akBottom]
     ClientHeight = 124
     ClientWidth = 329
-    Ctl3D = False
     TabOrder = 2
     object Label1: TLabel
       Left = 299
@@ -76,6 +75,7 @@ object TorrPropsForm: TTorrPropsForm
       Top = 24
       Width = 66
       Anchors = [akTop, akRight]
+      AutoSize = True
       Increment = 10
       MaxValue = 999999
       TabOrder = 1
@@ -95,6 +95,7 @@ object TorrPropsForm: TTorrPropsForm
       Top = 56
       Width = 66
       Anchors = [akTop, akRight]
+      AutoSize = True
       Increment = 10
       MaxValue = 999999
       TabOrder = 3
@@ -105,6 +106,7 @@ object TorrPropsForm: TTorrPropsForm
       Top = 88
       Width = 66
       Anchors = [akTop, akRight]
+      AutoSize = True
       MaxValue = 999
       MinValue = 1
       TabOrder = 4
@@ -117,7 +119,9 @@ object TorrPropsForm: TTorrPropsForm
     Top = 156
     Width = 75
     Anchors = [akRight, akBottom]
+    AutoSize = True
     Caption = 'OK'
+    Constraints.MinWidth = 75
     Default = True
     ModalResult = 1
     TabOrder = 0
@@ -128,8 +132,10 @@ object TorrPropsForm: TTorrPropsForm
     Top = 156
     Width = 75
     Anchors = [akRight, akBottom]
+    AutoSize = True
     Cancel = True
     Caption = 'Cancel'
+    Constraints.MinWidth = 75
     ModalResult = 2
     TabOrder = 1
   end

@@ -24,7 +24,6 @@ object AddTorrentForm: TAddTorrentForm
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 102
     ClientWidth = 449
-    Ctl3D = False
     TabOrder = 0
     object txDestFolder: TLabel
       Left = 10
@@ -59,7 +58,6 @@ object AddTorrentForm: TAddTorrentForm
       Width = 428
       Anchors = [akTop, akLeft, akRight]
       AutoComplete = False
-      Ctl3D = False
       ItemHeight = 13
       ItemWidth = 0
       TabOrder = 0
@@ -80,6 +78,7 @@ object AddTorrentForm: TAddTorrentForm
       Top = 68
       Width = 62
       Anchors = [akTop, akRight]
+      AutoSize = True
       MaxValue = 999
       MinValue = 1
       TabOrder = 2
@@ -95,7 +94,6 @@ object AddTorrentForm: TAddTorrentForm
     Caption = 'Torrent contents'
     ClientHeight = 157
     ClientWidth = 449
-    Ctl3D = False
     TabOrder = 1
     object lvFiles: TListView
       Left = 10
@@ -106,41 +104,41 @@ object AddTorrentForm: TAddTorrentForm
       Checkboxes = True
       Columns = <      
         item
-          AutoSize = False
           Caption = 'File name'
           Width = 300
         end      
         item
-          AutoSize = False
           Caption = 'Size'
           Width = 80
         end>
       ColumnClick = False
       ReadOnly = True
       RowSelect = True
-      SortColumn = 0
-      SortType = stNone
       TabOrder = 0
       ViewStyle = vsReport
       OnMouseDown = lvFilesMouseDown
     end
     object btSelectAll: TButton
-      Left = 284
+      Left = 274
       Height = 23
       Top = 0
       Width = 75
       Anchors = [akTop, akRight]
+      AutoSize = True
       Caption = 'Select all'
+      Constraints.MinWidth = 75
       OnClick = btSelectAllClick
       TabOrder = 1
     end
     object btSelectNone: TButton
-      Left = 363
+      Left = 355
       Height = 23
       Top = 0
-      Width = 75
+      Width = 83
       Anchors = [akTop, akRight]
+      AutoSize = True
       Caption = 'Select none'
+      Constraints.MinWidth = 75
       OnClick = btSelectNoneClick
       TabOrder = 2
     end
@@ -151,7 +149,9 @@ object AddTorrentForm: TAddTorrentForm
     Top = 311
     Width = 75
     Anchors = [akRight, akBottom]
+    AutoSize = True
     Caption = 'OK'
+    Constraints.MinWidth = 75
     Default = True
     ModalResult = 1
     TabOrder = 2
@@ -162,8 +162,10 @@ object AddTorrentForm: TAddTorrentForm
     Top = 311
     Width = 75
     Anchors = [akRight, akBottom]
+    AutoSize = True
     Cancel = True
     Caption = 'Cancel'
+    Constraints.MinWidth = 75
     ModalResult = 2
     TabOrder = 3
   end

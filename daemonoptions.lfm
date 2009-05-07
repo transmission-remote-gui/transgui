@@ -25,7 +25,6 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Caption = 'Global bandwidth settings'
     ClientHeight = 68
     ClientWidth = 390
-    Ctl3D = False
     TabOrder = 3
     object Label1: TLabel
       Left = 360
@@ -60,6 +59,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Top = 4
       Width = 66
       Anchors = [akTop, akRight]
+      AutoSize = True
       Increment = 10
       MaxValue = 999999
       TabOrder = 1
@@ -79,6 +79,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Top = 36
       Width = 66
       Anchors = [akTop, akRight]
+      AutoSize = True
       Increment = 10
       MaxValue = 999999
       TabOrder = 3
@@ -90,7 +91,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Top = 273
     Width = 75
     Anchors = [akRight, akBottom]
+    AutoSize = True
     Caption = 'OK'
+    Constraints.MinWidth = 75
     Default = True
     ModalResult = 1
     TabOrder = 0
@@ -101,8 +104,10 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Top = 273
     Width = 75
     Anchors = [akRight, akBottom]
+    AutoSize = True
     Cancel = True
     Caption = 'Cancel'
+    Constraints.MinWidth = 75
     ModalResult = 2
     TabOrder = 1
   end
@@ -114,7 +119,6 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 147
     ClientWidth = 390
-    Ctl3D = False
     TabOrder = 2
     object txDownloadDir: TLabel
       Left = 6
@@ -154,6 +158,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Top = 0
       Width = 268
       Anchors = [akTop, akLeft, akRight]
+      AutoSize = True
       TabOrder = 0
     end
     object edPort: TSpinEdit
@@ -161,6 +166,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Height = 23
       Top = 31
       Width = 66
+      AutoSize = True
       MaxValue = 65535
       MinValue = 1
       TabOrder = 1
@@ -173,7 +179,6 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Width = 268
       Anchors = [akTop, akLeft, akRight]
       AutoComplete = False
-      Ctl3D = False
       ItemHeight = 13
       Items.Strings = (
         'Disabled'
@@ -205,6 +210,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Height = 23
       Top = 112
       Width = 66
+      AutoSize = True
       MaxValue = 99999
       MinValue = 1
       TabOrder = 5
