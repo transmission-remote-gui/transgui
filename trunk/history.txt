@@ -9,6 +9,7 @@
 [-] Wrong torrent name in delete confirmation window if name column is not the first in the list. Issue #34.
 [-] When opening several .torrent files via file association, multiple instances of the application are started. Issue #44.
 [-] Selected/focused mix-up in torrents list. Issue #62.
+[-] Error during updating of GeoIP database in some cases.
 [-] Several fixes for 64-bit targets.
 
 0.95 beta (Jan 21, 2009)
