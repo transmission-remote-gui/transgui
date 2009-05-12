@@ -96,6 +96,7 @@ type
     AdvInfo: TAdvInfoType;
     RefreshNow: TRefreshType;
     RequestFullInfo: boolean;
+    XTorrentSession: string;
 
     constructor Create;
     destructor Destroy; override;
@@ -426,10 +427,11 @@ var
   s: string;
   i: integer;
   locked: boolean;
+  Pos1, Pos2: integer;
 begin
   Status:='';
   Result:=nil;
-  for i:=1 to 1 do begin
+  for i:=1 to 2 do begin
     HttpLock.Enter;
     locked:=True;
     try
@@ -437,11 +439,23 @@ begin
       s:=req.AsJSON;
       Http.Document.Write(PChar(s)^, Length(s));
       Http.Headers.Clear;
+      if XTorrentSession <> '' then
+        Http.Headers.Add(XTorrentSession);
       if not Http.HTTPMethod('POST', Url) then begin
         Status:=Http.Sock.LastErrorDesc;
         break;
       end
       else begin
+        if (Http.ResultCode = 409) and (i = 1) then begin
+          SetString(s, Http.Document.Memory, Http.Document.Size);
+          Pos1:=Pos('X-Transmission-Session-Id:', s);
+          Pos2:=Pos('</code>', s);
+          if (Pos1 > 0) and (Pos2 > 0) and (Pos('invalid session-id', s) > 0) then begin
+            XTorrentSession:=Trim(Copy(s, Pos1, Pos2-Pos1));
+            continue;
+          end;
+        end;
+
         if Http.ResultCode <> 200 then begin
           SetString(s, Http.Document.Memory, Http.Document.Size);
           s:=StringReplace(s, '<p>', LineEnding, [rfReplaceAll, rfIgnoreCase]);
@@ -452,7 +466,7 @@ begin
             Status:=s
           else
             Status:=Http.ResultString;
-          continue;
+          break;
         end;
 //        Http.Document.SaveToFile('c:\out.txt');
         Http.Document.Position:=0;
@@ -466,7 +480,7 @@ begin
             on E: Exception do
               begin
                 Status:=e.Message;
-                continue;
+                break;
               end;
           end;
           try
@@ -496,7 +510,7 @@ begin
             end
             else begin
               Status:='Invalid server response.';
-              continue;
+              break;
             end;
           finally
             obj.Free;
@@ -634,6 +648,7 @@ end;
 procedure TRpc.Connect;
 begin
   CurTorrentId:=0;
+  XTorrentSession:='';
   RequestFullInfo:=True;
   RpcThread:=TRpcThread.Create;
   with RpcThread do begin
