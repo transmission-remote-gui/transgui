@@ -1,3 +1,16 @@
+1.0 (May 12, 2009)
+------------------
+[+] Added option 'Show parameters window when adding a new torrent'.
+[*] Support for the latest version of Transmission. Issues #45, #50, #60, #64.
+[*] Faster update of torrent details.
+[*] Transmission Remote GUI can be compiled as native Windows x64 application.
+[-] Several fixes to Unicode support. Issues #49, #56.
+[-] Strip only common part of path in case if a torrent contains multiple folders. Issue #22.
+[-] Wrong torrent name in delete confirmation window if name column is not the first in the list. Issue #34.
+[-] When opening several .torrent files via file association, multiple instances of the application are started. Issue #44.
+[-] Selected/focused mix-up in torrents list. Issue #62.
+[-] Several fixes for 64-bit targets.
+
 0.95 beta (Jan 21, 2009)
 ------------------------
 [+] Proxy support.
