@@ -1108,6 +1108,7 @@ begin
       exit;
   end;
   try
+    FreeAndNil(FResolver);
     gz:=TGZFileStream.Create(tmp, gzopenread);
     try
       fs:=TFileStream.Create(FHomeDir + 'GeoIP.dat', fmCreate);
@@ -1126,7 +1127,6 @@ begin
     DeleteFile(tmp);
     raise;
   end;
-  FreeAndNil(FResolver);
   Result:=True;
 end;
 
