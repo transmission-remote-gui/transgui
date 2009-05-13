@@ -1200,7 +1200,7 @@ end;
 function TMainForm.RatioToString(Ratio: double): string;
 begin
   if (Ratio = MaxInt) or (Ratio = -2) then
-    Result:=Utf8Encode(WideChar($221E))
+    Result:=Utf8Encode(WideString(WideChar($221E)))
   else
     if Ratio = -1 then
       Result:=''
@@ -2700,7 +2700,7 @@ begin
     else begin
       i:=t.Integers['downloadLimit'];
       if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
-        s:=Utf8Encode(WideChar($221E))
+        s:=Utf8Encode(WideString(WideChar($221E)))
       else
         s:=GetHumanSize(i*1024)+'/s';
     end;
@@ -2711,7 +2711,7 @@ begin
     else begin
       i:=t.Integers['uploadLimit'];
       if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
-        s:=Utf8Encode(WideChar($221E))
+        s:=Utf8Encode(WideString(WideChar($221E)))
       else
         s:=GetHumanSize(i*1024)+'/s';
     end;
@@ -2722,7 +2722,7 @@ begin
     begin
       i:=t.Integers['downloadLimit'];
       if i < 0 then
-        s:=Utf8Encode(WideChar($221E))
+        s:=Utf8Encode(WideString(WideChar($221E)))
       else
         s:=GetHumanSize(i*1024)+'/s';
     end else s:='-';
@@ -2732,7 +2732,7 @@ begin
     begin
       i:=t.Integers['uploadLimit'];
       if i < 0 then
-        s:=Utf8Encode(WideChar($221E))
+        s:=Utf8Encode(WideString(WideChar($221E)))
       else
         s:=GetHumanSize(i*1024)+'/s';
     end else s:='-';
