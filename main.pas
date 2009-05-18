@@ -64,6 +64,7 @@ type
     acResolveCountry: TAction;
     acShowCountryFlag: TAction;
     acSetupColumns: TAction;
+    acRemoveTorrentAndData: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
     acVerifyTorrent: TAction;
@@ -72,6 +73,8 @@ type
     imgFlags: TImageList;
     ImageList16: TImageList;
     FilterTimer: TTimer;
+    MenuItem38: TMenuItem;
+    MenuItem39: TMenuItem;
     txLastActive: TLabel;
     txLastActiveLabel: TLabel;
     txTracker: TLabel;
@@ -215,6 +218,7 @@ type
     procedure acDisconnectExecute(Sender: TObject);
     procedure acExitExecute(Sender: TObject);
     procedure acDaemonOptionsExecute(Sender: TObject);
+    procedure acRemoveTorrentAndDataExecute(Sender: TObject);
     procedure acRemoveTorrentExecute(Sender: TObject);
     procedure acResolveCountryExecute(Sender: TObject);
     procedure acResolveHostExecute(Sender: TObject);
@@ -296,6 +300,7 @@ type
     procedure UpdateSortColumn(LV: TListView; ColumnID: integer; SortDescending: boolean);
     procedure DoRefresh(All: boolean = False);
     function GetFilesCommonPath(files: TJSONArray): string;
+    procedure InternalRemoveTorrent(const Msg: string; RemoveLocalData: boolean);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -303,7 +308,7 @@ type
     procedure FillFilesList(list, priorities, wanted: TJSONArray);
     procedure FillGeneralInfo(t: TJSONObject);
     procedure CheckStatus(Fatal: boolean = True);
-    function TorrentAction(TorrentId: integer; const AAction: string): boolean;
+    function TorrentAction(TorrentId: integer; const AAction: string; args: TJSONObject = nil): boolean;
     function SetFilePriority(TorrentId: integer; const Files: array of integer; const APriority: string): boolean;
     function SetCurrentFilePriority(const APriority: string): boolean;
     procedure ClearDetailsInfo;
@@ -1358,16 +1363,14 @@ begin
   end;
 end;
 
-procedure TMainForm.acRemoveTorrentExecute(Sender: TObject);
-var
-  id, i: integer;
+procedure TMainForm.acRemoveTorrentAndDataExecute(Sender: TObject);
 begin
-  if lvTorrents.Selected = nil then exit;
-  id:=RpcObj.CurTorrentId;
-  i:=FTorrents.IndexOf(idxTorrentId, id);
-  if i < 0 then exit;
-  if MessageDlg('', Format('Are you sure to remove torrent ''%s''?', [string(FTorrents[idxName, i])]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
-  TorrentAction(id, 'remove');
+  InternalRemoveTorrent('Are you sure to remove torrent ''%s'' and all associated DATA?', True);
+end;
+
+procedure TMainForm.acRemoveTorrentExecute(Sender: TObject);
+begin
+  InternalRemoveTorrent('Are you sure to remove torrent ''%s''?', False);
 end;
 
 procedure TMainForm.acResolveCountryExecute(Sender: TObject);
@@ -1825,6 +1828,7 @@ begin
   acStopTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
   acVerifyTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
   acRemoveTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
+  acRemoveTorrentAndData.Enabled:=acRemoveTorrent.Enabled and (RpcObj.RPCVersion >= 4);
   acTorrentProps.Enabled:=acRemoveTorrent.Enabled;
 
   acSetHighPriority.Enabled:=RpcObj.Connected and (lvTorrents.Selected <> nil) and
@@ -2559,6 +2563,22 @@ begin
   end;
 end;
 
+procedure TMainForm.InternalRemoveTorrent(const Msg: string; RemoveLocalData: boolean);
+var
+  id, i: integer;
+  args: TJSONObject;
+begin
+  if lvTorrents.Selected = nil then exit;
+  id:=RpcObj.CurTorrentId;
+  i:=FTorrents.IndexOf(idxTorrentId, id);
+  if i < 0 then exit;
+  if MessageDlg('', Format(Msg, [string(FTorrents[idxName, i])]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
+  args:=TJSONObject.Create;
+  if RemoveLocalData then
+    args.Add('delete-local-data', TJSONIntegerNumber.Create(1));
+  TorrentAction(id, 'remove', args);
+end;
+
 procedure TMainForm.FillFilesList(list, priorities, wanted: TJSONArray);
 const
   TR_PRI_LOW    = -1;
@@ -2805,15 +2825,16 @@ begin
   end;
 end;
 
-function TMainForm.TorrentAction(TorrentId: integer; const AAction: string): boolean;
+function TMainForm.TorrentAction(TorrentId: integer; const AAction: string; args: TJSONObject): boolean;
 var
-  req, args: TJSONObject;
+  req: TJSONObject;
 begin
   AppBusy;
   req:=TJSONObject.Create;
   try
     req.Add('method', 'torrent-' + AAction);
-    args:=TJSONObject.Create;
+    if args = nil then
+      args:=TJSONObject.Create;
     if TorrentId <> 0 then
       args.Add('ids', TJSONArray.Create([TorrentId]));
     req.Add('arguments', args);

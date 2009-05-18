@@ -1132,6 +1132,9 @@ object MainForm: TMainForm
         }
         OnClick = acRemoveTorrentExecute
       end
+      object MenuItem38: TMenuItem
+        Action = acRemoveTorrentAndData
+      end
       object MenuItem7: TMenuItem
         Action = acVerifyTorrent
         OnClick = acVerifyTorrentExecute
@@ -1255,12 +1258,6 @@ object MainForm: TMainForm
       OnExecute = acRemoveTorrentExecute
       ShortCut = 46
     end
-    object acVerifyTorrent: TAction
-      Category = 'Torrent'
-      Caption = 'Verify'
-      Hint = 'Verify torrent'
-      OnExecute = acVerifyTorrentExecute
-    end
     object acSetHighPriority: TAction
       Category = 'Files'
       Caption = 'High priority'
@@ -1293,23 +1290,6 @@ object MainForm: TMainForm
       ImageIndex = 8
       OnExecute = acDaemonOptionsExecute
     end
-    object acTorrentProps: TAction
-      Category = 'Torrent'
-      Caption = 'Properties...'
-      OnExecute = acTorrentPropsExecute
-    end
-    object acStartAllTorrents: TAction
-      Category = 'Torrent'
-      Caption = 'Start all torrents'
-      Hint = 'Start all torrents'
-      OnExecute = acStartAllTorrentsExecute
-    end
-    object acStopAllTorrents: TAction
-      Category = 'Torrent'
-      Caption = 'Stop all torrents'
-      Hint = 'Stop all'
-      OnExecute = acStopAllTorrentsExecute
-    end
     object acExit: TAction
       Caption = 'Exit'
       OnExecute = acExitExecute
@@ -1333,6 +1313,35 @@ object MainForm: TMainForm
       Category = 'Tools'
       Caption = 'Update GeoIP database'
       OnExecute = acUpdateGeoIPExecute
+    end
+    object acRemoveTorrentAndData: TAction
+      Category = 'Torrent'
+      Caption = 'Remove torrent and Data'
+      OnExecute = acRemoveTorrentAndDataExecute
+      ShortCut = 8238
+    end
+    object acVerifyTorrent: TAction
+      Category = 'Torrent'
+      Caption = 'Verify'
+      Hint = 'Verify torrent'
+      OnExecute = acVerifyTorrentExecute
+    end
+    object acTorrentProps: TAction
+      Category = 'Torrent'
+      Caption = 'Properties...'
+      OnExecute = acTorrentPropsExecute
+    end
+    object acStartAllTorrents: TAction
+      Category = 'Torrent'
+      Caption = 'Start all torrents'
+      Hint = 'Start all torrents'
+      OnExecute = acStartAllTorrentsExecute
+    end
+    object acStopAllTorrents: TAction
+      Category = 'Torrent'
+      Caption = 'Stop all torrents'
+      Hint = 'Stop all'
+      OnExecute = acStopAllTorrentsExecute
     end
     object acSetupColumns: TAction
       Category = 'Torrent'
@@ -1477,6 +1486,10 @@ object MainForm: TMainForm
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
       OnClick = acRemoveTorrentExecute
+    end
+    object MenuItem39: TMenuItem
+      Action = acRemoveTorrentAndData
+      OnClick = acRemoveTorrentAndDataExecute
     end
     object MenuItem11: TMenuItem
       Action = acVerifyTorrent
