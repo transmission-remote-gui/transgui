@@ -45,6 +45,7 @@ type
     procedure Clear; override;
     procedure Delete(Index: Integer);
     procedure Sort(ACol: integer; Descending: boolean = False);
+    function IndexOf(ACol: integer; const Value: variant): integer;
     property Items[ACol, ARow: integer]: variant read GetItems write SetItems; default;
     property Rows[ARow: integer]: variant read GetRows;
     property ColCnt: integer read FColCnt;
@@ -165,6 +166,18 @@ begin
   FSortColumn:=ACol;
   FSortDesc:=Descending;
   inherited Sort(@CompareItems);
+end;
+
+function TVarList.IndexOf(ACol: integer; const Value: variant): integer;
+var
+  i: integer;
+begin
+  for i:=0 to RowCnt - 1 do
+    if Items[ACol, i] = Value then begin
+      Result:=i;
+      exit;
+    end;
+  Result:=-1;
 end;
 
 end.
