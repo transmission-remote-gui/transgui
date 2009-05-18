@@ -302,6 +302,7 @@ type
     function GetFilesCommonPath(files: TJSONArray): string;
     procedure InternalRemoveTorrent(const Msg: string; RemoveLocalData: boolean);
     function IncludeProperTrailingPathDelimiter(const s: string): string;
+    procedure UrlLabelClick(Sender: TObject);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -1726,6 +1727,13 @@ begin
   miToggleApp.Click;
 end;
 
+procedure TMainForm.UrlLabelClick(Sender: TObject);
+begin
+  AppBusy;
+  OpenURL((Sender as TLabel).Caption);
+  AppNormal;
+end;
+
 procedure TMainForm.DoConnect;
 begin
   DoDisconnect;
@@ -2810,6 +2818,23 @@ begin
   txPieces.Caption:=Format('%d x %s (have %d)', [t.Integers['pieceCount'], GetHumanSize(t.Floats['pieceSize']), i]);
   txHash.Caption:=t.Strings['hashString'];
   txComment.Caption:=UTF8Encode(t.Strings['comment']);
+  if (AnsiCompareText(Copy(txComment.Caption, 1, 7), 'http://') = 0)
+     or (AnsiCompareText(Copy(txComment.Caption, 1, 8), 'https://') = 0)
+  then begin
+    if not Assigned(txComment.OnClick) then begin
+      txComment.OnClick:=@UrlLabelClick;
+      txComment.Cursor:=crHandPoint;
+      txComment.Font.Color:=clBlue;
+      txComment.Font.Style:=[fsUnderline];
+    end;
+  end
+  else begin
+    if Assigned(txComment.OnClick) then begin
+      txComment.OnClick:=nil;
+      txComment.Cursor:=crDefault;
+      txComment.ParentFont:=True;
+    end;
+  end;
   txAddedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['addedDate']));
   txCompletedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['doneDate']));
   panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
