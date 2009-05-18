@@ -301,6 +301,7 @@ type
     procedure DoRefresh(All: boolean = False);
     function GetFilesCommonPath(files: TJSONArray): string;
     procedure InternalRemoveTorrent(const Msg: string; RemoveLocalData: boolean);
+    function IncludeProperTrailingPathDelimiter(const s: string): string;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -2579,6 +2580,24 @@ begin
   TorrentAction(id, 'remove', args);
 end;
 
+function TMainForm.IncludeProperTrailingPathDelimiter(const s: string): string;
+var
+  i: integer;
+  d: char;
+begin
+  Result:=s;
+  if Result = '' then exit;
+  d:='/';
+  for i:=1 to Length(Result) do
+    if Result[i] in ['/','\',':'] then begin
+      d:=Result[i];
+      break;
+    end;
+
+  if Result[Length(Result)] <> d then
+    Result:=Result + d;
+end;
+
 procedure TMainForm.FillFilesList(list, priorities, wanted: TJSONArray);
 const
   TR_PRI_LOW    = -1;
@@ -2680,7 +2699,6 @@ end;
 procedure TMainForm.FillGeneralInfo(t: TJSONObject);
 var
   i, j, idx: integer;
-  it: TListItem;
   s: string;
   f: double;
 begin
@@ -2688,14 +2706,7 @@ begin
     ClearDetailsInfo;
     exit;
   end;
-  it:=lvTorrents.Selected;
-  idx:=-1;
-  for i:=0 to FTorrents.Count - 1 do
-    if FTorrents[idxTorrentId, i] = PtrUInt(it.Data) then begin
-      idx:=i;
-      break;
-    end;
-
+  idx:=FTorrents.IndexOf(idxTorrentId, t.Integers['id']);
   if idx = -1 then begin
     ClearDetailsInfo;
     exit;
@@ -2786,7 +2797,10 @@ begin
 
   panGeneralInfo.ChildSizing.Layout:=cclNone;
 
-  txTorrentName.Caption:=it.Caption;
+  s:=FTorrents[idxName, idx];
+  if RpcObj.RPCVersion >= 4 then
+    s:=IncludeProperTrailingPathDelimiter(t.Strings['downloadDir']) + s;
+  txTorrentName.Caption:=s;
   txCreated.Caption:=Format('%s by %s', [TorrentDateTimeToString(Trunc(t.Floats['dateCreated'])), t.Strings['creator']]);
   txTotalSize.Caption:=Format('%s (%s done)', [GetHumanSize(t.Floats['totalSize']), GetHumanSize(t.Floats['sizeWhenDone'] - t.Floats['leftUntilDone'])]);
   if t.Floats['totalSize'] = t.Floats['haveValid'] then
