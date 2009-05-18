@@ -50,6 +50,7 @@ function GetTimeZoneDelta: TDateTime;
 {$ifdef windows}
 var
   t: TIME_ZONE_INFORMATION;
+  res: dword;
 {$endif}
 {$ifdef unix}
 var
@@ -59,8 +60,16 @@ var
 begin
   Result:=0;
 {$ifdef windows}
-  if GetTimeZoneInformation(t) <> TIME_ZONE_ID_INVALID then
-    Result:=-t.Bias/MinsPerDay;
+  res:=GetTimeZoneInformation(t);
+  if res<> TIME_ZONE_ID_INVALID then begin
+    case res of
+      TIME_ZONE_ID_STANDARD:
+        Result:=-t.StandardBias;
+      TIME_ZONE_ID_DAYLIGHT:
+        Result:=-t.DaylightBias;
+    end;
+    Result:=(-t.Bias + Result)/MinsPerDay;
+  end;
 {$endif}
 {$ifdef unix}
   timezone.tz_minuteswest:=0;
