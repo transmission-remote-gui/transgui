@@ -47,11 +47,11 @@ type
     { public declarations }
   end; 
 
-function SetupColumns(LV: TListView): boolean;
+function SetupColumns(LV: TListView; PersistentColumnId: integer): boolean;
 
 implementation
 
-function SetupColumns(LV: TListView): boolean;
+function SetupColumns(LV: TListView; PersistentColumnId: integer): boolean;
 var
   i, j: integer;
 begin
@@ -66,6 +66,8 @@ begin
         lstColumns.Checked[j]:=Visible;
         if Visible or (Width <> 0) then
           Tag:=Width;
+        if ID = PersistentColumnId then
+          lstColumns.Checked[j]:=True;
       end;
     UpdateUI;
     Result:=ShowModal = mrOk;
@@ -77,6 +79,8 @@ begin
             with LV.Columns[j] do
               if ID = ptrint(lstColumns.Items.Objects[i]) then begin
                 Index:=i;
+                if ID = PersistentColumnId then
+                  lstColumns.Checked[i]:=True;
                 if not Visible and (Visible <> lstColumns.Checked[i]) then begin
                   Visible:=True;
                   if Width <> 0 then
@@ -94,6 +98,7 @@ begin
               end;
       finally
         LV.EndUpdate;
+        LV.Invalidate;
       end;
     end;
   finally
