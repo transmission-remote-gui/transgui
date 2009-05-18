@@ -18,6 +18,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <CurrentVersionNr Value="1"/>
+      <CurrentMajorRevNr Value="1"/>
       <CompanyName Value="Yury Sidorov"/>
       <FileDescription Value="Transmission Remote GUI"/>
       <InternalName Value="transgui"/>
