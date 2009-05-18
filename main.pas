@@ -2087,7 +2087,7 @@ begin
       if (StateImg = imgDone) and (t.Floats['leftUntilDone'] <> 0) then
         StateImg:=imgStopped;
     end;
-    FTorrents[idxDone, row]:=f;
+    FTorrents[idxDone, row]:=Int(f*10.0)/10.0;
     FTorrents[idxStateImg, row]:=StateImg;
     GetTorrentValue(idxDownSpeed, 'rateDownload', vtInteger);
     GetTorrentValue(idxUpSpeed, 'rateUpload', vtInteger);
@@ -2675,7 +2675,7 @@ begin
       SetSubItem(idxFileDone, GetHumanSize(f.Floats['bytesCompleted']));
       if ff <> 0 then
         ff:=f.Floats['bytesCompleted']*100.0/ff;
-      SetSubItem(idxFileProgress, Format('%.1f%%', [ff]));
+      SetSubItem(idxFileProgress, Format('%.1f%%', [Int(ff*10.0)/10.0]));
 
       if wanted.Integers[i] = 0 then
         s:='skip'
