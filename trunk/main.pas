@@ -1359,10 +1359,15 @@ begin
 end;
 
 procedure TMainForm.acRemoveTorrentExecute(Sender: TObject);
+var
+  id, i: integer;
 begin
   if lvTorrents.Selected = nil then exit;
-  if MessageDlg('', Format('Are you sure to remove torrent ''%s''?', [string(FTorrents[idxName, lvTorrents.Selected.Index])]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
-  TorrentAction(PtrUInt(lvTorrents.Selected.Data), 'remove');
+  id:=RpcObj.CurTorrentId;
+  i:=FTorrents.IndexOf(idxTorrentId, id);
+  if i < 0 then exit;
+  if MessageDlg('', Format('Are you sure to remove torrent ''%s''?', [string(FTorrents[idxName, i])]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
+  TorrentAction(id, 'remove');
 end;
 
 procedure TMainForm.acResolveCountryExecute(Sender: TObject);
