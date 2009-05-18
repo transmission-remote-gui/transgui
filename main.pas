@@ -1414,7 +1414,7 @@ procedure TMainForm.acSetupColumnsExecute(Sender: TObject);
 begin
   UpdateSortColumn(lvTorrents, -1, False);
   try
-    if not SetupColumns(lvTorrents) then exit;
+    if not SetupColumns(lvTorrents, idxName) then exit;
   finally
     UpdateSortColumn(lvTorrents, FTorrentsSortColumn, FTorrentsSortDesc);
   end;
