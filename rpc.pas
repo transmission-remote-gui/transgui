@@ -38,7 +38,6 @@ type
   private
     ResultData: TJSONData;
     FRpc: TRpc;
-    FRPCVersion: integer;
 
     function GetAdvInfo: TAdvInfoType;
     function GetCurTorrentId: cardinal;
@@ -77,10 +76,10 @@ type
     FInfoStatus: string;
     FConnected: boolean;
     FTorrentFields: string;
+    FRPCVersion: integer;
 
     function GetConnected: boolean;
     function GetInfoStatus: string;
-    function GetRPCVersion: integer;
     function GetStatus: string;
     function GetTorrentFields: string;
     procedure SetInfoStatus(const AValue: string);
@@ -115,7 +114,7 @@ type
     property InfoStatus: string read GetInfoStatus write SetInfoStatus;
     property Connected: boolean read GetConnected;
     property TorrentFields: string read GetTorrentFields write SetTorrentFields;
-    property RPCVersion: integer read GetRPCVersion;
+    property RPCVersion: integer read FRPCVersion;
   end;
 
 implementation
@@ -167,6 +166,7 @@ begin
   end;
   FRpc.RpcThread:=nil;
   FRpc.FConnected:=False;
+  FRpc.FRPCVersion:=0;
   Sleep(20);
 end;
 
@@ -235,9 +235,9 @@ begin
     if args <> nil then
     try
       if args.IndexOfName('rpc-version') >= 0 then
-        FRPCVersion := args.Integers['rpc-version']
+        FRpc.FRPCVersion := args.Integers['rpc-version']
       else
-        FRPCVersion := -1;
+        FRpc.FRPCVersion := 0;
       if args.IndexOfName('version') >= 0 then
         s:=' ' + args.Strings['version']
       else
@@ -603,14 +603,6 @@ begin
   finally
     Unlock;
   end;
-end;
-
-function TRpc.GetRPCVersion: integer;
-begin
-  if Assigned(RpcThread) then
-    Result:=RpcThread.FRPCVersion
-  else
-    Result:=-1;
 end;
 
 procedure TRpc.SetStatus(const AValue: string);
