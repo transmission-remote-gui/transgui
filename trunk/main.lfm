@@ -1134,6 +1134,7 @@ object MainForm: TMainForm
       end
       object MenuItem38: TMenuItem
         Action = acRemoveTorrentAndData
+        OnClick = acRemoveTorrentAndDataExecute
       end
       object MenuItem7: TMenuItem
         Action = acVerifyTorrent

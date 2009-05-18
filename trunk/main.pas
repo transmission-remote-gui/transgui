@@ -1578,10 +1578,15 @@ begin
 end;
 
 procedure TMainForm.acVerifyTorrentExecute(Sender: TObject);
+var
+  id, i: integer;
 begin
   if lvTorrents.Selected = nil then exit;
-  if MessageDlg('', Format('Torrent verification may take a long time.'#13'Are you sure to start verification of torrent ''%s''?', [lvTorrents.Selected.Caption]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
-  TorrentAction(PtrUInt(lvTorrents.Selected.Data), 'verify');
+  id:=RpcObj.CurTorrentId;
+  i:=FTorrents.IndexOf(idxTorrentId, id);
+  if i < 0 then exit;
+  if MessageDlg('', Format('Torrent verification may take a long time.'#13'Are you sure to start verification of torrent ''%s''?', [string(FTorrents[idxName, i])]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
+  TorrentAction(id, 'verify');
 end;
 
 procedure TMainForm.ApplicationPropertiesException(Sender: TObject; E: Exception);
