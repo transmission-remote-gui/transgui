@@ -425,9 +425,8 @@ var
   res: TJSONObject;
   jp: TJSONParser;
   s: string;
-  i: integer;
+  i, j: integer;
   locked: boolean;
-  Pos1, Pos2: integer;
 begin
   Status:='';
   Result:=nil;
@@ -447,13 +446,14 @@ begin
       end
       else begin
         if (Http.ResultCode = 409) and (i = 1) then begin
-          SetString(s, Http.Document.Memory, Http.Document.Size);
-          Pos1:=Pos('X-Transmission-Session-Id:', s);
-          Pos2:=Pos('</code>', s);
-          if (Pos1 > 0) and (Pos2 > 0) and (Pos('invalid session-id', s) > 0) then begin
-            XTorrentSession:=Trim(Copy(s, Pos1, Pos2-Pos1));
+          XTorrentSession:='';
+          for j:=0 to Http.Headers.Count - 1 do
+            if Pos('x-transmission-session-id:', AnsiLowerCase(Http.Headers[j])) > 0 then begin
+              XTorrentSession:=Http.Headers[j];
+              break;
+            end;
+          if XTorrentSession <> '' then
             continue;
-          end;
         end;
 
         if Http.ResultCode <> 200 then begin
