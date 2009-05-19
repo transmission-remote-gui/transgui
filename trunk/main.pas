@@ -73,8 +73,13 @@ type
     imgFlags: TImageList;
     ImageList16: TImageList;
     FilterTimer: TTimer;
+    Label1: TLabel;
+    panReconnectFrame: TShape;
+    txReconnectSecs: TLabel;
+    txConnError: TLabel;
     MenuItem38: TMenuItem;
     MenuItem39: TMenuItem;
+    panReconnect: TPanel;
     txLastActive: TLabel;
     txLastActiveLabel: TLabel;
     txTracker: TLabel;
@@ -158,7 +163,7 @@ type
     MenuItem17: TMenuItem;
     MenuItem18: TMenuItem;
     miTools: TMenuItem;
-    DummyTimer: TTimer;
+    TickTimer: TTimer;
     MainToolBar: TToolBar;
     panTransfer: TPanel;
     ToolButton1: TToolButton;
@@ -239,11 +244,13 @@ type
     procedure ApplicationPropertiesIdle(Sender: TObject; var Done: Boolean);
     procedure ApplicationPropertiesMinimize(Sender: TObject);
     procedure ApplicationPropertiesRestore(Sender: TObject);
-    procedure DummyTimerTimer(Sender: TObject);
+    procedure panReconnectResize(Sender: TObject);
+    procedure TickTimerTimer(Sender: TObject);
     procedure FilterTimerTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure lvFilterCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure lvFilterResize(Sender: TObject);
@@ -270,6 +277,8 @@ type
     FTrackers: TStringList;
     FResolver: TIpResolver;
     FUnZip: TUnZipper;
+    FReconnectWaitStart: TDateTime;
+    FReconnectTimeOut: integer;
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -303,6 +312,7 @@ type
     procedure InternalRemoveTorrent(const Msg: string; RemoveLocalData: boolean);
     function IncludeProperTrailingPathDelimiter(const s: string): string;
     procedure UrlLabelClick(Sender: TObject);
+    procedure CenterReconnectWindow;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -610,12 +620,18 @@ begin
   RpcObj.Free;
 end;
 
+procedure TMainForm.FormResize(Sender: TObject);
+begin
+  if panReconnect.Visible then
+    CenterReconnectWindow;
+end;
+
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   if not FStarted then begin
     VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
     HSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
-    DummyTimer.Enabled:=True;
+    TickTimer.Enabled:=True;
   end;
   UpdateTray;
 end;
@@ -1615,11 +1631,16 @@ begin
   UpdateTray;
 end;
 
-procedure TMainForm.DummyTimerTimer(Sender: TObject);
+procedure TMainForm.panReconnectResize(Sender: TObject);
+begin
+  panReconnectFrame.BoundsRect:=panReconnect.ClientRect;
+end;
+
+procedure TMainForm.TickTimerTimer(Sender: TObject);
 var
   s: string;
 begin
-  DummyTimer.Enabled:=False;
+  TickTimer.Enabled:=False;
   try
     if not FStarted then begin
       Application.ProcessMessages;
@@ -1653,12 +1674,21 @@ begin
         exit;
 
       if FileExistsUTF8(s) then begin
-        DummyTimer.Enabled:=True;
+        TickTimer.Enabled:=True;
         DoAddTorrent(s);
       end;
     end;
+
+    if RpcObj.Connected then
+      FReconnectTimeOut:=0
+    else
+      if panReconnect.Visible then
+        if Now - FReconnectWaitStart >= FReconnectTimeOut/SecsPerDay then
+          DoConnect
+        else
+          txReconnectSecs.Caption:=Format('Reconnect in %d seconds.', [FReconnectTimeOut - Round(SecsPerDay*(Now - FReconnectWaitStart))]);
   finally
-    DummyTimer.Enabled:=True;
+    TickTimer.Enabled:=True;
   end;
 end;
 
@@ -1739,8 +1769,15 @@ begin
   AppNormal;
 end;
 
+procedure TMainForm.CenterReconnectWindow;
+begin
+  panReconnect.Left:=(ClientWidth - panReconnect.Width) div 2;
+  panReconnect.Top:=(ClientHeight - panReconnect.Height) div 2;
+end;
+
 procedure TMainForm.DoConnect;
 begin
+  panReconnect.Hide;
   DoDisconnect;
   RpcObj.Http.UserName:=FIni.ReadString('Connection', 'UserName', '');
   RpcObj.Http.Password:=DecodeBase64(FIni.ReadString('Connection', 'Password', ''));
@@ -2857,7 +2894,25 @@ begin
       if Fatal then
         DoDisconnect;
       ForceAppNormal;
-      MessageDlg(s, mtError, [mbOK], 0);
+      if RpcObj.ReconnectAllowed then begin
+        FReconnectWaitStart:=Now;
+        if FReconnectTimeOut < 60 then
+          if FReconnectTimeOut < 10 then
+            Inc(FReconnectTimeOut, 5)
+          else
+            Inc(FReconnectTimeOut, 10);
+        txConnError.Caption:=s;
+        panReconnectFrame.Hide;
+        panReconnect.AutoSize:=True;
+        CenterReconnectWindow;
+        panReconnect.Show;
+        panReconnect.BringToFront;
+        TickTimerTimer(nil);
+        panReconnect.AutoSize:=False;
+        panReconnectFrame.Show;
+      end
+      else
+        MessageDlg(s, mtError, [mbOK], 0);
     end;
     if StatusBar.Panels[0].Text <> RpcObj.InfoStatus then begin
       StatusBar.Panels[0].Text:=RpcObj.InfoStatus;
