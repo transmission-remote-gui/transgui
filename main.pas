@@ -557,6 +557,7 @@ begin
   FTorrents:=TVarList.Create(idxTorrentColCount, 0);
   FIni:=TIniFile.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
   FTrackers:=TStringList.Create;
+  FReconnectTimeOut:=-1;
 
   with lvFilter.Items do begin
     Add.ImageIndex:=imgAll;
@@ -1924,8 +1925,10 @@ begin
          (edProxy.Text <> FIni.ReadString('Connection', 'ProxyHost', '')) or
          (edProxyPort.Value <> FIni.ReadInteger('Connection', 'ProxyPort', 8080)) or
          (cbUseProxy.Checked <> FIni.ReadBool('Connection', 'UseProxy', False))
-      then
+      then begin
         DoDisconnect;
+        FReconnectTimeOut:=-1;
+      end;
 
       FIni.WriteString('Connection', 'Host', edHost.Text);
       FIni.WriteInteger('Connection', 'Port', edPort.Value);
@@ -2894,7 +2897,7 @@ begin
       if Fatal then
         DoDisconnect;
       ForceAppNormal;
-      if RpcObj.ReconnectAllowed then begin
+      if RpcObj.ReconnectAllowed and (FReconnectTimeOut <> -1) then begin
         FReconnectWaitStart:=Now;
         if FReconnectTimeOut < 60 then
           if FReconnectTimeOut < 10 then
