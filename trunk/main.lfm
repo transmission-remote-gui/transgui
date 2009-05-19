@@ -943,6 +943,7 @@ object MainForm: TMainForm
       BorderSpacing.Bottom = 4
       Caption = 'Connection error occured:'
       Color = clInfoBk
+      ParentColor = False
       Transparent = False
     end
     object txConnError: TLabel
@@ -957,6 +958,7 @@ object MainForm: TMainForm
       Color = clInfoBk
       Font.Color = clInfoText
       Font.Style = [fsBold]
+      ParentColor = False
       ParentFont = False
       Transparent = False
     end
@@ -972,6 +974,7 @@ object MainForm: TMainForm
       BorderSpacing.Right = 16
       BorderSpacing.Bottom = 8
       Color = clInfoBk
+      ParentColor = False
       Transparent = False
     end
     object panReconnectFrame: TShape
