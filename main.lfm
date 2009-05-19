@@ -16,6 +16,7 @@ object MainForm: TMainForm
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnResize = FormResize
   OnShow = FormShow
   LCLVersion = '0.9.27'
   object panTop: TPanel
@@ -915,6 +916,73 @@ object MainForm: TMainForm
       Action = acDaemonOptions
     end
   end
+  object panReconnect: TPanel
+    Left = 532
+    Height = 71
+    Top = 64
+    Width = 161
+    ClientHeight = 71
+    ClientWidth = 161
+    Color = clInfoBk
+    Font.Color = clInfoText
+    ParentColor = False
+    ParentFont = False
+    TabOrder = 5
+    Visible = False
+    OnResize = panReconnectResize
+    object Label1: TLabel
+      Left = 17
+      Height = 14
+      Top = 9
+      Width = 127
+      Align = alTop
+      Alignment = taCenter
+      BorderSpacing.Left = 16
+      BorderSpacing.Top = 8
+      BorderSpacing.Right = 16
+      BorderSpacing.Bottom = 4
+      Caption = 'Connection error occured:'
+      Color = clInfoBk
+      Transparent = False
+    end
+    object txConnError: TLabel
+      Left = 17
+      Height = 14
+      Top = 27
+      Width = 127
+      Align = alTop
+      Alignment = taCenter
+      BorderSpacing.Left = 16
+      BorderSpacing.Right = 16
+      Color = clInfoBk
+      Font.Color = clInfoText
+      Font.Style = [fsBold]
+      ParentFont = False
+      Transparent = False
+    end
+    object txReconnectSecs: TLabel
+      Left = 17
+      Height = 14
+      Top = 49
+      Width = 127
+      Align = alTop
+      Alignment = taCenter
+      BorderSpacing.Left = 16
+      BorderSpacing.Top = 8
+      BorderSpacing.Right = 16
+      BorderSpacing.Bottom = 8
+      Color = clInfoBk
+      Transparent = False
+    end
+    object panReconnectFrame: TShape
+      Left = 20
+      Height = 33
+      Top = 28
+      Width = 107
+      Brush.Style = bsClear
+      Pen.Color = clBtnShadow
+    end
+  end
   object MainMenu: TMainMenu
     Images = ImageList16
     left = 36
@@ -1552,16 +1620,16 @@ object MainForm: TMainForm
       OnClick = acSetNotDownloadExecute
     end
   end
-  object DummyTimer: TTimer
+  object TickTimer: TTimer
     Enabled = False
-    Interval = 100
-    OnTimer = DummyTimerTimer
-    left = 455
-    top = 57
+    Interval = 300
+    OnTimer = TickTimerTimer
+    left = 408
+    top = 55
   end
   object ImageList16: TImageList
-    left = 520
-    top = 60
+    left = 412
+    top = 92
     Bitmap = {
       4C69150000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2251,12 +2319,12 @@ object MainForm: TMainForm
     BalloonTimeout = 10000
     PopUpMenu = pmTray
     OnDblClick = TrayIconDblClick
-    left = 592
-    top = 60
+    left = 456
+    top = 56
   end
   object pmTray: TPopupMenu
-    left = 628
-    top = 60
+    left = 460
+    top = 88
     object miToggleApp: TMenuItem
       Default = True
       OnClick = miToggleAppClick

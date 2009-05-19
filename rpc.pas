@@ -77,8 +77,10 @@ type
     FConnected: boolean;
     FTorrentFields: string;
     FRPCVersion: integer;
+    XTorrentSession: string;
 
     function GetConnected: boolean;
+    function GetConnecting: boolean;
     function GetInfoStatus: string;
     function GetStatus: string;
     function GetTorrentFields: string;
@@ -95,7 +97,7 @@ type
     AdvInfo: TAdvInfoType;
     RefreshNow: TRefreshType;
     RequestFullInfo: boolean;
-    XTorrentSession: string;
+    ReconnectAllowed: boolean;
 
     constructor Create;
     destructor Destroy; override;
@@ -113,6 +115,7 @@ type
     property Status: string read GetStatus write SetStatus;
     property InfoStatus: string read GetInfoStatus write SetInfoStatus;
     property Connected: boolean read GetConnected;
+    property Connecting: boolean read GetConnecting;
     property TorrentFields: string read GetTorrentFields write SetTorrentFields;
     property RPCVersion: integer read FRPCVersion;
   end;
@@ -441,6 +444,7 @@ begin
       if XTorrentSession <> '' then
         Http.Headers.Add(XTorrentSession);
       if not Http.HTTPMethod('POST', Url) then begin
+        ReconnectAllowed:=True;
         Status:=Http.Sock.LastErrorDesc;
         break;
       end
@@ -594,6 +598,11 @@ begin
   Result:=Assigned(RpcThread) and FConnected;
 end;
 
+function TRpc.GetConnecting: boolean;
+begin
+  Result:=not FConnected and Assigned(RpcThread);
+end;
+
 function TRpc.GetInfoStatus: string;
 begin
   Lock;
@@ -642,6 +651,7 @@ begin
   CurTorrentId:=0;
   XTorrentSession:='';
   RequestFullInfo:=True;
+  ReconnectAllowed:=False;
   RpcThread:=TRpcThread.Create;
   with RpcThread do begin
     FreeOnTerminate:=True;
