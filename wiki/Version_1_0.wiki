@@ -1,5 +1,5 @@
 #summary Version 1.0 released
-#labels Featured
+#labels Deprecated
 
 <pre>
 [`+`] Added option 'Show parameters window when adding a new torrent'.
