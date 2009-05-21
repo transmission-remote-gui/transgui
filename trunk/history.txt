@@ -6,7 +6,9 @@
 [+] Torrent comment becomes clickable if it contains URL address.
 [*] Display full torrent path in detailed info pane.
 [*] Made torrent name column always visible. Issue #72.
+[*] Improved UI response time on Linux.
 [-] Wrong torrent name shown in dialog box when deleting/verifying torrent if filtering is active. Issue #69.
+[-] Window not maximized again after minimization on Windows. Issue #46.
 [-] Properly display date/time during daylight time on Windows.
 [-] Completed percentage of 99.99% are displayed as 100.0%. Noticed by leshekb.
 
