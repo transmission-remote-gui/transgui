@@ -2325,7 +2325,7 @@ begin
       end;
 
       if edSearch.Text <> '' then
-        if Pos(AnsiUpperCase(edSearch.Text), AnsiUpperCase(FTorrents[idxName, i])) = 0 then
+        if Pos(AnsiUpperCase(UTF8Decode(edSearch.Text)), AnsiUpperCase(UTF8Decode(string(FTorrents[idxName, i])))) = 0 then
           continue;
 
       if Cnt >= lvTorrents.Items.Count then
