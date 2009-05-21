@@ -23,6 +23,7 @@ object ColSetupForm: TColSetupForm
     Anchors = [akTop, akLeft, akRight, akBottom]
     ItemHeight = 0
     OnClick = lstColumnsClick
+    OnClickCheck = lstColumnsClickCheck
     TabOrder = 0
   end
   object btUp: TButton

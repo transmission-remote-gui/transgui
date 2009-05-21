@@ -40,7 +40,10 @@ type
     procedure btOkClick(Sender: TObject);
     procedure btUpClick(Sender: TObject);
     procedure lstColumnsClick(Sender: TObject);
+    procedure lstColumnsClickCheck(Sender: TObject);
   private
+    FPersistentColumnId: integer;
+
     procedure UpdateUI;
     procedure MoveItem(Delta: integer);
   public
@@ -57,6 +60,7 @@ var
 begin
   with TColSetupForm.Create(Application) do
   try
+    FPersistentColumnId:=PersistentColumnId;
     for i:=0 to LV.Columns.Count - 1 do
       with LV.Columns[i] do begin
         j:=lstColumns.Items.Add(Caption);
@@ -134,6 +138,18 @@ end;
 procedure TColSetupForm.lstColumnsClick(Sender: TObject);
 begin
   UpdateUI;
+end;
+
+procedure TColSetupForm.lstColumnsClickCheck(Sender: TObject);
+var
+  i: integer;
+begin
+  if FPersistentColumnId >= 0 then
+    for i:=0 to lstColumns.Items.Count - 1 do
+      if ptrint(lstColumns.Items.Objects[i]) = FPersistentColumnId then begin
+        lstColumns.Checked[i]:=True;
+        break;
+      end;
 end;
 
 procedure TColSetupForm.UpdateUI;
