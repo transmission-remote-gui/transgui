@@ -1,3 +1,15 @@
+1.1 (May 21, 2009)
+------------------
+[+] Remove torrent and all associated data function. Issue #67.
+[+] Quick search for torrents list. Issue #21.
+[+] Automatically reconnect when connection was lost. Issue #9, Issue #41.
+[+] Torrent comment becomes clickable if it contains URL address.
+[*] Display full torrent path in detailed info pane.
+[*] Made torrent name column always visible. Issue #72.
+[-] Wrong torrent name shown in dialog box when deleting/verifying torrent if filtering is active. Issue #69.
+[-] Properly display date/time during daylight time on Windows.
+[-] Completed percentage of 99.99% are displayed as 100.0%. Noticed by leshekb.
+
 1.0 (May 12, 2009)
 ------------------
 [+] Added option 'Show parameters window when adding a new torrent'.
