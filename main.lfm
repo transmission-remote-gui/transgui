@@ -1,11 +1,12 @@
 object MainForm: TMainForm
-  Left = 57
+  Left = 193
   Height = 471
-  Top = 172
+  Top = 159
   Width = 780
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
   VertScrollBar.Range = 24
+  ActiveControl = lvTorrents
   AutoScroll = False
   Caption = ' '
   ClientHeight = 451
@@ -27,13 +28,13 @@ object MainForm: TMainForm
     Align = alClient
     ClientHeight = 120
     ClientWidth = 780
-    Constraints.MinHeight = 50
-    TabOrder = 4
+    Constraints.MinHeight = 80
+    TabOrder = 0
     object lvTorrents: TListView
-      Left = 116
+      Left = 136
       Height = 118
       Top = 1
-      Width = 663
+      Width = 643
       Align = alClient
       Columns = <      
         item
@@ -139,36 +140,125 @@ object MainForm: TMainForm
       OnResize = lvTorrentsResize
       OnSelectItem = lvTorrentsSelectItem
     end
-    object lvFilter: TListView
-      Left = 1
-      Height = 118
-      Top = 1
-      Width = 110
-      Align = alLeft
-      Columns = <      
-        item
-          Width = 10
-        end>
-      Constraints.MinWidth = 50
-      HideSelection = False
-      ReadOnly = True
-      RowSelect = True
-      ScrollBars = ssVertical
-      ShowColumnHeaders = False
-      SmallImages = ImageList16
-      TabOrder = 1
-      ViewStyle = vsReport
-      OnCustomDrawItem = lvFilterCustomDrawItem
-      OnResize = lvFilterResize
-      OnSelectItem = lvFilterSelectItem
-    end
     object HSplitter: TSplitter
-      Left = 111
+      Left = 131
       Height = 118
       Top = 1
       Width = 5
       AutoSnap = False
       MinSize = 50
+    end
+    object panFilter: TPanel
+      Left = 1
+      Height = 118
+      Top = 1
+      Width = 130
+      Align = alLeft
+      BevelOuter = bvNone
+      ClientHeight = 118
+      ClientWidth = 130
+      TabOrder = 2
+      object lvFilter: TListView
+        Left = 0
+        Height = 91
+        Top = 0
+        Width = 130
+        Align = alClient
+        Columns = <        
+          item
+            Width = 10
+          end>
+        Constraints.MinWidth = 50
+        HideSelection = False
+        ReadOnly = True
+        RowSelect = True
+        ScrollBars = ssVertical
+        ShowColumnHeaders = False
+        SmallImages = ImageList16
+        TabOrder = 0
+        ViewStyle = vsReport
+        OnCustomDrawItem = lvFilterCustomDrawItem
+        OnResize = lvFilterResize
+        OnSelectItem = lvFilterSelectItem
+      end
+      object panSearch: TPanel
+        Left = 0
+        Height = 23
+        Top = 93
+        Width = 130
+        Align = alBottom
+        AutoSize = True
+        BorderSpacing.Top = 2
+        BorderSpacing.Bottom = 2
+        BevelOuter = bvNone
+        ClientHeight = 23
+        ClientWidth = 130
+        TabOrder = 1
+        object imgSearch: TImage
+          Left = 0
+          Height = 23
+          Top = 0
+          Width = 24
+          Align = alLeft
+          Center = True
+          Picture.Data = {
+            055449636F6E7E05000000000100010010100000010008006805000016000000
+            2800000010000000200000000100080000000000000000000000000000000000
+            0000000000000000FFFFFC00FFFFF700FFFEEA00FFFFE600FFF7EA00F5EFE000
+            FFFFDA00FFFED400FFF2D700FFFCCD00FFF9C700FFF5CA00FFF5C300F3EDDA00
+            F1E5DD00EFDAC200E2CECE00DCC5C500C9D0D400FFF1BE00FFEEBD00FFE5B900
+            FFE4B100FFDEAB00F3D2A800F1CFA900F5CFA400E0C0B600EFC9A600E0C7AE00
+            E0BDB300E5BEA500E0B89E00D8BCBA00DCB3A000D2B4A400D2B19E00CCB29900
+            CEB09600CCAC9300CEA88E00BDE3FF00A5D8FF008DCDFF0089B0CA00ABABAB00
+            A1A1A100BC9A8600B9938A00B79E8C00B7948100AD8A8D00AA878E0096969600
+            9F8581008C8C8C0081818100987D8200907676008B75740053B8FF00588CCF00
+            4088DF004385D9004483D6007979A7007376A80073758900777777007B616100
+            6C6C6C00626262005F5B5B005757570000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000FFFFFF004A3749444A4A4A4A4A4A4A4A4A4A4A4A2D433448444A4A4A
+            4A4A4A4A4A4A4A4A2C3E423348444A4A4A4A4A4A4A4A4A4A293C3F413348444A
+            4A4A4A4A4A4A4A4A4A2A3C3F413348354A4A4A4A4A4A4A4A4A4A2B3C40413938
+            2E46494947374A4A4A4A4A2B3C3D373B2F261D233B49374A4A4A4A4A2A123319
+            0C070606053649374A4A4A4A4A101C0C0C060200000D45464A4A4A4A4A1E0C16
+            0A060200010631494A4A4A4A4A1F0B170C070302030625494A4A4A4A4A1F0B15
+            14090706060727464A4A4A4A4A1B0B0815130C0A0C0C32374A4A4A4A4A110F00
+            0414171613183A4A4A4A4A4A4A4A210E0209140C1A304A4A4A4A4A4A4A4A4A11
+            24282022374A4A4A8FFF000007FF000003FF000001FF000080FF0000C0030000
+            E0010000F0000000F8000000F8000000F8000000F8000000F8000000F8010000
+            FC030000FE070000
+          }
+        end
+        object edSearch: TEdit
+          Left = 24
+          Height = 23
+          Top = 0
+          Width = 106
+          Align = alClient
+          OnChange = edSearchChange
+          TabOrder = 0
+        end
+      end
     end
   end
   object StatusBar: TStatusBar
@@ -201,7 +291,7 @@ object MainForm: TMainForm
     Constraints.MinHeight = 50
     Images = ImageList16
     TabIndex = 0
-    TabOrder = 0
+    TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
     object tabGeneral: TTabSheet
@@ -855,7 +945,7 @@ object MainForm: TMainForm
     Width = 780
     Align = alBottom
     AutoSnap = False
-    MinSize = 50
+    MinSize = 80
     ResizeAnchor = akBottom
   end
   object MainToolBar: TToolBar
@@ -868,7 +958,7 @@ object MainForm: TMainForm
     Images = ImageList16
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 1
+    TabOrder = 2
     object ToolButton1: TToolButton
       Left = 1
       Top = 2
@@ -930,7 +1020,7 @@ object MainForm: TMainForm
     TabOrder = 5
     Visible = False
     OnResize = panReconnectResize
-    object Label1: TLabel
+    object txConnErrorLabel: TLabel
       Left = 17
       Height = 14
       Top = 9
@@ -988,8 +1078,8 @@ object MainForm: TMainForm
   end
   object MainMenu: TMainMenu
     Images = ImageList16
-    left = 36
-    top = 55
+    left = 8
+    top = 28
     object miTorrent: TMenuItem
       Caption = 'Torrent'
       object miConnect: TMenuItem
@@ -1293,8 +1383,8 @@ object MainForm: TMainForm
     end
   end
   object ActionList: TActionList
-    left = 77
-    top = 55
+    left = 40
+    top = 28
     object acConnect: TAction
       Caption = 'Connect to daemon'
       ImageIndex = 18
@@ -1584,13 +1674,6 @@ object MainForm: TMainForm
     end
   end
   object ApplicationProperties: TApplicationProperties
-    CaptureExceptions = True
-    HintColor = clInfoBk
-    HintHidePause = 2500
-    HintPause = 500
-    HintShortCuts = True
-    HintShortPause = 0
-    ShowHint = True
     OnException = ApplicationPropertiesException
     OnIdle = ApplicationPropertiesIdle
     OnMinimize = ApplicationPropertiesMinimize
@@ -2406,7 +2489,7 @@ object MainForm: TMainForm
   object FilterTimer: TTimer
     Interval = 100
     OnTimer = FilterTimerTimer
-    left = 36
-    top = 96
+    left = 76
+    top = 28
   end
 end

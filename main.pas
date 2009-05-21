@@ -70,10 +70,14 @@ type
     acVerifyTorrent: TAction;
     ActionList: TActionList;
     ApplicationProperties: TApplicationProperties;
+    edSearch: TEdit;
+    imgSearch: TImage;
     imgFlags: TImageList;
     ImageList16: TImageList;
     FilterTimer: TTimer;
-    Label1: TLabel;
+    txConnErrorLabel: TLabel;
+    panSearch: TPanel;
+    panFilter: TPanel;
     panReconnectFrame: TShape;
     txReconnectSecs: TLabel;
     txConnError: TLabel;
@@ -244,6 +248,7 @@ type
     procedure ApplicationPropertiesIdle(Sender: TObject; var Done: Boolean);
     procedure ApplicationPropertiesMinimize(Sender: TObject);
     procedure ApplicationPropertiesRestore(Sender: TObject);
+    procedure edSearchChange(Sender: TObject);
     procedure panReconnectResize(Sender: TObject);
     procedure TickTimerTimer(Sender: TObject);
     procedure FilterTimerTimer(Sender: TObject);
@@ -1632,6 +1637,11 @@ begin
   UpdateTray;
 end;
 
+procedure TMainForm.edSearchChange(Sender: TObject);
+begin
+  DoRefresh(True);
+end;
+
 procedure TMainForm.panReconnectResize(Sender: TObject);
 begin
   panReconnectFrame.BoundsRect:=panReconnect.ClientRect;
@@ -1664,6 +1674,7 @@ begin
           acShowCountryFlag.Execute;
         FIni.WriteBool('MainForm', 'FirstRun', False);
       end;
+      panSearch.AutoSize:=False;
     end;
 
     if FileExists(FIPCFileName) then begin
@@ -1827,6 +1838,9 @@ begin
   lvFilter.Items[2].Caption:=SCompleted;
   lvFilter.Items[3].Caption:=SActive;
   lvFilter.Items[4].Caption:=SInactive;
+  edSearch.Enabled:=False;
+  edSearch.Color:=Self.Color;
+  edSearch.Text:='';
 
   RpcObj.Disconnect;
 
@@ -2229,10 +2243,15 @@ begin
 //  lvTorrents.BeginUpdate;
   lvTorrents.Tag:=1;
   try
+    IsActive:=lvTorrents.Enabled;
     lvTorrents.Enabled:=True;
     lvTorrents.Color:=clWindow;
     lvFilter.Enabled:=True;
     lvFilter.Color:=clWindow;
+    edSearch.Enabled:=True;
+    edSearch.Color:=clWindow;
+    if not IsActive then
+      ActiveControl:=lvTorrents;
 
     FTorrents.Sort(FTorrentsSortColumn, FTorrentsSortDesc);
 
@@ -2304,6 +2323,10 @@ begin
           if (FTorrents[idxStateImg, i] <> imgDone) and (FTorrents[idxStatus, i] <> TR_STATUS_SEED) then
             continue;
       end;
+
+      if edSearch.Text <> '' then
+        if Pos(AnsiUpperCase(edSearch.Text), AnsiUpperCase(FTorrents[idxName, i])) = 0 then
+          continue;
 
       if Cnt >= lvTorrents.Items.Count then
         it:=lvTorrents.Items.Add
