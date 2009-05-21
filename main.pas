@@ -2936,6 +2936,7 @@ begin
         TickTimerTimer(nil);
         panReconnect.AutoSize:=False;
         panReconnectFrame.Show;
+        CenterReconnectWindow;
       end
       else
         MessageDlg(s, mtError, [mbOK], 0);

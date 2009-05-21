@@ -1011,6 +1011,7 @@ object MainForm: TMainForm
     Height = 71
     Top = 64
     Width = 161
+    BevelOuter = bvNone
     ClientHeight = 71
     ClientWidth = 161
     Color = clInfoBk
@@ -1021,10 +1022,10 @@ object MainForm: TMainForm
     Visible = False
     OnResize = panReconnectResize
     object txConnErrorLabel: TLabel
-      Left = 17
+      Left = 16
       Height = 14
-      Top = 9
-      Width = 127
+      Top = 8
+      Width = 129
       Align = alTop
       Alignment = taCenter
       BorderSpacing.Left = 16
@@ -1032,46 +1033,40 @@ object MainForm: TMainForm
       BorderSpacing.Right = 16
       BorderSpacing.Bottom = 4
       Caption = 'Connection error occured:'
-      Color = clInfoBk
       ParentColor = False
-      Transparent = False
     end
     object txConnError: TLabel
-      Left = 17
+      Left = 16
       Height = 14
-      Top = 27
-      Width = 127
+      Top = 26
+      Width = 129
       Align = alTop
       Alignment = taCenter
       BorderSpacing.Left = 16
       BorderSpacing.Right = 16
-      Color = clInfoBk
       Font.Color = clInfoText
       Font.Style = [fsBold]
       ParentColor = False
       ParentFont = False
-      Transparent = False
     end
     object txReconnectSecs: TLabel
-      Left = 17
+      Left = 16
       Height = 14
-      Top = 49
-      Width = 127
+      Top = 48
+      Width = 129
       Align = alTop
       Alignment = taCenter
       BorderSpacing.Left = 16
       BorderSpacing.Top = 8
       BorderSpacing.Right = 16
       BorderSpacing.Bottom = 8
-      Color = clInfoBk
       ParentColor = False
-      Transparent = False
     end
     object panReconnectFrame: TShape
-      Left = 20
-      Height = 33
-      Top = 28
-      Width = 107
+      Left = 8
+      Height = 19
+      Top = 32
+      Width = 24
       Brush.Style = bsClear
       Pen.Color = clBtnShadow
     end
