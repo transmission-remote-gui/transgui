@@ -29,7 +29,7 @@ uses
   Windows, win32int, InterfaceBase
 {$endif}
 {$ifdef unix}
-  baseunix, unix, process
+  baseunix, unix, unixutil, process
 {$endif}
   ;
 
@@ -52,11 +52,6 @@ var
   t: TIME_ZONE_INFORMATION;
   res: dword;
 {$endif}
-{$ifdef unix}
-var
-   timeval: TTimeVal;
-   timezone: TTimeZone;
-{$endif}
 begin
   Result:=0;
 {$ifdef windows}
@@ -72,9 +67,7 @@ begin
   end;
 {$endif}
 {$ifdef unix}
-  timezone.tz_minuteswest:=0;
-  fpgettimeofday(@timeval, @timezone);
-  Result:=-timezone.tz_minuteswest/MinsPerDay;
+  Result:=Tzseconds/SecsPerDay;
 {$endif}
 end;
 
