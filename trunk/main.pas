@@ -3001,7 +3001,7 @@ begin
       if Fatal then
         DoDisconnect;
       ForceAppNormal;
-      if RpcObj.ReconnectAllowed and (FReconnectTimeOut <> -1) then begin
+      if Fatal and not RpcObj.Connected and RpcObj.ReconnectAllowed and (FReconnectTimeOut <> -1) then begin
         FReconnectWaitStart:=Now;
         if FReconnectTimeOut < 60 then
           if FReconnectTimeOut < 10 then
@@ -3036,6 +3036,7 @@ function TMainForm.TorrentAction(TorrentId: integer; const AAction: string; args
 var
   req: TJSONObject;
 begin
+  Application.ProcessMessages;
   AppBusy;
   req:=TJSONObject.Create;
   try
