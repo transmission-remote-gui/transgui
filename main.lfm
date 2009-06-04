@@ -136,6 +136,7 @@ object MainForm: TMainForm
       TabOrder = 0
       ViewStyle = vsReport
       OnColumnClick = lvTorrentsColumnClick
+      OnCustomDrawSubItem = lvTorrentsCustomDrawSubItem
       OnDblClick = lvTorrentsDblClick
       OnResize = lvTorrentsResize
       OnSelectItem = lvTorrentsSelectItem
@@ -286,11 +287,11 @@ object MainForm: TMainForm
     Height = 279
     Top = 149
     Width = 780
-    ActivePage = tabGeneral
+    ActivePage = tabFiles
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -934,6 +935,7 @@ object MainForm: TMainForm
         RowSelect = True
         TabOrder = 0
         ViewStyle = vsReport
+        OnCustomDrawSubItem = lvFilesCustomDrawSubItem
       end
     end
   end
