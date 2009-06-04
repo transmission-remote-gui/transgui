@@ -249,6 +249,9 @@ type
     procedure ApplicationPropertiesMinimize(Sender: TObject);
     procedure ApplicationPropertiesRestore(Sender: TObject);
     procedure edSearchChange(Sender: TObject);
+    procedure lvFilesCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState; var DefaultDraw: Boolean);
+    procedure lvTorrentsCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
+      var DefaultDraw: Boolean);
     procedure panReconnectResize(Sender: TObject);
     procedure TickTimerTimer(Sender: TObject);
     procedure FilterTimerTimer(Sender: TObject);
@@ -284,6 +287,7 @@ type
     FUnZip: TUnZipper;
     FReconnectWaitStart: TDateTime;
     FReconnectTimeOut: integer;
+    FDoneColumnIdx: integer;
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -318,6 +322,7 @@ type
     function IncludeProperTrailingPathDelimiter(const s: string): string;
     procedure UrlLabelClick(Sender: TObject);
     procedure CenterReconnectWindow;
+    procedure DrawProgressCell(LV: TCustomListView; Item: TListItem; SubItem: Integer);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -415,7 +420,7 @@ implementation
 
 uses
   AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, utils, TorrProps, DaemonOptions, About,
-  ToolWin, download, ColSetup;
+  ToolWin, download, ColSetup, types;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -643,15 +648,13 @@ begin
 end;
 
 procedure TMainForm.lvFilterCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
-{
 var
   i: integer;
   R: TRect;
-}
 begin
   DefaultDraw:=Item.Data = nil;
   if DefaultDraw then exit;
-{
+
   with lvFilter.Canvas do begin
     Brush.Color:=lvFilter.Color;
     R:=Item.DisplayRect(drBounds);
@@ -660,7 +663,6 @@ begin
     Brush.Color:=clBtnFace;
     FillRect(Rect(4, i - 1, Sender.ClientWidth - 4, i + 1));
   end;
-}
 end;
 
 procedure TMainForm.lvFilterResize(Sender: TObject);
@@ -1164,6 +1166,7 @@ var
   i: integer;
   s: string;
 begin
+  FDoneColumnIdx:=-1;
   s:='';
   for i:=0 to lvTorrents.Columns.Count - 1 do
     with lvTorrents.Columns[i] do
@@ -1171,6 +1174,8 @@ begin
         if s <> '' then
           s:=s + ',';
         s:=s + TorrentFieldsMap[ID];
+        if ID = idxDone then
+          FDoneColumnIdx:=Index;
       end;
   RpcObj.TorrentFields:=s;
   DoRefresh(True);
@@ -1642,6 +1647,24 @@ begin
   DoRefresh(True);
 end;
 
+procedure TMainForm.lvFilesCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
+  var DefaultDraw: Boolean);
+begin
+  if SubItem = 3 then begin
+    DefaultDraw:=False;
+    DrawProgressCell(Sender, Item, SubItem);
+  end;
+end;
+
+procedure TMainForm.lvTorrentsCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
+  var DefaultDraw: Boolean);
+begin
+  if SubItem = FDoneColumnIdx then begin
+    DefaultDraw:=False;
+    DrawProgressCell(Sender, Item, SubItem);
+  end;
+end;
+
 procedure TMainForm.panReconnectResize(Sender: TObject);
 begin
   panReconnectFrame.BoundsRect:=panReconnect.ClientRect;
@@ -1785,6 +1808,57 @@ procedure TMainForm.CenterReconnectWindow;
 begin
   panReconnect.Left:=(ClientWidth - panReconnect.Width) div 2;
   panReconnect.Top:=(ClientHeight - panReconnect.Height) div 2;
+end;
+
+procedure TMainForm.DrawProgressCell(LV: TCustomListView; Item: TListItem; SubItem: Integer);
+var
+  R, RR: TRect;
+  i, j: integer;
+  s: string;
+  cl: TColor;
+  Progress: double;
+  sz: TSize;
+begin
+  s:=Item.SubItems[SubItem - 1];
+  Progress:=StrToFloatDef(Copy(s, 1, Length(s) - 1), 0);
+  with LV.Canvas do begin
+    R:=Item.DisplayRectSubItem(SubItem, drBounds);
+    if Item.Selected then
+      if LV.Focused then
+        Brush.Color:=clHighlight
+      else
+        Brush.Color:=clBtnFace
+    else
+      Brush.Color:=clWindow;
+    FrameRect(R);
+    InflateRect(R, -1, -1);
+
+    s:=Format('%.1f%%', [Progress]);
+    sz:=TextExtent(s);
+    if sz.cy < R.Bottom - R.Top - 1 then begin
+      FrameRect(R);
+      InflateRect(R, -1, -1);
+    end;
+
+    Brush.Color:=clBtnFace;
+    FrameRect(R);
+    InflateRect(R, -1, -1);
+
+    i:=R.Left + Round(Progress*(R.Right - R.Left)/100.0);
+    j:=(R.Top + R.Bottom) div 2;
+    cl:=GetLikeColor(clHighlight, 70);
+    GradientFill(Rect(R.Left, R.Top, i, j), cl, clHighlight, gdVertical);
+    GradientFill(Rect(R.Left, j, i, R.Bottom), clHighlight, cl, gdVertical);
+
+    RR:=Rect(R.Left, R.Top, i, R.Bottom);
+    j:=(R.Left + R.Right - sz.cx) div 2;
+    Font.Color:=clHighlightText;
+    TextRect(RR, j, RR.Top - 2, s);
+
+    RR:=Rect(i, R.Top, R.Right, R.Bottom);
+    Font.Color:=clWindowText;
+    TextRect(RR, j, RR.Top - 2, s);
+  end;
 end;
 
 procedure TMainForm.DoConnect;
