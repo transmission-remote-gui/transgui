@@ -323,6 +323,7 @@ type
     procedure UrlLabelClick(Sender: TObject);
     procedure CenterReconnectWindow;
     procedure DrawProgressCell(LV: TCustomListView; Item: TListItem; SubItem: Integer);
+    procedure lvLeftMouseSelect(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -587,6 +588,12 @@ begin
     EdgeOuter:=esRaised;
     Flat:=True;
   end;
+  lvTorrents.OnMouseDown:=@lvLeftMouseSelect;
+  lvFiles.OnMouseDown:=@lvLeftMouseSelect;
+  // Cutstom draw do not work on GTK2 yet
+  lvTorrents.OnCustomDrawSubItem:=nil;
+  lvFiles.OnCustomDrawSubItem:=nil;
+  lvFilter.OnCustomDrawItem:=nil;
 {$endif}
   txTransferHeader.Color:=GetLikeColor(clBtnFace, -15);
   txTorrentHeader.Color:=txTransferHeader.Color;
@@ -3109,6 +3116,21 @@ begin
   if j = 0 then exit;
   SetLength(Files, j);
   Result:=SetFilePriority(PtrUInt(lvTorrents.Selected.Data), Files, APriority);
+end;
+
+procedure TMainForm.lvLeftMouseSelect(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  it: TListItem;
+begin
+  if Button = mbRight then
+    with TListView(Sender) do begin
+      it:=GetItemAt(x, y);
+      if Selected <> nil then
+        Selected.Focused:=False;
+      Selected:=it;
+      if it <> nil then
+        it.Focused:=True;
+    end;
 end;
 
 initialization
