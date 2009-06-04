@@ -321,7 +321,7 @@ type
   PInAddr = ^TInAddr;
   TInAddr = record
     case integer of
-      0: (S_bytes: packed array [0..3] of byte);
+      0: (S_bytes: array [0..3] of byte);
       1: (S_addr: u_long);
   end;
 
@@ -344,10 +344,10 @@ type
   PInAddr6 = ^TInAddr6;
   TInAddr6 = record
     case integer of
-      0: (S6_addr: packed array [0..15] of byte);
-      1: (u6_addr8: packed array [0..15] of byte);
-      2: (u6_addr16: packed array [0..7] of word);
-      3: (u6_addr32: packed array [0..3] of integer);
+      0: (S6_addr: array [0..15] of byte);
+      1: (u6_addr8: array [0..15] of byte);
+      2: (u6_addr16: array [0..7] of word);
+      3: (u6_addr32: array [0..3] of integer);
   end;
 
   PSockAddrIn6 = ^TSockAddrIn6;
@@ -897,7 +897,7 @@ var
   SockWship6Api: Boolean;
 
 type
-  TVarSin = record
+  TVarSin = packed record
     case integer of
       0: (AddressFamily: u_short);
       1: (
