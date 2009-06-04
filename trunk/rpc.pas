@@ -472,7 +472,6 @@ begin
             Status:=Http.ResultString;
           break;
         end;
-//        Http.Document.SaveToFile('c:\out.txt');
         Http.Document.Position:=0;
         jp:=TJSONParser.Create(Http.Document);
         HttpLock.Leave;

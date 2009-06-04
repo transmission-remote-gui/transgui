@@ -55,6 +55,8 @@ type
 
 implementation
 
+uses Math;
+
 { TVarList }
 
 function TVarList.GetItems(ACol, ARow: integer): variant;
@@ -138,25 +140,27 @@ var
   FSortColumn: integer;
   FSortDesc: boolean;
 
+function CompareVariants(const v1, v2: variant): integer;
+begin
+  case VarType(v1) of
+  varInteger:
+    Result:=integer(v1) - integer(v2);
+  varDouble,varSingle,varDate:
+    Result:=Sign(double(v1) - double(v2));
+  else
+    Result:=AnsiCompareText(v1, v2);
+  end;
+end;
+
 function CompareItems(Item1, Item2: Pointer): Integer;
 var
   v1, v2: PVariant;
 begin
   v1:=Item1;
   v2:=Item2;
-  if v1^[FSortColumn] > v2^[FSortColumn] then
-    Result:=1
-  else
-    if v1^[FSortColumn] < v2^[FSortColumn] then
-      Result:=-1
-    else
-      if v1^[0] > v2^[0] then
-        Result:=1
-      else
-        if v1^[0] < v2^[0] then
-          Result:=-1
-        else
-          Result:=0;
+  Result:=CompareVariants(v1^[FSortColumn], v2^[FSortColumn]);
+  if Result = 0 then
+    Result:=CompareVariants(v1^[0], v2^[0]);
   if FSortDesc then
     Result:=-Result;
 end;
