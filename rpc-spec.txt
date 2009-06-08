@@ -95,6 +95,7 @@
    "files-unwanted"                  | array      indices of file(s) to not download
    "honorsSessionLimits"             | boolean    true if session upload limits are honored
    "ids"                             | array      torrent list, as described in 3.1
+   "location"                        | string     new location of the torrent's content
    "peer-limit"                      | number     maximum number of peers
    "priority-high"                   | array      indices of high-priority file(s)
    "priority-low"                    | array      indices of low-priority file(s)
@@ -344,6 +345,22 @@
    Response arguments: none
 
 
+3.6.  Moving a Torrent
+
+   Method name: "torrent-set-location"
+
+   Request arguments:
+
+   string                     | value type & description
+   ---------------------------+-------------------------------------------------
+   "ids"                      | array      torrent list, as described in 3.1
+   "location"                 | string     the new torrent location
+   "move"                     | boolean    if true, move from previous location.
+                              |            otherwise, search "location" for files
+
+   Response arguments: none
+
+
 4.   Session Requests
 
 4.1.  Session Arguments
@@ -359,6 +376,7 @@
    "alt-speed-up"             | number     max global upload speed (in K/s)
    "blocklist-enabled"        | boolean    true means enabled
    "blocklist-size"           | number     number of rules in the blocklist
+   "dht-enabled"              | boolean    true means allow dht in public torrents
    "encryption"               | string     "required", "preferred", "tolerated"
    "download-dir"             | string     default path to download torrents
    "peer-limit-global"        | number     maximum global number of peers
@@ -512,6 +530,8 @@
          |         | yes       | torrent-get    | new ids option "recently-active"
          |         |        NO | torrent-get    | removed arg "downloadLimitMode"
          |         |        NO | torrent-get    | removed arg "uploadLimitMode"
+   ------+---------+-----------+----------------+-------------------------------
+   6     | 1.70    | yes       |                | new "method torrent-set-location"
    ------+---------+-----------+----------------+-------------------------------
 
 
