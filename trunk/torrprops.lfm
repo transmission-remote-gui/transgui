@@ -25,7 +25,7 @@ object TorrPropsForm: TTorrPropsForm
     Anchors = [akTop, akLeft, akRight, akBottom]
     ClientHeight = 124
     ClientWidth = 329
-    TabOrder = 2
+    TabOrder = 0
     object Label1: TLabel
       Left = 299
       Height = 14
@@ -64,7 +64,7 @@ object TorrPropsForm: TTorrPropsForm
       Left = 10
       Height = 17
       Top = 26
-      Width = 146
+      Width = 147
       Caption = 'Maximum download speed:'
       OnClick = cbMaxDownClick
       TabOrder = 0
@@ -75,7 +75,6 @@ object TorrPropsForm: TTorrPropsForm
       Top = 24
       Width = 66
       Anchors = [akTop, akRight]
-      AutoSize = True
       Increment = 10
       MaxValue = 999999
       TabOrder = 1
@@ -84,7 +83,7 @@ object TorrPropsForm: TTorrPropsForm
       Left = 10
       Height = 17
       Top = 58
-      Width = 132
+      Width = 133
       Caption = 'Maximum upload speed:'
       OnClick = cbMaxUpClick
       TabOrder = 2
@@ -95,7 +94,6 @@ object TorrPropsForm: TTorrPropsForm
       Top = 56
       Width = 66
       Anchors = [akTop, akRight]
-      AutoSize = True
       Increment = 10
       MaxValue = 999999
       TabOrder = 3
@@ -106,7 +104,6 @@ object TorrPropsForm: TTorrPropsForm
       Top = 88
       Width = 66
       Anchors = [akTop, akRight]
-      AutoSize = True
       MaxValue = 999
       MinValue = 1
       TabOrder = 4
@@ -124,7 +121,7 @@ object TorrPropsForm: TTorrPropsForm
     Constraints.MinWidth = 75
     Default = True
     ModalResult = 1
-    TabOrder = 0
+    TabOrder = 1
   end
   object btCancel: TButton
     Left = 266
@@ -137,6 +134,6 @@ object TorrPropsForm: TTorrPropsForm
     Caption = 'Cancel'
     Constraints.MinWidth = 75
     ModalResult = 2
-    TabOrder = 1
+    TabOrder = 2
   end
 end
