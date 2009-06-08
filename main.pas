@@ -2956,7 +2956,7 @@ begin
 
   s:=FTorrents[idxName, idx];
   if RpcObj.RPCVersion >= 4 then
-    s:=IncludeProperTrailingPathDelimiter(t.Strings['downloadDir']) + s;
+    s:=IncludeProperTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir'])) + s;
   txTorrentName.Caption:=s;
   txCreated.Caption:=Format('%s by %s', [TorrentDateTimeToString(Trunc(t.Floats['dateCreated'])), t.Strings['creator']]);
   txTotalSize.Caption:=Format('%s (%s done)', [GetHumanSize(t.Floats['totalSize']), GetHumanSize(t.Floats['sizeWhenDone'] - t.Floats['leftUntilDone'])]);
