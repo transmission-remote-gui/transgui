@@ -351,7 +351,7 @@ begin
                                      'announceResponse', 'downloadLimit', 'downloadLimitMode', 'uploadLimit', 'uploadLimitMode',
                                      'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
                                      'seeders','peersGettingFromUs','leechers','peersKnown', 'uploadRatio', 'addedDate', 'doneDate',
-                                     'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id']);
+                                     'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id', 'pieces']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
