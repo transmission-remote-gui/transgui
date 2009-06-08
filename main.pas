@@ -75,6 +75,7 @@ type
     imgFlags: TImageList;
     ImageList16: TImageList;
     FilterTimer: TTimer;
+    pbDownloaded: TPaintBox;
     txConnErrorLabel: TLabel;
     panSearch: TPanel;
     panFilter: TPanel;
@@ -128,7 +129,6 @@ type
     txDownProgress: TLabel;
     txDownProgressLabel: TLabel;
     panProgress: TPanel;
-    pbDownloaded: TProgressBar;
     txMaxPeers: TLabel;
     txMaxPeersLabel: TLabel;
     txPeers: TLabel;
@@ -253,6 +253,8 @@ type
     procedure lvTorrentsCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
       var DefaultDraw: Boolean);
     procedure panReconnectResize(Sender: TObject);
+    procedure pbDownloadedPaint(Sender: TObject);
+    procedure pbDownloadedResize(Sender: TObject);
     procedure TickTimerTimer(Sender: TObject);
     procedure FilterTimerTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -288,6 +290,10 @@ type
     FReconnectWaitStart: TDateTime;
     FReconnectTimeOut: integer;
     FDoneColumnIdx: integer;
+    FTorrentProgress: TBitmap;
+    FLastPieces: string;
+    FLastPieceCount: integer;
+    FLastDone: double;
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -324,6 +330,7 @@ type
     procedure CenterReconnectWindow;
     procedure DrawProgressCell(LV: TCustomListView; Item: TListItem; SubItem: Integer);
     procedure lvLeftMouseSelect(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -636,6 +643,7 @@ begin
   FTrackers.Free;
   FUnZip.Free;
   RpcObj.Free;
+  FTorrentProgress.Free;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -1677,6 +1685,17 @@ begin
   panReconnectFrame.BoundsRect:=panReconnect.ClientRect;
 end;
 
+procedure TMainForm.pbDownloadedPaint(Sender: TObject);
+begin
+  if FTorrentProgress <> nil then
+    pbDownloaded.Canvas.StretchDraw(pbDownloaded.ClientRect, FTorrentProgress);
+end;
+
+procedure TMainForm.pbDownloadedResize(Sender: TObject);
+begin
+  ProcessPieces(FLastPieces, FLastPieceCount, FLastDone);
+end;
+
 procedure TMainForm.TickTimerTimer(Sender: TObject);
 var
   s: string;
@@ -1960,7 +1979,7 @@ begin
   lvFiles.Clear;
   ClearChildren(panGeneralInfo);
   ClearChildren(panTransfer);
-  pbDownloaded.Position:=0;
+  ProcessPieces('', 0, 0);
   txDownProgress.AutoSize:=False;
   txDownProgress.Caption:='';
 end;
@@ -2869,9 +2888,13 @@ begin
     exit;
   end;
 
-  pbDownloaded.Position:=Round(double(FTorrents[idxDone, idx])*10.0);
   txDownProgress.Caption:=Format('%.1f%%', [double(FTorrents[idxDone, idx])]);
   txDownProgress.AutoSize:=True;
+  if RpcObj.RPCVersion >= 5 then
+    s:=t.Strings['pieces']
+  else
+    s:='';
+  ProcessPieces(s, t.Integers['pieceCount'], FTorrents[idxDone, idx]);
 
   panTransfer.ChildSizing.Layout:=cclNone;
   txStatus.Caption:=GetTorrentStatus(idx);
@@ -3132,6 +3155,75 @@ begin
       if it <> nil then
         it.Focused:=True;
     end;
+end;
+
+procedure TMainForm.ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
+var
+  i, j, k, x: integer;
+  s: string;
+  R: TRect;
+  bmp: TBitmap;
+begin
+  FLastPieces:=Pieces;
+  FLastPieceCount:=PieceCount;
+  FLastDone:=Done;
+  bmp:=nil;
+  if FTorrentProgress = nil then
+    FTorrentProgress:=TBitmap.Create;
+  if RpcObj.RPCVersion >= 5 then begin
+    bmp:=TBitmap.Create;
+    bmp.Width:=PieceCount;
+    bmp.Height:=12;
+    x:=0;
+    s:=DecodeBase64(Pieces);
+    for i:=1 to Length(s) do begin
+      j:=byte(s[i]);
+      for k:=1 to 8 do begin
+        if PieceCount = 0 then
+          break;
+        if j and $80 <> 0 then
+          bmp.Canvas.Brush.Color:=clHighlight
+        else
+          bmp.Canvas.Brush.Color:=clWindow;
+        bmp.Canvas.FillRect(x, 0, x + 1, bmp.Height);
+        Inc(x);
+        j:=j shl 1;
+        Dec(PieceCount);
+      end;
+    end;
+  end;
+
+  with FTorrentProgress.Canvas do begin
+    FTorrentProgress.Width:=pbDownloaded.ClientWidth;
+    if bmp <> nil then begin
+      i:=bmp.Height div 3;
+      FTorrentProgress.Height:=bmp.Height + 5 + i;
+      Brush.Color:=clWindow;
+      FillRect(0, 0, FTorrentProgress.Width, FTorrentProgress.Height);
+      Brush.Color:=clBtnShadow;
+      R:=Rect(0, i + 3, FTorrentProgress.Width, FTorrentProgress.Height);
+      FrameRect(R);
+      InflateRect(R, -1, -1);
+      StretchDraw(R, bmp);
+      R:=Rect(0, 0, FTorrentProgress.Width, i + 2);
+    end
+    else begin
+      FTorrentProgress.Height:=14;
+      R:=Rect(0, 0, FTorrentProgress.Width, FTorrentProgress.Height);
+    end;
+    Brush.Color:=clBtnShadow;
+    FrameRect(R);
+    InflateRect(R, -1, -1);
+    x:=R.Left + Round((R.Right - R.Left)*Done/100.0);
+    Brush.Color:=clHighlight;
+    FillRect(R.Left, R.Top, x, R.Bottom);
+    Brush.Color:=clWindow;
+    FillRect(x, R.Top, R.Right, R.Bottom);
+  end;
+  pbDownloaded.Height:=FTorrentProgress.Height;
+  panProgress.AutoSize:=True;
+  panProgress.AutoSize:=False;
+  pbDownloaded.Invalidate;
 end;
 
 initialization

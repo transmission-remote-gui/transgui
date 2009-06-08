@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 193
+  Left = 164
   Height = 471
-  Top = 159
+  Top = 139
   Width = 780
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
@@ -26,15 +26,16 @@ object MainForm: TMainForm
     Top = 24
     Width = 780
     Align = alClient
+    BevelOuter = bvNone
     ClientHeight = 120
     ClientWidth = 780
     Constraints.MinHeight = 80
     TabOrder = 0
     object lvTorrents: TListView
-      Left = 136
-      Height = 118
-      Top = 1
-      Width = 643
+      Left = 135
+      Height = 120
+      Top = 0
+      Width = 645
       Align = alClient
       Columns = <      
         item
@@ -142,26 +143,26 @@ object MainForm: TMainForm
       OnSelectItem = lvTorrentsSelectItem
     end
     object HSplitter: TSplitter
-      Left = 131
-      Height = 118
-      Top = 1
+      Left = 130
+      Height = 120
+      Top = 0
       Width = 5
       AutoSnap = False
       MinSize = 50
     end
     object panFilter: TPanel
-      Left = 1
-      Height = 118
-      Top = 1
+      Left = 0
+      Height = 120
+      Top = 0
       Width = 130
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 118
+      ClientHeight = 120
       ClientWidth = 130
       TabOrder = 2
       object lvFilter: TListView
         Left = 0
-        Height = 91
+        Height = 93
         Top = 0
         Width = 130
         Align = alClient
@@ -185,7 +186,7 @@ object MainForm: TMainForm
       object panSearch: TPanel
         Left = 0
         Height = 23
-        Top = 93
+        Top = 95
         Width = 130
         Align = alBottom
         AutoSize = True
@@ -287,11 +288,11 @@ object MainForm: TMainForm
     Height = 279
     Top = 149
     Width = 780
-    ActivePage = tabFiles
+    ActivePage = tabGeneral
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -827,7 +828,7 @@ object MainForm: TMainForm
           Layout = tlCenter
           ParentColor = False
         end
-        object pbDownloaded: TProgressBar
+        object pbDownloaded: TPaintBox
           Left = 78
           Height = 14
           Top = 6
@@ -835,10 +836,8 @@ object MainForm: TMainForm
           Align = alClient
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Around = 6
-          Max = 1000
-          Smooth = True
-          Step = 1
-          TabOrder = 0
+          OnPaint = pbDownloadedPaint
+          OnResize = pbDownloadedResize
         end
       end
     end
