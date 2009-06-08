@@ -63,12 +63,17 @@ procedure TAddTorrentForm.lvFilesMouseDown(Sender: TObject; Button: TMouseButton
 {$ifdef windows}
 var
   it: TListItem;
+  R: TRect;
 {$endif}
 begin
 {$ifdef windows}
-  it:=lvFiles.GetItemAt(X, Y);
-  if it <> nil then
-    it.Checked:=it.Checked;
+  it:=TListView(Sender).GetItemAt(X, Y);
+  if it <> nil then begin
+    R:=it.DisplayRect(drBounds);
+    R.Right:=R.Left + (R.Bottom - R.Top);
+    if PtInRect(R, Point(X, Y)) then
+      it.Checked:=not it.Checked;
+  end;
 {$endif}
 end;
 
