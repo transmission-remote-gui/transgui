@@ -33,14 +33,19 @@ type
   TDaemonOptionsForm = class(TForm)
     btCancel: TButton;
     btOK: TButton;
+    btTestPort: TButton;
     cbMaxDown: TCheckBox;
     cbMaxUp: TCheckBox;
     cbEncryption: TComboBox;
     cbPortForwarding: TCheckBox;
     cbPEX: TCheckBox;
+    cbDHT: TCheckBox;
+    cbRandomPort: TCheckBox;
+    cbSeedRatio: TCheckBox;
     edDownloadDir: TEdit;
     edMaxDown: TSpinEdit;
     edMaxUp: TSpinEdit;
+    edSeedRatio: TFloatSpinEdit;
     gbBandwidth: TGroupBox;
     GroupBox1: TGroupBox;
     Label1: TLabel;
@@ -51,8 +56,12 @@ type
     txPort: TLabel;
     edPort: TSpinEdit;
     txDownloadDir: TLabel;
+    procedure btTestPortClick(Sender: TObject);
     procedure cbMaxDownClick(Sender: TObject);
     procedure cbMaxUpClick(Sender: TObject);
+    procedure cbRandomPortChange(Sender: TObject);
+    procedure cbRandomPortClick(Sender: TObject);
+    procedure cbSeedRatioClick(Sender: TObject);
   private
     { private declarations }
   public
@@ -61,6 +70,8 @@ type
 
 implementation
 
+uses main, utils, fpjson;
+
 { TDaemonOptionsForm }
 
 procedure TDaemonOptionsForm.cbMaxDownClick(Sender: TObject);
@@ -68,9 +79,46 @@ begin
   edMaxDown.Enabled:=cbMaxDown.Checked;
 end;
 
+procedure TDaemonOptionsForm.btTestPortClick(Sender: TObject);
+var
+  req, res: TJSONObject;
+begin
+  AppBusy;
+  req:=TJSONObject.Create;
+  try
+    req.Add('method', 'port-test');
+    res:=RpcObj.SendRequest(req, False);
+    AppNormal;
+    if res = nil then
+      MainForm.CheckStatus(False)
+    else
+      if res.Objects['arguments'].Integers['port-is-open'] <> 0 then
+        MessageDlg('Incoming port tested sucessfully.', mtInformation, [mbOk], 0)
+      else
+        MessageDlg('Incoming port is closed. Check your firewall settings.', mtError, [mbOK], 0);
+    res.Free;
+  finally
+    req.Free;
+  end;
+end;
+
 procedure TDaemonOptionsForm.cbMaxUpClick(Sender: TObject);
 begin
   edMaxUp.Enabled:=cbMaxUp.Checked;
+end;
+
+procedure TDaemonOptionsForm.cbRandomPortChange(Sender: TObject);
+begin
+end;
+
+procedure TDaemonOptionsForm.cbRandomPortClick(Sender: TObject);
+begin
+  edPort.Enabled:=not cbRandomPort.Checked;
+end;
+
+procedure TDaemonOptionsForm.cbSeedRatioClick(Sender: TObject);
+begin
+  edSeedRatio.Enabled:=cbSeedRatio.Checked;
 end;
 
 initialization
