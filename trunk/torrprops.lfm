@@ -51,6 +51,7 @@ object TorrPropsForm: TTorrPropsForm
       Width = 32
       Caption = 'Name:'
       ParentColor = False
+      ShowAccelChar = False
     end
     object txPeerLimit: TLabel
       Left = 10

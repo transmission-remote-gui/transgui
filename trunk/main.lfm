@@ -1,6 +1,6 @@
 object MainForm: TMainForm
   Left = 164
-  Height = 471
+  Height = 484
   Top = 139
   Width = 780
   HorzScrollBar.Page = 740
@@ -9,7 +9,7 @@ object MainForm: TMainForm
   ActiveControl = lvTorrents
   AutoScroll = False
   Caption = ' '
-  ClientHeight = 451
+  ClientHeight = 464
   ClientWidth = 780
   Constraints.MinHeight = 300
   Constraints.MinWidth = 300
@@ -22,18 +22,18 @@ object MainForm: TMainForm
   LCLVersion = '0.9.27'
   object panTop: TPanel
     Left = 0
-    Height = 120
+    Height = 122
     Top = 24
     Width = 780
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 120
+    ClientHeight = 122
     ClientWidth = 780
     Constraints.MinHeight = 80
     TabOrder = 0
     object lvTorrents: TListView
       Left = 135
-      Height = 120
+      Height = 122
       Top = 0
       Width = 645
       Align = alClient
@@ -144,7 +144,7 @@ object MainForm: TMainForm
     end
     object HSplitter: TSplitter
       Left = 130
-      Height = 120
+      Height = 122
       Top = 0
       Width = 5
       AutoSnap = False
@@ -152,17 +152,17 @@ object MainForm: TMainForm
     end
     object panFilter: TPanel
       Left = 0
-      Height = 120
+      Height = 122
       Top = 0
       Width = 130
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 120
+      ClientHeight = 122
       ClientWidth = 130
       TabOrder = 2
       object lvFilter: TListView
         Left = 0
-        Height = 93
+        Height = 95
         Top = 0
         Width = 130
         Align = alClient
@@ -186,7 +186,7 @@ object MainForm: TMainForm
       object panSearch: TPanel
         Left = 0
         Height = 23
-        Top = 95
+        Top = 97
         Width = 130
         Align = alBottom
         AutoSize = True
@@ -266,7 +266,7 @@ object MainForm: TMainForm
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 428
+    Top = 441
     Width = 780
     Panels = <    
       item
@@ -285,8 +285,8 @@ object MainForm: TMainForm
   end
   object PageInfo: TPageControl
     Left = 0
-    Height = 279
-    Top = 149
+    Height = 290
+    Top = 151
     Width = 780
     ActivePage = tabGeneral
     Align = alBottom
@@ -298,24 +298,24 @@ object MainForm: TMainForm
     OnPageChanged = PageInfoChange
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 252
+      ClientHeight = 263
       ClientWidth = 772
       ImageIndex = 4
       object sbGenInfo: TScrollBox
         Left = 0
-        Height = 226
+        Height = 237
         Top = 26
         Width = 772
         Align = alClient
-        ClientHeight = 222
-        ClientWidth = 751
+        ClientHeight = 233
+        ClientWidth = 768
         TabOrder = 0
         OnResize = sbGenInfoResize
         object panGeneralInfo: TPanel
           Left = 0
           Height = 78
           Top = 153
-          Width = 751
+          Width = 768
           Align = alTop
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 4
@@ -325,7 +325,7 @@ object MainForm: TMainForm
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
           ChildSizing.ControlsPerLine = 4
           ClientHeight = 78
-          ClientWidth = 751
+          ClientWidth = 768
           TabOrder = 0
           object txTorrentNameLabel: TLabel
             Left = 4
@@ -342,6 +342,7 @@ object MainForm: TMainForm
             Width = 74
             Caption = 'txTorrentName'
             ParentColor = False
+            ShowAccelChar = False
           end
           object txCreatedLabel: TLabel
             Left = 381
@@ -406,6 +407,7 @@ object MainForm: TMainForm
             Width = 35
             Caption = 'txHash'
             ParentColor = False
+            ShowAccelChar = False
           end
           object txCommentLabel: TLabel
             Left = 381
@@ -423,6 +425,7 @@ object MainForm: TMainForm
             Width = 56
             Caption = 'txComment'
             ParentColor = False
+            ShowAccelChar = False
           end
           object txAddedOnLabel: TLabel
             Left = 4
@@ -461,7 +464,7 @@ object MainForm: TMainForm
           Left = 0
           Height = 111
           Top = 21
-          Width = 751
+          Width = 768
           Align = alTop
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 4
@@ -471,7 +474,7 @@ object MainForm: TMainForm
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
           ChildSizing.ControlsPerLine = 6
           ClientHeight = 111
-          ClientWidth = 751
+          ClientWidth = 768
           TabOrder = 1
           object txStatusLabel: TLabel
             Left = 4
@@ -764,7 +767,7 @@ object MainForm: TMainForm
           Left = 2
           Height = 17
           Top = 2
-          Width = 747
+          Width = 764
           Align = alTop
           Alignment = taLeftJustify
           AutoSize = True
@@ -781,7 +784,7 @@ object MainForm: TMainForm
           Left = 2
           Height = 17
           Top = 134
-          Width = 747
+          Width = 764
           Align = alTop
           Alignment = taLeftJustify
           BorderSpacing.Around = 2
@@ -942,7 +945,7 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 144
+    Top = 146
     Width = 780
     Align = alBottom
     AutoSnap = False
