@@ -1329,12 +1329,21 @@ begin
             edPort.Value:=args.Integers['peer-port'];
             cbPEX.Checked:=args.Integers['pex-enabled'] <> 0;
             edMaxPeers.Value:=args.Integers['peer-limit-global'];
+            cbRandomPort.Checked:=args.Integers['peer-port-random-on-start'] <> 0;
+            cbDHT.Checked:=args.Integers['dht-enabled'] <> 0;
+            cbSeedRatio.Checked:=args.Integers['seedRatioLimited'] <> 0;
+            edSeedRatio.Value:=args.Floats['seedRatioLimit'];
           end
           else begin
             // RPC versions prior to v5
             edPort.Value:=args.Integers['port'];
             cbPEX.Checked:=args.Integers['pex-allowed'] <> 0;
             edMaxPeers.Value:=args.Integers['peer-limit'];
+            cbRandomPort.Enabled:=False;
+            cbDHT.Enabled:=False;
+            cbSeedRatio.Enabled:=False;
+            edSeedRatio.Enabled:=False;
+            btTestPort.Enabled:=False;
           end;
 
           cbPortForwarding.Checked:=args.Integers['port-forwarding-enabled'] <> 0;
@@ -1364,6 +1373,8 @@ begin
     end;
     cbMaxDownClick(nil);
     cbMaxUpClick(nil);
+    cbRandomPortClick(nil);
+    cbSeedRatioClick(nil);
     AppNormal;
 
     if ShowModal = mrOK then begin
@@ -1391,6 +1402,10 @@ begin
           args.Add('peer-limit-global', TJSONIntegerNumber.Create(edMaxPeers.Value));
           args.Add('peer-port', TJSONIntegerNumber.Create(edPort.Value));
           args.Add('pex-enabled', TJSONIntegerNumber.Create(integer(cbPEX.Checked) and 1));
+          args.Add('peer-port-random-on-start', TJSONIntegerNumber.Create(integer(cbRandomPort.Checked) and 1));
+          args.Add('dht-enabled', TJSONIntegerNumber.Create(integer(cbDHT.Checked) and 1));
+          args.Add('seedRatioLimited', TJSONIntegerNumber.Create(integer(cbSeedRatio.Checked) and 1));
+          args.Add('seedRatioLimit', TJSONFloatNumber.Create(edSeedRatio.Value));
         end
         else begin
           args.Add('peer-limit', TJSONIntegerNumber.Create(edMaxPeers.Value));
