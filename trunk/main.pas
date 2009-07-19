@@ -989,7 +989,8 @@ begin
           cbDestFolder.Items.Move(i, 0)
         else
           cbDestFolder.Items.Insert(0, cbDestFolder.Text);
-        while cbDestFolder.Items.Count > 6 do
+        i:=FIni.ReadInteger('Interface', 'MaxFoldersHistory', 10);
+        while cbDestFolder.Items.Count > i do
           cbDestFolder.Items.Delete(cbDestFolder.Items.Count - 1);
         FIni.WriteInteger(IniSec, 'FolderCount', cbDestFolder.Items.Count);
         for i:=0 to cbDestFolder.Items.Count - 1 do
