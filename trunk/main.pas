@@ -1324,17 +1324,17 @@ begin
       if args <> nil then
         try
           edDownloadDir.Text:=UTF8Encode(args.Strings['download-dir']);
-          if RpcObj.RPCVersion < 5 then
-          begin
-            // RPC versions prior to v5
-            edPort.Value:=args.Integers['port'];
-            cbPEX.Checked:=args.Integers['pex-allowed'] <> 0;
-            edMaxPeers.Value:=args.Integers['peer-limit'];
-          end else begin
+          if RpcObj.RPCVersion >= 5 then begin
             // RPC version 5
             edPort.Value:=args.Integers['peer-port'];
             cbPEX.Checked:=args.Integers['pex-enabled'] <> 0;
             edMaxPeers.Value:=args.Integers['peer-limit-global'];
+          end
+          else begin
+            // RPC versions prior to v5
+            edPort.Value:=args.Integers['port'];
+            cbPEX.Checked:=args.Integers['pex-allowed'] <> 0;
+            edMaxPeers.Value:=args.Integers['peer-limit'];
           end;
 
           cbPortForwarding.Checked:=args.Integers['port-forwarding-enabled'] <> 0;
@@ -1374,22 +1374,29 @@ begin
         req.Add('method', 'session-set');
         args:=TJSONObject.Create;
         args.Add('download-dir', TJSONString.Create(UTF8Decode(edDownloadDir.Text)));
-        args.Add('port', TJSONIntegerNumber.Create(edPort.Value));
         args.Add('port-forwarding-enabled', TJSONIntegerNumber.Create(integer(cbPortForwarding.Checked) and 1));
-        args.Add('pex-allowed', TJSONIntegerNumber.Create(integer(cbPEX.Checked) and 1));
         case cbEncryption.ItemIndex of
           1: s:='preferred';
           2: s:='required';
           else s:='tolerated';
         end;
         args.Add('encryption', TJSONString.Create(s));
-        args.Add('peer-limit', TJSONIntegerNumber.Create(edMaxPeers.Value));
         args.Add('speed-limit-down-enabled', TJSONIntegerNumber.Create(integer(cbMaxDown.Checked) and 1));
         if cbMaxDown.Checked then
           args.Add('speed-limit-down', TJSONIntegerNumber.Create(edMaxDown.Value));
         args.Add('speed-limit-up-enabled', TJSONIntegerNumber.Create(integer(cbMaxUp.Checked) and 1));
         if cbMaxUp.Checked then
           args.Add('speed-limit-up', TJSONIntegerNumber.Create(edMaxUp.Value));
+        if RpcObj.RPCVersion >= 5 then begin
+          args.Add('peer-limit-global', TJSONIntegerNumber.Create(edMaxPeers.Value));
+          args.Add('peer-port', TJSONIntegerNumber.Create(edPort.Value));
+          args.Add('pex-enabled', TJSONIntegerNumber.Create(integer(cbPEX.Checked) and 1));
+        end
+        else begin
+          args.Add('peer-limit', TJSONIntegerNumber.Create(edMaxPeers.Value));
+          args.Add('port', TJSONIntegerNumber.Create(edPort.Value));
+          args.Add('pex-allowed', TJSONIntegerNumber.Create(integer(cbPEX.Checked) and 1));
+        end;
         req.Add('arguments', args);
         args:=RpcObj.SendRequest(req, False);
         if args = nil then begin
