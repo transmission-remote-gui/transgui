@@ -142,25 +142,37 @@ var
 
 function CompareVariants(const v1, v2: variant): integer;
 begin
-  case VarType(v1) of
-  varInteger:
-    Result:=integer(v1) - integer(v2);
-  varDouble,varSingle,varDate:
-    Result:=Sign(double(v1) - double(v2));
+  if VarIsNull(v1) or VarIsEmpty(v1) or VarIsNull(v2) or VarIsEmpty(v2) then
+    Result:=0
   else
-    Result:=AnsiCompareText(v1, v2);
-  end;
+    case VarType(v1) of
+    varInteger:
+      Result:=integer(v1) - integer(v2);
+    varDouble,varSingle,varDate:
+      Result:=Sign(double(v1) - double(v2));
+    else
+      Result:=AnsiCompareText(v1, v2);
+    end;
 end;
 
 function CompareItems(Item1, Item2: Pointer): Integer;
 var
   v1, v2: PVariant;
+  i: integer;
 begin
+  if Item1 = Item2 then begin
+    Result:=0;
+    exit;
+  end;
   v1:=Item1;
   v2:=Item2;
   Result:=CompareVariants(v1^[FSortColumn], v2^[FSortColumn]);
-  if Result = 0 then
-    Result:=CompareVariants(v1^[0], v2^[0]);
+  i:=0;
+  while (Result = 0) and (i <= VarArrayHighBound(v1^, 1)) do begin
+    if i <> FSortColumn then
+      Result:=CompareVariants(v1^[i], v2^[i]);
+    Inc(i);
+  end;
   if FSortDesc then
     Result:=-Result;
 end;
