@@ -2268,6 +2268,8 @@ begin
       if (StateImg = imgDone) and (t.Floats['leftUntilDone'] <> 0) then
         StateImg:=imgStopped;
     end;
+    if f < 0 then
+      f:=0;
     FTorrents[idxDone, row]:=Int(f*10.0)/10.0;
     FTorrents[idxStateImg, row]:=StateImg;
     GetTorrentValue(idxDownSpeed, 'rateDownload', vtInteger);
