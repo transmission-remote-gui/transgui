@@ -3168,62 +3168,66 @@ begin
   FLastPieceCount:=PieceCount;
   FLastDone:=Done;
   bmp:=nil;
-  if FTorrentProgress = nil then
-    FTorrentProgress:=TBitmap.Create;
-  if RpcObj.RPCVersion >= 5 then begin
-    bmp:=TBitmap.Create;
-    bmp.Width:=PieceCount;
-    bmp.Height:=12;
-    x:=0;
-    s:=DecodeBase64(Pieces);
-    for i:=1 to Length(s) do begin
-      j:=byte(s[i]);
-      for k:=1 to 8 do begin
-        if PieceCount = 0 then
-          break;
-        if j and $80 <> 0 then
-          bmp.Canvas.Brush.Color:=clHighlight
-        else
-          bmp.Canvas.Brush.Color:=clWindow;
-        bmp.Canvas.FillRect(x, 0, x + 1, bmp.Height);
-        Inc(x);
-        j:=j shl 1;
-        Dec(PieceCount);
+  try
+    if FTorrentProgress = nil then
+      FTorrentProgress:=TBitmap.Create;
+    if RpcObj.RPCVersion >= 5 then begin
+      bmp:=TBitmap.Create;
+      bmp.Width:=PieceCount;
+      bmp.Height:=12;
+      x:=0;
+      s:=DecodeBase64(Pieces);
+      for i:=1 to Length(s) do begin
+        j:=byte(s[i]);
+        for k:=1 to 8 do begin
+          if PieceCount = 0 then
+            break;
+          if j and $80 <> 0 then
+            bmp.Canvas.Brush.Color:=clHighlight
+          else
+            bmp.Canvas.Brush.Color:=clWindow;
+          bmp.Canvas.FillRect(x, 0, x + 1, bmp.Height);
+          Inc(x);
+          j:=j shl 1;
+          Dec(PieceCount);
+        end;
       end;
     end;
-  end;
 
-  with FTorrentProgress.Canvas do begin
-    FTorrentProgress.Width:=pbDownloaded.ClientWidth;
-    if bmp <> nil then begin
-      i:=bmp.Height div 3;
-      FTorrentProgress.Height:=bmp.Height + 5 + i;
-      Brush.Color:=clWindow;
-      FillRect(0, 0, FTorrentProgress.Width, FTorrentProgress.Height);
+    with FTorrentProgress.Canvas do begin
+      FTorrentProgress.Width:=pbDownloaded.ClientWidth;
+      if bmp <> nil then begin
+        i:=bmp.Height div 3;
+        FTorrentProgress.Height:=bmp.Height + 5 + i;
+        Brush.Color:=clWindow;
+        FillRect(0, 0, FTorrentProgress.Width, FTorrentProgress.Height);
+        Brush.Color:=clBtnShadow;
+        R:=Rect(0, i + 3, FTorrentProgress.Width, FTorrentProgress.Height);
+        FrameRect(R);
+        InflateRect(R, -1, -1);
+        StretchDraw(R, bmp);
+        R:=Rect(0, 0, FTorrentProgress.Width, i + 2);
+      end
+      else begin
+        FTorrentProgress.Height:=14;
+        R:=Rect(0, 0, FTorrentProgress.Width, FTorrentProgress.Height);
+      end;
       Brush.Color:=clBtnShadow;
-      R:=Rect(0, i + 3, FTorrentProgress.Width, FTorrentProgress.Height);
       FrameRect(R);
       InflateRect(R, -1, -1);
-      StretchDraw(R, bmp);
-      R:=Rect(0, 0, FTorrentProgress.Width, i + 2);
-    end
-    else begin
-      FTorrentProgress.Height:=14;
-      R:=Rect(0, 0, FTorrentProgress.Width, FTorrentProgress.Height);
+      x:=R.Left + Round((R.Right - R.Left)*Done/100.0);
+      Brush.Color:=clHighlight;
+      FillRect(R.Left, R.Top, x, R.Bottom);
+      Brush.Color:=clWindow;
+      FillRect(x, R.Top, R.Right, R.Bottom);
     end;
-    Brush.Color:=clBtnShadow;
-    FrameRect(R);
-    InflateRect(R, -1, -1);
-    x:=R.Left + Round((R.Right - R.Left)*Done/100.0);
-    Brush.Color:=clHighlight;
-    FillRect(R.Left, R.Top, x, R.Bottom);
-    Brush.Color:=clWindow;
-    FillRect(x, R.Top, R.Right, R.Bottom);
+    pbDownloaded.Height:=FTorrentProgress.Height;
+    panProgress.AutoSize:=True;
+    panProgress.AutoSize:=False;
+    pbDownloaded.Invalidate;
+  finally
+    bmp.Free;
   end;
-  pbDownloaded.Height:=FTorrentProgress.Height;
-  panProgress.AutoSize:=True;
-  panProgress.AutoSize:=False;
-  pbDownloaded.Invalidate;
 end;
 
 initialization
