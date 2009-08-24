@@ -113,6 +113,7 @@ object AddTorrentForm: TAddTorrentForm
       RowSelect = True
       TabOrder = 0
       ViewStyle = vsReport
+      OnKeyDown = lvFilesKeyDown
       OnMouseDown = lvFilesMouseDown
     end
     object btSelectAll: TButton

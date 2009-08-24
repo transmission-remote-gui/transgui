@@ -47,6 +47,7 @@ type
     procedure btSelectAllClick(Sender: TObject);
     procedure btSelectNoneClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure lvFilesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure lvFilesMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   private
   public
@@ -55,7 +56,7 @@ type
 
 implementation
 
-uses lclintf;
+uses lclintf, lcltype;
 
 { TAddTorrentForm }
 
@@ -80,6 +81,16 @@ end;
 procedure TAddTorrentForm.FormShow(Sender: TObject);
 begin
   btSelectAllClick(nil);
+end;
+
+procedure TAddTorrentForm.lvFilesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_SPACE then begin
+    Key:=0;
+    if lvFiles.Selected = nil then
+      exit;
+    lvFiles.Selected.Checked:=not lvFiles.Selected.Checked;
+  end;
 end;
 
 procedure TAddTorrentForm.btSelectAllClick(Sender: TObject);
