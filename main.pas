@@ -3301,9 +3301,14 @@ begin
         FillRect(0, 0, FTorrentProgress.Width, FTorrentProgress.Height);
         Brush.Color:=clBtnShadow;
         R:=Rect(0, i + 3, FTorrentProgress.Width, FTorrentProgress.Height);
-        FrameRect(R);
+        FillRect(R);
         InflateRect(R, -1, -1);
-        StretchDraw(R, bmp);
+        if bmp.Width > 0 then
+          StretchDraw(R, bmp)
+        else begin
+          Brush.Color:=clWindow;
+          FillRect(R);
+        end;
         R:=Rect(0, 0, FTorrentProgress.Width, i + 2);
       end
       else begin
@@ -3311,7 +3316,7 @@ begin
         R:=Rect(0, 0, FTorrentProgress.Width, FTorrentProgress.Height);
       end;
       Brush.Color:=clBtnShadow;
-      FrameRect(R);
+      FillRect(R);
       InflateRect(R, -1, -1);
       x:=R.Left + Round((R.Right - R.Left)*Done/100.0);
       Brush.Color:=clHighlight;
@@ -3319,9 +3324,11 @@ begin
       Brush.Color:=clWindow;
       FillRect(x, R.Top, R.Right, R.Bottom);
     end;
-    pbDownloaded.Height:=FTorrentProgress.Height;
-    panProgress.AutoSize:=True;
-    panProgress.AutoSize:=False;
+    if pbDownloaded.Height <> FTorrentProgress.Height then begin
+      pbDownloaded.Height:=FTorrentProgress.Height;
+      panProgress.AutoSize:=True;
+      panProgress.AutoSize:=False;
+    end;
     pbDownloaded.Invalidate;
   finally
     bmp.Free;
