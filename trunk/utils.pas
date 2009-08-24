@@ -136,9 +136,14 @@ end;
 {$endif unix}
 
 function OpenURL(const URL: string): boolean;
+{$ifdef mswindows}
+var
+  s: string;
+{$endif mswindows}
 begin
 {$ifdef mswindows}
-  Result:=ShellExecute(0, 'open', PChar(URL), nil, nil, SW_SHOWNORMAL) > 32;
+  s:=UTF8Decode(URL);
+  Result:=ShellExecute(0, 'open', PChar(s), nil, nil, SW_SHOWNORMAL) > 32;
 {$endif mswindows}
 {$ifdef unix}
   Result:=UnixOpenURL(URL) = 0;

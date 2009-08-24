@@ -207,7 +207,7 @@ begin
     exit;
   end;
   t:=ResultData as TJSONObject;
-  MainForm.FillFilesList(t.Arrays['files'], t.Arrays['priorities'], t.Arrays['wanted']);
+  MainForm.FillFilesList(t.Arrays['files'], t.Arrays['priorities'], t.Arrays['wanted'], t.Strings['downloadDir']);
 end;
 
 procedure TRpcThread.DoFillInfo;
@@ -270,6 +270,7 @@ begin
     finally
       FRpc.Unlock;
     end;
+
     i:=sl.IndexOf('trackers');
     if FRpc.RequestFullInfo then begin
       if i < 0 then
@@ -278,6 +279,16 @@ begin
     else
       if i >= 0 then
         sl.Delete(i);
+
+    i:=sl.IndexOf('downloadDir');
+    if FRpc.RequestFullInfo then begin
+      if i < 0 then
+        sl.Add('downloadDir');
+    end
+    else
+      if i >= 0 then
+        sl.Delete(i);
+
     SetLength(ExtraFields, sl.Count);
     for i:=0 to sl.Count - 1 do
       ExtraFields[i]:=sl[i];
@@ -325,7 +336,7 @@ var
   args: TJSONObject;
   t: TJSONArray;
 begin
-  args:=FRpc.RequestInfo(TorrentId, ['files','priorities','wanted']);
+  args:=FRpc.RequestInfo(TorrentId, ['files','priorities','wanted','downloadDir']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];

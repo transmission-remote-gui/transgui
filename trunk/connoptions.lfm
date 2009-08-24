@@ -37,7 +37,6 @@ object OptionsForm: TOptionsForm
     Width = 75
     Anchors = [akRight, akBottom]
     AutoSize = True
-    Cancel = True
     Caption = 'Cancel'
     Constraints.MinWidth = 75
     ModalResult = 2
@@ -48,9 +47,9 @@ object OptionsForm: TOptionsForm
     Height = 290
     Top = 8
     Width = 361
-    ActivePage = tabInterface
+    ActivePage = tabPaths
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     object tabConnection: TTabSheet
       Caption = 'Connection'
@@ -126,10 +125,9 @@ object OptionsForm: TOptionsForm
         Top = 94
         Width = 196
         Anchors = [akTop, akLeft, akRight]
-        AutoSize = True
         EchoMode = emPassword
         PasswordChar = '*'
-        TabOrder = 3
+        TabOrder = 4
       end
       object edUserName: TEdit
         Left = 148
@@ -137,55 +135,42 @@ object OptionsForm: TOptionsForm
         Top = 66
         Width = 196
         Anchors = [akTop, akLeft, akRight]
-        AutoSize = True
-        TabOrder = 2
+        TabOrder = 3
       end
       object edPort: TSpinEdit
         Left = 148
         Height = 23
         Top = 38
         Width = 70
-        AutoSize = True
         MaxValue = 65535
         MinValue = 1
-        TabOrder = 1
+        TabOrder = 2
         Value = 65535
-      end
-      object edHost: TEdit
-        Left = 148
-        Height = 23
-        Top = 10
-        Width = 196
-        Anchors = [akTop, akLeft, akRight]
-        AutoSize = True
-        TabOrder = 0
       end
       object cbUseProxy: TCheckBox
         Left = 8
         Height = 17
         Top = 122
-        Width = 97
+        Width = 101
         Caption = 'Use proxy server'
         OnClick = cbUseProxyClick
-        TabOrder = 4
+        TabOrder = 5
       end
       object edProxy: TEdit
         Left = 148
         Height = 23
         Top = 146
         Width = 196
-        AutoSize = True
-        TabOrder = 5
+        TabOrder = 6
       end
       object edProxyPort: TSpinEdit
         Left = 148
         Height = 23
         Top = 174
         Width = 70
-        AutoSize = True
         MaxValue = 65535
         MinValue = 1
-        TabOrder = 6
+        TabOrder = 7
         Value = 65535
       end
       object edProxyUserName: TEdit
@@ -194,8 +179,7 @@ object OptionsForm: TOptionsForm
         Top = 202
         Width = 196
         Anchors = [akTop, akLeft, akRight]
-        AutoSize = True
-        TabOrder = 7
+        TabOrder = 8
       end
       object edProxyPassword: TEdit
         Left = 148
@@ -203,10 +187,67 @@ object OptionsForm: TOptionsForm
         Top = 230
         Width = 196
         Anchors = [akTop, akLeft, akRight]
-        AutoSize = True
         EchoMode = emPassword
         PasswordChar = '*'
-        TabOrder = 8
+        TabOrder = 9
+      end
+      object cbHost: TComboBox
+        Left = 148
+        Height = 21
+        Top = 10
+        Width = 164
+        Anchors = [akTop, akLeft, akRight]
+        ItemHeight = 13
+        OnSelect = cbHostSelect
+        TabOrder = 0
+      end
+      object btDelHost: TBitBtn
+        Left = 316
+        Height = 23
+        Hint = 'Delete host settings'
+        Top = 9
+        Width = 28
+        Glyph.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF003F3DED413B38EB08FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00211FE3081E1CE241FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF004A47F0414F4CF2FF403EEDFD3C39EB08FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF002725E5082422E4FC312FEAFF1F1DE241FFFFFF00FFFFFF00FFFFFF005451
+          F3415856F5FF6361FAFF5855F6FF413FEDFC3D3AEC08FFFFFF00FFFFFF00302D
+          E7082C2AE6FC413FF1FF4C4AF6FF312FEAFF1F1DE241FFFFFF00FFFFFF005956
+          F52B5B58F6FF6562FAFF7170FFFF5956F6FF4240EEFC3E3BEC083937EB083532
+          E9FC4745F2FF6362FFFF4A48F4FF2F2DE9FF2220E32BFFFFFF00FFFFFF00FFFF
+          FF005A57F52B5B59F6FF6663FAFF7471FFFF5A58F6FF4341EEFC3E3CECFD504D
+          F4FF6867FFFF504EF5FF3634EBFF2A27E52BFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF005B58F62B5C5AF6FF6764FAFF7472FFFF7370FFFF706EFFFF6E6C
+          FFFF5755F7FF3F3DEEFF3230E82BFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF005C59F62B5D5BF7FF7976FFFF5956FFFF5754FFFF7270
+          FFFF4846F0FF3C39EB2BFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00615EF8085D5AF6FD7D79FFFF5E5BFFFF5B58FFFF7674
+          FFFF4643EFFD413FED08FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF006967FB086663F9FC706DFBFF807EFFFF7E7BFFFF7C79FFFF7977
+          FFFF5E5CF7FF4744EFFC4240EE08FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00716EFD086E6BFCFC7774FDFF8682FFFF7673FCFF6462F8FF605DF7FF6D6A
+          FAFF7B79FFFF605DF7FF4845EFFC4341EE08FFFFFF00FFFFFF00FFFFFF007673
+          FF087471FEFD7D7AFEFF8A87FFFF7C79FDFF6C69FBFF6361F92B5F5CF72B615E
+          F8FF6E6CFAFF7D7AFFFF615FF7FF4946F0FC4441EE05FFFFFF00FFFFFF007774
+          FF1F7A77FFFF817EFFFF817EFEFF7471FDFF6C69FB2BFFFFFF00FFFFFF00605D
+          F72B625FF8FF6F6DFBFF7E7CFFFF625FF8FF4A47F06F4542EE02FFFFFF00FFFF
+          FF007774FF1F7A77FFFF7976FEFF726FFD2BFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00615EF82B6461F8FF6A68F9FF5451F3A84F4DF229FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF007774FF1F7774FF2BFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00625FF82B5D5BF76F5956F53EFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF006360F80AFFFFFF00FFFFFF00FFFFFF00
+        }
+        GlyphShowMode = gsmAlways
+        OnClick = btDelHostClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
       end
     end
     object tabInterface: TTabSheet
@@ -234,7 +275,6 @@ object OptionsForm: TOptionsForm
         Height = 23
         Top = 10
         Width = 70
-        AutoSize = True
         MaxValue = 999
         MinValue = 1
         TabOrder = 0
@@ -254,7 +294,7 @@ object OptionsForm: TOptionsForm
           Left = 10
           Height = 17
           Top = 40
-          Width = 129
+          Width = 130
           Caption = 'Tray icon always visible'
           TabOrder = 2
         end
@@ -262,7 +302,7 @@ object OptionsForm: TOptionsForm
           Left = 10
           Height = 17
           Top = 0
-          Width = 90
+          Width = 93
           Caption = 'Minimize to tray'
           TabOrder = 0
         end
@@ -270,7 +310,7 @@ object OptionsForm: TOptionsForm
           Left = 10
           Height = 17
           Top = 20
-          Width = 76
+          Width = 80
           Caption = 'Close to tray'
           TabOrder = 1
         end
@@ -279,9 +319,33 @@ object OptionsForm: TOptionsForm
         Left = 8
         Height = 17
         Top = 138
-        Width = 268
+        Width = 274
         Caption = 'Show parameters window when adding a new torrent'
         TabOrder = 2
+      end
+    end
+    object tabPaths: TTabSheet
+      Caption = 'Paths'
+      ClientHeight = 264
+      ClientWidth = 353
+      object txPaths: TLabel
+        Left = 4
+        Height = 72
+        Top = 6
+        Width = 344
+        Anchors = [akTop, akLeft, akRight]
+        AutoSize = False
+        Caption = 'Remote to local path mappings.'#13#10#13#10'Examples:'#13#10'/share=\\pch\share'#13#10'/var/downloads/music=Z:\music'
+        ParentColor = False
+        WordWrap = True
+      end
+      object edPaths: TMemo
+        Left = 4
+        Height = 176
+        Top = 82
+        Width = 344
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        TabOrder = 0
       end
     end
   end

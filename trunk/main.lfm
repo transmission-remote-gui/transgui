@@ -288,11 +288,11 @@ object MainForm: TMainForm
     Height = 290
     Top = 151
     Width = 780
-    ActivePage = tabGeneral
+    ActivePage = tabFiles
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -846,12 +846,12 @@ object MainForm: TMainForm
     end
     object tabPeers: TTabSheet
       Caption = 'Peers'
-      ClientHeight = 252
+      ClientHeight = 263
       ClientWidth = 772
       ImageIndex = 6
       object lvPeers: TListView
         Left = 0
-        Height = 252
+        Height = 263
         Top = 0
         Width = 772
         Align = alClient
@@ -897,12 +897,12 @@ object MainForm: TMainForm
     end
     object tabFiles: TTabSheet
       Caption = 'Files'
-      ClientHeight = 252
+      ClientHeight = 263
       ClientWidth = 772
       ImageIndex = 7
       object lvFiles: TListView
         Left = 0
-        Height = 252
+        Height = 263
         Top = 0
         Width = 772
         Align = alClient
@@ -938,6 +938,7 @@ object MainForm: TMainForm
         TabOrder = 0
         ViewStyle = vsReport
         OnCustomDrawSubItem = lvFilesCustomDrawSubItem
+        OnDblClick = lvFilesDblClick
       end
     end
   end
@@ -1509,6 +1510,16 @@ object MainForm: TMainForm
       Caption = 'Setup columns...'
       OnExecute = acSetupColumnsExecute
     end
+    object acOpenFile: TAction
+      Category = 'Files'
+      Caption = 'Open'
+      OnExecute = acOpenFileExecute
+    end
+    object acOpenContainingFolder: TAction
+      Category = 'Files'
+      Caption = 'Open containing folder'
+      OnExecute = acOpenContainingFolderExecute
+    end
   end
   object TorrentsListTimer: TTimer
     Enabled = False
@@ -1528,6 +1539,12 @@ object MainForm: TMainForm
     OnPopup = pmTorrentsPopup
     left = 149
     top = 55
+    object MenuItem42: TMenuItem
+      Action = acOpenContainingFolder
+    end
+    object MenuItem43: TMenuItem
+      Caption = '-'
+    end
     object MenuItem8: TMenuItem
       Action = acStartTorrent
       Bitmap.Data = {
@@ -1685,6 +1702,18 @@ object MainForm: TMainForm
     OnPopup = pmFilesPopup
     left = 304
     top = 92
+    object MenuItem40: TMenuItem
+      Action = acOpenFile
+      Default = True
+      OnClick = acOpenFileExecute
+    end
+    object MenuItem44: TMenuItem
+      Action = acOpenContainingFolder
+      OnClick = acOpenContainingFolderExecute
+    end
+    object MenuItem41: TMenuItem
+      Caption = '-'
+    end
     object MenuItem12: TMenuItem
       Action = acSetHighPriority
       OnClick = acSetHighPriorityExecute

@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '1.1';
+  AppVersion = '1.2';
 
 resourcestring
   SShowApp = 'Show';
@@ -65,6 +65,8 @@ type
     acShowCountryFlag: TAction;
     acSetupColumns: TAction;
     acRemoveTorrentAndData: TAction;
+    acOpenFile: TAction;
+    acOpenContainingFolder: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
     acVerifyTorrent: TAction;
@@ -75,6 +77,11 @@ type
     imgFlags: TImageList;
     ImageList16: TImageList;
     FilterTimer: TTimer;
+    MenuItem40: TMenuItem;
+    MenuItem41: TMenuItem;
+    MenuItem42: TMenuItem;
+    MenuItem43: TMenuItem;
+    MenuItem44: TMenuItem;
     pbDownloaded: TPaintBox;
     txConnErrorLabel: TLabel;
     panSearch: TPanel;
@@ -223,6 +230,8 @@ type
     tabFiles: TTabSheet;
     procedure acAddTorrentExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
+    procedure acOpenContainingFolderExecute(Sender: TObject);
+    procedure acOpenFileExecute(Sender: TObject);
     procedure acOptionsExecute(Sender: TObject);
     procedure acDisconnectExecute(Sender: TObject);
     procedure acExitExecute(Sender: TObject);
@@ -250,6 +259,7 @@ type
     procedure ApplicationPropertiesRestore(Sender: TObject);
     procedure edSearchChange(Sender: TObject);
     procedure lvFilesCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState; var DefaultDraw: Boolean);
+    procedure lvFilesDblClick(Sender: TObject);
     procedure lvTorrentsCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
       var DefaultDraw: Boolean);
     procedure panReconnectResize(Sender: TObject);
@@ -279,9 +289,9 @@ type
     procedure sbGenInfoResize(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
   private
-    FIni: TIniFile;
     FStarted: boolean;
     FTorrents: TVarList;
+    FFiles: TVarList;
     FTorrentsSortColumn: integer;
     FTorrentsSortDesc: boolean;
     FTrackers: TStringList;
@@ -294,6 +304,9 @@ type
     FLastPieces: string;
     FLastPieceCount: integer;
     FLastDone: double;
+    FIni: TIniFile;
+    FCurHost: string;
+    FPathMap: TStringList;
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -331,17 +344,20 @@ type
     procedure DrawProgressCell(LV: TCustomListView; Item: TListItem; SubItem: Integer);
     procedure lvLeftMouseSelect(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
+    function ExecRemoteFile(const FileName: string): boolean;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
     procedure FillPeersList(list: TJSONArray);
-    procedure FillFilesList(list, priorities, wanted: TJSONArray);
+    procedure FillFilesList(list, priorities, wanted: TJSONArray; const DownloadDir: WideString);
+    procedure UpdateFilesList;
     procedure FillGeneralInfo(t: TJSONObject);
     procedure CheckStatus(Fatal: boolean = True);
     function TorrentAction(TorrentId: integer; const AAction: string; args: TJSONObject = nil): boolean;
     function SetFilePriority(TorrentId: integer; const Files: array of integer; const APriority: string): boolean;
     function SetCurrentFilePriority(const APriority: string): boolean;
     procedure ClearDetailsInfo;
+    property Ini: TIniFile read FIni;
   end;
 
 function CheckAppParams: boolean;
@@ -370,8 +386,9 @@ const
   idxAddedOn = 14;
   idxCompletedOn = 15;
   idxLastActive = 16;
+  idxPath = 17;
 
-  idxLastVisible = 16;
+  idxLastVisible = 17;
   idxTorrentId = idxLastVisible + 1;
   idxTag = idxLastVisible + 2;
   idxSeedsTotal = idxLastVisible + 3;
@@ -396,6 +413,9 @@ const
   idxFileDone = 2;
   idxFileProgress = 3;
   idxFilePriority = 4;
+  idxFileFullPath = 5;
+  idxFileId = 6;
+  idcFileColCount = 7;
 
   // Filter idices
   fltAll      = 0;
@@ -573,6 +593,7 @@ begin
   TrayIcon.Icon.Assign(Application.Icon);
   RpcObj:=TRpc.Create;
   FTorrents:=TVarList.Create(idxTorrentColCount, 0);
+  FFiles:=TVarList.Create(idcFileColCount, 0);
   FIni:=TIniFile.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
   FTrackers:=TStringList.Create;
   FReconnectTimeOut:=-1;
@@ -632,6 +653,10 @@ begin
   acResolveCountry.Checked:=FIni.ReadBool('PeersList', 'ResolveCountry', True) and (GetGeoIpDatabase <> '');
   acShowCountryFlag.Checked:=FIni.ReadBool('PeersList', 'ShowCountryFlag', True) and (GetFlagsArchive <> '');
   acShowCountryFlag.Enabled:=acResolveCountry.Checked;
+  FCurHost:=FIni.ReadString('Hosts', 'CurHost', '');
+  if FCurHost = '' then
+    FCurHost:=FIni.ReadString('Connection', 'Host', '');
+  FPathMap:=TStringList.Create;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -644,6 +669,8 @@ begin
   FUnZip.Free;
   RpcObj.Free;
   FTorrentProgress.Free;
+  FPathMap.Free;
+  FFiles.Free;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -761,10 +788,31 @@ end;
 
 procedure TMainForm.acConnectExecute(Sender: TObject);
 begin
-  if RpcObj.Connected or (FIni.ReadString('Connection', 'Host', '') = '') then
+  if RpcObj.Connected or (FCurHost = '') then
     ShowConnOptions
   else
     DoConnect;
+end;
+
+procedure TMainForm.acOpenContainingFolderExecute(Sender: TObject);
+var
+  i: integer;
+begin
+  if lvTorrents.Selected = nil then
+    exit;
+  i:=PtrUInt(lvTorrents.Selected.Data);
+  i:=FTorrents.IndexOf(idxTorrentId, i);
+  if i < 0 then
+    exit;
+  if VarIsEmpty(FTorrents[idxPath, i]) then
+    exit;
+  ExecRemoteFile(FTorrents[idxPath, i]);
+end;
+
+procedure TMainForm.acOpenFileExecute(Sender: TObject);
+begin
+  if lvFiles.Selected = nil then exit;
+  ExecRemoteFile(FFiles[idxFileFullPath, ptruint(lvFiles.Selected.Data)]);
 end;
 
 procedure TMainForm.acOptionsExecute(Sender: TObject);
@@ -1694,6 +1742,11 @@ begin
   end;
 end;
 
+procedure TMainForm.lvFilesDblClick(Sender: TObject);
+begin
+  acOpenFile.Execute;
+end;
+
 procedure TMainForm.lvTorrentsCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
   var DefaultDraw: Boolean);
 begin
@@ -1911,16 +1964,21 @@ begin
 end;
 
 procedure TMainForm.DoConnect;
+var
+  Sec: string;
 begin
   panReconnect.Hide;
   DoDisconnect;
-  RpcObj.Http.UserName:=FIni.ReadString('Connection', 'UserName', '');
-  RpcObj.Http.Password:=DecodeBase64(FIni.ReadString('Connection', 'Password', ''));
-  if FIni.ReadBool('Connection', 'UseProxy', False) then begin
-    RpcObj.Http.ProxyHost:=FIni.ReadString('Connection', 'ProxyHost', '');
-    RpcObj.Http.ProxyPort:=IntToStr(FIni.ReadInteger('Connection', 'ProxyPort', 8080));
-    RpcObj.Http.ProxyUser:=FIni.ReadString('Connection', 'ProxyUser', '');
-    RpcObj.Http.ProxyPass:=DecodeBase64(FIni.ReadString('Connection', 'ProxyPass', ''));
+  Sec:='Connection.' + FCurHost;
+  if not FIni.SectionExists(Sec) then
+    Sec:='Connection';
+  RpcObj.Http.UserName:=FIni.ReadString(Sec, 'UserName', '');
+  RpcObj.Http.Password:=DecodeBase64(FIni.ReadString(Sec, 'Password', ''));
+  if FIni.ReadBool(Sec, 'UseProxy', False) then begin
+    RpcObj.Http.ProxyHost:=FIni.ReadString(Sec, 'ProxyHost', '');
+    RpcObj.Http.ProxyPort:=IntToStr(FIni.ReadInteger(Sec, 'ProxyPort', 8080));
+    RpcObj.Http.ProxyUser:=FIni.ReadString(Sec, 'ProxyUser', '');
+    RpcObj.Http.ProxyPass:=DecodeBase64(FIni.ReadString(Sec, 'ProxyPass', ''));
   end
   else begin
     RpcObj.Http.ProxyHost:='';
@@ -1928,9 +1986,9 @@ begin
     RpcObj.Http.ProxyUser:='';
     RpcObj.Http.ProxyPass:='';
   end;
-  RpcObj.Url:=Format('http://%s:%d/transmission/rpc', [FIni.ReadString('Connection', 'Host', 'localhost'), FIni.ReadInteger('Connection', 'Port', 9091)]);
+  RpcObj.Url:=Format('http://%s:%d/transmission/rpc', [FCurHost, FIni.ReadInteger(Sec, 'Port', 9091)]);
 
-  RpcObj.RefreshInterval:=FIni.ReadInteger('Connection', 'RefreshInterval', 5);
+  RpcObj.RefreshInterval:=FIni.ReadInteger('Interface', 'RefreshInterval', 5);
   if RpcObj.RefreshInterval < 1 then
     RpcObj.RefreshInterval:=1;
   RpcObj.RefreshInterval:=RpcObj.RefreshInterval/SecsPerDay;
@@ -1938,6 +1996,7 @@ begin
   CheckStatus;
   TrayIcon.Hint:=RpcObj.InfoStatus;
   RpcObj.Connect;
+  FPathMap.Text:=StringReplace(Ini.ReadString(Sec, 'PathMap', ''), '|', LineEnding, [rfReplaceAll]);
 end;
 
 procedure TMainForm.DoDisconnect;
@@ -1998,6 +2057,7 @@ procedure TMainForm.ClearDetailsInfo;
   end;
 
 begin
+  FFiles.Clear;
   lvPeers.Clear;
   lvFiles.Clear;
   ClearChildren(panGeneralInfo);
@@ -2029,23 +2089,24 @@ begin
 end;
 
 function TMainForm.ShowConnOptions: boolean;
+var
+  i, cnt: integer;
+  s: string;
 begin
   Result:=False;
   with TOptionsForm.Create(Self) do
   try
-    edHost.Text:=FIni.ReadString('Connection', 'Host', 'localhost');
-    edPort.Value:=FIni.ReadInteger('Connection', 'Port', 9091);
-    edUserName.Text:=FIni.ReadString('Connection', 'UserName', '');
-    if FIni.ReadString('Connection', 'Password', '') <> '' then
-      edPassword.Text:='******';
-    cbUseProxy.Checked:=FIni.ReadBool('Connection', 'UseProxy', False);
-    edProxy.Text:=FIni.ReadString('Connection', 'ProxyHost', '');
-    edProxyPort.Value:=FIni.ReadInteger('Connection', 'ProxyPort', 8080);
-    edProxyUserName.Text:=FIni.ReadString('Connection', 'ProxyUser', '');
-    if FIni.ReadString('Connection', 'ProxyPass', '') <> '' then
-      edProxyPassword.Text:='******';
+    cnt:=Ini.ReadInteger('Hosts', 'Count', 0);
+    for i:=1 to cnt do begin
+      s:=Ini.ReadString('Hosts', Format('Host%d', [i]), '');
+      if s <> '' then
+        cbHost.Items.Add(s);
+    end;
+    cbHost.ItemIndex:=cbHost.Items.IndexOf(FCurHost);
+    cbHost.Text:=FCurHost;
+    LoadHostSettings(FCurHost);
 
-    edRefreshInterval.Value:=FIni.ReadInteger('Connection', 'RefreshInterval', 5);
+    edRefreshInterval.Value:=FIni.ReadInteger('Interface', 'RefreshInterval', 5);
     cbTrayClose.Checked:=FIni.ReadBool('Interface', 'TrayClose', False);
 {$ifdef windows}
     cbTrayMinimize.Checked:=FIni.ReadBool('Interface', 'TrayMinimize', True);
@@ -2057,29 +2118,20 @@ begin
     chShowAddTorrentWindow.Checked:=FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
 
     if ShowModal = mrOK then begin
-      if (edHost.Text <> FIni.ReadString('Connection', 'Host', 'localhost')) or
-         (edPort.Value <> FIni.ReadInteger('Connection', 'Port', 9091)) or
-         (edProxy.Text <> FIni.ReadString('Connection', 'ProxyHost', '')) or
-         (edProxyPort.Value <> FIni.ReadInteger('Connection', 'ProxyPort', 8080)) or
-         (cbUseProxy.Checked <> FIni.ReadBool('Connection', 'UseProxy', False))
-      then begin
+      if (FCurHost <> cbHost.Text) or IsHostSettingsChanged(FCurHost) then begin
         DoDisconnect;
         FReconnectTimeOut:=-1;
       end;
+      FCurHost:=cbHost.Text;
+      SaveHostSettings(FCurHost);
+      FPathMap.Text:=edPaths.Lines.Text;
 
-      FIni.WriteString('Connection', 'Host', edHost.Text);
-      FIni.WriteInteger('Connection', 'Port', edPort.Value);
-      FIni.WriteString('Connection', 'UserName', edUserName.Text);
-      if edPassword.Text <> '******' then
-        FIni.WriteString('Connection', 'Password', EncodeBase64(edPassword.Text));
-      FIni.WriteBool('Connection', 'UseProxy', cbUseProxy.Checked);
-      FIni.WriteString('Connection', 'ProxyHost', edProxy.Text);
-      FIni.WriteInteger('Connection', 'ProxyPort', edProxyPort.Value);
-      FIni.WriteString('Connection', 'ProxyUser', edProxyUserName.Text);
-      if edProxyPassword.Text <> '******' then
-        FIni.WriteString('Connection', 'ProxyPass', EncodeBase64(edProxyPassword.Text));
+      Ini.WriteString('Hosts', 'CurHost', FCurHost);
+      Ini.WriteInteger('Hosts', 'Count', cbHost.Items.Count);
+      for i:=0 to cbHost.Items.Count - 1 do
+        Ini.WriteString('Hosts', Format('Host%d', [i + 1]), cbHost.Items[i]);
 
-      FIni.WriteInteger('Connection', 'RefreshInterval', edRefreshInterval.Value);
+      FIni.WriteInteger('Interface', 'RefreshInterval', edRefreshInterval.Value);
       FIni.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
 {$ifdef windows}
       FIni.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
@@ -2190,7 +2242,7 @@ var
   trackers: TJSONArray;
   f: double;
   ExistingRow: boolean;
-  s: string;
+  s, ss: string;
 
   function GetTorrentValue(AIndex: integer; const AName: string; AType: integer): boolean;
   var
@@ -2309,6 +2361,15 @@ begin
         j:=Pos('/', s);
         if j > 0 then
           s:=Copy(s, 1, j - 1);
+        j:=Pos('.', s);
+        if j > 0 then begin
+          ss:=Copy(s, 1, j - 1);
+          if AnsiCompareText(ss, 'bt') = 0 then
+            System.Delete(s, 1, 3)
+          else
+            if (Length(ss) = 3) and (AnsiCompareText(Copy(ss, 1, 2), 'bt') = 0) and (ss[3] in ['1'..'9']) then
+              System.Delete(s, 1, 4);
+        end;
         FTorrents[idxTracker, row]:=s;
       end
       else
@@ -2316,6 +2377,12 @@ begin
     end
     else
       if VarIsEmpty(FTorrents[idxTracker, row]) then
+        RpcObj.RequestFullInfo:=True;
+
+    if t.IndexOfName('downloadDir') >= 0 then
+      FTorrents[idxPath, row]:=UTF8Encode(t.Strings['downloadDir'])
+    else
+      if VarIsEmpty(FTorrents[idxPath, row]) then
         RpcObj.RequestFullInfo:=True;
 
     FTorrents[idxTag, row]:=1;
@@ -2799,12 +2866,65 @@ begin
     Result:=Result + d;
 end;
 
-procedure TMainForm.FillFilesList(list, priorities, wanted: TJSONArray);
+procedure TMainForm.FillFilesList(list, priorities, wanted: TJSONArray; const DownloadDir: WideString);
 const
   TR_PRI_LOW    = -1;
   TR_PRI_NORMAL =  0;
   TR_PRI_HIGH   =  1;
 
+var
+  i, row: integer;
+  d: TJSONData;
+  f: TJSONObject;
+  s, path, dir: string;
+  ff: double;
+
+begin
+  if (list = nil) or (priorities = nil) or (wanted = nil) then begin
+    ClearDetailsInfo;
+    exit;
+  end;
+
+  FFiles.RowCnt:=list.Count;
+  dir:=UTF8Encode(DownloadDir);
+  path:=GetFilesCommonPath(list);
+
+  for i:=0 to list.Count - 1 do begin
+    d:=list[i];
+    f:=d as TJSONObject;
+    row:=i;
+    FFiles[idxFileId, row]:=i + 1;
+
+    s:=UTF8Encode(f.Strings['name']);
+    FFiles[idxFileFullPath, row]:=IncludeProperTrailingPathDelimiter(dir) + s;
+    if (path <> '') and (Copy(s, 1, Length(path)) = path) then
+      s:=Copy(s, Length(path) + 1, MaxInt);
+
+    FFiles[idxFileName, row]:=s;
+    ff:=f.Floats['length'];
+    FFiles[idxFileSize, row]:=ff;
+    FFiles[idxFileDone, row]:=f.Floats['bytesCompleted'];
+    if ff <> 0 then
+      ff:=double(FFiles[idxFileDone, row])*100.0/ff;
+    FFiles[idxFileProgress, row]:=Int(ff*10.0)/10.0;
+
+    if wanted.Integers[i] = 0 then
+      s:='skip'
+    else begin
+      case priorities.Integers[i] of
+        TR_PRI_LOW:    s:='low';
+        TR_PRI_NORMAL: s:='normal';
+        TR_PRI_HIGH:   s:='high';
+        else           s:='???';
+      end;
+    end;
+    FFiles[idxFilePriority, row]:=s;
+  end;
+
+  UpdateFilesList;
+end;
+
+procedure TMainForm.UpdateFilesList;
 var
   it: TListItem;
 
@@ -2820,77 +2940,30 @@ var
   end;
 
 var
-  i, j: integer;
-  d: TJSONData;
-  f: TJSONObject;
-  s, path: string;
-  ff: double;
-
+  i: integer;
 begin
-  if (list = nil) or (priorities = nil) or (wanted = nil) then begin
-    ClearDetailsInfo;
-    exit;
-  end;
 //  lvFiles.BeginUpdate;
   try
     lvFiles.Enabled:=True;
     lvFiles.Color:=clWindow;
-    if list = nil then begin
-      lvFiles.Clear;
-      exit;
-    end;
 
-    for i:=0 to lvFiles.Items.Count - 1 do
-      lvFiles.Items[i].Data:=nil;
-
-    path:=GetFilesCommonPath(list);
-
-    for i:=0 to list.Count - 1 do begin
-      d:=list[i];
-      if not (d is TJSONObject) then continue;
-      f:=d as TJSONObject;
-      s:=UTF8Encode(f.Strings['name']);
-      if (path <> '') and (Copy(s, 1, Length(path)) = path) then
-        s:=Copy(s, Length(path) + 1, MaxInt);
-      it:=nil;
-      for j:=0 to lvFiles.Items.Count - 1 do
-        if lvFiles.Items[j].Caption = s then begin
-          it:=lvFiles.Items[j];
-          break;
-        end;
-      if it = nil then
-        it:=lvFiles.Items.Add;
-
-      it.Caption:=s;
-
-      ff:=f.Floats['length'];
-      SetSubItem(idxFileSize, GetHumanSize(ff));
-      SetSubItem(idxFileDone, GetHumanSize(f.Floats['bytesCompleted']));
-      if ff <> 0 then
-        ff:=f.Floats['bytesCompleted']*100.0/ff;
-      SetSubItem(idxFileProgress, Format('%.1f%%', [Int(ff*10.0)/10.0]));
-
-      if wanted.Integers[i] = 0 then
-        s:='skip'
-      else begin
-        case priorities.Integers[i] of
-          TR_PRI_LOW:    s:='low';
-          TR_PRI_NORMAL: s:='normal';
-          TR_PRI_HIGH:   s:='high';
-          else           s:='???';
-        end;
-      end;
-      SetSubItem(idxFilePriority, s);
-
-      it.Data:=pointer(i + 1);
-    end;
-
-    i:=0;
-    while i < lvFiles.Items.Count do
-      if lvFiles.Items[i].Data = nil then
-        lvFiles.Items.Delete(i)
+    for i:=0 to FFiles.Count - 1 do begin
+      if i >= lvFiles.Items.Count then
+        it:=lvFiles.Items.Add
       else
-        Inc(i);
+        it:=lvFiles.Items[i];
+
+      it.Caption:=FFiles[idxFileName, i];
+
+      SetSubItem(idxFileSize, GetHumanSize(FFiles[idxFileSize, i]));
+      SetSubItem(idxFileDone, GetHumanSize(FFiles[idxFileDone, i]));
+      SetSubItem(idxFileProgress, Format('%.1f%%', [double(FFiles[idxFileProgress, i])]));
+      SetSubItem(idxFilePriority, FFiles[idxFilePriority, i]);
+      it.Data:=pointer(i);
+    end;
+
+    while lvFiles.Items.Count > FFiles.Count do
+      lvFiles.Items.Delete(lvFiles.Items.Count - 1);
 
   finally
 //    lvFiles.EndUpdate;
@@ -3253,6 +3326,34 @@ begin
   finally
     bmp.Free;
   end;
+end;
+
+function TMainForm.ExecRemoteFile(const FileName: string): boolean;
+var
+  i, j: integer;
+  s, ss: string;
+begin
+  for i:=0 to FPathMap.Count - 1 do begin
+    s:=FPathMap[i];
+    j:=Pos('=', s);
+    if j > 0 then begin
+      ss:=Copy(s, 1, j - 1);
+      if (ss = FileName) or (Pos(IncludeProperTrailingPathDelimiter(ss), FileName) = 1) then begin
+        if ss = FileName then
+          ss:=Copy(s, j + 1, MaxInt)
+        else begin
+          ss:=IncludeProperTrailingPathDelimiter(ss);
+          ss:=IncludeTrailingPathDelimiter(Copy(s, j + 1, MaxInt)) + Copy(FileName, Length(ss) + 1, MaxInt);
+        end;
+        ss:=StringReplace(ss, '/', DirectorySeparator, [rfReplaceAll]);
+        ss:=StringReplace(ss, '\', DirectorySeparator, [rfReplaceAll]);
+        Result:=OpenURL(ss);
+        exit;
+      end;
+    end;
+  end;
+
+  MessageDlg('Unable to find path mapping.'+LineEnding+'Use program''s options to setup path mappings.', mtInformation, [mbOK], 0);
 end;
 
 initialization
