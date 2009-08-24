@@ -47,14 +47,15 @@ object OptionsForm: TOptionsForm
     Height = 290
     Top = 8
     Width = 361
-    ActivePage = tabPaths
+    ActivePage = tabConnection
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     object tabConnection: TTabSheet
       Caption = 'Connection'
       ClientHeight = 264
       ClientWidth = 353
+      OnShow = tabConnectionShow
       object txPassword: TLabel
         Left = 8
         Height = 14
@@ -330,11 +331,10 @@ object OptionsForm: TOptionsForm
       ClientWidth = 353
       object txPaths: TLabel
         Left = 4
-        Height = 72
+        Height = 66
         Top = 6
         Width = 344
         Anchors = [akTop, akLeft, akRight]
-        AutoSize = False
         Caption = 'Remote to local path mappings.'#13#10#13#10'Examples:'#13#10'/share=\\pch\share'#13#10'/var/downloads/music=Z:\music'
         ParentColor = False
         WordWrap = True

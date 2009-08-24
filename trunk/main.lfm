@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 164
+  Left = 348
   Height = 484
-  Top = 139
+  Top = 150
   Width = 780
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
@@ -288,11 +288,11 @@ object MainForm: TMainForm
     Height = 290
     Top = 151
     Width = 780
-    ActivePage = tabFiles
+    ActivePage = tabGeneral
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
