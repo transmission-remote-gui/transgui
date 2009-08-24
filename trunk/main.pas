@@ -3353,6 +3353,11 @@ begin
     end;
   end;
 
+  if FileExistsUTF8(FileName) or DirectoryExistsUTF8(FileName) then begin
+    Result:=OpenURL(FileName);
+    exit;
+  end;
+
   MessageDlg('Unable to find path mapping.'+LineEnding+'Use program''s options to setup path mappings.', mtInformation, [mbOK], 0);
 end;
 
