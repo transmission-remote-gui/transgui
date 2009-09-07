@@ -1,5 +1,5 @@
 #summary Version 1.1 released
-#labels Featured
+#labels Deprecated
 
 <pre>
 `[+`] Remove torrent and all associated data function. Issue #67.
