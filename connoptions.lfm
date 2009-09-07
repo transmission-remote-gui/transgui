@@ -13,6 +13,7 @@ object OptionsForm: TOptionsForm
   ClientWidth = 376
   Constraints.MinHeight = 334
   Constraints.MinWidth = 300
+  OnActivate = FormActivate
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
@@ -47,9 +48,9 @@ object OptionsForm: TOptionsForm
     Height = 290
     Top = 8
     Width = 361
-    ActivePage = tabConnection
+    ActivePage = tabPaths
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     object tabConnection: TTabSheet
       Caption = 'Connection'
@@ -329,6 +330,7 @@ object OptionsForm: TOptionsForm
       Caption = 'Paths'
       ClientHeight = 264
       ClientWidth = 353
+      OnShow = tabPathsShow
       object txPaths: TLabel
         Left = 4
         Height = 66

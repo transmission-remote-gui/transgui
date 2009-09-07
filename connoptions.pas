@@ -69,9 +69,11 @@ type
     procedure btOKClick(Sender: TObject);
     procedure cbHostSelect(Sender: TObject);
     procedure cbUseProxyClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure tabConnectionShow(Sender: TObject);
+    procedure tabPathsShow(Sender: TObject);
   private
     FCurHost: string;
   public
@@ -169,6 +171,11 @@ begin
   edProxyPassword.Enabled:=cbUseProxy.Checked;
 end;
 
+procedure TOptionsForm.FormActivate(Sender: TObject);
+begin
+  tabConnectionShow(nil);
+end;
+
 procedure TOptionsForm.FormCreate(Sender: TObject);
 begin
   Page.ActivePageIndex:=0;
@@ -176,19 +183,23 @@ begin
 end;
 
 procedure TOptionsForm.FormShow(Sender: TObject);
-var
-  R: TRect;
 begin
   cbUseProxyClick(nil);
   FCurHost:=cbHost.Text;
-  R:=edPaths.BoundsRect;
-  R.Top:=txPaths.BoundsRect.Bottom + 8;
-  edPaths.BoundsRect:=R;
 end;
 
 procedure TOptionsForm.tabConnectionShow(Sender: TObject);
 begin
   btDelHost.Height:=cbHost.Height + 2;
+end;
+
+procedure TOptionsForm.tabPathsShow(Sender: TObject);
+var
+  R: TRect;
+begin
+  R:=edPaths.BoundsRect;
+  R.Top:=txPaths.BoundsRect.Bottom + 8;
+  edPaths.BoundsRect:=R;
 end;
 
 procedure TOptionsForm.LoadHostSettings(const HostName: string);
