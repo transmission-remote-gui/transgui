@@ -1541,6 +1541,7 @@ object MainForm: TMainForm
     top = 55
     object MenuItem42: TMenuItem
       Action = acOpenContainingFolder
+      OnClick = acOpenContainingFolderExecute
     end
     object MenuItem43: TMenuItem
       Caption = '-'

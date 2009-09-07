@@ -2437,9 +2437,11 @@ begin
   try
     IsActive:=lvTorrents.Enabled;
     lvTorrents.Enabled:=True;
-    lvTorrents.Color:=clWindow;
     lvFilter.Enabled:=True;
+{$ifndef LCLgtk2}
+    lvTorrents.Color:=clWindow;
     lvFilter.Color:=clWindow;
+{$endif LCLgtk2}
     edSearch.Enabled:=True;
     edSearch.Color:=clWindow;
     if not IsActive then
@@ -2691,7 +2693,9 @@ begin
 //  lvPeers.BeginUpdate;
   try
     lvPeers.Enabled:=True;
+{$ifndef LCLgtk2}
     lvPeers.Color:=clWindow;
+{$endif LCLgtk2}
     if list = nil then begin
       lvPeers.Clear;
       exit;
@@ -2945,7 +2949,9 @@ begin
 //  lvFiles.BeginUpdate;
   try
     lvFiles.Enabled:=True;
+{$ifndef LCLgtk2}
     lvFiles.Color:=clWindow;
+{$endif LCLgtk2}
 
     for i:=0 to FFiles.Count - 1 do begin
       if i >= lvFiles.Items.Count then
