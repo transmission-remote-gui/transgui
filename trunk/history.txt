@@ -1,3 +1,24 @@
+1.2 (Sep 07, 2009)
+------------------
+[+] Draw progress bar in torrents and files lists (works on Windows only).
+[+] Show torrent pieces map on General page when Transmission 1.60 or later is connected. Issue #99.
+[+] Added the following daemon options available in Transmission 1.60 and later: Peek random port on daemon launch, Enable DHT, Seed ratio, Port testing.
+[+] Support for connection profiles.
+[+] Ability to specify remote to local path mappings in program's options.
+[+] Ability to open file and open containing folder when path mappings are specified.
+[+] Added ini parameter MaxFoldersHistory to [Interface] section of .ini file. Issue #101.
+[-] Select items using right mouse click in torrent and files lists on GTK2. Issue #84.
+[-] Reconnect window was shown if torrent deletion took too much time. Issue #79.
+[-] Fixed connection error "Can't assign requested address" on Windows 2000 or older. Issue #90.
+[-] Restored Win9x support.
+[-] Fixed handling of international character in torrent path on General info page. Issue #96.
+[-] Double click is required to select/deselect files in Add torrent window. Issue #94
+[-] Do not transform & character to underscore in labels. Issue #104.
+[-] More correct sorting on torrent name when there are several torrents with the same name. Issue #103.
+[-] Fixed changing of the following options for newer versions of transmission: Incoming port, Enable peer exchange, Global peer limit.
+[-] Fixed checking and un-checking files using Space key in Add torrent window.
+[-] Fixed red error images on successfully running torrents on Transmission 1.74+. Issue #121.
+
 1.1 (May 21, 2009)
 ------------------
 [+] Remove torrent and all associated data function. Issue #67.
