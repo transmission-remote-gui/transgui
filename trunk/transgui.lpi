@@ -51,8 +51,8 @@
       </Unit0>
       <Unit1>
         <Filename Value="main.pas"/>
-        <ComponentName Value="MainForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main"/>
       </Unit1>
@@ -63,15 +63,15 @@
       </Unit2>
       <Unit3>
         <Filename Value="addtorrent.pas"/>
-        <ComponentName Value="AddTorrentForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="AddTorrentForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="AddTorrent"/>
       </Unit3>
       <Unit4>
         <Filename Value="connoptions.pas"/>
-        <ComponentName Value="OptionsForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="OptionsForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ConnOptions"/>
       </Unit4>
@@ -82,22 +82,22 @@
       </Unit5>
       <Unit6>
         <Filename Value="torrprops.pas"/>
-        <ComponentName Value="TorrPropsForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="TorrPropsForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TorrProps"/>
       </Unit6>
       <Unit7>
         <Filename Value="daemonoptions.pas"/>
-        <ComponentName Value="DaemonOptionsForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="DaemonOptionsForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="DaemonOptions"/>
       </Unit7>
       <Unit8>
         <Filename Value="about.pas"/>
-        <ComponentName Value="AboutForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="About"/>
       </Unit8>
@@ -108,15 +108,15 @@
       </Unit9>
       <Unit10>
         <Filename Value="download.pas"/>
-        <ComponentName Value="DownloadForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="DownloadForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="download"/>
       </Unit10>
       <Unit11>
         <Filename Value="colsetup.pas"/>
-        <ComponentName Value="ColSetupForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="ColSetupForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ColSetup"/>
       </Unit11>
