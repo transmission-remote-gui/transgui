@@ -2205,14 +2205,17 @@ begin
   Result:=t.Strings['errorString'];
   if Result = '' then begin
     Result:=t.Strings['announceResponse'];
-    if Result <> '' then begin
-      i:=Pos('(', Result);
-      if i <> 0 then
-        if Copy(Result, i, 5) = '(200)' then
-          Result:=''
-        else
-          Result:='Tracker: ' + Copy(Result, 1, i - 1);
-    end;
+    if Result = 'Success' then
+      Result:=''
+    else
+      if Result <> '' then begin
+        i:=Pos('(', Result);
+        if i <> 0 then
+          if Copy(Result, i, 5) = '(200)' then
+            Result:=''
+          else
+            Result:='Tracker: ' + Copy(Result, 1, i - 1);
+      end;
   end;
 end;
 
