@@ -287,11 +287,11 @@ object MainForm: TMainForm
     Height = 290
     Top = 151
     Width = 780
-    ActivePage = tabGeneral
+    ActivePage = tabFiles
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -938,6 +938,7 @@ object MainForm: TMainForm
         ViewStyle = vsReport
         OnCustomDrawSubItem = lvFilesCustomDrawSubItem
         OnDblClick = lvFilesDblClick
+        OnKeyPress = lvFilesKeyPress
       end
     end
   end
