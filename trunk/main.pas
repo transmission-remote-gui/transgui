@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '1.2';
+  AppVersion = '1.3';
 
 resourcestring
   SShowApp = 'Show';
@@ -2900,7 +2900,7 @@ begin
     d:=list[i];
     f:=d as TJSONObject;
     row:=i;
-    FFiles[idxFileId, row]:=i + 1;
+    FFiles[idxFileId, row]:=i;
 
     s:=UTF8Encode(f.Strings['name']);
     FFiles[idxFileFullPath, row]:=IncludeProperTrailingPathDelimiter(dir) + s;
@@ -3241,7 +3241,7 @@ begin
   for i:=0 to lvFiles.Items.Count - 1 do
     with lvFiles.Items[i] do
       if Selected then begin
-        Files[j]:=PtrUInt(Data) - 1;
+        Files[j]:=FFiles[idxFileId, PtrUInt(Data)];
         Inc(j);
       end;
   if j = 0 then exit;
