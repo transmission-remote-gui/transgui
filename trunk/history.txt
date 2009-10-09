@@ -1,3 +1,10 @@
+1.3 (Oct 09, 2009)
+------------------
+[+] Alternate lines color in torrent,peer and file lists (Windows only). Issue #24.
+[-] Priority was set for wrong files. Issue #128.
+[-] Fixed error "JSON element 'downloadDir' not found." with Transmission 1.4x. Issue #132.
+[-] "Open" menu item was active if more than one file in the list was selected. Issue #127.
+
 1.2 (Sep 07, 2009)
 ------------------
 [+] Draw progress bar in torrents and files lists (works on Windows only).
