@@ -201,13 +201,18 @@ end;
 procedure TRpcThread.DoFillFilesList;
 var
   t: TJSONObject;
+  dir: string;
 begin
   if ResultData = nil then begin
     MainForm.ClearDetailsInfo;
     exit;
   end;
   t:=ResultData as TJSONObject;
-  MainForm.FillFilesList(t.Arrays['files'], t.Arrays['priorities'], t.Arrays['wanted'], t.Strings['downloadDir']);
+  if RpcObj.RPCVersion >= 4 then
+    dir:=t.Strings['downloadDir']
+  else
+    dir:='';
+  MainForm.FillFilesList(t.Arrays['files'], t.Arrays['priorities'], t.Arrays['wanted'], dir);
 end;
 
 procedure TRpcThread.DoFillInfo;
