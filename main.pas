@@ -260,6 +260,7 @@ type
     procedure edSearchChange(Sender: TObject);
     procedure lvFilesCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure lvFilesDblClick(Sender: TObject);
+    procedure lvFilesKeyPress(Sender: TObject; var Key: char);
     procedure lvTorrentsCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
       var DefaultDraw: Boolean);
     procedure panReconnectResize(Sender: TObject);
@@ -1747,6 +1748,12 @@ begin
   acOpenFile.Execute;
 end;
 
+procedure TMainForm.lvFilesKeyPress(Sender: TObject; var Key: char);
+begin
+  if Key = #13 then
+    acOpenFile.Execute;
+end;
+
 procedure TMainForm.lvTorrentsCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
   var DefaultDraw: Boolean);
 begin
@@ -2079,11 +2086,12 @@ begin
   acRemoveTorrent.Enabled:=RpcObj.Connected and Assigned(lvTorrents.Selected);
   acRemoveTorrentAndData.Enabled:=acRemoveTorrent.Enabled and (RpcObj.RPCVersion >= 4);
   acTorrentProps.Enabled:=acRemoveTorrent.Enabled;
-
+  acOpenContainingFolder.Enabled:=acTorrentProps.Enabled;
   acSetHighPriority.Enabled:=RpcObj.Connected and (lvTorrents.Selected <> nil) and
                       (lvFiles.Selected <> nil) and (PageInfo.ActivePage = tabFiles);
   acSetNormalPriority.Enabled:=acSetHighPriority.Enabled;
   acSetLowPriority.Enabled:=acSetHighPriority.Enabled;
+  acOpenFile.Enabled:=acSetHighPriority.Enabled and (lvFiles.SelCount < 2);
   acSetNotDownload.Enabled:=acSetHighPriority.Enabled;
   acSetupColumns.Enabled:=RpcObj.Connected;
 end;
