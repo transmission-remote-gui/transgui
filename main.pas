@@ -258,9 +258,13 @@ type
     procedure ApplicationPropertiesMinimize(Sender: TObject);
     procedure ApplicationPropertiesRestore(Sender: TObject);
     procedure edSearchChange(Sender: TObject);
+    procedure lvFilesCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure lvFilesCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure lvFilesDblClick(Sender: TObject);
     procedure lvFilesKeyPress(Sender: TObject; var Key: char);
+    procedure lvPeersCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
+    procedure lvPeersCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState; var DefaultDraw: Boolean);
+    procedure lvTorrentsCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure lvTorrentsCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
       var DefaultDraw: Boolean);
     procedure panReconnectResize(Sender: TObject);
@@ -308,6 +312,7 @@ type
     FIni: TIniFile;
     FCurHost: string;
     FPathMap: TStringList;
+    FAlterColor: TColor;
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -598,6 +603,7 @@ begin
   FIni:=TIniFile.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
   FTrackers:=TStringList.Create;
   FReconnectTimeOut:=-1;
+  FAlterColor:=GetLikeColor(lvTorrents.Color, -$10);
 
   with lvFilter.Items do begin
     Add.ImageIndex:=imgAll;
@@ -1734,9 +1740,21 @@ begin
   DoRefresh(True);
 end;
 
+procedure TMainForm.lvFilesCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
+begin
+  if Item.Index and 1 = 0 then
+    Sender.Canvas.Brush.Color:=Sender.Color
+  else
+    Sender.Canvas.Brush.Color:=FAlterColor;
+end;
+
 procedure TMainForm.lvFilesCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
   var DefaultDraw: Boolean);
 begin
+  if Item.Index and 1 = 0 then
+    Sender.Canvas.Brush.Color:=Sender.Color
+  else
+    Sender.Canvas.Brush.Color:=FAlterColor;
   if SubItem = 3 then begin
     DefaultDraw:=False;
     DrawProgressCell(Sender, Item, SubItem);
@@ -1754,9 +1772,38 @@ begin
     acOpenFile.Execute;
 end;
 
+procedure TMainForm.lvPeersCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
+begin
+  if Item.Index and 1 = 0 then
+    Sender.Canvas.Brush.Color:=Sender.Color
+  else
+    Sender.Canvas.Brush.Color:=FAlterColor;
+end;
+
+procedure TMainForm.lvPeersCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
+  var DefaultDraw: Boolean);
+begin
+  if Item.Index and 1 = 0 then
+    Sender.Canvas.Brush.Color:=Sender.Color
+  else
+    Sender.Canvas.Brush.Color:=FAlterColor;
+end;
+
+procedure TMainForm.lvTorrentsCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
+begin
+  if Item.Index and 1 = 0 then
+    Sender.Canvas.Brush.Color:=Sender.Color
+  else
+    Sender.Canvas.Brush.Color:=FAlterColor;
+end;
+
 procedure TMainForm.lvTorrentsCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
   var DefaultDraw: Boolean);
 begin
+  if Item.Index and 1 = 0 then
+    Sender.Canvas.Brush.Color:=Sender.Color
+  else
+    Sender.Canvas.Brush.Color:=FAlterColor;
   if SubItem = FDoneColumnIdx then begin
     DefaultDraw:=False;
     DrawProgressCell(Sender, Item, SubItem);
@@ -1936,9 +1983,7 @@ begin
       if LV.Focused then
         Brush.Color:=clHighlight
       else
-        Brush.Color:=clBtnFace
-    else
-      Brush.Color:=clWindow;
+        Brush.Color:=clBtnFace;
     FrameRect(R);
     InflateRect(R, -1, -1);
 
