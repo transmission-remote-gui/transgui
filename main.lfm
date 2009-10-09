@@ -7,7 +7,6 @@ object MainForm: TMainForm
   VertScrollBar.Page = 420
   VertScrollBar.Range = 24
   ActiveControl = lvTorrents
-  AutoScroll = False
   Caption = ' '
   ClientHeight = 464
   ClientWidth = 780
@@ -19,7 +18,7 @@ object MainForm: TMainForm
   OnDestroy = FormDestroy
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '0.9.27'
+  LCLVersion = '0.9.29'
   object panTop: TPanel
     Left = 0
     Height = 122
@@ -162,7 +161,7 @@ object MainForm: TMainForm
       TabOrder = 2
       object lvFilter: TListView
         Left = 0
-        Height = 95
+        Height = 97
         Top = 0
         Width = 130
         Align = alClient
@@ -185,20 +184,20 @@ object MainForm: TMainForm
       end
       object panSearch: TPanel
         Left = 0
-        Height = 23
-        Top = 97
+        Height = 21
+        Top = 99
         Width = 130
         Align = alBottom
         AutoSize = True
         BorderSpacing.Top = 2
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
-        ClientHeight = 23
+        ClientHeight = 21
         ClientWidth = 130
         TabOrder = 1
         object imgSearch: TImage
           Left = 0
-          Height = 23
+          Height = 21
           Top = 0
           Width = 24
           Align = alLeft
@@ -253,7 +252,7 @@ object MainForm: TMainForm
         end
         object edSearch: TEdit
           Left = 24
-          Height = 23
+          Height = 21
           Top = 0
           Width = 106
           Align = alClient
