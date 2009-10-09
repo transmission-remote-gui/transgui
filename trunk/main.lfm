@@ -136,6 +136,7 @@ object MainForm: TMainForm
       TabOrder = 0
       ViewStyle = vsReport
       OnColumnClick = lvTorrentsColumnClick
+      OnCustomDrawItem = lvTorrentsCustomDrawItem
       OnCustomDrawSubItem = lvTorrentsCustomDrawSubItem
       OnDblClick = lvTorrentsDblClick
       OnResize = lvTorrentsResize
@@ -287,11 +288,11 @@ object MainForm: TMainForm
     Height = 290
     Top = 151
     Width = 780
-    ActivePage = tabFiles
+    ActivePage = tabPeers
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -892,6 +893,8 @@ object MainForm: TMainForm
         SmallImages = imgFlags
         TabOrder = 0
         ViewStyle = vsReport
+        OnCustomDrawItem = lvPeersCustomDrawItem
+        OnCustomDrawSubItem = lvPeersCustomDrawSubItem
       end
     end
     object tabFiles: TTabSheet
@@ -936,6 +939,7 @@ object MainForm: TMainForm
         RowSelect = True
         TabOrder = 0
         ViewStyle = vsReport
+        OnCustomDrawItem = lvFilesCustomDrawItem
         OnCustomDrawSubItem = lvFilesCustomDrawSubItem
         OnDblClick = lvFilesDblClick
         OnKeyPress = lvFilesKeyPress
