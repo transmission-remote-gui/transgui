@@ -4,6 +4,7 @@
 [-] Priority was set for wrong files. Issue #128.
 [-] Fixed error "JSON element 'downloadDir' not found." with Transmission 1.4x. Issue #132.
 [-] "Open" menu item was active if more than one file in the list was selected. Issue #127.
+[-] Crash when building pieces map for large torrents. Issue #130.
 
 1.2 (Sep 07, 2009)
 ------------------

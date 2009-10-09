@@ -3318,11 +3318,14 @@ begin
 end;
 
 procedure TMainForm.ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
+const
+  MaxPieces = 4000;
 var
-  i, j, k, x: integer;
+  i, j, k, x, xx: integer;
   s: string;
   R: TRect;
   bmp: TBitmap;
+  c: double;
 begin
   FLastPieces:=Pieces;
   FLastPieceCount:=PieceCount;
@@ -3333,8 +3336,18 @@ begin
       FTorrentProgress:=TBitmap.Create;
     if RpcObj.RPCVersion >= 5 then begin
       bmp:=TBitmap.Create;
-      bmp.Width:=PieceCount;
+      if PieceCount > MaxPieces then begin
+        bmp.Width:=MaxPieces;
+        c:=MaxPieces/PieceCount;
+      end
+      else begin
+        bmp.Width:=PieceCount;
+        c:=1;
+      end;
       bmp.Height:=12;
+      bmp.Canvas.Brush.Color:=clWindow;
+      bmp.Canvas.FillRect(0, 0, bmp.Width, bmp.Height);
+      bmp.Canvas.Brush.Color:=clHighlight;
       x:=0;
       s:=DecodeBase64(Pieces);
       for i:=1 to Length(s) do begin
@@ -3342,11 +3355,10 @@ begin
         for k:=1 to 8 do begin
           if PieceCount = 0 then
             break;
-          if j and $80 <> 0 then
-            bmp.Canvas.Brush.Color:=clHighlight
-          else
-            bmp.Canvas.Brush.Color:=clWindow;
-          bmp.Canvas.FillRect(x, 0, x + 1, bmp.Height);
+          if j and $80 <> 0 then begin
+            xx:=Trunc(x*c);
+            bmp.Canvas.FillRect(xx, 0, xx + 1, bmp.Height);
+          end;
           Inc(x);
           j:=j shl 1;
           Dec(PieceCount);
