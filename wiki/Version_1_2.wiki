@@ -1,5 +1,5 @@
 #summary Version 1.2 released
-#labels Featured
+#labels Deprecated
 
 <pre>
 `[+`] Draw progress bar in torrents and files lists (works on Windows only).
