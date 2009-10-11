@@ -1976,7 +1976,9 @@ var
   sz: TSize;
 begin
   s:=Item.SubItems[SubItem - 1];
-  Progress:=StrToFloatDef(Copy(s, 1, Length(s) - 1), 0);
+  s:=Copy(s, 1, Length(s) - 1);
+  s:=StringReplace(s, DecimalSeparator, '.', []);
+  Progress:=StrToFloatDef(s, 0);
   with LV.Canvas do begin
     R:=Item.DisplayRectSubItem(SubItem, drBounds);
     if Item.Selected then
