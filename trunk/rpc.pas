@@ -276,14 +276,16 @@ begin
       FRpc.Unlock;
     end;
 
-    i:=sl.IndexOf('trackers');
-    if FRpc.RequestFullInfo then begin
-      if i < 0 then
-        sl.Add('trackers');
-    end
-    else
-      if i >= 0 then
-        sl.Delete(i);
+    if FRpc.RPCVersion < 7 then begin
+      i:=sl.IndexOf('trackers');
+      if FRpc.RequestFullInfo then begin
+        if i < 0 then
+          sl.Add('trackers');
+      end
+      else
+        if i >= 0 then
+          sl.Delete(i);
+    end;
 
     i:=sl.IndexOf('downloadDir');
     if FRpc.RequestFullInfo then begin
@@ -302,7 +304,7 @@ begin
   end;
 
   args:=FRpc.RequestInfo(0, ['id', 'name', 'status', 'errorString', 'announceResponse', 'recheckProgress',
-                             'sizeWhenDone', 'leftUntilDone', 'rateDownload', 'rateUpload'], ExtraFields);
+                             'sizeWhenDone', 'leftUntilDone', 'rateDownload', 'rateUpload', 'trackerStats'], ExtraFields);
   try
     if (args <> nil) and not Terminated then begin
       FRpc.RequestFullInfo:=False;
@@ -367,7 +369,8 @@ begin
                                      'announceResponse', 'downloadLimit', 'downloadLimitMode', 'uploadLimit', 'uploadLimitMode',
                                      'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
                                      'seeders','peersGettingFromUs','leechers','peersKnown', 'uploadRatio', 'addedDate', 'doneDate',
-                                     'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id', 'pieces']);
+                                     'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id', 'pieces',
+                                     'trackerStats']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
