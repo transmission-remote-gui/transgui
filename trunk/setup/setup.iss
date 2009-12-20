@@ -3,8 +3,11 @@
 
 #ifndef AppVersion
   #define AppVersion GetFileVersion(SourcePath+'..\units\transgui.exe')
-  #define tmpvar Copy(AppVersion, 1, RPos('.', AppVersion) - 1)
-  #define AppVersion Copy(tmpvar, 1, RPos('.', tmpvar) - 1)
+  #define AppVersion Copy(AppVersion, 1, RPos('.', AppVersion) - 1)
+  #define tmpvar Copy(AppVersion, RPos('.', AppVersion) + 1, 3)
+  #if tmpvar == "0"
+    #define AppVersion Copy(AppVersion, 1, RPos('.', AppVersion) - 1)
+  #endif
   #undef tmpvar
 ;  #define AppVersion AppVersion+'-beta'
 #endif
