@@ -1,3 +1,8 @@
+1.3.1 (Dec 20, 2009)
+------------------
+[*] Support for Transmission 1.80. Issue #147.
+[-] Fixed 10x progress percentage in some rare cases.
+
 1.3 (Oct 09, 2009)
 ------------------
 [+] Alternate lines color in torrent,peer and file lists (Windows only). Issue #24.
