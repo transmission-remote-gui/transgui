@@ -1,3 +1,8 @@
+1.3.2 (Jan 09, 2010)
+------------------
+[-] Fixed x10 progress percentage in some cases. Issue #171.
+[-] Fixed "List index (0) out of bounds" error in some cases. Issue #170.
+
 1.3.1 (Dec 20, 2009)
 ------------------
 [*] Support for Transmission 1.80. Issue #147.
