@@ -2266,18 +2266,20 @@ var
 begin
   Result:=UTF8Encode(t.Strings['errorString']);
   if Result = '' then
-    if RpcObj.RPCVersion >= 7 then
-      with t.Arrays['trackerStats'].Objects[0] do begin
-        if Booleans['hasAnnounced'] then
-          Result:=Strings['lastAnnounceResult']
-        else
-          if Booleans['hasScraped'] then
-            Result:=Strings['lastScrapeResult'];
-        if Result = 'Success' then
-          Result:='';
-        if Result <> '' then
-          Result:='Tracker: ' + Result;
-      end
+    if RpcObj.RPCVersion >= 7 then begin
+      if t.Arrays['trackerStats'].Count > 0 then
+        with t.Arrays['trackerStats'].Objects[0] do begin
+          if Booleans['hasAnnounced'] then
+            Result:=Strings['lastAnnounceResult']
+          else
+            if Booleans['hasScraped'] then
+              Result:=Strings['lastScrapeResult'];
+          if Result = 'Success' then
+            Result:='';
+          if Result <> '' then
+            Result:='Tracker: ' + Result;
+        end
+    end
     else begin
       Result:=t.Strings['announceResponse'];
       if Result = 'Success' then
@@ -2381,22 +2383,26 @@ begin
       TR_STATUS_STOPPED:    StateImg:=imgDone;
     end;
 
-    if RpcObj.RPCVersion >= 7 then
-      with t.Arrays['trackerStats'].Objects[0] do begin
-        s:='';
-        if integer(Integers['announceState']) in [2, 3] then
-          s:='Updating'
-        else
-          if Booleans['hasAnnounced'] then
-            s:=Strings['lastAnnounceResult']
+    if RpcObj.RPCVersion >= 7 then begin
+      if t.Arrays['trackerStats'].Count > 0 then
+        with t.Arrays['trackerStats'].Objects[0] do begin
+          s:='';
+          if integer(Integers['announceState']) in [2, 3] then
+            s:='Updating'
           else
-            if Booleans['hasScraped'] then
-              s:=Strings['lastScrapeResult'];
+            if Booleans['hasAnnounced'] then
+              s:=Strings['lastAnnounceResult']
+            else
+              if Booleans['hasScraped'] then
+                s:=Strings['lastScrapeResult'];
 
-        if s = 'Success' then
-          s:='Working';
-        FTorrents[idxTrackerStatus, row]:=s;
-      end
+          if s = 'Success' then
+            s:='Working';
+          FTorrents[idxTrackerStatus, row]:=s;
+        end
+      else
+        FTorrents[idxTrackerStatus, row]:='';
+    end
     else
       FTorrents[idxTrackerStatus, row]:=t.Strings['announceResponse'];
     if (FTorrents[idxStatus, row] <> TR_STATUS_STOPPED) and (GetTorrentError(t) <> '') then
@@ -2433,11 +2439,17 @@ begin
     GetTorrentValue(idxCompletedOn, 'doneDate', vtExtended);
     GetTorrentValue(idxLastActive, 'activityDate', vtExtended);
 
-    if RpcObj.RPCVersion >= 7 then
-      with t.Arrays['trackerStats'].Objects[0] do begin
-        FTorrents[idxSeedsTotal, row]:=Integers['seederCount'];
-        FTorrents[idxLeechers, row]:=Integers['leecherCount'];
-      end
+    if RpcObj.RPCVersion >= 7 then begin
+      if t.Arrays['trackerStats'].Count > 0 then
+        with t.Arrays['trackerStats'].Objects[0] do begin
+          FTorrents[idxSeedsTotal, row]:=Integers['seederCount'];
+          FTorrents[idxLeechers, row]:=Integers['leecherCount'];
+        end
+      else begin
+        FTorrents[idxSeedsTotal, row]:=-1;
+        FTorrents[idxLeechers, row]:=-1;
+      end;
+    end
     else begin
       GetTorrentValue(idxSeedsTotal, 'seeders', vtInteger);
       GetTorrentValue(idxLeechers, 'leechers', vtInteger);
@@ -2451,8 +2463,12 @@ begin
     else
       FTorrents[idxRatio, row]:=NULL;
 
-    if RpcObj.RPCVersion >= 7 then
-      s:=UTF8Encode(t.Arrays['trackerStats'].Objects[0].Strings['announce'])
+    if RpcObj.RPCVersion >= 7 then begin
+      if t.Arrays['trackerStats'].Count > 0 then
+        s:=UTF8Encode(t.Arrays['trackerStats'].Objects[0].Strings['announce'])
+      else
+        s:='';
+    end
     else
       if t.IndexOfName('trackers') >= 0 then
         s:=UTF8Encode(t.Arrays['trackers'].Objects[0].Strings['announce'])
@@ -3166,10 +3182,14 @@ begin
 
   if RpcObj.RPCVersion >= 7 then
     with t.Arrays['trackerStats'] do begin
-      if integer(Objects[0].Integers['announceState']) in [2, 3] then
-        f:=1
+      if Count > 0 then begin
+        if integer(Objects[0].Integers['announceState']) in [2, 3] then
+          f:=1
+        else
+          f:=Objects[0].Floats['nextAnnounceTime'];
+      end
       else
-        f:=Objects[0].Floats['nextAnnounceTime'];
+        f:=0;
     end
   else
     f:=t.Floats['nextAnnounceTime'];
@@ -3183,13 +3203,19 @@ begin
   txTrackerUpdate.Caption:=s;
   txTracker.Caption:=string(FTorrents[idxTracker, idx]);
   if RpcObj.RPCVersion >= 7 then
-    i:=t.Arrays['trackerStats'].Objects[0].Integers['seederCount']
+    if t.Arrays['trackerStats'].Count > 0 then
+      i:=t.Arrays['trackerStats'].Objects[0].Integers['seederCount']
+    else
+      i:=-1
   else
     i:=t.Integers['seeders'];
   s:=GetSeedsText(t.Integers['peersSendingToUs'], i);
   txSeeds.Caption:=StringReplace(s, '/', ' of ', []) + ' connected';
   if RpcObj.RPCVersion >= 7 then
-    i:=t.Arrays['trackerStats'].Objects[0].Integers['leecherCount']
+    if t.Arrays['trackerStats'].Count > 0 then
+      i:=t.Arrays['trackerStats'].Objects[0].Integers['leecherCount']
+    else
+      i:=-1
   else
     i:=t.Integers['leechers'];
   s:=GetPeersText(t.Integers['peersGettingFromUs'], t.Integers['peersKnown'], i);
