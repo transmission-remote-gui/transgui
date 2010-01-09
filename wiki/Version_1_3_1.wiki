@@ -1,5 +1,5 @@
 #summary Version 1.3.1 released
-#labels Featured
+#labels Deprecated
 
 <pre>
 `[*`] Support for Transmission 1.80. Issue #147.
