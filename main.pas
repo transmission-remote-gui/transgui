@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '1.3.1';
+  AppVersion = '1.3.2';
 
 resourcestring
   SShowApp = 'Show';
@@ -1977,8 +1977,15 @@ var
 begin
   s:=Item.SubItems[SubItem - 1];
   s:=Copy(s, 1, Length(s) - 1);
-  s:=StringReplace(s, DecimalSeparator, '.', []);
-  Progress:=StrToFloatDef(s, 0);
+  // StrToFloat() is buggy in some cases. Use manual conversion from string to float
+  i:=Pos(DecimalSeparator, s);
+  if i = 0 then
+    i:=Length(s) + 1;
+  Progress:=StrToIntDef(Copy(s, 1, i - 1), 0);
+  j:=Length(s) - i;
+  if j > 0 then
+    Progress:=Progress + StrToIntDef(Copy(s, i + 1, MaxInt), 0)/(10.0*j);
+
   with LV.Canvas do begin
     R:=Item.DisplayRectSubItem(SubItem, drBounds);
     if Item.Selected then

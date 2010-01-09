@@ -19,7 +19,7 @@
       <UseVersionInfo Value="True"/>
       <CurrentVersionNr Value="1"/>
       <CurrentMajorRevNr Value="3"/>
-      <CurrentMinorRevNr Value="1"/>
+      <CurrentMinorRevNr Value="2"/>
       <ProjectVersion Value="1.3.0.0"/>
       <CompanyName Value="Yury Sidorov"/>
       <FileDescription Value="Transmission Remote GUI"/>
