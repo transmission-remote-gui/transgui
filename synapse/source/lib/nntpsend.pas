@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.005.001 |
+| Project : Ararat Synapse                                       | 001.005.002 |
 |==============================================================================|
 | Content: NNTP client                                                         |
 |==============================================================================|
-| Copyright (c)1999-2007, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c) 1999-2007.               |
+| Portions created by Lukas Gebauer are Copyright (c) 1999-2010.               |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -52,6 +52,12 @@ Used RFC: RFC-977, RFC-2980
   {$MODE DELPHI}
 {$ENDIF}
 {$H+}
+
+{$IFDEF UNICODE}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+  {$WARN SUSPICIOUS_TYPECAST OFF}
+{$ENDIF}
 
 unit nntpsend;
 
@@ -195,6 +201,7 @@ constructor TNNTPSend.Create;
 begin
   inherited Create;
   FSock := TTCPBlockSocket.Create;
+  FSock.Owner := self;
   FData := TStringList.Create;
   FDataToSend := TStringList.Create;
   FNNTPcap := TStringList.Create;

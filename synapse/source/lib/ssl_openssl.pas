@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.000.004 |
+| Project : Ararat Synapse                                       | 001.001.001 |
 |==============================================================================|
 | Content: SSL support by OpenSSL                                              |
 |==============================================================================|
-| Copyright (c)1999-2005, Lukas Gebauer                                        |
+| Copyright (c)1999-2008, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2005.                     |
+| Portions created by Lukas Gebauer are Copyright (c)2005-2008.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -80,6 +80,11 @@ accepting of new connections!
 {$ENDIF}
 {$H+}
 
+{$IFDEF UNICODE}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
+
 unit ssl_openssl;
 
 interface
@@ -105,7 +110,7 @@ type
     function Init(server:Boolean): Boolean;
     function DeInit: Boolean;
     function Prepare(server:Boolean): Boolean;
-    function LoadPFX(pfxdata: string): Boolean;
+    function LoadPFX(pfxdata: ansistring): Boolean;
     function CreateSelfSignedCert(Host: string): Boolean; override;
   public
     {:See @inherited}
@@ -156,9 +161,9 @@ implementation
 {==============================================================================}
 
 {$IFNDEF CIL}
-function PasswordCallback(buf:PChar; size:Integer; rwflag:Integer; userdata: Pointer):Integer; cdecl;
+function PasswordCallback(buf:PAnsiChar; size:Integer; rwflag:Integer; userdata: Pointer):Integer; cdecl;
 var
-  Password: String;
+  Password: AnsiString;
 begin
   Password := '';
   if TCustomSSL(userdata) is TCustomSSL then
@@ -166,7 +171,7 @@ begin
   if Length(Password) > (Size - 1) then
     SetLength(Password, Size - 1);
   Result := Length(Password);
-  StrLCopy(buf, PChar(Password + #0), Result + 1);
+  StrLCopy(buf, PAnsiChar(Password + #0), Result + 1);
 end;
 {$ENDIF}
 
@@ -197,10 +202,11 @@ begin
 end;
 
 function TSSLOpenSSL.SSLCheck: Boolean;
-{$IFDEF CIL}
 var
+{$IFDEF CIL}
   sb: StringBuilder;
 {$ENDIF}
+  s : AnsiString;
 begin
   Result := true;
   FLastErrorDesc := '';
@@ -214,8 +220,9 @@ begin
     ErrErrorString(FLastError, sb, 256);
     FLastErrorDesc := Trim(sb.ToString);
 {$ELSE}
-    FLastErrorDesc := StringOfChar(#0, 256);
-    ErrErrorString(FLastError, FLastErrorDesc, Length(FLastErrorDesc));
+    s := StringOfChar(#0, 256);
+    ErrErrorString(FLastError, s, Length(s));
+    FLastErrorDesc := s;
 {$ENDIF}
   end;
 end;
@@ -307,7 +314,7 @@ begin
   end;
 end;
 
-function TSSLOpenSSL.LoadPFX(pfxdata: string): Boolean;
+function TSSLOpenSSL.LoadPFX(pfxdata: Ansistring): Boolean;
 var
   cert, pkey, ca: SslPtr;
   b: PBIO;
@@ -392,6 +399,8 @@ begin
 end;
 
 function TSSLOpenSSL.Init(server:Boolean): Boolean;
+var
+  s: AnsiString;
 begin
   Result := False;
   FLastErrorDesc := '';
@@ -416,7 +425,8 @@ begin
   end
   else
   begin
-    SslCtxSetCipherList(Fctx, FCiphers);
+    s := FCiphers;
+    SslCtxSetCipherList(Fctx, s);
     if FVerifyCert then
       SslCtxSetVerify(FCtx, SSL_VERIFY_PEER, nil)
     else
@@ -610,10 +620,9 @@ begin
     err := SslGetError(FSsl, Result);
   until (err <> SSL_ERROR_WANT_READ) and (err <> SSL_ERROR_WANT_WRITE);
   if err = SSL_ERROR_ZERO_RETURN then
-    Result := 0
-  else
-    if (err <> 0) then
-      FLastError := err;
+    Result := 0;
+  if (err <> 0) then
+    FLastError := err;
 end;
 
 function TSSLOpenSSL.WaitingData: Integer;
@@ -632,7 +641,7 @@ end;
 function TSSLOpenSSL.GetPeerSubject: string;
 var
   cert: PX509;
-  s: string;
+  s: ansistring;
 {$IFDEF CIL}
   sb: StringBuilder;
 {$ENDIF}
@@ -660,7 +669,7 @@ end;
 
 function TSSLOpenSSL.GetPeerName: string;
 var
-  s: string;
+  s: ansistring;
 begin
   s := GetPeerSubject;
   s := SeparateRight(s, '/CN=');
@@ -670,7 +679,7 @@ end;
 function TSSLOpenSSL.GetPeerIssuer: string;
 var
   cert: PX509;
-  s: string;
+  s: ansistring;
 {$IFDEF CIL}
   sb: StringBuilder;
 {$ENDIF}

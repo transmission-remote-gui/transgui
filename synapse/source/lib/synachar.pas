@@ -60,6 +60,11 @@ Internal routines knows all major charsets for Europe or America. For East-Asian
 {$Q-}
 {$H+}
 
+{$IFDEF UNICODE}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
+
 unit synachar;
 
 interface

@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.001.001 |
+| Project : Ararat Synapse                                       | 001.001.002 |
 |==============================================================================|
 | Content: Utils for FreePascal compatibility                                  |
 |==============================================================================|
-| Copyright (c)1999-2007, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2003-2007.                |
+| Portions created by Lukas Gebauer are Copyright (c)2003-2010.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -48,6 +48,12 @@
   {$MODE DELPHI}
 {$ENDIF}
 {$H+}
+//old Delphi does not have MSWINDOWS define.
+{$IFDEF WIN32}
+  {$IFNDEF MSWINDOWS}
+    {$DEFINE MSWINDOWS}
+  {$ENDIF}
+{$ENDIF}
 
 unit synafpc;
 
@@ -57,7 +63,7 @@ uses
 {$IFDEF FPC}
   dynlibs, sysutils;
 {$ELSE}
-  {$IFDEF WIN32}
+  {$IFDEF MSWINDOWS}
   Windows;
   {$ELSE}
   SysUtils;
@@ -116,7 +122,7 @@ end;
 
 procedure Sleep(milliseconds: Cardinal);
 begin
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
   {$IFDEF FPC}
   sysutils.sleep(milliseconds);
   {$ELSE}

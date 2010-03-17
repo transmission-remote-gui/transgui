@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.004.001 |
+| Project : Ararat Synapse                                       | 001.007.000 |
 |==============================================================================|
 | Content: LDAP client                                                         |
 |==============================================================================|
-| Copyright (c)1999-2005, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2003-2005.                |
+| Portions created by Lukas Gebauer are Copyright (c)2003-2010.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -51,6 +51,11 @@ Used RFC: RFC-2251, RFC-2254, RFC-2829, RFC-2830
   {$MODE DELPHI}
 {$ENDIF}
 {$H+}
+
+{$IFDEF UNICODE}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
 
 unit ldapsend;
 
@@ -92,15 +97,15 @@ type
    descendant of TStringList class enhanced by some new properties.}
   TLDAPAttribute = class(TStringList)
   private
-    FAttributeName: string;
+    FAttributeName: AnsiString;
     FIsBinary: Boolean;
   protected
     function Get(Index: integer): string; override;
     procedure Put(Index: integer; const Value: string); override;
-    procedure SetAttributeName(Value: string);
+    procedure SetAttributeName(Value: AnsiString);
   published
     {:Name of LDAP attribute.}
-    property AttributeName: string read FAttributeName Write SetAttributeName;
+    property AttributeName: AnsiString read FAttributeName Write SetAttributeName;
     {:Return @true when attribute contains binary data.}
     property IsBinary: Boolean read FIsBinary;
   end;
@@ -122,6 +127,10 @@ type
     function Add: TLDAPAttribute;
     {:Delete one TLDAPAttribute object from list.}
     procedure Del(Index: integer);
+    {:Find and return attribute with requested name. Returns nil if not found.}
+    function Find(AttributeName: AnsiString): TLDAPAttribute;
+    {:Find and return attribute value with requested name. Returns empty string if not found.}
+    function Get(AttributeName: AnsiString): string;
     {:List of TLDAPAttribute objects.}
     property Items[Index: Integer]: TLDAPAttribute read GetAttribute; default;
   end;
@@ -131,14 +140,14 @@ type
    values)}
   TLDAPResult = class(TObject)
   private
-    FObjectName: string;
+    FObjectName: AnsiString;
     FAttributes: TLDAPAttributeList;
   public
     constructor Create;
     destructor Destroy; override;
   published
     {:Name of this LDAP object.}
-    property ObjectName: string read FObjectName write FObjectName;
+    property ObjectName: AnsiString read FObjectName write FObjectName;
     {:Here is list of object attributes.}
     property Attributes: TLDAPAttributeList read FAttributes;
   end;
@@ -196,13 +205,13 @@ type
   private
     FSock: TTCPBlockSocket;
     FResultCode: Integer;
-    FResultString: string;
-    FFullResult: string;
+    FResultString: AnsiString;
+    FFullResult: AnsiString;
     FAutoTLS: Boolean;
     FFullSSL: Boolean;
     FSeq: integer;
     FResponseCode: integer;
-    FResponseDN: string;
+    FResponseDN: AnsiString;
     FReferals: TStringList;
     FVersion: integer;
     FSearchScope: TLDAPSearchScope;
@@ -210,15 +219,15 @@ type
     FSearchSizeLimit: integer;
     FSearchTimeLimit: integer;
     FSearchResult: TLDAPResultList;
-    FExtName: string;
-    FExtValue: string;
+    FExtName: AnsiString;
+    FExtValue: AnsiString;
     function Connect: Boolean;
-    function BuildPacket(const Value: string): string;
-    function ReceiveResponse: string;
-    function DecodeResponse(const Value: string): string;
-    function LdapSasl(Value: string): string;
-    function TranslateFilter(Value: string): string;
-    function GetErrorString(Value: integer): string;
+    function BuildPacket(const Value: AnsiString): AnsiString;
+    function ReceiveResponse: AnsiString;
+    function DecodeResponse(const Value: AnsiString): AnsiString;
+    function LdapSasl(Value: AnsiString): AnsiString;
+    function TranslateFilter(Value: AnsiString): AnsiString;
+    function GetErrorString(Value: integer): AnsiString;
   public
     constructor Create;
     destructor Destroy; override;
@@ -247,26 +256,26 @@ type
     function Logout: Boolean;
 
     {:Modify content of LDAP attribute on this object.}
-    function Modify(obj: string; Op: TLDAPModifyOp; const Value: TLDAPAttribute): Boolean;
+    function Modify(obj: AnsiString; Op: TLDAPModifyOp; const Value: TLDAPAttribute): Boolean;
 
     {:Add list of attributes to specified object.}
-    function Add(obj: string; const Value: TLDAPAttributeList): Boolean;
+    function Add(obj: AnsiString; const Value: TLDAPAttributeList): Boolean;
 
     {:Delete this LDAP object from server.}
-    function Delete(obj: string): Boolean;
+    function Delete(obj: AnsiString): Boolean;
 
     {:Modify object name of this LDAP object.}
-    function ModifyDN(obj, newRDN, newSuperior: string; DeleteoldRDN: Boolean): Boolean;
+    function ModifyDN(obj, newRDN, newSuperior: AnsiString; DeleteoldRDN: Boolean): Boolean;
 
     {:Try to compare Attribute value with this LDAP object.}
-    function Compare(obj, AttributeValue: string): Boolean;
+    function Compare(obj, AttributeValue: AnsiString): Boolean;
 
     {:Search LDAP base for LDAP objects by Filter.}
-    function Search(obj: string; TypesOnly: Boolean; Filter: string;
+    function Search(obj: AnsiString; TypesOnly: Boolean; Filter: AnsiString;
       const Attributes: TStrings): Boolean;
 
     {:Call any LDAPv3 extended command.}
-    function Extended(const Name, Value: string): Boolean;
+    function Extended(const Name, Value: AnsiString): Boolean;
 
     {:Try to start SSL/TLS connection to LDAP server.}
     function StartTLS: Boolean;
@@ -278,11 +287,11 @@ type
     property ResultCode: Integer read FResultCode;
 
     {:Human readable description of result code of last LDAP operation.}
-    property ResultString: string read FResultString;
+    property ResultString: AnsiString read FResultString;
 
     {:Binary string with full last response of LDAP server. This string is
      encoded by ASN.1 BER encoding! You need this only for debugging.}
-    property FullResult: string read FFullResult;
+    property FullResult: AnsiString read FFullResult;
 
     {:If @true, then try to start TSL mode in Login procedure.}
     property AutoTLS: Boolean read FAutoTLS Write FAutoTLS;
@@ -315,18 +324,18 @@ type
 
     {:When you call @link(Extended) operation, then here is result Name returned
      by server.}
-    property ExtName: string read FExtName;
+    property ExtName: AnsiString read FExtName;
 
     {:When you call @link(Extended) operation, then here is result Value returned
      by server.}
-    property ExtValue: string read FExtValue;
+    property ExtValue: AnsiString read FExtValue;
 
     {:TCP socket used by all LDAP operations.}
     property Sock: TTCPBlockSocket read FSock;
   end;
 
 {:Dump result of LDAP SEARCH into human readable form. Good for debugging.}
-function LDAPResultDump(const Value: TLDAPResultList): string;
+function LDAPResultDump(const Value: TLDAPResultList): AnsiString;
 
 implementation
 
@@ -340,7 +349,7 @@ end;
 
 procedure TLDAPAttribute.Put(Index: integer; const Value: string);
 var
-  s: string;
+  s: AnsiString;
 begin
   s := Value;
   if FIsbinary then
@@ -350,7 +359,7 @@ begin
   inherited Put(Index, s);
 end;
 
-procedure TLDAPAttribute.SetAttributeName(Value: string);
+procedure TLDAPAttribute.SetAttributeName(Value: AnsiString);
 begin
   FAttributeName := Value;
   FIsBinary := Pos(';binary', Lowercase(value)) > 0;
@@ -389,6 +398,17 @@ begin
   Result := FAttributeList.Count;
 end;
 
+function TLDAPAttributeList.Get(AttributeName: AnsiString): string;
+var
+  x: TLDAPAttribute;
+begin
+  Result := '';
+  x := self.Find(AttributeName);
+  if x <> nil then
+    if x.Count > 0 then
+      Result := x[0];
+end;
+
 function TLDAPAttributeList.GetAttribute(Index: integer): TLDAPAttribute;
 begin
   Result := nil;
@@ -410,6 +430,25 @@ begin
   if Assigned(x) then
     x.free;
   FAttributeList.Delete(Index);
+end;
+
+function TLDAPAttributeList.Find(AttributeName: AnsiString): TLDAPAttribute;
+var
+  n: integer;
+  x: TLDAPAttribute;
+begin
+  Result := nil;
+  AttributeName := lowercase(AttributeName);
+  for n := 0 to Count - 1 do
+  begin
+    x := GetAttribute(n);
+    if Assigned(x) then
+      if lowercase(x.AttributeName) = Attributename then
+      begin
+        result := x;
+        break;
+      end;
+  end;
 end;
 
 {==============================================================================}
@@ -478,6 +517,7 @@ begin
   FReferals := TStringList.Create;
   FFullResult := '';
   FSock := TTCPBlockSocket.Create;
+  FSock.Owner := self;
   FTimeout := 60000;
   FTargetPort := cLDAPProtocol;
   FAutoTLS := False;
@@ -499,7 +539,7 @@ begin
   inherited Destroy;
 end;
 
-function TLDAPSend.GetErrorString(Value: integer): string;
+function TLDAPSend.GetErrorString(Value: integer): AnsiString;
 begin
   case Value of
     0:
@@ -602,13 +642,13 @@ begin
   Result := FSock.LastError = 0;
 end;
 
-function TLDAPSend.BuildPacket(const Value: string): string;
+function TLDAPSend.BuildPacket(const Value: AnsiString): AnsiString;
 begin
   Inc(FSeq);
   Result := ASNObject(ASNObject(ASNEncInt(FSeq), ASN1_INT) + Value,  ASN1_SEQ);
 end;
 
-function TLDAPSend.ReceiveResponse: string;
+function TLDAPSend.ReceiveResponse: AnsiString;
 var
   x: Byte;
   i,j: integer;
@@ -618,9 +658,9 @@ begin
   x := FSock.RecvByte(FTimeout);
   if x <> ASN1_SEQ then
     Exit;
-  Result := Char(x);
+  Result := AnsiChar(x);
   x := FSock.RecvByte(FTimeout);
-  Result := Result + Char(x);
+  Result := Result + AnsiChar(x);
   if x < $80 then
     i := 0
   else
@@ -646,11 +686,11 @@ begin
   FFullResult := Result;
 end;
 
-function TLDAPSend.DecodeResponse(const Value: string): string;
+function TLDAPSend.DecodeResponse(const Value: AnsiString): AnsiString;
 var
   i, x: integer;
   Svt: Integer;
-  s, t: string;
+  s, t: AnsiString;
 begin
   Result := '';
   FResultCode := -1;
@@ -692,11 +732,11 @@ begin
   Result := Copy(Value, i, Length(Value) - i + 1);
 end;
 
-function TLDAPSend.LdapSasl(Value: string): string;
+function TLDAPSend.LdapSasl(Value: AnsiString): AnsiString;
 var
-  nonce, cnonce, nc, realm, qop, uri, response: string;
-  s: string;
-  a1, a2: string;
+  nonce, cnonce, nc, realm, qop, uri, response: AnsiString;
+  s: AnsiString;
+  a1, a2: AnsiString;
   l: TStringList;
   n: integer;
 begin
@@ -730,12 +770,13 @@ begin
   end;
 end;
 
-function TLDAPSend.TranslateFilter(Value: string): string;
+function TLDAPSend.TranslateFilter(Value: AnsiString): AnsiString;
 var
   x: integer;
-  s, t, l, r: string;
-  c: char;
-  attr, rule: string;
+  s, t, l: AnsiString;
+  r: string;
+  c: Ansichar;
+  attr, rule: AnsiString;
   dn: Boolean;
 begin
   Result := '';
@@ -889,7 +930,7 @@ end;
 
 function TLDAPSend.Bind: Boolean;
 var
-  s: string;
+  s: AnsiString;
 begin
   s := ASNObject(ASNEncInt(FVersion), ASN1_INT)
     + ASNObject(FUsername, ASN1_OCTSTR)
@@ -903,9 +944,9 @@ end;
 
 function TLDAPSend.BindSasl: Boolean;
 var
-  s, t: string;
+  s, t: AnsiString;
   x, xt: integer;
-  digreq: string;
+  digreq: AnsiString;
 begin
   Result := False;
   if FPassword = '' then
@@ -913,7 +954,7 @@ begin
   else
   begin
     digreq := ASNObject(ASNEncInt(FVersion), ASN1_INT)
-      + ASNObject('', ASN1_NULL)
+      + ASNObject('', ASN1_OCTSTR)
       + ASNObject(ASNObject('DIGEST-MD5', ASN1_OCTSTR), $A3);
     digreq := ASNObject(digreq, LDAP_ASN1_BIND_REQUEST);
     Fsock.SendString(BuildPacket(digreq));
@@ -925,9 +966,9 @@ begin
       x := 1;
       t := ASNItem(x, s, xt);
       s := ASNObject(ASNEncInt(FVersion), ASN1_INT)
-        + ASNObject('', ASN1_NULL)
-        + ASNObject(ASNObject('DIGEST-MD5', ASN1_OCTSTR), $A3)
-        + ASNObject(LdapSasl(t), ASN1_OCTSTR);
+        + ASNObject('', ASN1_OCTSTR)
+        + ASNObject(ASNObject('DIGEST-MD5', ASN1_OCTSTR)
+          + ASNObject(LdapSasl(t), ASN1_OCTSTR), $A3);
       s := ASNObject(s, LDAP_ASN1_BIND_REQUEST);
       Fsock.SendString(BuildPacket(s));
       s := ReceiveResponse;
@@ -950,9 +991,9 @@ begin
   Result := True;
 end;
 
-function TLDAPSend.Modify(obj: string; Op: TLDAPModifyOp; const Value: TLDAPAttribute): Boolean;
+function TLDAPSend.Modify(obj: AnsiString; Op: TLDAPModifyOp; const Value: TLDAPAttribute): Boolean;
 var
-  s: string;
+  s: AnsiString;
   n: integer;
 begin
   s := '';
@@ -969,9 +1010,9 @@ begin
   Result := FResultCode = 0;
 end;
 
-function TLDAPSend.Add(obj: string; const Value: TLDAPAttributeList): Boolean;
+function TLDAPSend.Add(obj: AnsiString; const Value: TLDAPAttributeList): Boolean;
 var
-  s, t: string;
+  s, t: AnsiString;
   n, m: integer;
 begin
   s := '';
@@ -992,9 +1033,9 @@ begin
   Result := FResultCode = 0;
 end;
 
-function TLDAPSend.Delete(obj: string): Boolean;
+function TLDAPSend.Delete(obj: AnsiString): Boolean;
 var
-  s: string;
+  s: AnsiString;
 begin
   s := ASNObject(obj, LDAP_ASN1_DEL_REQUEST);
   Fsock.SendString(BuildPacket(s));
@@ -1003,9 +1044,9 @@ begin
   Result := FResultCode = 0;
 end;
 
-function TLDAPSend.ModifyDN(obj, newRDN, newSuperior: string; DeleteOldRDN: Boolean): Boolean;
+function TLDAPSend.ModifyDN(obj, newRDN, newSuperior: AnsiString; DeleteOldRDN: Boolean): Boolean;
 var
-  s: string;
+  s: AnsiString;
 begin
   s := ASNObject(obj, ASN1_OCTSTR) + ASNObject(newRDN, ASN1_OCTSTR);
   if DeleteOldRDN then
@@ -1021,9 +1062,9 @@ begin
   Result := FResultCode = 0;
 end;
 
-function TLDAPSend.Compare(obj, AttributeValue: string): Boolean;
+function TLDAPSend.Compare(obj, AttributeValue: AnsiString): Boolean;
 var
-  s: string;
+  s: AnsiString;
 begin
   s := ASNObject(Trim(SeparateLeft(AttributeValue, '=')), ASN1_OCTSTR)
     + ASNObject(Trim(SeparateRight(AttributeValue, '=')), ASN1_OCTSTR);
@@ -1035,10 +1076,10 @@ begin
   Result := FResultCode = 0;
 end;
 
-function TLDAPSend.Search(obj: string; TypesOnly: Boolean; Filter: string;
+function TLDAPSend.Search(obj: AnsiString; TypesOnly: Boolean; Filter: AnsiString;
   const Attributes: TStrings): Boolean;
 var
-  s, t, u: string;
+  s, t, u: AnsiString;
   n, i, x: integer;
   r: TLDAPResult;
   a: TLDAPAttribute;
@@ -1109,9 +1150,9 @@ begin
   Result := FResultCode = 0;
 end;
 
-function TLDAPSend.Extended(const Name, Value: string): Boolean;
+function TLDAPSend.Extended(const Name, Value: AnsiString): Boolean;
 var
-  s, t: string;
+  s, t: AnsiString;
   x, xt: integer;
 begin
   s := ASNObject(Name, $80);
@@ -1142,7 +1183,7 @@ begin
 end;
 
 {==============================================================================}
-function LDAPResultDump(const Value: TLDAPResultList): string;
+function LDAPResultDump(const Value: TLDAPResultList): AnsiString;
 var
   n, m, o: integer;
   r: TLDAPResult;

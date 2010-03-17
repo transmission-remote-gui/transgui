@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 002.007.004 |
+| Project : Ararat Synapse                                       | 002.007.006 |
 |==============================================================================|
 | Content: DNS client                                                          |
 |==============================================================================|
-| Copyright (c)1999-2007, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2000-2007.                |
+| Portions created by Lukas Gebauer are Copyright (c)2000-2010.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -53,6 +53,11 @@ Used RFC: RFC-1035, RFC-1183, RFC1706, RFC1712, RFC2163, RFC2230
 {$ENDIF}
 {$Q-}
 {$H+}
+
+{$IFDEF UNICODE}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
 
 unit dnssend;
 
@@ -212,7 +217,9 @@ constructor TDNSSend.Create;
 begin
   inherited Create;
   FSock := TUDPBlockSocket.Create;
+  FSock.Owner := self;
   FTCPSock := TTCPBlockSocket.Create;
+  FTCPSock.Owner := self;
   FUseTCP := False;
   FTimeout := 10000;
   FTargetPort := cDnsProtocol;
@@ -246,13 +253,13 @@ begin
     for n := 1 to Length(Value) do
       if Value[n] = '.' then
       begin
-        Result := Result + Char(Length(s)) + s;
+        Result := Result + AnsiChar(Length(s)) + s;
         s := '';
       end
       else
         s := s + Value[n];
     if s <> '' then
-      Result := Result + Char(Length(s)) + s;
+      Result := Result + AnsiChar(Length(s)) + s;
     Result := Result + #0;
   end;
 end;

@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.002.002 |
+| Project : Ararat Synapse                                       | 001.002.003 |
 |==============================================================================|
 | Content: SysLog client                                                       |
 |==============================================================================|
-| Copyright (c)1999-2003, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2001-2003.                |
+| Portions created by Lukas Gebauer are Copyright (c)2001-2010.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -264,6 +264,7 @@ constructor TSyslogSend.Create;
 begin
   inherited Create;
   FSock := TUDPBlockSocket.Create;
+  FSock.Owner := self;
   FSysLogMessage := TSysLogMessage.Create;
   FTargetPort := cSysLogProtocol;
 end;

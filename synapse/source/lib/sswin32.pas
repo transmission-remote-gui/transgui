@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 002.000.002 |
+| Project : Ararat Synapse                                       | 002.002.003 |
 |==============================================================================|
 | Content: Socket Independent Platform Layer - Win32 definition include        |
 |==============================================================================|
-| Copyright (c)1999-2003, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2003.                     |
+| Portions created by Lukas Gebauer are Copyright (c)2003-2010.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -43,8 +43,6 @@
 |==============================================================================}
 
 {:@exclude}
-
-{$IFDEF WINDOWS}
 
 //{$DEFINE WINSOCK1}
 {Note about define WINSOCK1:
@@ -244,7 +242,7 @@ uses
   SyncObjs, SysUtils, Classes,
   Windows;
 
-function InitSocketInterface(stack: string): Boolean;
+function InitSocketInterface(stack: String): Boolean;
 function DestroySocketInterface: Boolean;
 
 const
@@ -255,13 +253,16 @@ const
 {$ENDIF}
 
 type
-  u_char = Char;
   u_short = Word;
   u_int = Integer;
   u_long = Longint;
   pu_long = ^u_long;
   pu_short = ^u_short;
-  TSocket = {$ifdef FPC} uint_ptr {$else} u_int {$endif};
+{$IFDEF FPC}
+  TSocket = ptruint;
+{$ELSE}
+  TSocket = u_int;
+{$ENDIF}
   TAddrFamily = integer;
 
   TMemory = pointer;
@@ -312,6 +313,7 @@ const
   IPPROTO_UDP    =   17;	{ User Datagram Protocol		}
   IPPROTO_IPV6   =   41;
   IPPROTO_ICMPV6 =   58;
+  IPPROTO_RM     =  113;
 
   IPPROTO_RAW    =   255;
   IPPROTO_MAX    =   256;
@@ -321,7 +323,7 @@ type
   PInAddr = ^TInAddr;
   TInAddr = record
     case integer of
-      0: (S_bytes: array [0..3] of byte);
+      0: (S_bytes: packed array [0..3] of byte);
       1: (S_addr: u_long);
   end;
 
@@ -331,9 +333,9 @@ type
       0: (sin_family: u_short;
           sin_port: u_short;
           sin_addr: TInAddr;
-          sin_zero: array[0..7] of Char);
+          sin_zero: array[0..7] of byte);
       1: (sa_family: u_short;
-          sa_data: array[0..13] of Char)
+          sa_data: array[0..13] of byte)
   end;
 
   TIP_mreq =  record
@@ -344,10 +346,10 @@ type
   PInAddr6 = ^TInAddr6;
   TInAddr6 = record
     case integer of
-      0: (S6_addr: array [0..15] of byte);
-      1: (u6_addr8: array [0..15] of byte);
-      2: (u6_addr16: array [0..7] of word);
-      3: (u6_addr32: array [0..3] of integer);
+      0: (S6_addr: packed array [0..15] of byte);
+      1: (u6_addr8: packed array [0..15] of byte);
+      2: (u6_addr16: packed array [0..7] of word);
+      3: (u6_addr32: packed array [0..3] of integer);
   end;
 
   PSockAddrIn6 = ^TSockAddrIn6;
@@ -368,40 +370,40 @@ type
 
   PHostEnt = ^THostEnt;
   THostEnt = record
-    h_name: PChar;
-    h_aliases: ^PChar;
+    h_name: PAnsiChar;
+    h_aliases: ^PAnsiChar;
     h_addrtype: Smallint;
     h_length: Smallint;
     case integer of
-     0: (h_addr_list: ^PChar);
+     0: (h_addr_list: ^PAnsiChar);
      1: (h_addr: ^PInAddr);
   end;
 
   PNetEnt = ^TNetEnt;
   TNetEnt = record
-    n_name: PChar;
-    n_aliases: ^PChar;
+    n_name: PAnsiChar;
+    n_aliases: ^PAnsiChar;
     n_addrtype: Smallint;
     n_net: u_long;
   end;
 
   PServEnt = ^TServEnt;
   TServEnt = record
-    s_name: PChar;
-    s_aliases: ^PChar;
+    s_name: PAnsiChar;
+    s_aliases: ^PAnsiChar;
 {$ifdef WIN64}
-    s_proto: PChar;
+    s_proto: PAnsiChar;
     s_port: Smallint;
-{$else WIN64}
+{$else} 
     s_port: Smallint;
-    s_proto: PChar;
-{$endif WIN64}
+    s_proto: PAnsiChar;
+{$endif}
   end;
 
   PProtoEnt = ^TProtoEnt;
   TProtoEnt = record
-    p_name: PChar;
-    p_aliases: ^Pchar;
+    p_name: PAnsiChar;
+    p_aliases: ^PAnsichar;
     p_proto: Smallint;
   end;
 
@@ -545,7 +547,7 @@ type
                 ai_socktype: integer; // SOCK_xxx.
                 ai_protocol: integer; // 0 or IPPROTO_xxx for IPv4 and IPv6.
                 ai_addrlen: u_int;    // Length of ai_addr.
-                ai_canonname: PChar;  // Canonical name for nodename.
+                ai_canonname: PAnsiChar;  // Canonical name for nodename.
                 ai_addr: PSockAddr;   // Binary address.
                 ai_next: PAddrInfo;     // Next structure in linked list.
               end;
@@ -725,18 +727,18 @@ type
     wVersion: Word;
     wHighVersion: Word;
 {$ifdef win64}
-     iMaxSockets : word;
-     iMaxUdpDg : word;
-     lpVendorInfo : pchar;
-     szDescription : array[0..WSADESCRIPTION_LEN] of char;
-     szSystemStatus : array[0..WSASYS_STATUS_LEN] of char;
-{$else win64}
-    szDescription: array[0..WSADESCRIPTION_LEN] of Char;
-    szSystemStatus: array[0..WSASYS_STATUS_LEN] of Char;
+    iMaxSockets : Word;
+    iMaxUdpDg : Word;
+    lpVendorInfo : PAnsiChar;
+    szDescription : array[0..WSADESCRIPTION_LEN] of AnsiChar;
+    szSystemStatus : array[0..WSASYS_STATUS_LEN] of AnsiChar;
+{$else}     
+    szDescription: array[0..WSADESCRIPTION_LEN] of AnsiChar;
+    szSystemStatus: array[0..WSASYS_STATUS_LEN] of AnsiChar;
     iMaxSockets: Word;
     iMaxUdpDg: Word;
-    lpVendorInfo: PChar;
-{$endif win64}
+    lpVendorInfo: PAnsiChar;
+{$endif}
   end;
 
   function IN6_IS_ADDR_UNSPECIFIED(const a: PInAddr6): boolean;
@@ -764,26 +766,26 @@ type
     stdcall;
   TWSAGetLastError = function: Integer;
     stdcall;
-  TGetServByName = function(name, proto: PChar): PServEnt;
+  TGetServByName = function(name, proto: PAnsiChar): PServEnt;
     stdcall;
-  TGetServByPort = function(port: Integer; proto: PChar): PServEnt;
+  TGetServByPort = function(port: Integer; proto: PAnsiChar): PServEnt;
     stdcall;
-  TGetProtoByName = function(name: PChar): PProtoEnt;
+  TGetProtoByName = function(name: PAnsiChar): PProtoEnt;
     stdcall;
   TGetProtoByNumber = function(proto: Integer): PProtoEnt;
     stdcall;
-  TGetHostByName = function(name: PChar): PHostEnt;
+  TGetHostByName = function(name: PAnsiChar): PHostEnt;
     stdcall;
   TGetHostByAddr = function(addr: Pointer; len, Struc: Integer): PHostEnt;
     stdcall;
-  TGetHostName = function(name: PChar; len: Integer): Integer;
+  TGetHostName = function(name: PAnsiChar; len: Integer): Integer;
     stdcall;
   TShutdown = function(s: TSocket; how: Integer): Integer;
     stdcall;
-  TSetSockOpt = function(s: TSocket; level, optname: Integer; optval: PChar;
+  TSetSockOpt = function(s: TSocket; level, optname: Integer; optval: PAnsiChar;
     optlen: Integer): Integer;
     stdcall;
-  TGetSockOpt = function(s: TSocket; level, optname: Integer; optval: PChar;
+  TGetSockOpt = function(s: TSocket; level, optname: Integer; optval: PAnsiChar;
     var optlen: Integer): Integer;
     stdcall;
   TSendTo = function(s: TSocket; const Buf; len, flags: Integer; addrto: PSockAddr;
@@ -804,9 +806,9 @@ type
     stdcall;
   TIoctlSocket = function(s: TSocket; cmd: DWORD; var arg: Integer): Integer;
     stdcall;
-  TInet_ntoa = function(inaddr: TInAddr): PChar;
+  TInet_ntoa = function(inaddr: TInAddr): PAnsiChar;
     stdcall;
-  TInet_addr = function(cp: PChar): u_long;
+  TInet_addr = function(cp: PAnsiChar): u_long;
     stdcall;
   Thtons = function(hostshort: u_short): u_short;
     stdcall;
@@ -830,13 +832,13 @@ type
     timeout: PTimeVal): Longint;
     stdcall;
 
-  TGetAddrInfo = function(NodeName: PChar; ServName: PChar; Hints: PAddrInfo;
+  TGetAddrInfo = function(NodeName: PAnsiChar; ServName: PAnsiChar; Hints: PAddrInfo;
     var Addrinfo: PAddrInfo): integer;
     stdcall;
   TFreeAddrInfo = procedure(ai: PAddrInfo);
     stdcall;
-  TGetNameInfo = function( addr: PSockAddr; namelen: Integer; host: PChar;
-    hostlen: DWORD; serv: PChar; servlen: DWORD; flags: integer): integer;
+  TGetNameInfo = function( addr: PSockAddr; namelen: Integer; host: PAnsiChar;
+    hostlen: DWORD; serv: PAnsiChar; servlen: DWORD; flags: integer): integer;
     stdcall;
 
   T__WSAFDIsSet = function (s: TSocket; var FDSet: TFDSet): Bool;
@@ -904,7 +906,7 @@ type
         case sin_family: u_short of
           AF_INET: (sin_port: u_short;
                     sin_addr: TInAddr;
-                    sin_zero: array[0..7] of Char);
+                    sin_zero: array[0..7] of byte);
           AF_INET6: (sin6_port:     u_short;
                 		sin6_flowinfo: u_long;
       	    	      sin6_addr:     TInAddr6;
@@ -918,7 +920,7 @@ function Bind(s: TSocket; const addr: TVarSin): Integer;
 function Connect(s: TSocket; const name: TVarSin): Integer;
 function GetSockName(s: TSocket; var name: TVarSin): Integer;
 function GetPeerName(s: TSocket; var name: TVarSin): Integer;
-function GetHostName: string;
+function GetHostName: AnsiString;
 function Send(s: TSocket; Buf: TMemory; len, flags: Integer): Integer;
 function Recv(s: TSocket; Buf: TMemory; len, flags: Integer): Integer;
 function SendTo(s: TSocket; Buf: TMemory; len, flags: Integer; addrto: TVarSin): Integer;
@@ -926,12 +928,12 @@ function RecvFrom(s: TSocket; Buf: TMemory; len, flags: Integer; var from: TVarS
 function Accept(s: TSocket; var addr: TVarSin): TSocket;
 
 function IsNewApi(Family: integer): Boolean;
-function SetVarSin(var Sin: TVarSin; IP, Port: string; Family, SockProtocol, SockType: integer; PreferIP4: Boolean): integer;
-function GetSinIP(Sin: TVarSin): string;
+function SetVarSin(var Sin: TVarSin; IP, Port: AnsiString; Family, SockProtocol, SockType: integer; PreferIP4: Boolean): integer;
+function GetSinIP(Sin: TVarSin): AnsiString;
 function GetSinPort(Sin: TVarSin): Integer;
-procedure ResolveNameToIP(Name: string;  Family, SockProtocol, SockType: integer; const IPList: TStrings);
-function ResolveIPToName(IP: string; Family, SockProtocol, SockType: integer): string;
-function ResolvePort(Port: string; Family, SockProtocol, SockType: integer): Word;
+procedure ResolveNameToIP(Name: AnsiString;  Family, SockProtocol, SockType: integer; const IPList: TStrings);
+function ResolveIPToName(IP: AnsiString; Family, SockProtocol, SockType: integer): AnsiString;
+function ResolvePort(Port: AnsiString; Family, SockProtocol, SockType: integer): Word;
 
 {==============================================================================}
 implementation
@@ -1071,14 +1073,14 @@ begin
   Result := ssGetPeerName(s, @name, Len);
 end;
 
-function GetHostName: string;
+function GetHostName: AnsiString;
 var
-  s: string;
+  s: AnsiString;
 begin
   Result := '';
   setlength(s, 255);
-  ssGetHostName(pchar(s), Length(s) - 1);
-  Result := Pchar(s);
+  ssGetHostName(pAnsichar(s), Length(s) - 1);
+  Result := PAnsichar(s);
 end;
 
 function Send(s: TSocket; Buf: TMemory; len, flags: Integer): Integer;
@@ -1120,7 +1122,7 @@ begin
     Result := (Family = AF_INET6) and SockWship6Api;
 end;
 
-function SetVarSin(var Sin: TVarSin; IP, Port: string; Family, SockProtocol, SockType: integer; PreferIP4: Boolean): integer;
+function SetVarSin(var Sin: TVarSin; IP, Port: AnsiString; Family, SockProtocol, SockType: integer; PreferIP4: Boolean): integer;
 type
   pu_long = ^u_long;
 var
@@ -1132,7 +1134,7 @@ var
   Sin1, Sin2: TVarSin;
   TwoPass: boolean;
 
-  function GetAddr(const IP, port: string; Hints: TAddrInfo; var Sin: TVarSin): integer;
+  function GetAddr(const IP, port: AnsiString; Hints: TAddrInfo; var Sin: TVarSin): integer;
   var
     Addr: PAddrInfo;
   begin
@@ -1143,23 +1145,23 @@ var
       begin
         Hints.ai_socktype := 0;
         Hints.ai_protocol := 0;
-        Result := synsock.GetAddrInfo(PChar(IP), nil, @Hints, Addr);
+        Result := synsock.GetAddrInfo(PAnsiChar(IP), nil, @Hints, Addr);
       end
       else
       begin
         if (IP = cAnyHost) or (IP = c6AnyHost) then
         begin
           Hints.ai_flags := AI_PASSIVE;
-          Result := synsock.GetAddrInfo(nil, PChar(Port), @Hints, Addr);
+          Result := synsock.GetAddrInfo(nil, PAnsiChar(Port), @Hints, Addr);
         end
         else
           if (IP = cLocalhost) or (IP = c6Localhost) then
           begin
-            Result := synsock.GetAddrInfo(nil, PChar(Port), @Hints, Addr);
+            Result := synsock.GetAddrInfo(nil, PAnsiChar(Port), @Hints, Addr);
           end
           else
           begin
-            Result := synsock.GetAddrInfo(PChar(IP), PChar(Port), @Hints, Addr);
+            Result := synsock.GetAddrInfo(PAnsiChar(IP), PAnsiChar(Port), @Hints, Addr);
           end;
       end;
       if Result = 0 then
@@ -1181,20 +1183,20 @@ begin
       Sin.sin_family := AF_INET;
       ProtoEnt := synsock.GetProtoByNumber(SockProtocol);
       ServEnt := nil;
-      if ProtoEnt <> nil then
-        ServEnt := synsock.GetServByName(PChar(Port), ProtoEnt^.p_name);
+      if (ProtoEnt <> nil) and (StrToIntDef(string(Port),-1) =-1) then
+        ServEnt := synsock.GetServByName(PAnsiChar(Port), ProtoEnt^.p_name);
       if ServEnt = nil then
-        Sin.sin_port := synsock.htons(StrToIntDef(Port, 0))
+        Sin.sin_port := synsock.htons(StrToIntDef(string(Port), 0))
       else
         Sin.sin_port := ServEnt^.s_port;
       if IP = cBroadcast then
         Sin.sin_addr.s_addr := u_long(INADDR_BROADCAST)
       else
       begin
-        Sin.sin_addr.s_addr := synsock.inet_addr(PChar(IP));
+        Sin.sin_addr.s_addr := synsock.inet_addr(PAnsiChar(IP));
         if Sin.sin_addr.s_addr = u_long(INADDR_NONE) then
         begin
-          HostEnt := synsock.GetHostByName(PChar(IP));
+          HostEnt := synsock.GetHostByName(PAnsiChar(IP));
           Result := synsock.WSAGetLastError;
           if HostEnt <> nil then
             Sin.sin_addr.S_addr := u_long(Pu_long(HostEnt^.h_addr_list^)^);
@@ -1246,10 +1248,10 @@ begin
   end;
 end;
 
-function GetSinIP(Sin: TVarSin): string;
+function GetSinIP(Sin: TVarSin): AnsiString;
 var
-  p: PChar;
-  host, serv: string;
+  p: PAnsiChar;
+  host, serv: AnsiString;
   hostlen, servlen: integer;
   r: integer;
 begin
@@ -1266,10 +1268,10 @@ begin
     servlen := NI_MAXSERV;
     setlength(host, hostlen);
     setlength(serv, servlen);
-    r := getnameinfo(@sin, SizeOfVarSin(sin), PChar(host), hostlen,
-      PChar(serv), servlen, NI_NUMERICHOST + NI_NUMERICSERV);
+    r := getnameinfo(@sin, SizeOfVarSin(sin), PAnsiChar(host), hostlen,
+      PAnsiChar(serv), servlen, NI_NUMERICHOST + NI_NUMERICSERV);
     if r = 0 then
-      Result := PChar(host);
+      Result := PAnsiChar(host);
   end;
 end;
 
@@ -1281,7 +1283,7 @@ begin
     Result := synsock.ntohs(Sin.sin_port);
 end;
 
-procedure ResolveNameToIP(Name: string; Family, SockProtocol, SockType: integer; const IPList: TStrings);
+procedure ResolveNameToIP(Name: AnsiString; Family, SockProtocol, SockType: integer; const IPList: TStrings);
 type
   TaPInAddr = array[0..250] of PInAddr;
   PaPInAddr = ^TaPInAddr;
@@ -1290,24 +1292,24 @@ var
   Addr: PAddrInfo;
   AddrNext: PAddrInfo;
   r: integer;
-  host, serv: string;
+  host, serv: AnsiString;
   hostlen, servlen: integer;
   RemoteHost: PHostEnt;
   IP: u_long;
   PAdrPtr: PaPInAddr;
   i: Integer;
-  s: string;
+  s: String;
   InAddr: TInAddr;
 begin
   IPList.Clear;
   if not IsNewApi(Family) then
   begin
-    IP := synsock.inet_addr(PChar(Name));
+    IP := synsock.inet_addr(PAnsiChar(Name));
     if IP = u_long(INADDR_NONE) then
     begin
       SynSockCS.Enter;
       try
-        RemoteHost := synsock.GetHostByName(PChar(Name));
+        RemoteHost := synsock.GetHostByName(PAnsiChar(Name));
         if RemoteHost <> nil then
         begin
           PAdrPtr := PAPInAddr(RemoteHost^.h_addr_list);
@@ -1326,7 +1328,7 @@ begin
       end;
     end
     else
-      IPList.Add(Name);
+      IPList.Add(string(Name));
   end
   else
   begin
@@ -1337,7 +1339,7 @@ begin
       Hints.ai_socktype := SockType;
       Hints.ai_protocol := SockProtocol;
       Hints.ai_flags := 0;
-      r := synsock.GetAddrInfo(PChar(Name), nil, @Hints, Addr);
+      r := synsock.GetAddrInfo(PAnsiChar(Name), nil, @Hints, Addr);
       if r = 0 then
       begin
         AddrNext := Addr;
@@ -1351,12 +1353,12 @@ begin
             setlength(host, hostlen);
             setlength(serv, servlen);
             r := getnameinfo(AddrNext^.ai_addr, AddrNext^.ai_addrlen,
-              PChar(host), hostlen, PChar(serv), servlen,
+              PAnsiChar(host), hostlen, PAnsiChar(serv), servlen,
               NI_NUMERICHOST + NI_NUMERICSERV);
             if r = 0 then
             begin
-              host := PChar(host);
-              IPList.Add(host);
+              host := PAnsiChar(host);
+              IPList.Add(string(host));
             end;
           end;
           AddrNext := AddrNext^.ai_next;
@@ -1371,7 +1373,7 @@ begin
     IPList.Add(cAnyHost);
 end;
 
-function ResolvePort(Port: string; Family, SockProtocol, SockType: integer): Word;
+function ResolvePort(Port: AnsiString; Family, SockProtocol, SockType: integer): Word;
 var
   ProtoEnt: PProtoEnt;
   ServEnt: PServEnt;
@@ -1387,9 +1389,9 @@ begin
       ProtoEnt := synsock.GetProtoByNumber(SockProtocol);
       ServEnt := nil;
       if ProtoEnt <> nil then
-        ServEnt := synsock.GetServByName(PChar(Port), ProtoEnt^.p_name);
+        ServEnt := synsock.GetServByName(PAnsiChar(Port), ProtoEnt^.p_name);
       if ServEnt = nil then
-        Result := StrToIntDef(Port, 0)
+        Result := StrToIntDef(string(Port), 0)
       else
         Result := synsock.htons(ServEnt^.s_port);
     finally
@@ -1405,7 +1407,7 @@ begin
       Hints.ai_socktype := SockType;
       Hints.ai_protocol := Sockprotocol;
       Hints.ai_flags := AI_PASSIVE;
-      r := synsock.GetAddrInfo(nil, PChar(Port), @Hints, Addr);
+      r := synsock.GetAddrInfo(nil, PAnsiChar(Port), @Hints, Addr);
       if (r = 0) and Assigned(Addr) then
       begin
         if Addr^.ai_family = AF_INET then
@@ -1420,12 +1422,12 @@ begin
   end;
 end;
 
-function ResolveIPToName(IP: string; Family, SockProtocol, SockType: integer): string;
+function ResolveIPToName(IP: AnsiString; Family, SockProtocol, SockType: integer): AnsiString;
 var
   Hints: TAddrInfo;
   Addr: PAddrInfo;
   r: integer;
-  host, serv: string;
+  host, serv: AnsiString;
   hostlen, servlen: integer;
   RemoteHost: PHostEnt;
   IPn: u_long;
@@ -1433,7 +1435,7 @@ begin
   Result := IP;
   if not IsNewApi(Family) then
   begin
-    IPn := synsock.inet_addr(PChar(IP));
+    IPn := synsock.inet_addr(PAnsiChar(IP));
     if IPn <> u_long(INADDR_NONE) then
     begin
       SynSockCS.Enter;
@@ -1455,7 +1457,7 @@ begin
       Hints.ai_socktype := SockType;
       Hints.ai_protocol := SockProtocol;
       Hints.ai_flags := 0;
-      r := synsock.GetAddrInfo(PChar(IP), nil, @Hints, Addr);
+      r := synsock.GetAddrInfo(PAnsiChar(IP), nil, @Hints, Addr);
       if (r = 0) and Assigned(Addr)then
       begin
         hostlen := NI_MAXHOST;
@@ -1463,10 +1465,10 @@ begin
         setlength(host, hostlen);
         setlength(serv, servlen);
         r := getnameinfo(Addr^.ai_addr, Addr^.ai_addrlen,
-          PChar(host), hostlen, PChar(serv), servlen,
+          PAnsiChar(host), hostlen, PAnsiChar(serv), servlen,
           NI_NUMERICSERV);
         if r = 0 then
-          Result := PChar(host);
+          Result := PAnsiChar(host);
       end;
     finally
       if Assigned(Addr) then
@@ -1477,7 +1479,7 @@ end;
 
 {=============================================================================}
 
-function InitSocketInterface(stack: string): Boolean;
+function InitSocketInterface(stack: String): Boolean;
 begin
   Result := False;
   SockEnhancedApi := False;
@@ -1492,46 +1494,46 @@ begin
       LibHandle := LoadLibrary(PChar(Stack));
       if LibHandle <> 0 then
       begin
-        WSAIoctl := GetProcAddress(LibHandle, PChar('WSAIoctl'));
-        __WSAFDIsSet := GetProcAddress(LibHandle, PChar('__WSAFDIsSet'));
-        CloseSocket := GetProcAddress(LibHandle, PChar('closesocket'));
-        IoctlSocket := GetProcAddress(LibHandle, PChar('ioctlsocket'));
-        WSAGetLastError := GetProcAddress(LibHandle, PChar('WSAGetLastError'));
-        WSAStartup := GetProcAddress(LibHandle, PChar('WSAStartup'));
-        WSACleanup := GetProcAddress(LibHandle, PChar('WSACleanup'));
-        ssAccept := GetProcAddress(LibHandle, PChar('accept'));
-        ssBind := GetProcAddress(LibHandle, PChar('bind'));
-        ssConnect := GetProcAddress(LibHandle, PChar('connect'));
-        ssGetPeerName := GetProcAddress(LibHandle, PChar('getpeername'));
-        ssGetSockName := GetProcAddress(LibHandle, PChar('getsockname'));
-        GetSockOpt := GetProcAddress(LibHandle, PChar('getsockopt'));
-        Htonl := GetProcAddress(LibHandle, PChar('htonl'));
-        Htons := GetProcAddress(LibHandle, PChar('htons'));
-        Inet_Addr := GetProcAddress(LibHandle, PChar('inet_addr'));
-        Inet_Ntoa := GetProcAddress(LibHandle, PChar('inet_ntoa'));
-        Listen := GetProcAddress(LibHandle, PChar('listen'));
-        Ntohl := GetProcAddress(LibHandle, PChar('ntohl'));
-        Ntohs := GetProcAddress(LibHandle, PChar('ntohs'));
-        ssRecv := GetProcAddress(LibHandle, PChar('recv'));
-        ssRecvFrom := GetProcAddress(LibHandle, PChar('recvfrom'));
-        Select := GetProcAddress(LibHandle, PChar('select'));
-        ssSend := GetProcAddress(LibHandle, PChar('send'));
-        ssSendTo := GetProcAddress(LibHandle, PChar('sendto'));
-        SetSockOpt := GetProcAddress(LibHandle, PChar('setsockopt'));
-        ShutDown := GetProcAddress(LibHandle, PChar('shutdown'));
-        Socket := GetProcAddress(LibHandle, PChar('socket'));
-        GetHostByAddr := GetProcAddress(LibHandle, PChar('gethostbyaddr'));
-        GetHostByName := GetProcAddress(LibHandle, PChar('gethostbyname'));
-        GetProtoByName := GetProcAddress(LibHandle, PChar('getprotobyname'));
-        GetProtoByNumber := GetProcAddress(LibHandle, PChar('getprotobynumber'));
-        GetServByName := GetProcAddress(LibHandle, PChar('getservbyname'));
-        GetServByPort := GetProcAddress(LibHandle, PChar('getservbyport'));
-        ssGetHostName := GetProcAddress(LibHandle, PChar('gethostname'));
+        WSAIoctl := GetProcAddress(LibHandle, PAnsiChar(AnsiString('WSAIoctl')));
+        __WSAFDIsSet := GetProcAddress(LibHandle, PAnsiChar(AnsiString('__WSAFDIsSet')));
+        CloseSocket := GetProcAddress(LibHandle, PAnsiChar(AnsiString('closesocket')));
+        IoctlSocket := GetProcAddress(LibHandle, PAnsiChar(AnsiString('ioctlsocket')));
+        WSAGetLastError := GetProcAddress(LibHandle, PAnsiChar(AnsiString('WSAGetLastError')));
+        WSAStartup := GetProcAddress(LibHandle, PAnsiChar(AnsiString('WSAStartup')));
+        WSACleanup := GetProcAddress(LibHandle, PAnsiChar(AnsiString('WSACleanup')));
+        ssAccept := GetProcAddress(LibHandle, PAnsiChar(AnsiString('accept')));
+        ssBind := GetProcAddress(LibHandle, PAnsiChar(AnsiString('bind')));
+        ssConnect := GetProcAddress(LibHandle, PAnsiChar(AnsiString('connect')));
+        ssGetPeerName := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getpeername')));
+        ssGetSockName := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getsockname')));
+        GetSockOpt := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getsockopt')));
+        Htonl := GetProcAddress(LibHandle, PAnsiChar(AnsiString('htonl')));
+        Htons := GetProcAddress(LibHandle, PAnsiChar(AnsiString('htons')));
+        Inet_Addr := GetProcAddress(LibHandle, PAnsiChar(AnsiString('inet_addr')));
+        Inet_Ntoa := GetProcAddress(LibHandle, PAnsiChar(AnsiString('inet_ntoa')));
+        Listen := GetProcAddress(LibHandle, PAnsiChar(AnsiString('listen')));
+        Ntohl := GetProcAddress(LibHandle, PAnsiChar(AnsiString('ntohl')));
+        Ntohs := GetProcAddress(LibHandle, PAnsiChar(AnsiString('ntohs')));
+        ssRecv := GetProcAddress(LibHandle, PAnsiChar(AnsiString('recv')));
+        ssRecvFrom := GetProcAddress(LibHandle, PAnsiChar(AnsiString('recvfrom')));
+        Select := GetProcAddress(LibHandle, PAnsiChar(AnsiString('select')));
+        ssSend := GetProcAddress(LibHandle, PAnsiChar(AnsiString('send')));
+        ssSendTo := GetProcAddress(LibHandle, PAnsiChar(AnsiString('sendto')));
+        SetSockOpt := GetProcAddress(LibHandle, PAnsiChar(AnsiString('setsockopt')));
+        ShutDown := GetProcAddress(LibHandle, PAnsiChar(AnsiString('shutdown')));
+        Socket := GetProcAddress(LibHandle, PAnsiChar(AnsiString('socket')));
+        GetHostByAddr := GetProcAddress(LibHandle, PAnsiChar(AnsiString('gethostbyaddr')));
+        GetHostByName := GetProcAddress(LibHandle, PAnsiChar(AnsiString('gethostbyname')));
+        GetProtoByName := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getprotobyname')));
+        GetProtoByNumber := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getprotobynumber')));
+        GetServByName := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getservbyname')));
+        GetServByPort := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getservbyport')));
+        ssGetHostName := GetProcAddress(LibHandle, PAnsiChar(AnsiString('gethostname')));
 
 {$IFNDEF FORCEOLDAPI}
-        GetAddrInfo := GetProcAddress(LibHandle, PChar('getaddrinfo'));
-        FreeAddrInfo := GetProcAddress(LibHandle, PChar('freeaddrinfo'));
-        GetNameInfo := GetProcAddress(LibHandle, PChar('getnameinfo'));
+        GetAddrInfo := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getaddrinfo')));
+        FreeAddrInfo := GetProcAddress(LibHandle, PAnsiChar(AnsiString('freeaddrinfo')));
+        GetNameInfo := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getnameinfo')));
         SockEnhancedApi := Assigned(GetAddrInfo) and Assigned(FreeAddrInfo)
           and Assigned(GetNameInfo);
         if not SockEnhancedApi then
@@ -1539,9 +1541,9 @@ begin
           LibWship6Handle := LoadLibrary(PChar(DLLWship6));
           if LibWship6Handle <> 0 then
           begin
-            GetAddrInfo := GetProcAddress(LibWship6Handle, PChar('getaddrinfo'));
-            FreeAddrInfo := GetProcAddress(LibWship6Handle, PChar('freeaddrinfo'));
-            GetNameInfo := GetProcAddress(LibWship6Handle, PChar('getnameinfo'));
+            GetAddrInfo := GetProcAddress(LibWship6Handle, PAnsiChar(AnsiString('getaddrinfo')));
+            FreeAddrInfo := GetProcAddress(LibWship6Handle, PAnsiChar(AnsiString('freeaddrinfo')));
+            GetNameInfo := GetProcAddress(LibWship6Handle, PAnsiChar(AnsiString('getnameinfo')));
             SockWship6Api := Assigned(GetAddrInfo) and Assigned(FreeAddrInfo)
               and Assigned(GetNameInfo);
           end;
@@ -1595,6 +1597,3 @@ finalization
 begin
   SynSockCS.Free;
 end;
-
-{$ENDIF}
-
