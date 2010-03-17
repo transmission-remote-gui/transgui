@@ -788,7 +788,7 @@ procedure TMainForm.miCopyLabelClick(Sender: TObject);
 begin
   with TLabel(pmLabels.PopupComponent) do
     if (Length(Name) > 5) and (Copy(Name, Length(Name) - 4, 5) = 'Label') then
-      Clipboard.AsText:=TLabel(Parent.ControlByName(Copy(Name, 1, Length(Name) - 5))).Caption
+      Clipboard.AsText:=TLabel(Parent.FindChildControl(Copy(Name, 1, Length(Name) - 5))).Caption
     else
       Clipboard.AsText:=Caption;
 end;
@@ -2369,7 +2369,7 @@ begin
     FTorrents[idxTorrentId, row]:=t.Integers['id'];
 
     if t.IndexOfName('name') >= 0 then
-      FTorrents[idxName, row]:=UTF8Encode(t.Strings['name']);
+      FTorrents[idxName, row]:=t.Strings['name'];
 
     j:=t.Integers['status'];
     if ExistingRow and (j = TR_STATUS_SEED) and (FTorrents[idxStatus, row] = TR_STATUS_DOWNLOAD) then
@@ -2465,13 +2465,13 @@ begin
 
     if RpcObj.RPCVersion >= 7 then begin
       if t.Arrays['trackerStats'].Count > 0 then
-        s:=UTF8Encode(t.Arrays['trackerStats'].Objects[0].Strings['announce'])
+        s:=t.Arrays['trackerStats'].Objects[0].Strings['announce']
       else
         s:='';
     end
     else
       if t.IndexOfName('trackers') >= 0 then
-        s:=UTF8Encode(t.Arrays['trackers'].Objects[0].Strings['announce'])
+        s:=t.Arrays['trackers'].Objects[0].Strings['announce']
       else begin
         s:='';
         if VarIsEmpty(FTorrents[idxTracker, row]) then
@@ -2501,7 +2501,7 @@ begin
     end;
 
     if t.IndexOfName('downloadDir') >= 0 then
-      FTorrents[idxPath, row]:=UTF8Encode(t.Strings['downloadDir'])
+      FTorrents[idxPath, row]:=t.Strings['downloadDir']
     else
       if VarIsEmpty(FTorrents[idxPath, row]) then
         RpcObj.RequestFullInfo:=True;
@@ -2523,10 +2523,15 @@ procedure TMainForm.UpdateTorrentsList;
 var
   it: TListItem;
 
-  procedure SetSubItem(AID: integer; const s: string);
+  procedure SetSubItem(AID: integer; const Text: string; Encode: boolean = True);
   var
     idx: integer;
+    s: string;
   begin
+    if Encode then
+      s:=UTF8Encode(Text)
+    else
+      s:=Text;
     for idx:=0 to lvTorrents.Columns.Count - 1 do
       with lvTorrents.Columns[idx] do
         if ID = AID then begin
@@ -2653,7 +2658,7 @@ begin
         SetSubItem(idxSize, GetHumanSize(FTorrents[idxSize, i], 0));
 
       if not VarIsNull(FTorrents[idxStatus, i]) then
-        SetSubItem(idxStatus, GetTorrentStatus(i));
+        SetSubItem(idxStatus, GetTorrentStatus(i), False);
 
       SetSubItem(idxDone, Format('%.1f%%', [double(FTorrents[idxDone, i])]));
 
@@ -2681,7 +2686,7 @@ begin
         SetSubItem(idxETA, EtaToString(FTorrents[idxETA, i]));
 
       if not VarIsNull(FTorrents[idxRatio, i]) then
-        SetSubItem(idxRatio, RatioToString(FTorrents[idxRatio, i]));
+        SetSubItem(idxRatio, RatioToString(FTorrents[idxRatio, i]), False);
 
       if not VarIsNull(FTorrents[idxDownloaded, i]) then
         SetSubItem(idxDownloaded, GetHumanSize(FTorrents[idxDownloaded, i]));
@@ -2712,7 +2717,7 @@ begin
       DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, i];
       UpSpeed:=UpSpeed + FTorrents[idxUpSpeed, i];
 
-      it.ImageIndex:=FTorrents[idxStateImg, i];
+      it.ImageIndex:=integer(FTorrents[idxStateImg, i]);
       it.Data:=pointer(ptruint(j));
       Inc(Cnt);
     end;
@@ -3228,11 +3233,11 @@ begin
 
   panGeneralInfo.ChildSizing.Layout:=cclNone;
 
-  s:=FTorrents[idxName, idx];
+  s:=UTF8Encode(FTorrents[idxName, idx]);
   if RpcObj.RPCVersion >= 4 then
     s:=IncludeProperTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir'])) + s;
   txTorrentName.Caption:=s;
-  txCreated.Caption:=Format('%s by %s', [TorrentDateTimeToString(Trunc(t.Floats['dateCreated'])), t.Strings['creator']]);
+  txCreated.Caption:=Format('%s by %s', [TorrentDateTimeToString(Trunc(t.Floats['dateCreated'])), UTF8Encode(t.Strings['creator'])]);
   txTotalSize.Caption:=Format('%s (%s done)', [GetHumanSize(t.Floats['totalSize']), GetHumanSize(t.Floats['sizeWhenDone'] - t.Floats['leftUntilDone'])]);
   if t.Floats['totalSize'] = t.Floats['haveValid'] then
     i:=t.Integers['pieceCount']
