@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 003.005.000 |
+| Project : Ararat Synapse                                       | 003.005.003 |
 |==============================================================================|
 | Content: FTP client                                                          |
 |==============================================================================|
-| Copyright (c)1999-2007, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c) 1999-2007.               |
+| Portions created by Lukas Gebauer are Copyright (c) 1999-2010.               |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -52,6 +52,11 @@ Used RFC: RFC-959, RFC-2228, RFC-2428
   {$MODE DELPHI}
 {$ENDIF}
 {$H+}
+
+{$IFDEF UNICODE}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
 
 unit ftpsend;
 
@@ -84,18 +89,17 @@ type
    listing of FTP server.}
   TFTPListRec = class(TObject)
   private
-    FFileName: string;
+    FFileName: String;
     FDirectory: Boolean;
     FReadable: Boolean;
     FFileSize: Longint;
     FFileTime: TDateTime;
     FOriginalLine: string;
     FMask: string;
-    FPermission: string;
+    FPermission: String;
   public
     {: You can assign another TFTPListRec to this object.}
     procedure Assign(Value: TFTPListRec); virtual;
-  published
     {:name of file}
     property FileName: string read FFileName write FFileName;
     {:if name is subdirectory not file.}
@@ -135,16 +139,16 @@ type
     YearTime: string;
     Year: string;
     Hours: string;
-    HoursModif: string;
+    HoursModif: Ansistring;
     Minutes: string;
     Seconds: string;
-    Size: string;
-    Permissions: string;
+    Size: Ansistring;
+    Permissions: Ansistring;
     DirFlag: string;
     function GetListItem(Index: integer): TFTPListRec; virtual;
     function ParseEPLF(Value: string): Boolean; virtual;
     procedure ClearStore; virtual;
-    function ParseByMask(Value, NextValue, Mask: string): Integer; virtual;
+    function ParseByMask(Value, NextValue, Mask: ansistring): Integer; virtual;
     function CheckValues: Boolean; virtual;
     procedure FillRecord(const Value: TFTPListRec); virtual;
   public
@@ -465,8 +469,10 @@ begin
   FFullResult := TStringList.Create;
   FDataStream := TMemoryStream.Create;
   FSock := TTCPBlockSocket.Create;
+  FSock.Owner := self;
   FSock.ConvertLineEnd := True;
   FDSock := TTCPBlockSocket.Create;
+  FDSock.Owner := self;
   FFtpList := TFTPList.Create;
   FTimeout := 300000;
   FTargetPort := cFtpProtocol;
@@ -508,7 +514,7 @@ end;
 
 function TFTPSend.ReadResult: Integer;
 var
-  s, c: string;
+  s, c: AnsiString;
 begin
   FFullResult.Clear;
   c := '';
@@ -818,7 +824,7 @@ end;
 procedure TFTPSend.ParseRemoteEPSV(Value: string);
 var
   n: integer;
-  s, v: string;
+  s, v: AnsiString;
 begin
   s := SeparateRight(Value, '(');
   s := Trim(SeparateLeft(s, ')'));
@@ -983,11 +989,11 @@ begin
   Result := DataRead(FDataStream);
   if (not NameList) and Result then
   begin
-    FDataStream.Seek(0, soFromBeginning);
+    FDataStream.Position := 0;
     FFTPList.Lines.LoadFromStream(FDataStream);
     FFTPList.ParseLines;
   end;
-  FDataStream.Seek(0, soFromBeginning);
+  FDataStream.Position := 0;
 end;
 
 function TFTPSend.RetrieveFile(const FileName: string; Restore: Boolean): Boolean;
@@ -1016,7 +1022,7 @@ begin
       FTPCommand('TYPE A');
     if Restore then
     begin
-      RetrStream.Seek(0, soFromEnd);
+      RetrStream.Position := RetrStream.Size;
       if (FTPCommand('REST ' + IntToStr(RetrStream.Size)) div 100) <> 3 then
         Exit;
     end
@@ -1027,7 +1033,7 @@ begin
       Exit;
     Result := DataRead(RetrStream);
     if not FDirectFile then
-      RetrStream.Seek(0, soFromBeginning);
+      RetrStream.Position := 0;
   finally
     if FDirectFile then
       RetrStream.Free;
@@ -1069,7 +1075,7 @@ begin
     if FCanResume then
       if (FTPCommand('REST ' + IntToStr(RestoreAt)) div 100) <> 3 then
         Exit;
-    SendStream.Seek(RestoreAt, soFromBeginning);
+    SendStream.Position := RestoreAt;
     if (FTPCommand(Command) div 100) <> 1 then
       Exit;
     Result := DataWrite(SendStream);
@@ -1336,11 +1342,11 @@ begin
   DirFlag := '';
 end;
 
-function TFTPList.ParseByMask(Value, NextValue, Mask: string): Integer;
+function TFTPList.ParseByMask(Value, NextValue, Mask: AnsiString): Integer;
 var
   Ivalue, IMask: integer;
-  MaskC, LastMaskC: Char;
-  c: char;
+  MaskC, LastMaskC: AnsiChar;
+  c: AnsiChar;
   s: string;
 begin
   ClearStore;

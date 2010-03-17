@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.000.000 |
+| Project : Ararat Synapse                                       | 001.001.001 |
 |==============================================================================|
 | Content: ClamAV-daemon client                                                |
 |==============================================================================|
-| Copyright (c)2005, Lukas Gebauer                                             |
+| Copyright (c)2005-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2003.                     |
+| Portions created by Lukas Gebauer are Copyright (c)2005-2010.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -53,6 +53,11 @@ daemon from ClamAV. See more about ClamAV on @LINK(http://www.clamav.net)
 {$ENDIF}
 {$Q-}
 {$H+}
+
+{$IFDEF UNICODE}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
 
 unit clamsend;
 
@@ -95,6 +100,12 @@ type
 
     {:Scan content of TStream.}
     function ScanStream(const Value: TStream): AnsiString; virtual;
+
+    {:Scan content of TStrings by new 0.95 API.}
+    function ScanStrings2(const Value: TStrings): AnsiString; virtual;
+
+    {:Scan content of TStream by new 0.95 API.}
+    function ScanStream2(const Value: TStream): AnsiString; virtual;
   published
     {:Socket object used for TCP/IP operation. Good for seting OnStatus hook, etc.}
     property Sock: TTCPBlockSocket read FSock;
@@ -115,7 +126,9 @@ constructor TClamSend.Create;
 begin
   inherited Create;
   FSock := TTCPBlockSocket.Create;
+  FSock.Owner := self;
   FDSock := TTCPBlockSocket.Create;
+  FDSock.Owner := self;
   FTimeout := 60000;
   FTargetPort := cClamProtocol;
   FSession := false;
@@ -170,7 +183,7 @@ end;
 
 function TClamSend.GetVersion: AnsiString;
 begin
-  Result := DoCommand('VERSION');
+  Result := DoCommand('nVERSION');
 end;
 
 function TClamSend.OpenStream: Boolean;
@@ -178,7 +191,7 @@ var
   S: AnsiString;
 begin
   Result := False;
-  s := DoCommand('STREAM');
+  s := DoCommand('nSTREAM');
   if (s <> '') and (Copy(s, 1, 4) = 'PORT') then
   begin
     s := SeparateRight(s, ' ');
@@ -213,6 +226,52 @@ begin
     DSock.CloseSocket;
     Result := FSock.RecvTerminated(FTimeout, LF);
   end;
+end;
+
+function TClamSend.ScanStrings2(const Value: TStrings): AnsiString;
+var
+  i: integer;
+  s: AnsiString;
+begin
+  Result := '';
+  if not FSession then
+    FSock.CloseSocket
+  else
+    FSock.sendstring('nINSTREAM' + LF);
+  if not FSession or (FSock.LastError <> 0) then
+  begin
+    if Login then
+      FSock.sendstring('nINSTREAM' + LF)
+    else
+      Exit;
+  end;
+  s := Value.text;
+  i := length(s);
+  FSock.SendString(CodeLongint(i) + s + #0#0#0#0);
+  Result := FSock.RecvTerminated(FTimeout, LF);
+end;
+
+function TClamSend.ScanStream2(const Value: TStream): AnsiString;
+var
+  i: integer;
+begin
+  Result := '';
+  if not FSession then
+    FSock.CloseSocket
+  else
+    FSock.sendstring('nINSTREAM' + LF);
+  if not FSession or (FSock.LastError <> 0) then
+  begin
+    if Login then
+      FSock.sendstring('nINSTREAM' + LF)
+    else
+      Exit;
+  end;
+  i := value.Size;
+  FSock.SendString(CodeLongint(i));
+  FSock.SendStreamRaw(Value);
+  FSock.SendString(#0#0#0#0);
+  Result := FSock.RecvTerminated(FTimeout, LF);
 end;
 
 end.

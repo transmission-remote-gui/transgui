@@ -62,6 +62,11 @@ For sample of using, look to @link(TSnmpSend) or @link(TLdapSend)class.
   {$MODE DELPHI}
 {$ENDIF}
 
+{$IFDEF UNICODE}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
+
 unit asn1util;
 
 interface

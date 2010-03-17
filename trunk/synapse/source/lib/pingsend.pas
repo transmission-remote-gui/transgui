@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 004.000.000 |
+| Project : Ararat Synapse                                       | 004.000.002 |
 |==============================================================================|
 | Content: PING sender                                                         |
 |==============================================================================|
-| Copyright (c)1999-2007, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2000-2007.                |
+| Portions created by Lukas Gebauer are Copyright (c)2000-2010.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -66,6 +66,17 @@ Note: This unit is NOT portable to .NET!
 {$IFDEF CIL}
   Sorry, this unit is not for .NET!
 {$ENDIF}
+//old Delphi does not have MSWINDOWS define.
+{$IFDEF WIN32}
+  {$IFNDEF MSWINDOWS}
+    {$DEFINE MSWINDOWS}
+  {$ENDIF}
+{$ENDIF}
+
+{$IFDEF UNICODE}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
 
 unit pingsend;
 
@@ -74,7 +85,7 @@ interface
 uses
   SysUtils,
   synsock, blcksock, synautil, synafpc, synaip
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
   , windows
 {$ENDIF}
   ;
@@ -107,7 +118,7 @@ type
   TPINGSend = class(TSynaClient)
   private
     FSock: TICMPBlockSocket;
-    FBuffer: string;
+    FBuffer: Ansistring;
     FSeq: Integer;
     FId: Integer;
     FPacketSize: Integer;
@@ -122,8 +133,8 @@ type
     FReplyErrorDesc: string;
     FTTL: Byte;
     Fsin: TVarSin;
-    function Checksum(Value: string): Word;
-    function Checksum6(Value: string): Word;
+    function Checksum(Value: AnsiString): Word;
+    function Checksum6(Value: AnsiString): Word;
     function ReadPacket: Boolean;
     procedure TranslateError;
     procedure TranslateErrorIpHlp(value: integer);
@@ -184,7 +195,7 @@ implementation
 
 type
   {:Record for ICMP ECHO packet header.}
-  TIcmpEchoHeader = record
+  TIcmpEchoHeader = packed record
     i_type: Byte;
     i_code: Byte;
     i_checkSum: Word;
@@ -195,7 +206,7 @@ type
 
   {:record used internally by TPingSend for compute checksum of ICMPv6 packet
    pseudoheader.}
-  TICMP6Packet = record
+  TICMP6Packet = packed record
     in_source: TInAddr6;
     in_dest: TInAddr6;
     Length: integer;
@@ -205,20 +216,20 @@ type
     proto: Byte;
   end;
 
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
 const
   DLLIcmpName = 'iphlpapi.dll';
 type
-  TIP_OPTION_INFORMATION = packed record
+  TIP_OPTION_INFORMATION = record
     TTL: Byte;
     TOS: Byte;
     Flags: Byte;
     OptionsSize: Byte;
-    OptionsData: PChar;
+    OptionsData: PAnsiChar;
   end;
   PIP_OPTION_INFORMATION = ^TIP_OPTION_INFORMATION;
 
-  TICMP_ECHO_REPLY = packed record
+  TICMP_ECHO_REPLY = record
     Address: TInAddr;
     Status: integer;
     RoundTripTime: integer;
@@ -229,7 +240,7 @@ type
   end;
   PICMP_ECHO_REPLY = ^TICMP_ECHO_REPLY;
 
-  TICMPV6_ECHO_REPLY = packed record
+  TICMPV6_ECHO_REPLY = record
     Address: TSockAddrIn6;
     Status: integer;
     RoundTripTime: integer;
@@ -264,6 +275,7 @@ constructor TPINGSend.Create;
 begin
   inherited Create;
   FSock := TICMPBlockSocket.Create;
+  FSock.Owner := self;
   FTimeout := 5000;
   FPacketSize := 32;
   FSeq := 0;
@@ -331,7 +343,7 @@ begin
   FReplyError := IE_Other;
   GenErrorDesc;
   FBuffer := StringOfChar(#55, SizeOf(TICMPEchoHeader) + FPacketSize);
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
   b := IsHostIP6(host);
   if not(b) and IcmpHelper4 then
     result := InternalPingIpHlp(host)
@@ -399,7 +411,7 @@ begin
       break;
     if fSock.IP6used then
     begin
-{$IFNDEF WIN32}
+{$IFNDEF MSWINDOWS}
       IcmpEchoHeaderPtr := Pointer(FBuffer);
 {$ELSE}
 //WinXP SP1 with networking update doing this think by another way ;-O
@@ -436,7 +448,7 @@ begin
     end;
 end;
 
-function TPINGSend.Checksum(Value: string): Word;
+function TPINGSend.Checksum(Value: AnsiString): Word;
 var
   CkSum: integer;
   Num, Remain: Integer;
@@ -458,7 +470,7 @@ begin
   Result := Word(not CkSum);
 end;
 
-function TPINGSend.Checksum6(Value: string): Word;
+function TPINGSend.Checksum6(Value: AnsiString): Word;
 const
   IOC_OUT = $40000000;
   IOC_IN = $80000000;
@@ -467,13 +479,13 @@ const
   SIO_ROUTING_INTERFACE_QUERY = 20 or IOC_WS2 or IOC_INOUT;
 var
   ICMP6Ptr: ^TICMP6Packet;
-  s: string;
+  s: AnsiString;
   b: integer;
   ip6: TSockAddrIn6;
   x: integer;
 begin
   Result := 0;
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
   s := StringOfChar(#0, SizeOf(TICMP6Packet)) + Value;
   ICMP6Ptr := Pointer(s);
   x := synsock.WSAIoctl(FSock.Socket, SIO_ROUTING_INTERFACE_QUERY,
@@ -565,13 +577,13 @@ begin
 end;
 
 function TPINGSend.InternalPingIpHlp(const Host: string): Boolean;
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
 var
   PingIp6: boolean;
   PingHandle: integer;
   r: integer;
   ipo: TIP_OPTION_INFORMATION;
-  RBuff: string;
+  RBuff: Ansistring;
   ip4reply: PICMP_ECHO_REPLY;
   ip6reply: PICMPV6_ECHO_REPLY;
   ip6: TSockAddrIn6;
@@ -595,7 +607,7 @@ begin
       begin
         FillChar(ip6, sizeof(ip6), 0);
         r := Icmp6SendEcho2(PingHandle, nil, nil, nil, @ip6, @Fsin,
-          Pchar(FBuffer), length(FBuffer), @ipo, pchar(RBuff), length(RBuff), FTimeout);
+          PAnsichar(FBuffer), length(FBuffer), @ipo, pAnsichar(RBuff), length(RBuff), FTimeout);
         if r > 0 then
         begin
           RBuff := #0 + #0 + RBuff;
@@ -610,7 +622,7 @@ begin
       else
       begin
         r := IcmpSendEcho2(PingHandle, nil, nil, nil, Fsin.sin_addr,
-          Pchar(FBuffer), length(FBuffer), @ipo, pchar(RBuff), length(RBuff), FTimeout);
+          PAnsichar(FBuffer), length(FBuffer), @ipo, pAnsichar(RBuff), length(RBuff), FTimeout);
         if r > 0 then
         begin
           ip4reply := PICMP_ECHO_REPLY(pointer(RBuff));
@@ -678,7 +690,7 @@ begin
   end;
 end;
 
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
 initialization
 begin
   IcmpHelper4 := false;

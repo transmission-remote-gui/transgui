@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 002.007.007 |
+| Project : Ararat Synapse                                       | 002.008.000 |
 |==============================================================================|
 | Content: MIME support procedures and functions                               |
 |==============================================================================|
-| Copyright (c)1999-2007, Lukas Gebauer                                        |
+| Copyright (c)1999-2008, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2000-2007.                |
+| Portions created by Lukas Gebauer are Copyright (c)2000-2008.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -54,6 +54,11 @@ Used RFC: RFC-2045
 {$H+}
 {$Q-}
 {$R-}
+
+{$IFDEF UNICODE}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
 
 unit mimepart;
 
@@ -347,41 +352,10 @@ const
     ('ZIP', 'application', 'ZIP')
     );
 
-{:Read header from "Value" stringlist beginning at "Index" position. If header
- is Splitted into multiple lines, then this procedure de-split it into one line.}
-function NormalizeHeader(Value: TStrings; var Index: Integer): string;
-
 {:Generates a unique boundary string.}
 function GenerateBoundary: string;
 
 implementation
-
-function NormalizeHeader(Value: TStrings; var Index: Integer): string;
-var
-  s, t: string;
-  n: Integer;
-begin
-  s := Value[Index];
-  Inc(Index);
-  if s <> '' then
-    while (Value.Count - 1) > Index do
-    begin
-      t := Value[Index];
-      if t = '' then
-        Break;
-      for n := 1 to Length(t) do
-        if t[n] = #9 then
-          t[n] := ' ';
-      if not(t[1] in [' ', '"', ':', '=']) then
-        Break
-      else
-      begin
-        s := s + ' ' + Trim(t);
-        Inc(Index);
-      end;
-    end;
-  Result := TrimRight(s);
-end;
 
 {==============================================================================}
 
@@ -397,7 +371,9 @@ begin
   FDecodedLines := TMemoryStream.Create;
   FSubParts := TList.Create;
   FTargetCharset := GetCurCP;
-  FDefaultCharset := 'US-ASCII';
+  //was 'US-ASCII' before, but RFC-ignorant Outlook sometimes using default
+  //system charset instead.
+  FDefaultCharset := GetIDFromCP(GetCurCP);
   FMaxLineLength := 78;
   FSubLevel := 0;
   FMaxSubLevel := -1;
@@ -798,7 +774,8 @@ begin
   FDescription := '';
   Charset := FDefaultCharset;
   FFileName := '';
-  Encoding := '7BIT';
+  //was 7bit before, but this is more compatible with RFC-ignorant outlook
+  Encoding := '8BIT';
   FDisposition := '';
   FContentID := '';
   fn := '';
@@ -843,7 +820,7 @@ begin
       if Pos('CONTENT-ID:', su) = 1 then
         FContentID := Trim(SeparateRight(s, ':'));
     end;
-  if FFileName = '' then
+  if fn <> '' then
     FFileName := fn;
   FFileName := InlineDecode(FFileName, FTargetCharset);
   FFileName := ExtractFileName(FFileName);

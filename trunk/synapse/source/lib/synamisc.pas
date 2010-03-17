@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.001.004 |
+| Project : Ararat Synapse                                       | 001.003.000 |
 |==============================================================================|
 | Content: misc. procedures and functions                                      |
 |==============================================================================|
-| Copyright (c)1999-2003, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c) 2002-2003.               |
+| Portions created by Lukas Gebauer are Copyright (c) 2002-2010.               |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -49,6 +49,11 @@
 {$ENDIF}
 {$Q-}
 {$H+}
+
+{$IFDEF UNICODE}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
 
 unit synamisc;
 
@@ -97,14 +102,17 @@ function GetDNS: string;
 working only on windows!}
 function GetIEProxy(protocol: string): TProxySetting;
 
+{:Return all known IP addresses on local system. Addresses are divided by comma.}
+function GetLocalIPs: string;
+
 implementation
 
 {==============================================================================}
 procedure WakeOnLan(MAC, IP: string);
 var
   sock: TUDPBlockSocket;
-  HexMac: string;
-  data: string;
+  HexMac: Ansistring;
+  data: Ansistring;
   n: integer;
   b: Byte;
 begin
@@ -143,7 +151,7 @@ end;
 function GetDNSbyIpHlp: string;
 type
   PTIP_ADDRESS_STRING = ^TIP_ADDRESS_STRING;
-  TIP_ADDRESS_STRING = array[0..15] of char;
+  TIP_ADDRESS_STRING = array[0..15] of Ansichar;
   PTIP_ADDR_STRING = ^TIP_ADDR_STRING;
   TIP_ADDR_STRING = packed record
     Next: PTIP_ADDR_STRING;
@@ -153,12 +161,12 @@ type
   end;
   PTFixedInfo = ^TFixedInfo;
   TFixedInfo = packed record
-    HostName: array[1..128 + 4] of char;
-    DomainName: array[1..128 + 4] of char;
+    HostName: array[1..128 + 4] of Ansichar;
+    DomainName: array[1..128 + 4] of Ansichar;
     CurrentDNSServer: PTIP_ADDR_STRING;
     DNSServerList: TIP_ADDR_STRING;
     NodeType: UINT;
-    ScopeID: array[1..256 + 4] of char;
+    ScopeID: array[1..256 + 4] of Ansichar;
     EnableRouting: UINT;
     EnableProxy: UINT;
     EnableDNS: UINT;
@@ -179,7 +187,7 @@ begin
   if IpHlpModule = 0 then
     exit;
   try
-    GetNetworkParams := GetProcAddress(IpHlpModule,'GetNetworkParams');
+    GetNetworkParams := GetProcAddress(IpHlpModule,PAnsiChar(AnsiString('GetNetworkParams')));
     if @GetNetworkParams = nil then
       Exit;
     err := GetNetworkParams(Nil, @InfoSize);
@@ -224,7 +232,7 @@ begin
     DataType := REG_SZ;
     DataSize := SizeOf(Temp);
     if RegQueryValueEx(OpenKey, Vn, nil, @DataType, @Temp, @DataSize) = ERROR_SUCCESS then
-      Result := string(Temp);
+      SetString(Result, Temp, DataSize div SizeOf(Char) - 1);
     RegCloseKey(OpenKey);
    end;
 end ;
@@ -259,14 +267,19 @@ const
 begin
   Result := GetDNSbyIpHlp;
   if Result = '...' then
+  begin
     if Win32Platform = VER_PLATFORM_WIN32_NT then
     begin
       Result := ReadReg(NTdyn, 'NameServer');
       if result = '' then
         Result := ReadReg(NTfix, 'NameServer');
+      if result = '' then
+        Result := ReadReg(NTfix, 'DhcpNameServer');
     end
     else
       Result := ReadReg(W9xfix, 'NameServer');
+    Result := ReplaceString(trim(Result), ' ', ',');
+  end;
 end;
 {$ENDIF}
 
@@ -310,7 +323,7 @@ begin
   if WininetModule = 0 then
     exit;
   try
-    InternetQueryOption := GetProcAddress(WininetModule,'InternetQueryOptionA');
+    InternetQueryOption := GetProcAddress(WininetModule,PAnsiChar(AnsiString('InternetQueryOptionA')));
     if @InternetQueryOption = nil then
       Exit;
 
@@ -355,6 +368,28 @@ begin
   end;
 end;
 {$ENDIF}
+
+{==============================================================================}
+
+function GetLocalIPs: string;
+var
+  TcpSock: TTCPBlockSocket;
+  ipList: TStringList;
+begin
+  Result := '';
+  ipList := TStringList.Create;
+  try
+    TcpSock := TTCPBlockSocket.create;
+    try
+      TcpSock.ResolveNameToIP(TcpSock.LocalName, ipList);
+      Result := ipList.CommaText;
+    finally
+      TcpSock.Free;
+    end;
+  finally
+    ipList.Free;
+  end;
+end;
 
 {==============================================================================}
 

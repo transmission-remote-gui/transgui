@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.000.000 |
+| Project : Ararat Synapse                                       | 001.000.001 |
 |==============================================================================|
 | Content: Encryption support                                                  |
 |==============================================================================|
-| Copyright (c)2007, Lukas Gebauer                                             |
+| Copyright (c)2007-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2007.                     |
+| Portions created by Lukas Gebauer are Copyright (c)2007-2010.                |
 | All Rights Reserved.                                                         |
 | Based on work of David Barton and Eric Young                                 |
 |==============================================================================|
@@ -55,6 +55,11 @@ Implemented are DES and 3DES encryption/decryption by ECB, CBC, CFB-8bit,
 {$Q-}
 {$R-}
 {$H+}
+
+{$IFDEF UNICODE}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
 
 unit synacrypt;
 
