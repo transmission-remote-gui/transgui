@@ -760,8 +760,8 @@ begin
   if lvTorrents.Tag <> 0 then exit;
   RpcObj.Lock;
   try
-    if (Item <> nil) and Selected then
-      RpcObj.CurTorrentId:=ptruint(Item.Data)
+    if lvTorrents.Selected <> nil then
+      RpcObj.CurTorrentId:=ptruint(lvTorrents.Selected.Data)
     else
       RpcObj.CurTorrentId:=0;
   finally
