@@ -2662,7 +2662,7 @@ begin
 
       SetSubItem(idxDone, Format('%.1f%%', [double(FTorrents[idxDone, i])]));
 
-      if not VarIsNull(FTorrents[idxSeedsTotal, i]) then
+      if not VarIsNull(FTorrents[idxSeedsTotal, i]) and not VarIsNull(FTorrents[idxSeeds, i]) then
         SetSubItem(idxSeeds, GetSeedsText(FTorrents[idxSeeds, i], FTorrents[idxSeedsTotal, i]));
 
       if not VarIsNull(FTorrents[idxPeers, i]) then
