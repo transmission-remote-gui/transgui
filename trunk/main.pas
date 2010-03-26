@@ -2523,7 +2523,7 @@ procedure TMainForm.UpdateTorrentsList;
 var
   it: TListItem;
 
-  procedure SetSubItem(AID: integer; const Text: string; Encode: boolean = True);
+  procedure SetSubItem(AID: integer; const Text: widestring; Encode: boolean = True);
   var
     idx: integer;
     s: string;
@@ -3091,7 +3091,7 @@ begin
       SetSubItem(idxFileDone, GetHumanSize(FFiles[idxFileDone, i]));
       SetSubItem(idxFileProgress, Format('%.1f%%', [double(FFiles[idxFileProgress, i])]));
       SetSubItem(idxFilePriority, FFiles[idxFilePriority, i]);
-      it.Data:=pointer(i);
+      it.Data:=pointer(ptrint(i));
     end;
 
     while lvFiles.Items.Count > FFiles.Count do
@@ -3233,7 +3233,7 @@ begin
 
   panGeneralInfo.ChildSizing.Layout:=cclNone;
 
-  s:=UTF8Encode(FTorrents[idxName, idx]);
+  s:=UTF8Encode(widestring(FTorrents[idxName, idx]));
   if RpcObj.RPCVersion >= 4 then
     s:=IncludeProperTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir'])) + s;
   txTorrentName.Caption:=s;
