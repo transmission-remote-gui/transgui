@@ -2,6 +2,6 @@
 #labels Featured
 Donate to support further development of Transmission Remote GUI.
 
-[https://www.plimus.com/jsp/buynow.jsp?contractId=2343710 http://transmisson-remote-gui.googlecode.com/svn/wiki/plimus-donate.png]
+<a href="https://www.plimus.com/jsp/buynow.jsp?contractId=2343710"><img src="http://transmisson-remote-gui.googlecode.com/svn/wiki/plimus-donate.png" title="Donate via Plimus"></img></a>
 
 Any amount is welcome, and greatly appreciated.
