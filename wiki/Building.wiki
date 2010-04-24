@@ -10,5 +10,5 @@ Download sources archive and extract it to some folder or perform svn checkout.
 Run Lazarus IDE, open transgui project and build it.
 
 Or to build from command line:
-  * Open terminal/command line prompt and cd to sources folder
-  * Execute {{{lazbuild transgui.lpi}}} command to build the application
+  * Open terminal/command line prompt and cd to the sources folder;
+  * Execute {{{lazbuild transgui.lpi}}} command to build the application.
