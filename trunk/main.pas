@@ -33,13 +33,48 @@ const
   AppVersion = '1.3.2';
 
 resourcestring
-  SShowApp = 'Show';
-  SHideApp = 'Hide';
-  SAll = 'All';
-  SDownloading = 'Downloading';
-  SCompleted = 'Completed';
-  SActive = 'Active';
-  SInactive = 'Inactive';
+  sShowApp = 'Show';
+  sHideApp = 'Hide';
+  sAll = 'All';
+  sWaiting = 'Waiting';
+  sVerifying = 'Verifying';
+  sDownloading = 'Downloading';
+  sSeeding = 'Seeding';
+  sFinished = 'Finished';
+  sStopped = 'Stopped';
+  sUnknown = 'Unknown';
+  sCompleted = 'Completed';
+  sConnected = 'connected';
+  sActive = 'Active';
+  sInactive = 'Inactive';
+  sUpdating = 'Updating...';
+  sFinishedDownload = '''%s'' has finished downloading';
+  sDownloadComplete = 'Download complete';
+  sUpdateComplete = 'Update complete.';
+  sTorrentVerification = 'Torrent verification may take a long time.' + LineEnding + 'Are you sure to start verification of torrent ''%s''?';
+  sReconnect = 'Reconnect in %d seconds.';
+  sSec = '%ds';
+  sMinSec = '%dm, %ds';
+  sHourMin = '%dh, %dm';
+  sDayHour = '%dd, %dh';
+  sDownloadingSeeding = '%s%s%d downloading, %d seeding%s%s, %s';
+  sDownSpeed = 'D: %s/s';
+  sUpSpeed = 'U: %s/s';
+  sNoPathMapping = 'Unable to find path mapping.'+LineEnding+'Use program''s options to setup path mappings.';
+  sGeoIPConfirm = 'Geo IP database is needed to resolve country by IP address.' + LineEnding + 'Download this database now?';
+  sFlagArchiveConfirm = 'Flag images archive is needed to display country flags.' + LineEnding + 'Download this archive now?';
+  sInSwarm = 'in swarm';
+  sHashfails = '%s (%d hashfails)';
+  sDone = '%s (%s done)';
+  sHave = '%d x %s (have %d)';
+  sUnableExtractFlag = 'Unable to extract flag image.';
+
+  sByte = 'b';
+  sKByte = 'KB';
+  sMByte = 'MB';
+  sGByte = 'GB';
+  sTByte = 'TB';
+
 
 type
 
@@ -468,7 +503,7 @@ const
   TR_SPEEDLIMIT_UNLIMITED = 2;    // no limits at all
 
 const
-  SizeNames: array[1..5] of string = ('b', 'KB', 'MB', 'GB', 'TB');
+  SizeNames: array[1..5] of string = (sByte, sKByte, sMByte, sGByte, sTByte);
 
 function GetHumanSize(sz: double; RoundTo: integer = 0): string;
 var
@@ -1090,8 +1125,8 @@ end;
 procedure TMainForm.DownloadFinished(const TorrentName: string);
 begin
   if not TrayIcon.Visible then exit;
-  TrayIcon.BalloonHint:=Format('''%s'' has finished downloading', [TorrentName]);
-  TrayIcon.BalloonTitle:='Download complete';
+  TrayIcon.BalloonHint:=Format(sFinishedDownload, [TorrentName]);
+  TrayIcon.BalloonTitle:=sDownloadComplete;
   TrayIcon.ShowBalloonHint;
 end;
 
@@ -1133,7 +1168,7 @@ begin
         FreeAndNil(FUnZip);
         DeleteFile(GetFlagsArchive);
         acShowCountryFlag.Checked:=False;
-        MessageDlg('Unable to extract flag image.'+LineEnding+Exception(ExceptObject).Message, mtError, [mbOK], 0);
+        MessageDlg(sUnableExtractFlag + LineEnding + Exception(ExceptObject).Message, mtError, [mbOK], 0);
         exit;
       end;
       if not FileExists(FlagsPath + ImageName) then exit;
@@ -1204,7 +1239,7 @@ begin
   Result:=False;
   tmp:=FHomeDir + 'GeoIP.dat.gz';
   if not FileExists(tmp) or AUpdate then begin
-    if MessageDlg('', 'Geo IP database is needed to resolve country by IP address.' + LineEnding + 'Download this database now?', mtConfirmation, mbYesNo, 0, mbYes) <> mrYes then
+    if MessageDlg('', sGeoIPConfirm, mtConfirmation, mbYesNo, 0, mbYes) <> mrYes then
       exit;
     if not DownloadFile(GeoLiteURL, ExtractFilePath(tmp), ExtractFileName(tmp)) then
       exit;
@@ -1267,20 +1302,20 @@ function TMainForm.GetTorrentStatus(TorrentIdx: integer): string;
 begin
   case integer(FTorrents[idxStatus, TorrentIdx]) of
     TR_STATUS_CHECK_WAIT:
-      Result:='Waiting';
+      Result:=sWaiting;
     TR_STATUS_CHECK:
-      Result:='Verifying';
+      Result:=sVerifying;
     TR_STATUS_DOWNLOAD:
-      Result:='Downloading';
+      Result:=sDownloading;
     TR_STATUS_SEED:
-      Result:='Seeding';
+      Result:=sSeeding;
     TR_STATUS_STOPPED:
       if FTorrents[idxStateImg, TorrentIdx] = imgDone then
-        Result:='Finished'
+        Result:=sFinished
       else
-        Result:='Stopped';
+        Result:=sStopped;
     else
-      Result:='Unknown';
+      Result:=sUnknown;
   end;
 end;
 
@@ -1552,7 +1587,7 @@ const
 begin
   if not acShowCountryFlag.Checked then
     if GetFlagsArchive = '' then begin
-      if MessageDlg('', 'Flag images archive is needed to display country flags.' + LineEnding + 'Download this archive now?', mtConfirmation, mbYesNo, 0, mbYes) <> mrYes then
+      if MessageDlg('', sFlagArchiveConfirm, mtConfirmation, mbYesNo, 0, mbYes) <> mrYes then
         exit;
       if not DownloadFile(FlagsURL, FHomeDir) then
         exit;
@@ -1694,7 +1729,7 @@ end;
 procedure TMainForm.acUpdateGeoIPExecute(Sender: TObject);
 begin
   if DownloadGeoIpDatabase(True) then
-    MessageDlg('Update complete.', mtInformation, [mbOK], 0);
+    MessageDlg(sUpdateComplete, mtInformation, [mbOK], 0);
 end;
 
 procedure TMainForm.acVerifyTorrentExecute(Sender: TObject);
@@ -1705,7 +1740,7 @@ begin
   id:=RpcObj.CurTorrentId;
   i:=FTorrents.IndexOf(idxTorrentId, id);
   if i < 0 then exit;
-  if MessageDlg('', Format('Torrent verification may take a long time.'#13'Are you sure to start verification of torrent ''%s''?', [string(FTorrents[idxName, i])]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
+  if MessageDlg('', Format(sTorrentVerification, [string(FTorrents[idxName, i])]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
   TorrentAction(id, 'verify');
 end;
 
@@ -1877,7 +1912,7 @@ begin
         if Now - FReconnectWaitStart >= FReconnectTimeOut/SecsPerDay then
           DoConnect
         else
-          txReconnectSecs.Caption:=Format('Reconnect in %d seconds.', [FReconnectTimeOut - Round(SecsPerDay*(Now - FReconnectWaitStart))]);
+          txReconnectSecs.Caption:=Format(sReconnect, [FReconnectTimeOut - Round(SecsPerDay*(Now - FReconnectWaitStart))]);
   finally
     TickTimer.Enabled:=True;
   end;
@@ -2299,17 +2334,17 @@ end;
 function TMainForm.SecondsToString(j: integer): string;
 begin
   if j < 60 then
-    Result:=Format('%ds', [j])
+    Result:=Format(sSec, [j])
   else
   if j < 60*60 then
-    Result:=Format('%dm, %ds', [j div 60, j mod 60])
+    Result:=Format(sMinSec, [j div 60, j mod 60])
   else begin
     j:=(j + 30) div 60;
     if j < 60*24 then
-      Result:=Format('%dh, %dm', [j div 60, j mod 60])
+      Result:=Format(sHourMin, [j div 60, j mod 60])
     else begin
       j:=(j + 30) div 60;
-      Result:=Format('%dd, %dh', [j div 24, j mod 24])
+      Result:=Format(sDayHour, [j div 24, j mod 24])
     end;
   end;
 
@@ -2772,10 +2807,10 @@ begin
 
   CheckStatus;
 
-  StatusBar.Panels[1].Text:=Format('D: %s/s', [GetHumanSize(DownSpeed, 1)]);
-  StatusBar.Panels[2].Text:=Format('U: %s/s', [GetHumanSize(UpSpeed, 1)]);
+  StatusBar.Panels[1].Text:=Format(sDownSpeed, [GetHumanSize(DownSpeed, 1)]);
+  StatusBar.Panels[2].Text:=Format(sUpSpeed, [GetHumanSize(UpSpeed, 1)]);
 
-  TrayIcon.Hint:=Format('%s%s%d downloading, %d seeding%s%s, %s',
+  TrayIcon.Hint:=Format(sDownloadingSeeding,
         [RpcObj.InfoStatus, LineEnding, DownCnt, SeedCnt, LineEnding, StatusBar.Panels[1].Text, StatusBar.Panels[2].Text]);
 
   if (lvTorrents.Selected <> nil) and (PtrUInt(lvTorrents.Selected.Data) <> RpcObj.CurTorrentId) then
@@ -3132,7 +3167,7 @@ begin
   txRemaining.Caption:=EtaToString(t.Integers['eta']);
   txDownloaded.Caption:=GetHumanSize(t.Floats['downloadedEver']);
   txUploaded.Caption:=GetHumanSize(t.Floats['uploadedEver']);
-  txWasted.Caption:=Format('%s (%d hashfails)', [GetHumanSize(t.Floats['corruptEver']), Round(t.Floats['corruptEver']/t.Floats['pieceSize'])]);
+  txWasted.Caption:=Format(sHashfails, [GetHumanSize(t.Floats['corruptEver']), Round(t.Floats['corruptEver']/t.Floats['pieceSize'])]);
   txDownSpeed.Caption:=GetHumanSize(FTorrents[idxDownSpeed, idx], 1)+'/s';
   txUpSpeed.Caption:=GetHumanSize(FTorrents[idxUpSpeed, idx], 1)+'/s';
   txRatio.Caption:=RatioToString(t.Floats['uploadRatio']);
@@ -3202,7 +3237,7 @@ begin
     s:='-'
   else
   if f = 1 then
-    s:='Updating...'
+    s:=sUpdating
   else
     s:=DateTimeToStr(UnixToDateTime(Trunc(f)) + GetTimeZoneDelta);
   txTrackerUpdate.Caption:=s;
@@ -3215,7 +3250,7 @@ begin
   else
     i:=t.Integers['seeders'];
   s:=GetSeedsText(t.Integers['peersSendingToUs'], i);
-  txSeeds.Caption:=StringReplace(s, '/', ' of ', []) + ' connected';
+  txSeeds.Caption:=StringReplace(s, '/', ' of ', []) + ' '+ sConnected;
   if RpcObj.RPCVersion >= 7 then
     if t.Arrays['trackerStats'].Count > 0 then
       i:=t.Arrays['trackerStats'].Objects[0].Integers['leecherCount']
@@ -3224,9 +3259,9 @@ begin
   else
     i:=t.Integers['leechers'];
   s:=GetPeersText(t.Integers['peersGettingFromUs'], t.Integers['peersKnown'], i);
-  s:=StringReplace(s, ' ', ' connected ', []);
+  s:=StringReplace(s, ' ', ' '+ sConnected +' ', []);
   s:=StringReplace(s, '/', ' of ', []);
-  txPeers.Caption:=StringReplace(s, ')', ' in swarm)', []);
+  txPeers.Caption:=StringReplace(s, ')', ' '+ sInSwarm+ ')', []);
   txMaxPeers.Caption:=t.Strings['maxConnectedPeers'];
   txLastActive.Caption:=TorrentDateTimeToString(Trunc(t.Floats['activityDate']));
   panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
@@ -3238,12 +3273,13 @@ begin
     s:=IncludeProperTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir'])) + s;
   txTorrentName.Caption:=s;
   txCreated.Caption:=Format('%s by %s', [TorrentDateTimeToString(Trunc(t.Floats['dateCreated'])), UTF8Encode(t.Strings['creator'])]);
-  txTotalSize.Caption:=Format('%s (%s done)', [GetHumanSize(t.Floats['totalSize']), GetHumanSize(t.Floats['sizeWhenDone'] - t.Floats['leftUntilDone'])]);
+  txTotalSize.Caption:=Format(sDone, [GetHumanSize(t.Floats['totalSize']), GetHumanSize(t.Floats['sizeWhenDone'] - t.Floats['leftUntilDone'])]);
   if t.Floats['totalSize'] = t.Floats['haveValid'] then
     i:=t.Integers['pieceCount']
   else
     i:=Trunc(t.Floats['haveValid']/t.Floats['pieceSize']);
-  txPieces.Caption:=Format('%d x %s (have %d)', [t.Integers['pieceCount'], GetHumanSize(t.Floats['pieceSize']), i]);
+  txPieces.Caption:=Format(sHave, [t.Integers['pieceCount'], GetHumanSize(t.Floats['pieceSize']), i]);
+
   txHash.Caption:=t.Strings['hashString'];
   txComment.Caption:=UTF8Encode(t.Strings['comment']);
   if (AnsiCompareText(Copy(txComment.Caption, 1, 7), 'http://') = 0)
@@ -3535,7 +3571,7 @@ begin
     exit;
   end;
 
-  MessageDlg('Unable to find path mapping.'+LineEnding+'Use program''s options to setup path mappings.', mtInformation, [mbOK], 0);
+  MessageDlg(sNoPathMapping, mtInformation, [mbOK], 0);
 end;
 
 initialization
