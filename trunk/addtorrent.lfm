@@ -1,12 +1,11 @@
 object AddTorrentForm: TAddTorrentForm
-  Left = 384
+  Left = 376
   Height = 341
-  Top = 185
+  Top = 186
   Width = 468
   HorzScrollBar.Page = 505
   VertScrollBar.Page = 404
   VertScrollBar.Range = 92
-  AutoScroll = False
   BorderIcons = [biSystemMenu]
   Caption = 'Add new torrent'
   ClientHeight = 341
@@ -15,7 +14,7 @@ object AddTorrentForm: TAddTorrentForm
   Constraints.MinWidth = 300
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '0.9.27'
+  LCLVersion = '0.9.28.3'
   object gbSaveAs: TGroupBox
     Left = 8
     Height = 120
@@ -72,7 +71,7 @@ object AddTorrentForm: TAddTorrentForm
     end
     object edPeerLimit: TSpinEdit
       Left = 376
-      Height = 23
+      Height = 21
       Top = 68
       Width = 62
       Anchors = [akTop, akRight]

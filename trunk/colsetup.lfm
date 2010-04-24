@@ -1,11 +1,10 @@
 object ColSetupForm: TColSetupForm
-  Left = 423
+  Left = 404
   Height = 239
-  Top = 195
+  Top = 194
   Width = 267
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
-  AutoScroll = False
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Setup columns'
@@ -14,7 +13,7 @@ object ColSetupForm: TColSetupForm
   Constraints.MinHeight = 200
   Constraints.MinWidth = 260
   Position = poMainFormCenter
-  LCLVersion = '0.9.27'
+  LCLVersion = '0.9.28.3'
   object lstColumns: TCheckListBox
     Left = 8
     Height = 221

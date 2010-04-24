@@ -1,11 +1,10 @@
 object OptionsForm: TOptionsForm
-  Left = 384
+  Left = 401
   Height = 334
-  Top = 185
+  Top = 186
   Width = 376
   HorzScrollBar.Page = 349
   VertScrollBar.Page = 238
-  AutoScroll = False
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Options'
@@ -17,7 +16,7 @@ object OptionsForm: TOptionsForm
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '0.9.27'
+  LCLVersion = '0.9.28.3'
   object btOK: TButton
     Left = 214
     Height = 23
@@ -48,9 +47,9 @@ object OptionsForm: TOptionsForm
     Height = 290
     Top = 8
     Width = 361
-    ActivePage = tabPaths
+    ActivePage = tabInterface
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     object tabConnection: TTabSheet
       Caption = 'Connection'
@@ -274,7 +273,7 @@ object OptionsForm: TOptionsForm
       end
       object edRefreshInterval: TSpinEdit
         Left = 144
-        Height = 23
+        Height = 21
         Top = 10
         Width = 70
         MaxValue = 999
@@ -317,7 +316,7 @@ object OptionsForm: TOptionsForm
           TabOrder = 1
         end
       end
-      object chShowAddTorrentWindow: TCheckBox
+      object cbShowAddTorrentWindow: TCheckBox
         Left = 8
         Height = 17
         Top = 138
