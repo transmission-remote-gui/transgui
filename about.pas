@@ -38,7 +38,7 @@ type
     imgTransmission: TImage;
     imgSynapse: TImage;
     imgLazarus: TImage;
-    Label1: TLabel;
+    txDonate: TLabel;
     txHomePage: TLabel;
     txAuthor: TLabel;
     txVersion: TLabel;

@@ -38,7 +38,7 @@ type
     cbTrayMinimize: TCheckBox;
     cbTrayClose: TCheckBox;
     cbUseProxy: TCheckBox;
-    chShowAddTorrentWindow: TCheckBox;
+    cbShowAddTorrentWindow: TCheckBox;
     cbHost: TComboBox;
     edProxyPassword: TEdit;
     edProxyPort: TSpinEdit;

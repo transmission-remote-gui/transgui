@@ -39,8 +39,8 @@ type
     edPeerLimit: TSpinEdit;
     gbOptions: TGroupBox;
     edMaxDown: TSpinEdit;
-    Label1: TLabel;
-    Label2: TLabel;
+    txKbs1: TLabel;
+    txKbs2: TLabel;
     txName: TLabel;
     txPeerLimit: TLabel;
     procedure cbMaxDownClick(Sender: TObject);

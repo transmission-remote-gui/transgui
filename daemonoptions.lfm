@@ -1,12 +1,11 @@
 object DaemonOptionsForm: TDaemonOptionsForm
-  Left = 380
+  Left = 354
   Height = 340
-  Top = 213
+  Top = 216
   Width = 464
   HorzScrollBar.Page = 409
   VertScrollBar.Page = 302
   VertScrollBar.Range = 169
-  AutoScroll = False
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Transmission options'
@@ -15,7 +14,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
   Constraints.MinHeight = 340
   Constraints.MinWidth = 400
   Position = poMainFormCenter
-  LCLVersion = '0.9.27'
+  LCLVersion = '0.9.28.3'
   object gbBandwidth: TGroupBox
     Left = 8
     Height = 87
@@ -26,7 +25,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     ClientHeight = 69
     ClientWidth = 444
     TabOrder = 1
-    object Label1: TLabel
+    object txKbs1: TLabel
       Left = 414
       Height = 14
       Top = 8
@@ -35,7 +34,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Caption = 'KB/s'
       ParentColor = False
     end
-    object Label2: TLabel
+    object txKbs2: TLabel
       Left = 414
       Height = 14
       Top = 40
@@ -55,7 +54,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object edMaxDown: TSpinEdit
       Left = 338
-      Height = 23
+      Height = 21
       Top = 4
       Width = 66
       Anchors = [akTop, akRight]
@@ -74,7 +73,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object edMaxUp: TSpinEdit
       Left = 338
-      Height = 23
+      Height = 21
       Top = 36
       Width = 66
       Anchors = [akTop, akRight]
@@ -152,7 +151,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object edDownloadDir: TEdit
       Left = 114
-      Height = 23
+      Height = 21
       Top = 0
       Width = 322
       Anchors = [akTop, akLeft, akRight]
@@ -160,7 +159,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object edPort: TSpinEdit
       Left = 114
-      Height = 23
+      Height = 21
       Top = 31
       Width = 75
       MaxValue = 65535
@@ -201,7 +200,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object edMaxPeers: TSpinEdit
       Left = 114
-      Height = 23
+      Height = 21
       Top = 155
       Width = 66
       MaxValue = 99999
@@ -238,7 +237,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object edSeedRatio: TFloatSpinEdit
       Left = 370
-      Height = 23
+      Height = 21
       Top = 155
       Width = 66
       Increment = 0.1

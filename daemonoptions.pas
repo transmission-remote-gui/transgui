@@ -48,8 +48,8 @@ type
     edSeedRatio: TFloatSpinEdit;
     gbBandwidth: TGroupBox;
     GroupBox1: TGroupBox;
-    Label1: TLabel;
-    Label2: TLabel;
+    txKbs1: TLabel;
+    txKbs2: TLabel;
     edMaxPeers: TSpinEdit;
     txPeerLimit: TLabel;
     txEncryption: TLabel;

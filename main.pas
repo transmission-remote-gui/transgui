@@ -26,7 +26,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
   httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
-  zipper;
+  zipper, DefaultTranslator;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -2212,7 +2212,7 @@ begin
 {$endif}
     cbTrayIconAlways.Checked:=FIni.ReadBool('Interface', 'TrayIconAlways', True);
 
-    chShowAddTorrentWindow.Checked:=FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
+    cbShowAddTorrentWindow.Checked:=FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
 
     if ShowModal = mrOK then begin
       if (FCurHost <> cbHost.Text) or IsHostSettingsChanged(FCurHost) then begin
@@ -2235,7 +2235,7 @@ begin
 {$endif}
       FIni.WriteBool('Interface', 'TrayIconAlways', cbTrayIconAlways.Checked);
 
-      FIni.WriteBool('Interface', 'ShowAddTorrentWindow', chShowAddTorrentWindow.Checked);
+      FIni.WriteBool('Interface', 'ShowAddTorrentWindow', cbShowAddTorrentWindow.Checked);
 
       if not RpcObj.Connected then
         DoConnect;

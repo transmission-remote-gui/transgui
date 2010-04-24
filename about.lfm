@@ -1,5 +1,5 @@
 object AboutForm: TAboutForm
-  Left = 384
+  Left = 426
   Height = 330
   Top = 185
   Width = 420
@@ -13,7 +13,7 @@ object AboutForm: TAboutForm
   Constraints.MinWidth = 350
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.28.3'
   object btOK: TButton
     Left = 340
     Height = 23
@@ -585,7 +585,7 @@ object AboutForm: TAboutForm
         ParentFont = False
         OnClick = txHomePageClick
       end
-      object Label1: TLabel
+      object txDonate: TLabel
         Left = 86
         Height = 14
         Top = 118
