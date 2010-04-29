@@ -27,7 +27,7 @@ uses
   Classes, SysUtils, Forms, httpsend, syncobjs, fpjson, jsonparser;
 
 type
-  TAdvInfoType = (aiNone, aiGeneral, aiFiles, aiPeers);
+  TAdvInfoType = (aiNone, aiGeneral, aiFiles, aiPeers, aiTrackers);
   TRefreshType = (rtNone, rtAll, rtDetails);
 
   TRpc = class;
@@ -48,6 +48,7 @@ type
     function GetTorrents: boolean;
     procedure GetPeers(TorrentId: integer);
     procedure GetFiles(TorrentId: integer);
+    procedure GetTrackers(TorrentId: integer);
     procedure GetInfo(TorrentId: integer);
     procedure GetStatusInfo;
 
@@ -55,6 +56,7 @@ type
     procedure DoFillPeersList;
     procedure DoFillFilesList;
     procedure DoFillInfo;
+    procedure DoFillTrackersList;
     procedure NotifyCheckStatus;
     procedure CheckStatusHandler(Data: PtrInt);
   protected
@@ -153,6 +155,8 @@ begin
                 GetPeers(CurTorrentId);
               aiFiles:
                 GetFiles(CurTorrentId);
+              aiTrackers:
+                GetTrackers(CurTorrentId);
             end;
             if FRpc.RefreshNow = rtDetails then
               FRpc.RefreshNow:=rtNone;
@@ -218,6 +222,15 @@ end;
 procedure TRpcThread.DoFillInfo;
 begin
   MainForm.FillGeneralInfo(ResultData as TJSONObject);
+end;
+
+procedure TRpcThread.DoFillTrackersList;
+begin
+  if ResultData = nil then begin
+    MainForm.ClearDetailsInfo;
+    exit;
+  end;
+  MainForm.FillTrackersList(ResultData as TJSONObject);
 end;
 
 procedure TRpcThread.NotifyCheckStatus;
@@ -353,6 +366,27 @@ begin
         ResultData:=nil;
       if not Terminated then
         Synchronize(@DoFillFilesList);
+    end;
+  finally
+    args.Free;
+  end;
+end;
+
+procedure TRpcThread.GetTrackers(TorrentId: integer);
+var
+  args: TJSONObject;
+  t: TJSONArray;
+begin
+  args:=FRpc.RequestInfo(TorrentId, ['id','trackers','trackerStats', 'nextAnnounceTime']);
+  try
+    if args <> nil then begin
+      t:=args.Arrays['torrents'];
+      if t.Count > 0 then
+        ResultData:=t.Objects[0]
+      else
+        ResultData:=nil;
+      if not Terminated then
+        Synchronize(@DoFillTrackersList);
     end;
   finally
     args.Free;

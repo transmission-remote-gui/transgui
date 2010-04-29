@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '1.3.2';
+  AppVersion = '1.4';
 
 resourcestring
   sShowApp = 'Show';
@@ -68,6 +68,8 @@ resourcestring
   sDone = '%s (%s done)';
   sHave = '%d x %s (have %d)';
   sUnableExtractFlag = 'Unable to extract flag image.';
+  sTrackerWorking = 'Working';
+  sTrackerUpdating = 'Updating';
 
   sByte = 'b';
   sKByte = 'KB';
@@ -112,12 +114,14 @@ type
     imgFlags: TImageList;
     ImageList16: TImageList;
     FilterTimer: TTimer;
+    lvTrackers: TListView;
     MenuItem40: TMenuItem;
     MenuItem41: TMenuItem;
     MenuItem42: TMenuItem;
     MenuItem43: TMenuItem;
     MenuItem44: TMenuItem;
     pbDownloaded: TPaintBox;
+    tabTrackers: TTabSheet;
     txConnErrorLabel: TLabel;
     panSearch: TPanel;
     panFilter: TPanel;
@@ -393,6 +397,7 @@ type
     procedure FillFilesList(list, priorities, wanted: TJSONArray; const DownloadDir: WideString);
     procedure UpdateFilesList;
     procedure FillGeneralInfo(t: TJSONObject);
+    procedure FillTrackersList(TrackersData: TJSONObject);
     procedure CheckStatus(Fatal: boolean = True);
     function TorrentAction(TorrentId: integer; const AAction: string; args: TJSONObject = nil): boolean;
     function SetFilePriority(TorrentId: integer; const Files: array of integer; const APriority: string): boolean;
@@ -457,6 +462,12 @@ const
   idxFileFullPath = 5;
   idxFileId = 6;
   idcFileColCount = 7;
+
+  // Trackers list
+  idxTrackersListName = 0;
+  idxTrackersListStatus = 1;
+  idxTrackersListUpdateIn = 2;
+  idxTrackersListSeeds = 3;
 
   // Filter idices
   fltAll      = 0;
@@ -686,6 +697,7 @@ begin
   TorrentColumnsChanged;
   LoadColumns(lvFiles, 'FilesList');
   LoadColumns(lvPeers, 'PeersList');
+  LoadColumns(lvTrackers, 'TrackersList');
 
   FTorrentsSortColumn:=FIni.ReadInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
   FTorrentsSortDesc:=FIni.ReadBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
@@ -1206,6 +1218,7 @@ begin
   SaveColumns(lvTorrents, 'TorrentsList', True);
   SaveColumns(lvFiles, 'FilesList');
   SaveColumns(lvPeers, 'PeersList');
+  SaveColumns(lvTrackers, 'TrackersList');
 
   FIni.WriteInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
   FIni.WriteBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
@@ -1955,7 +1968,10 @@ begin
       RpcObj.AdvInfo:=aiPeers
     else
     if PageInfo.ActivePage = tabFiles then
-      RpcObj.AdvInfo:=aiFiles;
+      RpcObj.AdvInfo:=aiFiles
+    else
+    if PageInfo.ActivePage = tabTrackers then
+      RpcObj.AdvInfo:=aiTrackers;
     DoRefresh;
   finally
     RpcObj.Unlock;
@@ -2108,6 +2124,8 @@ begin
   lvPeers.Color:=Self.Color;
   lvFiles.Enabled:=False;
   lvFiles.Color:=Self.Color;
+  lvTrackers.Enabled:=False;
+  lvTrackers.Color:=Self.Color;
 
   lvFilter.Enabled:=False;
   lvFilter.Color:=Self.Color;
@@ -2156,6 +2174,7 @@ begin
   FFiles.Clear;
   lvPeers.Clear;
   lvFiles.Clear;
+  lvTrackers.Clear;
   ClearChildren(panGeneralInfo);
   ClearChildren(panTransfer);
   ProcessPieces('', 0, 0);
@@ -2298,25 +2317,36 @@ end;
 function TMainForm.GetTorrentError(t: TJSONObject): string;
 var
   i: integer;
+  stats: TJSONArray;
+  err: widestring;
 begin
   Result:=UTF8Encode(t.Strings['errorString']);
   if Result = '' then
     if RpcObj.RPCVersion >= 7 then begin
-      if t.Arrays['trackerStats'].Count > 0 then
-        with t.Arrays['trackerStats'].Objects[0] do begin
+      stats:=t.Arrays['trackerStats'];
+      for i:=0 to stats.Count - 1 do
+        with stats.Objects[i] do begin
           if Booleans['hasAnnounced'] then
-            Result:=Strings['lastAnnounceResult']
+            err:=Strings['lastAnnounceResult']
           else
             if Booleans['hasScraped'] then
-              Result:=Strings['lastScrapeResult'];
-          if Result = 'Success' then
+              err:=Strings['lastScrapeResult']
+            else
+              err:='';
+          if err = 'Success' then
+            err:='';
+          if err = '' then begin
+            // If at least one tracker is working, then report no error
             Result:='';
-          if Result <> '' then
-            Result:='Tracker: ' + Result;
-        end
+            break;
+          end
+          else
+            if Result = '' then
+              Result:='Tracker: ' + UTF8Encode(err);
+        end;
     end
     else begin
-      Result:=t.Strings['announceResponse'];
+      Result:=UTF8Encode(t.Strings['announceResponse']);
       if Result = 'Success' then
         Result:=''
       else
@@ -2423,7 +2453,7 @@ begin
         with t.Arrays['trackerStats'].Objects[0] do begin
           s:='';
           if integer(Integers['announceState']) in [2, 3] then
-            s:='Updating'
+            s:=sTrackerUpdating
           else
             if Booleans['hasAnnounced'] then
               s:=Strings['lastAnnounceResult']
@@ -2432,7 +2462,7 @@ begin
                 s:=Strings['lastScrapeResult'];
 
           if s = 'Success' then
-            s:='Working';
+            s:=sTrackerWorking;
           FTorrents[idxTrackerStatus, row]:=s;
         end
       else
@@ -2857,11 +2887,6 @@ begin
 {$ifndef LCLgtk2}
     lvPeers.Color:=clWindow;
 {$endif LCLgtk2}
-    if list = nil then begin
-      lvPeers.Clear;
-      exit;
-    end;
-
     if FResolver = nil then begin
       opt:=[];
       if acResolveHost.Checked then
@@ -3302,6 +3327,146 @@ begin
   txAddedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['addedDate']));
   txCompletedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['doneDate']));
   panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
+end;
+
+procedure TMainForm.FillTrackersList(TrackersData: TJSONObject);
+var
+  it: TListItem;
+
+  procedure SetSubItem(idx: integer; const s: string);
+  begin
+    if it.SubItems.Count < idx then begin
+      while it.SubItems.Count < idx - 1 do
+        it.SubItems.Add('');
+      it.SubItems.Add(s);
+    end
+    else
+      it.SubItems[idx-1]:=s;
+  end;
+
+var
+  i, j, tidx: integer;
+  id: ptruint;
+  d: TJSONData;
+  t: TJSONObject;
+  tr: array of pointer;
+  f: double;
+  s: string;
+  Trackers, TrackerStats: TJSONArray;
+begin
+  if TrackersData = nil then begin
+    ClearDetailsInfo;
+    exit;
+  end;
+  Trackers:=TrackersData.Arrays['trackers'];
+  if RpcObj.RPCVersion >= 7 then
+    TrackerStats:=TrackersData.Arrays['trackerStats']
+  else
+    TrackerStats:=nil;
+  tidx:=FTorrents.IndexOf(idxTorrentId, TrackersData.Integers['id']);
+  if tidx = -1 then begin
+    ClearDetailsInfo;
+    exit;
+  end;
+  i:=TrackerStats.Count;
+//  lvTrackers.BeginUpdate;
+  try
+    lvTrackers.Enabled:=True;
+{$ifndef LCLgtk2}
+    lvTrackers.Color:=clWindow;
+{$endif LCLgtk2}
+
+    SetLength(tr, lvTrackers.Items.Count);
+    for i:=0 to lvTrackers.Items.Count - 1 do begin
+      tr[i]:=lvTrackers.Items[i].Data;
+      lvTrackers.Items[i].Data:=nil;
+    end;
+
+    for i:=0 to Trackers.Count - 1 do begin
+      d:=Trackers[i];
+      if not (d is TJSONObject) then continue;
+      t:=d as TJSONObject;
+      if t.IndexOfName('id') >= 0 then
+        id:=t.Integers['id'] + 1
+      else
+        id:=i + 1;
+      it:=nil;
+      for j:=0 to High(tr) do
+        if id = ptruint(tr[j]) then begin
+          it:=lvTrackers.Items[j];
+          break;
+        end;
+      if it = nil then
+        it:=lvTrackers.Items.Add;
+
+      it.Caption:=UTF8Encode(t.Strings['announce']);
+      if TrackerStats <> nil then begin
+        f:=0;
+        if i < TrackerStats.Count then
+          with TrackerStats.Objects[i] do begin
+            s:='';
+            if integer(Integers['announceState']) in [2, 3] then
+              s:=sTrackerUpdating
+            else
+              if Booleans['hasAnnounced'] then
+                s:=Strings['lastAnnounceResult']
+              else
+                if Booleans['hasScraped'] then
+                  s:=Strings['lastScrapeResult'];
+
+            if s = 'Success' then
+              s:=sTrackerWorking;
+
+            SetSubItem(idxTrackersListStatus, UTF8Encode(s));
+
+            j:=Integers['seederCount'];
+            if j >= 0 then
+              s:=IntToStr(j)
+            else
+              s:='';
+            SetSubItem(idxTrackersListSeeds, s);
+
+            if integer(Integers['announceState']) in [2, 3] then
+              f:=1
+            else
+              f:=Floats['nextAnnounceTime'];
+          end;
+      end
+      else begin
+        if i = 0 then begin
+          SetSubItem(idxTrackersListStatus, UTF8Encode(WideString(FTorrents[idxTrackerStatus, tidx])));
+          SetSubItem(idxTrackersListSeeds, IntToStr(FTorrents[idxSeedsTotal, tidx]));
+        end;
+        f:=TrackersData.Floats['nextAnnounceTime'];
+      end;
+
+      if f = 0 then
+        s:='-'
+      else
+      if f = 1 then
+        s:=sUpdating
+      else begin
+        f:=(UnixToDateTime(Trunc(f)) + GetTimeZoneDelta - Now)*SecsPerDay;
+        if f < 0 then
+          f:=0;
+        s:=SecondsToString(Trunc(f));
+      end;
+      if (TrackerStats <> nil) or (i = 0) then
+        SetSubItem(idxTrackersListUpdateIn, s);
+
+      it.Data:=pointer(id);
+    end;
+
+    i:=0;
+    while i < lvTrackers.Items.Count do
+      if lvTrackers.Items[i].Data = nil then
+        lvTrackers.Items.Delete(i)
+      else
+        Inc(i);
+
+  finally
+//    lvTrackers.EndUpdate;
+  end;
 end;
 
 procedure TMainForm.CheckStatus(Fatal: boolean);

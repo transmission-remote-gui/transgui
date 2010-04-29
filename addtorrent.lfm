@@ -110,6 +110,7 @@ object AddTorrentForm: TAddTorrentForm
       ColumnClick = False
       ReadOnly = True
       RowSelect = True
+      ScrollBars = ssAutoBoth
       TabOrder = 0
       ViewStyle = vsReport
       OnKeyDown = lvFilesKeyDown

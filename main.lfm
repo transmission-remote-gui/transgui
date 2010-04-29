@@ -131,6 +131,7 @@ object MainForm: TMainForm
       PopupMenu = pmTorrents
       ReadOnly = True
       RowSelect = True
+      ScrollBars = ssAutoBoth
       SmallImages = ImageList16
       SortType = stData
       TabOrder = 0
@@ -288,7 +289,7 @@ object MainForm: TMainForm
     Height = 290
     Top = 151
     Width = 780
-    ActivePage = tabPeers
+    ActivePage = tabTrackers
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
@@ -844,6 +845,41 @@ object MainForm: TMainForm
         end
       end
     end
+    object tabTrackers: TTabSheet
+      Caption = 'Trackers'
+      ClientHeight = 263
+      ClientWidth = 772
+      ImageIndex = 5
+      object lvTrackers: TListView
+        Left = 0
+        Height = 263
+        Top = 0
+        Width = 772
+        Align = alClient
+        Columns = <        
+          item
+            Caption = 'Name'
+            Width = 200
+          end        
+          item
+            Caption = 'Status'
+            Width = 200
+          end        
+          item
+            Caption = 'Update in'
+            Width = 80
+          end        
+          item
+            Caption = 'Seeds'
+          end>
+        ColumnClick = False
+        ReadOnly = True
+        RowSelect = True
+        ScrollBars = ssAutoBoth
+        TabOrder = 0
+        ViewStyle = vsReport
+      end
+    end
     object tabPeers: TTabSheet
       Caption = 'Peers'
       ClientHeight = 263
@@ -890,6 +926,7 @@ object MainForm: TMainForm
         PopupMenu = pmPeers
         ReadOnly = True
         RowSelect = True
+        ScrollBars = ssAutoBoth
         SmallImages = imgFlags
         TabOrder = 0
         ViewStyle = vsReport
@@ -937,6 +974,7 @@ object MainForm: TMainForm
         PopupMenu = pmFiles
         ReadOnly = True
         RowSelect = True
+        ScrollBars = ssAutoBoth
         TabOrder = 0
         ViewStyle = vsReport
         OnCustomDrawItem = lvFilesCustomDrawItem
