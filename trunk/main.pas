@@ -978,7 +978,7 @@ begin
   AppBusy;
   id:=0;
 
-  fs:=TFileStream.Create(UTF8Decode(FileName), fmOpenRead or fmShareDenyNone);
+  fs:=TFileStream.Create(UTF8ToSys(FileName), fmOpenRead or fmShareDenyNone);
   try
     SetLength(torrent, fs.Size);
     fs.ReadBuffer(PChar(torrent)^, Length(torrent));
@@ -2779,7 +2779,7 @@ begin
       end;
 
       if edSearch.Text <> '' then
-        if Pos(AnsiUpperCase(UTF8Decode(edSearch.Text)), AnsiUpperCase(UTF8Decode(string(FTorrents[idxName, i])))) = 0 then
+        if UTF8Pos(UTF8UpperCase(edSearch.Text), UTF8UpperCase(UTF8Encode(widestring(FTorrents[idxName, i])))) = 0 then
           continue;
 
       if Cnt >= lvTorrents.Items.Count then
