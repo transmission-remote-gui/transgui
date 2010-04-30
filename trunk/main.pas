@@ -2658,30 +2658,25 @@ procedure TMainForm.UpdateTorrentsList;
 var
   it: TListItem;
 
-  procedure SetSubItem(AID: integer; const Text: widestring; Encode: boolean = True);
+  procedure SetSubItem(AID: integer; const Text: string);
   var
     idx: integer;
-    s: string;
   begin
-    if Encode then
-      s:=UTF8Encode(Text)
-    else
-      s:=Text;
     for idx:=0 to lvTorrents.Columns.Count - 1 do
       with lvTorrents.Columns[idx] do
         if ID = AID then begin
           if not Visible or (Width = 0) then
             break;
           if idx = 0 then
-            it.Caption:=s
+            it.Caption:=Text
           else
             if it.SubItems.Count < idx then begin
               while it.SubItems.Count < idx - 1 do
                 it.SubItems.Add('');
-              it.SubItems.Add(s);
+              it.SubItems.Add(Text);
             end
             else
-              it.SubItems[idx-1]:=s;
+              it.SubItems[idx-1]:=Text;
           break;
         end;
   end;
@@ -2787,12 +2782,12 @@ begin
       else
         it:=lvTorrents.Items[Cnt];
 
-      SetSubItem(idxName, FTorrents[idxName, i]);
+      SetSubItem(idxName, UTF8Encode(widestring(FTorrents[idxName, i])));
       if not VarIsNull(FTorrents[idxSize, i]) then
-        SetSubItem(idxSize, GetHumanSize(FTorrents[idxSize, i], 0), False);
+        SetSubItem(idxSize, GetHumanSize(FTorrents[idxSize, i], 0));
 
       if not VarIsNull(FTorrents[idxStatus, i]) then
-        SetSubItem(idxStatus, GetTorrentStatus(i), False);
+        SetSubItem(idxStatus, GetTorrentStatus(i));
 
       SetSubItem(idxDone, Format('%.1f%%', [double(FTorrents[idxDone, i])]));
 
@@ -2807,20 +2802,20 @@ begin
         s:=GetHumanSize(j, 1) + sPerSecond
       else
         s:='';
-      SetSubItem(idxDownSpeed, s, False);
+      SetSubItem(idxDownSpeed, s);
 
       j:=FTorrents[idxUpSpeed, i];
       if j > 0 then
         s:=GetHumanSize(j, 1) + sPerSecond
       else
         s:='';
-      SetSubItem(idxUpSpeed, s, False);
+      SetSubItem(idxUpSpeed, s);
 
       if not VarIsNull(FTorrents[idxETA, i]) then
-        SetSubItem(idxETA, EtaToString(FTorrents[idxETA, i]), False);
+        SetSubItem(idxETA, EtaToString(FTorrents[idxETA, i]));
 
       if not VarIsNull(FTorrents[idxRatio, i]) then
-        SetSubItem(idxRatio, RatioToString(FTorrents[idxRatio, i]), False);
+        SetSubItem(idxRatio, RatioToString(FTorrents[idxRatio, i]));
 
       if not VarIsNull(FTorrents[idxDownloaded, i]) then
         SetSubItem(idxDownloaded, GetHumanSize(FTorrents[idxDownloaded, i]));
@@ -3161,7 +3156,7 @@ begin
     if (path <> '') and (Copy(s, 1, Length(path)) = path) then
       s:=Copy(s, Length(path) + 1, MaxInt);
 
-    FFiles[idxFileName, row]:=s;
+    FFiles[idxFileName, row]:=UTF8Decode(s);
     ff:=f.Floats['length'];
     FFiles[idxFileSize, row]:=ff;
     FFiles[idxFileDone, row]:=f.Floats['bytesCompleted'];
@@ -3179,7 +3174,7 @@ begin
         else           s:='???';
       end;
     end;
-    FFiles[idxFilePriority, row]:=s;
+    FFiles[idxFilePriority, row]:=UTF8Decode(s);
   end;
 
   UpdateFilesList;
@@ -3216,12 +3211,12 @@ begin
       else
         it:=lvFiles.Items[i];
 
-      it.Caption:=FFiles[idxFileName, i];
+      it.Caption:=UTF8Encode(widestring(FFiles[idxFileName, i]));
 
       SetSubItem(idxFileSize, GetHumanSize(FFiles[idxFileSize, i]));
       SetSubItem(idxFileDone, GetHumanSize(FFiles[idxFileDone, i]));
       SetSubItem(idxFileProgress, Format('%.1f%%', [double(FFiles[idxFileProgress, i])]));
-      SetSubItem(idxFilePriority, FFiles[idxFilePriority, i]);
+      SetSubItem(idxFilePriority, UTF8Encode(widestring(FFiles[idxFilePriority, i])));
       it.Data:=pointer(ptrint(i));
     end;
 
