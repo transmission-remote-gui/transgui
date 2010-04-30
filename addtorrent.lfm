@@ -17,11 +17,11 @@ object AddTorrentForm: TAddTorrentForm
   LCLVersion = '0.9.28.3'
   object gbSaveAs: TGroupBox
     Left = 8
-    Height = 120
+    Height = 92
     Top = 4
     Width = 453
     Anchors = [akTop, akLeft, akRight]
-    ClientHeight = 102
+    ClientHeight = 74
     ClientWidth = 449
     TabOrder = 0
     object txDestFolder: TLabel
@@ -35,19 +35,11 @@ object AddTorrentForm: TAddTorrentForm
     object txPeerLimit: TLabel
       Left = 312
       Height = 14
-      Top = 73
+      Top = 49
       Width = 48
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
       Caption = 'Peer limit:'
-      ParentColor = False
-    end
-    object txWarning: TLabel
-      Left = 10
-      Height = 14
-      Top = 44
-      Width = 374
-      Caption = 'WARNING: Transmission daemon may crash if non-existent folder is specified.'
       ParentColor = False
     end
     object cbDestFolder: TComboBox
@@ -62,7 +54,7 @@ object AddTorrentForm: TAddTorrentForm
     object cbStartTorrent: TCheckBox
       Left = 10
       Height = 17
-      Top = 70
+      Top = 46
       Width = 79
       Caption = 'Start torrent'
       Checked = True
@@ -72,7 +64,7 @@ object AddTorrentForm: TAddTorrentForm
     object edPeerLimit: TSpinEdit
       Left = 376
       Height = 21
-      Top = 68
+      Top = 44
       Width = 62
       Anchors = [akTop, akRight]
       MaxValue = 999
@@ -83,17 +75,17 @@ object AddTorrentForm: TAddTorrentForm
   end
   object gbContents: TGroupBox
     Left = 8
-    Height = 175
-    Top = 128
+    Height = 203
+    Top = 100
     Width = 453
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Torrent contents'
-    ClientHeight = 157
+    ClientHeight = 185
     ClientWidth = 449
     TabOrder = 1
     object lvFiles: TListView
       Left = 10
-      Height = 116
+      Height = 144
       Top = 28
       Width = 428
       Anchors = [akTop, akLeft, akRight, akBottom]
