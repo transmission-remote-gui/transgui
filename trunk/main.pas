@@ -3466,10 +3466,11 @@ begin
                 if Booleans['hasScraped'] then
                   s:=Strings['lastScrapeResult'];
 
+            s:=UTF8Encode(s);
             if s = 'Success' then
               s:=sTrackerWorking;
 
-            SetSubItem(idxTrackersListStatus, UTF8Encode(s));
+            SetSubItem(idxTrackersListStatus, s);
 
             j:=Integers['seederCount'];
             if j >= 0 then
