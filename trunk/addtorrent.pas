@@ -45,6 +45,7 @@ type
     txDestFolder: TLabel;
     procedure btSelectAllClick(Sender: TObject);
     procedure btSelectNoneClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure lvFilesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure lvFilesMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -106,6 +107,13 @@ var
 begin
   for i:=0 to lvFiles.Items.Count - 1 do
     lvFiles.Items[i].Checked:=False;
+end;
+
+procedure TAddTorrentForm.FormCreate(Sender: TObject);
+begin
+{$ifndef LCLgtk2}
+  gbSaveAs.Caption:='';
+{$endif LCLgtk2}
 end;
 
 initialization

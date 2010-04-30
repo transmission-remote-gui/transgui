@@ -45,6 +45,7 @@ type
     txPeerLimit: TLabel;
     procedure cbMaxDownClick(Sender: TObject);
     procedure cbMaxUpClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -63,6 +64,13 @@ end;
 procedure TTorrPropsForm.cbMaxUpClick(Sender: TObject);
 begin
   edMaxUp.Enabled:=cbMaxUp.Checked;
+end;
+
+procedure TTorrPropsForm.FormCreate(Sender: TObject);
+begin
+{$ifndef LCLgtk2}
+  gbOptions.Caption:='';
+{$endif LCLgtk2}
 end;
 
 initialization
