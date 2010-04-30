@@ -175,7 +175,7 @@ object MainForm: TMainForm
         HideSelection = False
         ReadOnly = True
         RowSelect = True
-        ScrollBars = ssVertical
+        ScrollBars = ssAutoVertical
         ShowColumnHeaders = False
         SmallImages = ImageList16
         TabOrder = 0
