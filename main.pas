@@ -26,7 +26,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
   httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
-  zipper, ResTranslator, StrUtils, GetText;
+  zipper, ResTranslator, StrUtils, LCLProc;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -670,8 +670,8 @@ begin
   else
     FileClose(FileCreate(FRunFileName, fmCreate));
 
-  GetLanguageIDs(lLang, sLang);
-  TranslationFileName := ExtractFilePath(ParamStr(0)) + 'lang' + DirectorySeparator + ExtractFileNameOnly(ParamStr(0))+ '.' + sLang;
+  LCLGetLanguageIDs(lLang, sLang);
+  TranslationFileName := ExtractFilePath(ParamStr(0)) + 'lang' + DirectorySeparator + ExtractFileNameOnly(ParamStr(0))+ '.' + AnsiLowerCase(sLang);
   LoadTranslationFile(TranslationFileName, @OnTranslate);
 
   SizeNames[1]:=sByte;
