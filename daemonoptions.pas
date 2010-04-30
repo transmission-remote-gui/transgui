@@ -54,7 +54,7 @@ type
     edMaxUp: TSpinEdit;
     edSeedRatio: TFloatSpinEdit;
     gbBandwidth: TGroupBox;
-    GroupBox1: TGroupBox;
+    gbGeneral: TGroupBox;
     txKbs1: TLabel;
     txKbs2: TLabel;
     edMaxPeers: TSpinEdit;
@@ -131,6 +131,9 @@ end;
 
 procedure TDaemonOptionsForm.FormCreate(Sender: TObject);
 begin
+{$ifndef LCLgtk2}
+  gbGeneral.Caption:='';
+{$endif LCLgtk2}
   cbEncryption.Items.Add(sEncryptionDisabled);
   cbEncryption.Items.Add(sEncryptionEnabled);
   cbEncryption.Items.Add(sEncryptionRequired);

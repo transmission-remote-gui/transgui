@@ -12,6 +12,7 @@ object AddTorrentForm: TAddTorrentForm
   ClientWidth = 468
   Constraints.MinHeight = 300
   Constraints.MinWidth = 300
+  OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '0.9.28.3'
@@ -21,6 +22,7 @@ object AddTorrentForm: TAddTorrentForm
     Top = 4
     Width = 453
     Anchors = [akTop, akLeft, akRight]
+    Caption = ' '
     ClientHeight = 74
     ClientWidth = 449
     TabOrder = 0

@@ -47,9 +47,9 @@ object OptionsForm: TOptionsForm
     Height = 290
     Top = 8
     Width = 361
-    ActivePage = tabInterface
+    ActivePage = tabPaths
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     object tabConnection: TTabSheet
       Caption = 'Connection'
@@ -122,7 +122,7 @@ object OptionsForm: TOptionsForm
       end
       object edPassword: TEdit
         Left = 148
-        Height = 23
+        Height = 21
         Top = 94
         Width = 196
         Anchors = [akTop, akLeft, akRight]
@@ -132,7 +132,7 @@ object OptionsForm: TOptionsForm
       end
       object edUserName: TEdit
         Left = 148
-        Height = 23
+        Height = 21
         Top = 66
         Width = 196
         Anchors = [akTop, akLeft, akRight]
@@ -140,7 +140,7 @@ object OptionsForm: TOptionsForm
       end
       object edPort: TSpinEdit
         Left = 148
-        Height = 23
+        Height = 21
         Top = 38
         Width = 70
         MaxValue = 65535
@@ -159,14 +159,14 @@ object OptionsForm: TOptionsForm
       end
       object edProxy: TEdit
         Left = 148
-        Height = 23
+        Height = 21
         Top = 146
         Width = 196
         TabOrder = 6
       end
       object edProxyPort: TSpinEdit
         Left = 148
-        Height = 23
+        Height = 21
         Top = 174
         Width = 70
         MaxValue = 65535
@@ -176,7 +176,7 @@ object OptionsForm: TOptionsForm
       end
       object edProxyUserName: TEdit
         Left = 148
-        Height = 23
+        Height = 21
         Top = 202
         Width = 196
         Anchors = [akTop, akLeft, akRight]
@@ -184,7 +184,7 @@ object OptionsForm: TOptionsForm
       end
       object edProxyPassword: TEdit
         Left = 148
-        Height = 23
+        Height = 21
         Top = 230
         Width = 196
         Anchors = [akTop, akLeft, akRight]

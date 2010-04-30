@@ -14,6 +14,7 @@ object TorrPropsForm: TTorrPropsForm
   ClientWidth = 350
   Constraints.MinHeight = 186
   Constraints.MinWidth = 350
+  OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '0.9.28.3'
   object gbOptions: TGroupBox
@@ -22,6 +23,7 @@ object TorrPropsForm: TTorrPropsForm
     Top = 4
     Width = 333
     Anchors = [akTop, akLeft, akRight, akBottom]
+    Caption = ' '
     ClientHeight = 124
     ClientWidth = 329
     TabOrder = 0

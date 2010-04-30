@@ -109,12 +109,13 @@ object DaemonOptionsForm: TDaemonOptionsForm
     ModalResult = 2
     TabOrder = 3
   end
-  object GroupBox1: TGroupBox
+  object gbGeneral: TGroupBox
     Left = 8
     Height = 204
     Top = 4
     Width = 526
     Anchors = [akTop, akLeft, akRight]
+    Caption = ' '
     ClientHeight = 186
     ClientWidth = 522
     TabOrder = 0
@@ -145,7 +146,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     object txPeerLimit: TLabel
       Left = 6
       Height = 14
-      Top = 159
+      Top = 158
       Width = 80
       Caption = 'Global peer limit:'
       ParentColor = False
@@ -225,14 +226,14 @@ object DaemonOptionsForm: TDaemonOptionsForm
     object cbSeedRatio: TCheckBox
       Left = 262
       Height = 17
-      Top = 158
+      Top = 157
       Width = 71
       Caption = 'Seed ratio:'
       OnClick = cbSeedRatioClick
       TabOrder = 9
     end
     object edSeedRatio: TFloatSpinEdit
-      Left = 416
+      Left = 448
       Height = 21
       Top = 155
       Width = 66
