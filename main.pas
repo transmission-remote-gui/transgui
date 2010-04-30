@@ -352,6 +352,9 @@ type
     FCurHost: string;
     FPathMap: TStringList;
     FAlterColor: TColor;
+{$ifdef LCLcarbon}
+    FColClickTime: TDateTime;
+{$endif LCLcarbon}
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -779,6 +782,11 @@ end;
 
 procedure TMainForm.lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
 begin
+{$ifdef LCLcarbon}
+  if (Now - FColClickTime)*MSecsPerDay < 300 then
+    exit;
+  FColClickTime:=Now;
+{$endif LCLcarbon}
   if FTorrentsSortColumn = Column.ID then
     FTorrentsSortDesc:=not FTorrentsSortDesc
   else begin
