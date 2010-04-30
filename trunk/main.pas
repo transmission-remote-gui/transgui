@@ -1774,6 +1774,9 @@ end;
 procedure TMainForm.ApplicationPropertiesIdle(Sender: TObject; var Done: Boolean);
 begin
   UpdateUI;
+{$ifdef LCLcarbon}
+  CheckSynchronize;
+{$endif LCLcarbon}
   Done:=True;
 end;
 
