@@ -6,6 +6,7 @@ object AboutForm: TAboutForm
   HorzScrollBar.Page = 423
   VertScrollBar.Page = 316
   BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
   Caption = 'About'
   ClientHeight = 330
   ClientWidth = 420

@@ -79,6 +79,7 @@ end;
 
 procedure TAboutForm.FormCreate(Sender: TObject);
 begin
+  BorderStyle:=bsSizeable;
   txAppName.Caption:=AppName;
   txVersion.Caption:=Format(txVersion.Caption, [AppVersion]);
   Page.ActivePageIndex:=0;
