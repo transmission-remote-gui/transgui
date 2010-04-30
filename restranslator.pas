@@ -351,7 +351,7 @@ begin
       SaveToStream(FS);
       if (Count > 0) and (FAddedStrings.Count > 0) then begin
         FS.WriteBuffer(LineSeparator, Length(LineSeparator));
-        FS.WriteBuffer(LineEnding, Length(LineEnding));
+        FS.WriteBuffer(string(LineEnding)[1], Length(LineEnding));
       end;
     end;
     FAddedStrings.SaveToStream(FS);
