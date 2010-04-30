@@ -26,7 +26,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
   httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
-  zipper, DefaultTranslator;
+  zipper, ResTranslator, StrUtils, GetText;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -53,6 +53,8 @@ resourcestring
   sUpdateComplete = 'Update complete.';
   sTorrentVerification = 'Torrent verification may take a long time.' + LineEnding + 'Are you sure to start verification of torrent ''%s''?';
   sReconnect = 'Reconnect in %d seconds.';
+  sDisconnected = 'Disconnected';
+  sConnectingToDaemon = 'Connecting to daemon...';
   sSec = '%ds';
   sMinSec = '%dm, %ds';
   sHourMin = '%dh, %dm';
@@ -71,6 +73,13 @@ resourcestring
   sTrackerWorking = 'Working';
   sTrackerUpdating = 'Updating';
 
+  sRemoveTorrentData = 'Are you sure to remove torrent ''%s'' and all associated DATA?';
+  sRemoveTorrent = 'Are you sure to remove torrent ''%s''?';
+  sUnableGetFilesList = 'Unable to get files list';
+  sSkip = 'skip';
+  sLow = 'low';
+  sNormal = 'normal';
+  sHigh = 'high';
   sByte = 'b';
   sKByte = 'KB';
   sMByte = 'MB';
@@ -592,6 +601,17 @@ begin
   Result:='';
 end;
 
+procedure OnTranslate(Sender: TResTranslator; const ResourceName: AnsiString; var Accept: boolean);
+const
+  IgnoreUnits: array[0..10] of string =
+      ('fpjson','jsonparser','jsonscanner','lclstrconsts','math',
+       'rtlconsts','sysconst','variants','zbase','zipper','zstream');
+begin
+  Accept := not AnsiMatchText(Copy2Symb(ResourceName, '.'), IgnoreUnits)
+             or AnsiStartsText('lclstrconsts.rsMb', ResourceName)  //<-- dialog buttons
+             or AnsiStartsText('lclstrconsts.rsMt', ResourceName); //<-- dialog message
+end;
+
 var
   FHomeDir: string;
   FIPCFileName: string;
@@ -602,6 +622,8 @@ var
   h: THandle;
   s: utf8string;
   i: integer;
+  lLang, sLang: string;
+  TranslationFileName: string;
 begin
   Application.Title:=AppName;
   FHomeDir:=IncludeTrailingPathDelimiter(GetAppConfigDir(False));
@@ -633,6 +655,10 @@ begin
   end
   else
     FileClose(FileCreate(FRunFileName, fmCreate));
+
+  GetLanguageIDs(lLang, sLang);
+  TranslationFileName := ExtractFilePath(ParamStr(0)) + 'lang' + DirectorySeparator + ExtractFileNameOnly(ParamStr(0))+ '.' + sLang;
+  LoadTranslationFile(TranslationFileName, @OnTranslate);
 
   Result:=True;
 end;
@@ -728,6 +754,8 @@ begin
   FTorrentProgress.Free;
   FPathMap.Free;
   FFiles.Free;
+//  if Application.HasOption('m', 'MakeTranslation') then
+//    SaveTranslationFile;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -990,7 +1018,7 @@ begin
       try
         t:=args.Arrays['torrents'];
         if t.Count = 0 then
-          raise Exception.Create('Unable to get files list');
+          raise Exception.Create(sUnableGetFilesList);
         edPeerLimit.Value:=t.Objects[0].Integers['maxConnectedPeers'];
         files:=t.Objects[0].Arrays['files'];
         path:=GetFilesCommonPath(files);
@@ -1196,7 +1224,7 @@ begin
 
     pic:=TPicture.Create;
     try
-      pic.LoadFromFile(FlagsPath + ImageName);
+      pic.LoadFromFile(UTF8Encode(FlagsPath + ImageName));
       if imgFlags.Count = 1 then begin
         imgFlags.Width:=pic.Width;
         imgFlags.Height:=pic.Height;
@@ -1543,12 +1571,12 @@ end;
 
 procedure TMainForm.acRemoveTorrentAndDataExecute(Sender: TObject);
 begin
-  InternalRemoveTorrent('Are you sure to remove torrent ''%s'' and all associated DATA?', True);
+  InternalRemoveTorrent(sRemoveTorrentData, True);
 end;
 
 procedure TMainForm.acRemoveTorrentExecute(Sender: TObject);
 begin
-  InternalRemoveTorrent('Are you sure to remove torrent ''%s''?', False);
+  InternalRemoveTorrent(sRemoveTorrent, False);
 end;
 
 procedure TMainForm.acResolveCountryExecute(Sender: TObject);
@@ -1761,7 +1789,7 @@ begin
   id:=RpcObj.CurTorrentId;
   i:=FTorrents.IndexOf(idxTorrentId, id);
   if i < 0 then exit;
-  if MessageDlg('', Format(sTorrentVerification, [string(FTorrents[idxName, i])]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
+  if MessageDlg('', Format(sTorrentVerification, [UTF8Encode(widestring(FTorrents[idxName, i]))]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
   TorrentAction(id, 'verify');
 end;
 
@@ -2115,7 +2143,7 @@ begin
   if RpcObj.RefreshInterval < 1 then
     RpcObj.RefreshInterval:=1;
   RpcObj.RefreshInterval:=RpcObj.RefreshInterval/SecsPerDay;
-  RpcObj.InfoStatus:='Connecting to daemon...';
+  RpcObj.InfoStatus:=sConnectingToDaemon;
   CheckStatus;
   TrayIcon.Hint:=RpcObj.InfoStatus;
   RpcObj.Connect;
@@ -2151,7 +2179,7 @@ begin
 
   RpcObj.Disconnect;
 
-  RpcObj.InfoStatus:='Disconnected';
+  RpcObj.InfoStatus:=sDisconnected;
   CheckStatus;
   UpdateUI;
   TrayIcon.Hint:=RpcObj.InfoStatus;
@@ -2460,7 +2488,7 @@ begin
 
     j:=t.Integers['status'];
     if ExistingRow and (j = TR_STATUS_SEED) and (FTorrents[idxStatus, row] = TR_STATUS_DOWNLOAD) then
-      DownloadFinished(FTorrents[idxName, row]);
+      DownloadFinished(UTF8Encode(widestring(FTorrents[idxName, row])));
     FTorrents[idxStatus, row]:=j;
     case j of
       TR_STATUS_CHECK_WAIT: StateImg:=imgDownQueue;
@@ -2770,7 +2798,7 @@ begin
       SetSubItem(idxUpSpeed, s);
 
       if not VarIsNull(FTorrents[idxETA, i]) then
-        SetSubItem(idxETA, EtaToString(FTorrents[idxETA, i]));
+        SetSubItem(idxETA, EtaToString(FTorrents[idxETA, i]), False);
 
       if not VarIsNull(FTorrents[idxRatio, i]) then
         SetSubItem(idxRatio, RatioToString(FTorrents[idxRatio, i]), False);
@@ -3055,7 +3083,7 @@ begin
   id:=RpcObj.CurTorrentId;
   i:=FTorrents.IndexOf(idxTorrentId, id);
   if i < 0 then exit;
-  if MessageDlg('', Format(Msg, [string(FTorrents[idxName, i])]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
+  if MessageDlg('', Format(Msg, [UTF8Encode(widestring(FTorrents[idxName, i]))]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
   args:=TJSONObject.Create;
   if RemoveLocalData then
     args.Add('delete-local-data', TJSONIntegerNumber.Create(1));
@@ -3123,12 +3151,12 @@ begin
     FFiles[idxFileProgress, row]:=Int(ff*10.0)/10.0;
 
     if wanted.Integers[i] = 0 then
-      s:='skip'
+      s:=sSkip
     else begin
       case priorities.Integers[i] of
-        TR_PRI_LOW:    s:='low';
-        TR_PRI_NORMAL: s:='normal';
-        TR_PRI_HIGH:   s:='high';
+        TR_PRI_LOW:    s:=sLow;
+        TR_PRI_NORMAL: s:=sNormal;
+        TR_PRI_HIGH:   s:=sHigh;
         else           s:='???';
       end;
     end;
@@ -3526,9 +3554,17 @@ begin
       else
         MessageDlg(s, mtError, [mbOK], 0);
     end;
-    if StatusBar.Panels[0].Text <> RpcObj.InfoStatus then begin
-      StatusBar.Panels[0].Text:=RpcObj.InfoStatus;
-      TrayIcon.Hint:=RpcObj.InfoStatus;
+
+    s := UTF8Encode(RpcObj.InfoStatus);
+
+    if s = RpcObj.InfoStatus then
+      s := TranslateString(RpcObj.InfoStatus)
+    else
+      s := RpcObj.InfoStatus;
+
+    if StatusBar.Panels[0].Text <> s then begin
+      StatusBar.Panels[0].Text:= s;
+      TrayIcon.Hint:=s;
     end;
     if not RpcObj.Connected then
       for i:=1 to StatusBar.Panels.Count - 1 do
