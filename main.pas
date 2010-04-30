@@ -774,7 +774,7 @@ begin
   FTorrentProgress.Free;
   FPathMap.Free;
   FFiles.Free;
-//  if Application.HasOption('m', 'MakeTranslation') then
+  if Application.HasOption('updatelang') then
     SaveTranslationFile;
 end;
 
