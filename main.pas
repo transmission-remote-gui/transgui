@@ -76,6 +76,7 @@ resourcestring
   sRemoveTorrentData = 'Are you sure to remove torrent ''%s'' and all associated DATA?';
   sRemoveTorrent = 'Are you sure to remove torrent ''%s''?';
   sUnableGetFilesList = 'Unable to get files list';
+  sTrackerError = 'Tracker';
   sSkip = 'skip';
   sLow = 'low';
   sNormal = 'normal';
@@ -85,7 +86,8 @@ resourcestring
   sMByte = 'MB';
   sGByte = 'GB';
   sTByte = 'TB';
-
+  sPerSecond = '/s';
+  sOf = 'of';
 
 type
 
@@ -671,6 +673,12 @@ begin
   GetLanguageIDs(lLang, sLang);
   TranslationFileName := ExtractFilePath(ParamStr(0)) + 'lang' + DirectorySeparator + ExtractFileNameOnly(ParamStr(0))+ '.' + sLang;
   LoadTranslationFile(TranslationFileName, @OnTranslate);
+
+  SizeNames[1]:=sByte;
+  SizeNames[2]:=sKByte;
+  SizeNames[3]:=sMByte;
+  SizeNames[4]:=sGByte;
+  SizeNames[5]:=sTByte;
 
   Result:=True;
 end;
@@ -2395,7 +2403,7 @@ begin
         end
         else begin
           if not NoTrackerError and (Result = '') then
-            Result:='Tracker: ' + UTF8Encode(err);
+            Result:=sTrackerError + ': ' + UTF8Encode(err);
           // Workaround for transmission bug
           // If the global error string is equal to some tracker error string,
           // then igonore the global error string
@@ -2415,7 +2423,7 @@ begin
           if Copy(Result, i, 5) = '(200)' then
             Result:=''
           else
-            Result:='Tracker: ' + Copy(Result, 1, i - 1);
+            Result:=sTrackerError + ': ' + Copy(Result, 1, i - 1);
       end;
   end;
 
@@ -2741,7 +2749,6 @@ begin
           end;
         TR_STATUS_STOPPED:
           if FTorrents[idxStateImg, i] = imgDone then begin
-            s:='Finished';
             Inc(CompletedCnt);
           end;
       end;
@@ -2782,7 +2789,7 @@ begin
 
       SetSubItem(idxName, FTorrents[idxName, i]);
       if not VarIsNull(FTorrents[idxSize, i]) then
-        SetSubItem(idxSize, GetHumanSize(FTorrents[idxSize, i], 0));
+        SetSubItem(idxSize, GetHumanSize(FTorrents[idxSize, i], 0), False);
 
       if not VarIsNull(FTorrents[idxStatus, i]) then
         SetSubItem(idxStatus, GetTorrentStatus(i), False);
@@ -2797,17 +2804,17 @@ begin
 
       j:=FTorrents[idxDownSpeed, i];
       if j > 0 then
-        s:=GetHumanSize(j, 1) + '/s'
+        s:=GetHumanSize(j, 1) + sPerSecond
       else
         s:='';
-      SetSubItem(idxDownSpeed, s);
+      SetSubItem(idxDownSpeed, s, False);
 
       j:=FTorrents[idxUpSpeed, i];
       if j > 0 then
-        s:=GetHumanSize(j, 1) + '/s'
+        s:=GetHumanSize(j, 1) + sPerSecond
       else
         s:='';
-      SetSubItem(idxUpSpeed, s);
+      SetSubItem(idxUpSpeed, s, False);
 
       if not VarIsNull(FTorrents[idxETA, i]) then
         SetSubItem(idxETA, EtaToString(FTorrents[idxETA, i]), False);
@@ -3026,7 +3033,7 @@ begin
       if p.IndexOfName('rateToClient') >= 0 then begin
         j:=p.Integers['rateToClient'];
         if j > 0 then
-          s:=GetHumanSize(j, 1) + '/s'
+          s:=GetHumanSize(j, 1) + sPerSecond
         else
           s:='';
         SetSubItem(idxPeerDownSpeed, s);
@@ -3035,7 +3042,7 @@ begin
       if p.IndexOfName('rateToPeer') >= 0 then begin
         j:=p.Integers['rateToPeer'];
         if j > 0 then
-          s:=GetHumanSize(j, 1) + '/s'
+          s:=GetHumanSize(j, 1) + sPerSecond
         else
           s:='';
         SetSubItem(idxPeerUpSpeed, s);
@@ -3257,8 +3264,8 @@ begin
   txDownloaded.Caption:=GetHumanSize(t.Floats['downloadedEver']);
   txUploaded.Caption:=GetHumanSize(t.Floats['uploadedEver']);
   txWasted.Caption:=Format(sHashfails, [GetHumanSize(t.Floats['corruptEver']), Round(t.Floats['corruptEver']/t.Floats['pieceSize'])]);
-  txDownSpeed.Caption:=GetHumanSize(FTorrents[idxDownSpeed, idx], 1)+'/s';
-  txUpSpeed.Caption:=GetHumanSize(FTorrents[idxUpSpeed, idx], 1)+'/s';
+  txDownSpeed.Caption:=GetHumanSize(FTorrents[idxDownSpeed, idx], 1)+sPerSecond;
+  txUpSpeed.Caption:=GetHumanSize(FTorrents[idxUpSpeed, idx], 1)+sPerSecond;
   txRatio.Caption:=RatioToString(t.Floats['uploadRatio']);
 
   if RpcObj.RPCVersion < 5 then
@@ -3272,7 +3279,7 @@ begin
       if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
         s:=Utf8Encode(WideString(WideChar($221E)))
       else
-        s:=GetHumanSize(i*1024)+'/s';
+        s:=GetHumanSize(i*1024)+sPerSecond;
     end;
     txDownLimit.Caption:=s;
     j:=t.Integers['uploadLimitMode'];
@@ -3283,7 +3290,7 @@ begin
       if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
         s:=Utf8Encode(WideString(WideChar($221E)))
       else
-        s:=GetHumanSize(i*1024)+'/s';
+        s:=GetHumanSize(i*1024)+sPerSecond;
     end;
     txUpLimit.Caption:=s;
   end else begin
@@ -3294,7 +3301,7 @@ begin
       if i < 0 then
         s:=Utf8Encode(WideString(WideChar($221E)))
       else
-        s:=GetHumanSize(i*1024)+'/s';
+        s:=GetHumanSize(i*1024)+sPerSecond;
     end else s:='-';
     txDownLimit.Caption:=s;
 
@@ -3304,7 +3311,7 @@ begin
       if i < 0 then
         s:=Utf8Encode(WideString(WideChar($221E)))
       else
-        s:=GetHumanSize(i*1024)+'/s';
+        s:=GetHumanSize(i*1024)+sPerSecond;
     end else s:='-';
     txUpLimit.Caption:=s;
   end;
@@ -3339,7 +3346,7 @@ begin
   else
     i:=t.Integers['seeders'];
   s:=GetSeedsText(t.Integers['peersSendingToUs'], i);
-  txSeeds.Caption:=StringReplace(s, '/', ' of ', []) + ' '+ sConnected;
+  txSeeds.Caption:=StringReplace(s, '/', ' ' + sOf + ' ', []) + ' '+ sConnected;
   if RpcObj.RPCVersion >= 7 then
     if t.Arrays['trackerStats'].Count > 0 then
       i:=t.Arrays['trackerStats'].Objects[0].Integers['leecherCount']
@@ -3349,7 +3356,7 @@ begin
     i:=t.Integers['leechers'];
   s:=GetPeersText(t.Integers['peersGettingFromUs'], t.Integers['peersKnown'], i);
   s:=StringReplace(s, ' ', ' '+ sConnected +' ', []);
-  s:=StringReplace(s, '/', ' of ', []);
+  s:=StringReplace(s, '/', ' ' + sOf + ' ', []);
   txPeers.Caption:=StringReplace(s, ')', ' '+ sInSwarm+ ')', []);
   txMaxPeers.Caption:=t.Strings['maxConnectedPeers'];
   txLastActive.Caption:=TorrentDateTimeToString(Trunc(t.Floats['activityDate']));

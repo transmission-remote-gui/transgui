@@ -13,6 +13,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
   ClientWidth = 542
   Constraints.MinHeight = 340
   Constraints.MinWidth = 400
+  OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '0.9.28.3'
   object gbBandwidth: TGroupBox
@@ -174,11 +175,6 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Width = 340
       Anchors = [akTop, akLeft, akRight]
       ItemHeight = 13
-      Items.Strings = (
-        'Disabled'
-        'Enabled'
-        'Required'
-      )
       Style = csDropDownList
       TabOrder = 5
     end

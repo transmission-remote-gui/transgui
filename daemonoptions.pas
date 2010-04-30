@@ -26,6 +26,13 @@ interface
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, Spin;
 
+resourcestring
+ sPortTestSuccess = 'Incoming port tested sucessfully.';
+ sPortTestFailed = 'Incoming port is closed. Check your firewall settings.';
+ sEncryptionDisabled = 'Encryption disabled';
+ sEncryptionEnabled = 'Encryption enabled';
+ sEncryptionRequired = 'Encryption required';
+
 type
 
   { TDaemonOptionsForm }
@@ -62,6 +69,7 @@ type
     procedure cbRandomPortChange(Sender: TObject);
     procedure cbRandomPortClick(Sender: TObject);
     procedure cbSeedRatioClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -93,9 +101,9 @@ begin
       MainForm.CheckStatus(False)
     else
       if res.Objects['arguments'].Integers['port-is-open'] <> 0 then
-        MessageDlg('Incoming port tested sucessfully.', mtInformation, [mbOk], 0)
+        MessageDlg(sPortTestSuccess, mtInformation, [mbOk], 0)
       else
-        MessageDlg('Incoming port is closed. Check your firewall settings.', mtError, [mbOK], 0);
+        MessageDlg(sPortTestFailed, mtError, [mbOK], 0);
     res.Free;
   finally
     req.Free;
@@ -119,6 +127,13 @@ end;
 procedure TDaemonOptionsForm.cbSeedRatioClick(Sender: TObject);
 begin
   edSeedRatio.Enabled:=cbSeedRatio.Checked;
+end;
+
+procedure TDaemonOptionsForm.FormCreate(Sender: TObject);
+begin
+  cbEncryption.Items.Add(sEncryptionDisabled);
+  cbEncryption.Items.Add(sEncryptionEnabled);
+  cbEncryption.Items.Add(sEncryptionRequired);
 end;
 
 initialization
