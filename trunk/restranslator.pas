@@ -327,6 +327,9 @@ begin
   if Assigned(OnTranslateString) then
     OnTranslateString(Self, ResourceName, Accept);
 
+  if (PropInfo^.Name = 'Caption') and (Instance.GetNamePath = Content) then
+    Accept:=False;
+
   if Accept then
     Content := InternalTranslateString(Content);
 end;

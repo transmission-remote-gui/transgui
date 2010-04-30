@@ -606,10 +606,22 @@ const
   IgnoreUnits: array[0..10] of string =
       ('fpjson','jsonparser','jsonscanner','lclstrconsts','math',
        'rtlconsts','sysconst','variants','zbase','zipper','zstream');
+
+  IgnoreControls: array[0..1] of string =
+    ('AboutForm.txAuthor', 'AboutForm.txHomePage');
+
+var
+  i: integer;
 begin
   Accept := not AnsiMatchText(Copy2Symb(ResourceName, '.'), IgnoreUnits)
-             or AnsiStartsText('lclstrconsts.rsMb', ResourceName)  //<-- dialog buttons
-             or AnsiStartsText('lclstrconsts.rsMt', ResourceName); //<-- dialog message
+            or AnsiStartsText('lclstrconsts.rsMb', ResourceName)  //<-- dialog buttons
+            or AnsiStartsText('lclstrconsts.rsMt', ResourceName); //<-- dialog message
+  if Accept then
+    for i:=Low(IgnoreControls) to High(IgnoreControls) do
+      if AnsiStartsText(IgnoreControls[i], ResourceName) then begin
+        Accept:=False;
+        exit;
+      end;
 end;
 
 var
@@ -755,7 +767,7 @@ begin
   FPathMap.Free;
   FFiles.Free;
 //  if Application.HasOption('m', 'MakeTranslation') then
-//    SaveTranslationFile;
+    SaveTranslationFile;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -3556,16 +3568,9 @@ begin
         MessageDlg(s, mtError, [mbOK], 0);
     end;
 
-    s := UTF8Encode(RpcObj.InfoStatus);
-
-    if s = RpcObj.InfoStatus then
-      s := TranslateString(RpcObj.InfoStatus)
-    else
-      s := RpcObj.InfoStatus;
-
-    if StatusBar.Panels[0].Text <> s then begin
-      StatusBar.Panels[0].Text:= s;
-      TrayIcon.Hint:=s;
+    if StatusBar.Panels[0].Text <> RpcObj.InfoStatus then begin
+      StatusBar.Panels[0].Text:=RpcObj.InfoStatus;
+      TrayIcon.Hint:=RpcObj.InfoStatus;
     end;
     if not RpcObj.Connected then
       for i:=1 to StatusBar.Panels.Count - 1 do
