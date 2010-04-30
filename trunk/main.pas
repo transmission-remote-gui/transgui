@@ -2786,8 +2786,10 @@ begin
       j:=FTorrents[idxTorrentId, i];
       if cardinal(j) = RpcObj.CurTorrentId then begin
         it.Selected:=True;
+{$ifdef windows}
         it.Focused:=False;
         it.Focused:=True;
+{$endif windows}
       end;
 
       DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, i];
