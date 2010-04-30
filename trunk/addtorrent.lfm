@@ -109,24 +109,22 @@ object AddTorrentForm: TAddTorrentForm
       OnMouseDown = lvFilesMouseDown
     end
     object btSelectAll: TButton
-      Left = 274
+      Left = 210
       Height = 23
       Top = 0
-      Width = 75
+      Width = 110
       Anchors = [akTop, akRight]
-      AutoSize = True
       Caption = 'Select all'
       Constraints.MinWidth = 75
       OnClick = btSelectAllClick
       TabOrder = 1
     end
     object btSelectNone: TButton
-      Left = 356
+      Left = 328
       Height = 23
       Top = 0
-      Width = 82
+      Width = 110
       Anchors = [akTop, akRight]
-      AutoSize = True
       Caption = 'Select none'
       Constraints.MinWidth = 75
       OnClick = btSelectNoneClick
