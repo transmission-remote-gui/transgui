@@ -2318,47 +2318,58 @@ function TMainForm.GetTorrentError(t: TJSONObject): string;
 var
   i: integer;
   stats: TJSONArray;
-  err: widestring;
+  err, gerr: widestring;
+  NoTrackerError: boolean;
 begin
-  Result:=UTF8Encode(t.Strings['errorString']);
-  if Result = '' then
-    if RpcObj.RPCVersion >= 7 then begin
-      stats:=t.Arrays['trackerStats'];
-      for i:=0 to stats.Count - 1 do
-        with stats.Objects[i] do begin
-          if Booleans['hasAnnounced'] then
-            err:=Strings['lastAnnounceResult']
+  Result:='';
+  gerr:=t.Strings['errorString'];
+  if RpcObj.RPCVersion >= 7 then begin
+    NoTrackerError:=False;
+    stats:=t.Arrays['trackerStats'];
+    for i:=0 to stats.Count - 1 do
+      with stats.Objects[i] do begin
+        if Booleans['hasAnnounced'] then
+          err:=Strings['lastAnnounceResult']
+        else
+          if Booleans['hasScraped'] then
+            err:=Strings['lastScrapeResult']
           else
-            if Booleans['hasScraped'] then
-              err:=Strings['lastScrapeResult']
-            else
-              err:='';
-          if err = 'Success' then
             err:='';
-          if err = '' then begin
-            // If at least one tracker is working, then report no error
-            Result:='';
-            break;
-          end
+        if err = 'Success' then
+          err:='';
+        if err = '' then begin
+          // If at least one tracker is working, then report no error
+          NoTrackerError:=True;
+          Result:='';
+        end
+        else begin
+          if not NoTrackerError and (Result = '') then
+            Result:='Tracker: ' + UTF8Encode(err);
+          // Workaround for transmission bug
+          // If the global error string is equal to some tracker error string,
+          // then igonore the global error string
+          if gerr = err then
+            gerr:='';
+        end;
+      end;
+  end
+  else begin
+    Result:=UTF8Encode(t.Strings['announceResponse']);
+    if Result = 'Success' then
+      Result:=''
+    else
+      if Result <> '' then begin
+        i:=Pos('(', Result);
+        if i <> 0 then
+          if Copy(Result, i, 5) = '(200)' then
+            Result:=''
           else
-            if Result = '' then
-              Result:='Tracker: ' + UTF8Encode(err);
-        end;
-    end
-    else begin
-      Result:=UTF8Encode(t.Strings['announceResponse']);
-      if Result = 'Success' then
-        Result:=''
-      else
-        if Result <> '' then begin
-          i:=Pos('(', Result);
-          if i <> 0 then
-            if Copy(Result, i, 5) = '(200)' then
-              Result:=''
-            else
-              Result:='Tracker: ' + Copy(Result, 1, i - 1);
-        end;
-    end;
+            Result:='Tracker: ' + Copy(Result, 1, i - 1);
+      end;
+  end;
+
+  if Result = '' then
+    Result:=UTF8Encode(gerr);
 end;
 
 function TMainForm.SecondsToString(j: integer): string;
