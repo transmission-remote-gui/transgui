@@ -82,13 +82,14 @@ end;
 
 function TCorrectedStringList.ScanQuotSep(P: PChar): integer;
 var
- i: integer;
+ i, len: integer;
  QuoteCount: integer;
 begin
   result := 0;
   QuoteCount := 0;
   i := 0;
-  while (i < strlen(P)) and (result = 0) do begin
+  len:=strlen(P);
+  while (i < len) and (result = 0) do begin
     if P[i] = QuoteChar then
       inc(QuoteCount)
     else if (P[i] = NameValueSeparator) and not odd(QuoteCount) then
@@ -359,6 +360,9 @@ begin
     FS.Free;
   end;
 end;
+
+finalization
+  FreeAndNil(LRSTranslator);
 
 end.
 
