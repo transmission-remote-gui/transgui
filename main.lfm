@@ -289,11 +289,11 @@ object MainForm: TMainForm
     Height = 290
     Top = 151
     Width = 780
-    ActivePage = tabTrackers
+    ActivePage = tabGeneral
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -389,8 +389,8 @@ object MainForm: TMainForm
             Left = 578
             Height = 14
             Top = 22
-            Width = 54
-            Caption = 'txTotalSize'
+            Width = 41
+            Caption = 'txPieces'
             ParentColor = False
           end
           object txHashLabel: TLabel

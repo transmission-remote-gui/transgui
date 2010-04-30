@@ -26,6 +26,9 @@ interface
 uses
   Classes, SysUtils, Forms, httpsend, syncobjs, fpjson, jsonparser;
 
+resourcestring
+  sTransmissionAt = 'Transmission%s at %s:%s';
+
 type
   TAdvInfoType = (aiNone, aiGeneral, aiFiles, aiPeers, aiTrackers);
   TRefreshType = (rtNone, rtAll, rtDetails);
@@ -263,7 +266,7 @@ begin
         s:=' ' + args.Strings['version']
       else
         s:='';
-      FRpc.InfoStatus:=Format('Transmission%s at %s:%s', [s, FRpc.Http.TargetHost, FRpc.Http.TargetPort]);
+      FRpc.InfoStatus:=Format(sTransmissionAt, [s, FRpc.Http.TargetHost, FRpc.Http.TargetPort]);
     finally
       args.Free;
     end;
