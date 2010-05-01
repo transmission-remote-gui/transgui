@@ -1,0 +1,50 @@
+[require]
+packages=
+
+[target]
+programs=transgui
+
+[prerules]
+ifeq ($(LAZARUS_DIR),)
+$(error Lazrus directory is not specified. Use LAZARUS_DIR=<dir> switch.)
+endif
+
+# Checking for lazres
+LAZRES=$(LAZARUS_DIR)/tools/lazres$(SRCEXEEXT)
+have_lazres=$(strip $(wildcard $(LAZRES)))
+ifeq ($(have_lazres),)
+$(error "$(LAZRES)" is not found. You need to build lazres first)
+endif
+
+# Widgetset
+LCL_WIDGETSET=gtk2
+ifneq ($(findstring $(OS_TARGET),win32),)
+LCL_WIDGETSET=win32
+endif
+ifneq ($(findstring $(OS_TARGET),win64),)
+LCL_WIDGETSET=win32
+endif
+ifneq ($(findstring $(OS_TARGET),darwin),)
+LCL_WIDGETSET=carbons
+endif
+
+[compiler]
+unitdir=synapse/source/lib
+unitdir=json
+options=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
+
+#Lazarus dirs
+unitdir=$(LAZARUS_DIR)/lcl/units/$(FULL_TARGET)
+unitdir=$(LAZARUS_DIR)/lcl/units/$(FULL_TARGET)/$(LCL_WIDGETSET)
+
+[rules]
+#.PHONY: extraclean
+
+transgui$(EXEEXT): $(patsubst %.lfm,%.lrs,$(wildcard *.lfm)) $(wildcard *.lfm) $(wildcard *.pas)
+
+%.lrs: %.lfm; -$(LAZRES) $@ $<
+
+extraclean:
+	-$(DEL) $(addprefix $(UNITTARGETDIRPREFIX), *$(OEXT) *$(PPUEXT) *$(RSTEXT) *$(ASMEXT) *$(STATICLIBEXT) *$(SHAREDLIBEXT) *$(PPLEXT) *.or *.res)
+
+clean: extraclean fpc_clean
