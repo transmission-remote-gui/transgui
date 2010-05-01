@@ -279,7 +279,7 @@ ifneq ($(findstring $(OS_TARGET),win64),)
 LCL_WIDGETSET=win32
 endif
 ifneq ($(findstring $(OS_TARGET),darwin),)
-LCL_WIDGETSET=carbons
+LCL_WIDGETSET=carbon
 endif
 ifeq ($(FULL_TARGET),i386-linux)
 override TARGET_PROGRAMS+=transgui
@@ -495,7 +495,7 @@ ifeq ($(FULL_TARGET),i386-wdosx)
 override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
 endif
 ifeq ($(FULL_TARGET),i386-darwin)
-override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
+override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs  -k-macosx_version_min -k10.5 -XR/Developer/SDKs/MacOSX10.5.sdk/
 endif
 ifeq ($(FULL_TARGET),i386-emx)
 override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
@@ -552,7 +552,7 @@ ifeq ($(FULL_TARGET),powerpc-macos)
 override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
 endif
 ifeq ($(FULL_TARGET),powerpc-darwin)
-override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
+override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs  -k-macosx_version_min -k10.5 -XR/Developer/SDKs/MacOSX10.5.sdk/
 endif
 ifeq ($(FULL_TARGET),powerpc-morphos)
 override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
@@ -579,7 +579,7 @@ ifeq ($(FULL_TARGET),x86_64-freebsd)
 override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
 endif
 ifeq ($(FULL_TARGET),x86_64-darwin)
-override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
+override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs  -k-macosx_version_min -k10.5 -XR/Developer/SDKs/MacOSX10.5.sdk/
 endif
 ifeq ($(FULL_TARGET),x86_64-win64)
 override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
@@ -594,7 +594,7 @@ ifeq ($(FULL_TARGET),arm-palmos)
 override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
 endif
 ifeq ($(FULL_TARGET),arm-darwin)
-override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
+override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs  -k-macosx_version_min -k10.5 -XR/Developer/SDKs/MacOSX10.5.sdk/
 endif
 ifeq ($(FULL_TARGET),arm-wince)
 override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
@@ -615,7 +615,7 @@ ifeq ($(FULL_TARGET),powerpc64-linux)
 override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
 endif
 ifeq ($(FULL_TARGET),powerpc64-darwin)
-override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
+override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs  -k-macosx_version_min -k10.5 -XR/Developer/SDKs/MacOSX10.5.sdk/
 endif
 ifeq ($(FULL_TARGET),powerpc64-embedded)
 override COMPILER_OPTIONS+=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
