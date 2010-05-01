@@ -25,13 +25,15 @@ ifneq ($(findstring $(OS_TARGET),win64),)
 LCL_WIDGETSET=win32
 endif
 ifneq ($(findstring $(OS_TARGET),darwin),)
-LCL_WIDGETSET=carbons
+LCL_WIDGETSET=carbon
 endif
 
 [compiler]
 unitdir=synapse/source/lib
 unitdir=json
 options=-MObjFPC -WG -dLCL -dLCL$(LCL_WIDGETSET) -O2 -g- -CX -XX -Xs
+#options_darwin=-k-macosx_version_min -k10.4 -XR/Developer/SDKs/MacOSX10.4u.sdk/
+options_darwin=-k-macosx_version_min -k10.5 -XR/Developer/SDKs/MacOSX10.5.sdk/
 
 #Lazarus dirs
 unitdir=$(LAZARUS_DIR)/lcl/units/$(FULL_TARGET)
