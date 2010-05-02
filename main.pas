@@ -2696,6 +2696,9 @@ var
   UpSpeed, DownSpeed: double;
   Cnt, DownCnt, SeedCnt, CompletedCnt, ActiveCnt: integer;
   IsActive: boolean;
+{$ifdef LCLcarbon}
+  it2: TListItem;
+{$endif LCLcarbon}
 begin
 //  lvTorrents.BeginUpdate;
   lvTorrents.Tag:=1;
@@ -2786,8 +2789,17 @@ begin
         if UTF8Pos(UTF8UpperCase(edSearch.Text), UTF8UpperCase(UTF8Encode(widestring(FTorrents[idxName, i])))) = 0 then
           continue;
 
-      if Cnt >= lvTorrents.Items.Count then
-        it:=lvTorrents.Items.Add
+      if Cnt >= lvTorrents.Items.Count then begin
+{$ifdef LCLcarbon}
+        // Workaround for carbon interface bug.
+        it2:=lvTorrents.Selected;
+        lvTorrents.Selected:=nil;
+{$endif LCLcarbon}
+        it:=lvTorrents.Items.Add;
+{$ifdef LCLcarbon}
+        lvTorrents.Selected:=it2;
+{$endif LCLcarbon}
+      end
       else
         it:=lvTorrents.Items[Cnt];
 
@@ -2862,8 +2874,19 @@ begin
       Inc(Cnt);
     end;
 
+{$ifdef LCLcarbon}
+    // Workaround for carbon interface bug.
+    if lvTorrents.Selected <> nil then
+      j:=lvTorrents.Selected.Index
+    else
+      j:=MaxInt;
+{$endif LCLcarbon}
     while lvTorrents.Items.Count > Cnt do
       lvTorrents.Items.Delete(lvTorrents.Items.Count - 1);
+{$ifdef LCLcarbon}
+    if j < lvTorrents.Items.Count then
+      lvTorrents.Items[j].Selected:=True;
+{$endif LCLcarbon}
   finally
     lvTorrents.Tag:=0;
 //    lvTorrents.EndUpdate;
@@ -2888,7 +2911,15 @@ begin
       j:=ptruint(FTrackers.Objects[i]);
       if j > 0 then begin
         if i + StatusFiltersCount + 1 >= lvFilter.Items.Count then begin
+{$ifdef LCLcarbon}
+          // Workaround for carbon interface bug.
+          it2:=lvFilter.Selected;
+          lvFilter.Selected:=nil;
+{$endif LCLcarbon}
           it:=lvFilter.Items.Add;
+{$ifdef LCLcarbon}
+          lvFilter.Selected:=it2;
+{$endif LCLcarbon}
           it.ImageIndex:=5;
         end
         else
@@ -2902,8 +2933,19 @@ begin
       else
         FTrackers.Delete(i);
     end;
+{$ifdef LCLcarbon}
+    // Workaround for carbon interface bug.
+    if lvFilter.Selected <> nil then
+      j:=lvFilter.Selected.Index
+    else
+      j:=MaxInt;
+{$endif LCLcarbon}
     while lvFilter.Items.Count > i + StatusFiltersCount + 1 do
       lvFilter.Items.Delete(lvFilter.Items.Count - 1);
+{$ifdef LCLcarbon}
+    if j < lvFilter.Items.Count then
+      lvFilter.Items[j].Selected:=True;
+{$endif LCLcarbon}
   finally
     lvFilter.Tag:=0;
   end;
