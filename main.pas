@@ -2535,14 +2535,14 @@ begin
             s:=sTrackerUpdating
           else
             if Booleans['hasAnnounced'] then
-              s:=Strings['lastAnnounceResult']
+              s:=UTF8Encode(Strings['lastAnnounceResult'])
             else
               if Booleans['hasScraped'] then
-                s:=Strings['lastScrapeResult'];
+                s:=UTF8Encode(Strings['lastScrapeResult']);
 
           if s = 'Success' then
             s:=sTrackerWorking;
-          FTorrents[idxTrackerStatus, row]:=s;
+          FTorrents[idxTrackerStatus, row]:=UTF8Decode(s);
         end
       else
         FTorrents[idxTrackerStatus, row]:='';
@@ -2846,7 +2846,7 @@ begin
 
       if not VarIsEmpty(FTorrents[idxTracker, i]) then
         SetSubItem(idxTracker, FTorrents[idxTracker, i]);
-      SetSubItem(idxTrackerStatus, FTorrents[idxTrackerStatus, i]);
+      SetSubItem(idxTrackerStatus, UTF8Encode(widestring(FTorrents[idxTrackerStatus, i])));
 
       if not VarIsNull(FTorrents[idxAddedOn, i]) then
         SetSubItem(idxAddedOn, TorrentDateTimeToString(FTorrents[idxAddedOn, i]));
@@ -3526,12 +3526,11 @@ begin
               s:=sTrackerUpdating
             else
               if Booleans['hasAnnounced'] then
-                s:=Strings['lastAnnounceResult']
+                s:=UTF8Encode(Strings['lastAnnounceResult'])
               else
                 if Booleans['hasScraped'] then
-                  s:=Strings['lastScrapeResult'];
+                  s:=UTF8Encode(Strings['lastScrapeResult']);
 
-            s:=UTF8Encode(s);
             if s = 'Success' then
               s:=sTrackerWorking;
 
