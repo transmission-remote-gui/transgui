@@ -37,7 +37,7 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>transgui.icns</string>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>torrent</string>
