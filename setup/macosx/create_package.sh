@@ -30,11 +30,16 @@ cp ../../LICENSE.txt ./Resources/License.txt
 echo Creating package...
 
 mkdir ./image
-$pm --root $proot --id com.transgui --version $progver --title "Transmission Remote GUI $progver" --target 10.4 --resources ./Resources --out ./image/transgui.pkg
+$pm --root $proot --id com.transgui --version $progver --title "Transmission Remote GUI $progver" --resources ./Resources --target 10.4 --no-relocate --out ./image/transgui.pkg
 rm -r ./Resources
 rm -r "$proot"
 
 echo Creating disk image...
-hdiutil create -ov -anyowners -volname transgui-$progver -imagekey zlib-level=9 -format UDZO -srcfolder ./image transgui-$progver.dmg
+if [ ! -e "../../Release" ]
+then
+  mkdir "../../Release"
+fi
+
+hdiutil create -ov -anyowners -volname transgui-$progver -imagekey zlib-level=9 -format UDZO -srcfolder ./image ../../Release/transgui-$progver.dmg
 
 rm -r ./image
