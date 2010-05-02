@@ -308,6 +308,7 @@ type
     procedure ApplicationPropertiesMinimize(Sender: TObject);
     procedure ApplicationPropertiesRestore(Sender: TObject);
     procedure edSearchChange(Sender: TObject);
+    procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
     procedure lvFilesCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure lvFilesCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure lvFilesDblClick(Sender: TObject);
@@ -631,10 +632,21 @@ var
   FIPCFileName: string;
   FRunFileName: string;
 
-function CheckAppParams: boolean;
+procedure AddTorrentFile(const FileName: string);
 var
   h: THandle;
-  s: utf8string;
+begin
+  if FileExistsUTF8(FileName) then begin
+    h:=FileCreate(FIPCFileName, fmCreate);
+    if h <> THandle(-1) then begin
+      FileWrite(h, FileName[1], Length(FileName));
+      FileClose(h);
+    end;
+  end;
+end;
+
+function CheckAppParams: boolean;
+var
   i: integer;
   lLang, sLang: string;
   TranslationFileName: string;
@@ -645,16 +657,8 @@ begin
   FIPCFileName:=FHomeDir + 'ipc.txt';
   FRunFileName:=FHomeDir + 'run';
 
-  if ParamCount > 0 then begin
-    s:=ParamStrUTF8(1);
-    if FileExistsUTF8(s) then begin
-      h:=FileCreate(FIPCFileName, fmCreate);
-      if h <> THandle(-1) then begin
-        FileWrite(h, s[1], Length(s));
-        FileClose(h);
-      end;
-    end;
-  end;
+  if ParamCount > 0 then
+    AddTorrentFile(ParamStrUTF8(1));
 
   if FileExists(FRunFileName) then begin
     if not FileExists(FIPCFileName) then
@@ -1845,6 +1849,11 @@ end;
 procedure TMainForm.edSearchChange(Sender: TObject);
 begin
   DoRefresh(True);
+end;
+
+procedure TMainForm.FormDropFiles(Sender: TObject; const FileNames: array of String);
+begin
+  AddTorrentFile(FileNames[0]);
 end;
 
 procedure TMainForm.lvFilesCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);

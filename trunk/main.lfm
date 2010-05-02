@@ -7,6 +7,7 @@ object MainForm: TMainForm
   VertScrollBar.Page = 420
   VertScrollBar.Range = 24
   ActiveControl = lvTorrents
+  AllowDropFiles = True
   Caption = ' '
   ClientHeight = 464
   ClientWidth = 780
@@ -16,6 +17,7 @@ object MainForm: TMainForm
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnDropFiles = FormDropFiles
   OnResize = FormResize
   OnShow = FormShow
   LCLVersion = '0.9.28.3'
