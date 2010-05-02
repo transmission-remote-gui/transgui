@@ -34,6 +34,9 @@ $pm --root $proot --id com.transgui --version $progver --title "Transmission Rem
 rm -r ./Resources
 rm -r "$proot"
 
+cp ../../history.txt ./image
+cp ../../readme.txt ./image
+
 echo Creating disk image...
 if [ ! -e "../../Release" ]
 then
