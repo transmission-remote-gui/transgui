@@ -2396,13 +2396,9 @@ begin
     stats:=t.Arrays['trackerStats'];
     for i:=0 to stats.Count - 1 do
       with stats.Objects[i] do begin
-        if Booleans['hasAnnounced'] then
-          err:=Strings['lastAnnounceResult']
-        else
-          if Booleans['hasScraped'] then
-            err:=Strings['lastScrapeResult']
-          else
-            err:='';
+        err:='';
+        if Booleans['hasAnnounced'] and not Booleans['lastAnnounceSucceeded'] then
+          err:=Strings['lastAnnounceResult'];
         if err = 'Success' then
           err:='';
         if err = '' then begin
@@ -2535,10 +2531,10 @@ begin
             s:=sTrackerUpdating
           else
             if Booleans['hasAnnounced'] then
-              s:=UTF8Encode(Strings['lastAnnounceResult'])
-            else
-              if Booleans['hasScraped'] then
-                s:=UTF8Encode(Strings['lastScrapeResult']);
+              if Booleans['lastAnnounceSucceeded'] then
+                s:=sTrackerWorking
+              else
+                s:=UTF8Encode(Strings['lastAnnounceResult']);
 
           if s = 'Success' then
             s:=sTrackerWorking;
@@ -3526,10 +3522,10 @@ begin
               s:=sTrackerUpdating
             else
               if Booleans['hasAnnounced'] then
-                s:=UTF8Encode(Strings['lastAnnounceResult'])
-              else
-                if Booleans['hasScraped'] then
-                  s:=UTF8Encode(Strings['lastScrapeResult']);
+                if Booleans['lastAnnounceSucceeded'] then
+                  s:=sTrackerWorking
+                else
+                  s:=UTF8Encode(Strings['lastAnnounceResult']);
 
             if s = 'Success' then
               s:=sTrackerWorking;
