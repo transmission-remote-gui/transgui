@@ -1,5 +1,6 @@
 #!/bin/sh
 
+prog_ver=`cat ../../VERSION.txt`
 exename=../../transgui
 appname="Transmission Remote GUI"
 appfolder=../../$appname.app
@@ -44,7 +45,7 @@ mkdir "$appfolder/Contents"
 mkdir "$appfolder/Contents/MacOS"
 mkdir "$appfolder/Contents/Resources"
 
-cp $exename "$appfolder/Contents/MacOS"
-cp Info.plist "$appfolder/Contents"
+mv $exename "$appfolder/Contents/MacOS"
 cp PkgInfo "$appfolder/Contents"
 cp transgui.icns "$appfolder/Contents/Resources"
+cat Info.plist | sed -e "s/@prog_ver@/$prog_ver/" > "$appfolder/Contents/Info.plist"

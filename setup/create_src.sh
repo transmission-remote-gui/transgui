@@ -1,12 +1,12 @@
 #!/bin/sh
 
+prog_ver=`cat ../VERSION.txt`
+zipfile=../Release/transgui-$prog_ver-src.zip
+
 if [ ! -e "../Release" ]
 then
   mkdir "../Release"
 fi
-
-prog_ver=`cat ../VERSION.txt`
-zipfile=../Release/transgui-$prog_ver-src.zip
 
 if [ -e TransGUI ]
 then

@@ -1,8 +1,8 @@
 #!/bin/sh
 
+prog_ver=`cat ../../VERSION.txt`
 pm="/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker"
 proot=../../proot
-progver=1.4
 
 echo Preparing package contents...
 
@@ -30,7 +30,7 @@ cp ../../LICENSE.txt ./Resources/License.txt
 echo Creating package...
 
 mkdir ./image
-$pm --root $proot --id com.transgui --version $progver --title "Transmission Remote GUI $progver" --resources ./Resources --target 10.4 --no-relocate --out ./image/transgui.pkg
+$pm --root $proot --id com.transgui --version $prog_ver --title "Transmission Remote GUI $prog_ver" --resources ./Resources --target 10.4 --no-relocate --out ./image/transgui.pkg
 rm -r ./Resources
 rm -r "$proot"
 
@@ -43,6 +43,6 @@ then
   mkdir "../../Release"
 fi
 
-hdiutil create -ov -anyowners -volname transgui-$progver -imagekey zlib-level=9 -format UDZO -srcfolder ./image ../../Release/transgui-$progver.dmg
+hdiutil create -ov -anyowners -volname transgui-$prog_ver -imagekey zlib-level=9 -format UDZO -srcfolder ./image ../../Release/transgui-$prog_ver.dmg
 
 rm -r ./image
