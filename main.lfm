@@ -1359,6 +1359,15 @@ object MainForm: TMainForm
     end
     object miTools: TMenuItem
       Caption = 'Tools'
+      object miLanguage: TMenuItem
+        Caption = 'Language'
+        object miLnEnglish: TMenuItem
+          Caption = 'English'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = miLanguageClick
+        end
+      end
       object MenuItem34: TMenuItem
         Action = acSetupColumns
         OnClick = acSetupColumnsExecute

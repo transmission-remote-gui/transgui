@@ -1,3 +1,5 @@
+"TranslationLanguage"=Русский
+
 "%dd, %dh"="%dд, %dч"
 "%dh, %dm"="%dч, %dмин"
 "%dm, %ds"="%dмин, %dс"
