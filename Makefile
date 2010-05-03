@@ -263,6 +263,11 @@ ifeq ($(UNITSDIR),)
 UNITSDIR:=$(wildcard $(FPCDIR)/units/$(OS_TARGET))
 endif
 PACKAGESDIR:=$(wildcard $(FPCDIR) $(FPCDIR)/packages $(FPCDIR)/packages/base $(FPCDIR)/packages/extra)
+ifneq ($(findstring $(OS_TARGET),win32,win64),)
+PROG_VER=$(shell type VERSION.txt)
+else
+PROG_VER=$(shell cat VERSION.txt)
+endif
 ifeq ($(LAZARUS_DIR),)
 $(error Lazrus directory is not specified. Use LAZARUS_DIR=<dir> switch.)
 endif
@@ -272,10 +277,7 @@ ifeq ($(have_lazres),)
 $(error "$(LAZRES)" is not found. You need to build lazres first)
 endif
 LCL_WIDGETSET=gtk2
-ifneq ($(findstring $(OS_TARGET),win32),)
-LCL_WIDGETSET=win32
-endif
-ifneq ($(findstring $(OS_TARGET),win64),)
+ifneq ($(findstring $(OS_TARGET),win32,win64),)
 LCL_WIDGETSET=win32
 endif
 ifneq ($(findstring $(OS_TARGET),darwin),)
@@ -2289,3 +2291,14 @@ transgui$(EXEEXT): $(patsubst %.lfm,%.lrs,$(wildcard *.lfm)) $(wildcard *.lfm) $
 extraclean:
 	-$(DEL) $(addprefix $(UNITTARGETDIRPREFIX), *$(OEXT) *$(PPUEXT) *$(RSTEXT) *$(ASMEXT) *$(STATICLIBEXT) *$(SHAREDLIBEXT) *$(PPLEXT) *.or *.res)
 clean: extraclean fpc_clean
+zipdist: all
+	-$(DEL) -r ./Release/dist
+	$(MKDIRPROG) ./Release/dist
+	$(MKDIRPROG) ./Release/dist/lang
+	$(CPPROG) ./transgui$(EXEEXT) ./Release/dist
+	$(CPPROG) ./lang/transgui.* ./Release/dist/lang
+	-$(DEL) ./Release/transgui-$(PROG_VER)-$(FULL_TARGET).zip
+	$(MAKE) -C ./Release/dist -f ../../Makefile int_zip
+	-$(DEL) -r ./Release/dist
+int_zip:
+	$(ZIPPROG) -9 -r ../transgui-$(PROG_VER)-$(FULL_TARGET).zip .
