@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #ifndef AppVersion
-  #define AppVersion GetFileVersion(SourcePath+'..\units\transgui.exe')
+  #define AppVersion GetFileVersion(SourcePath+'..\..\transgui.exe')
   #define AppVersion Copy(AppVersion, 1, RPos('.', AppVersion) - 1)
   #define tmpvar Copy(AppVersion, RPos('.', AppVersion) + 1, 3)
   #if tmpvar == "0"
@@ -34,9 +34,9 @@ VersionInfoTextVersion={#GetFileVersion(SourcePath+'..\units\transgui.exe')}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=..\LICENSE.txt
-InfoAfterFile=..\history.txt
-OutputDir=..\Release
+LicenseFile=..\..\LICENSE.txt
+InfoAfterFile=..\..\history.txt
+OutputDir=..\..\Release
 OutputBaseFilename=transgui-{#AppVersion}-setup
 
 Compression=lzma/max
@@ -58,10 +58,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\units\transgui.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\readme.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\history.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\transgui.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\readme.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\history.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
