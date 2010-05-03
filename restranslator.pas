@@ -296,18 +296,14 @@ procedure TCorrectedStringList.LoadFromFile(const FileName: string);
 var
   FS: TFileStream;
   buff: array[1..3] of char;
-  HeaderFound: boolean;
-  aPosition: int64;
 begin
   FS:= TFileStream.Create(UTF8ToSys(FileName), fmOpenRead);
   try
-    repeat
-      buff := '';
-      aPosition:=FS.Position;
-      FS.Read(buff, SizeOf(UTF8FileHeader));
-      HeaderFound:=(buff = UTF8FileHeader);
-    until not HeaderFound;
-    FS.Seek(aPosition, soBeginning);
+    // Skip UTF8 headers
+    buff := '';
+    FS.Read(buff, SizeOf(UTF8FileHeader));
+    if buff <> UTF8FileHeader then
+      FS.Position:=0;
     LoadFromStream(FS);
   finally
     FS.Free;
