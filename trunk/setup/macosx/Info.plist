@@ -20,13 +20,13 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>Transmission Remote GUI 1.4</string>
+	<string>Transmission Remote GUI @prog_ver@</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.transgui</string>
 	<key>CFBundleSignature</key>
 	<string>transgui</string>
 	<key>CFBundleVersion</key>
-	<string>1.4</string>
+	<string>@prog_ver@</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>CFBundleDocumentTypes</key>
