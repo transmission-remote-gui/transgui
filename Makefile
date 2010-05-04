@@ -272,10 +272,6 @@ ifeq ($(LAZARUS_DIR),)
 $(error Lazrus directory is not specified. Use LAZARUS_DIR=<dir> switch.)
 endif
 LAZRES=$(LAZARUS_DIR)/tools/lazres$(SRCEXEEXT)
-have_lazres=$(strip $(wildcard $(LAZRES)))
-ifeq ($(have_lazres),)
-$(error "$(LAZRES)" is not found. You need to build lazres first)
-endif
 LCL_WIDGETSET=gtk2
 ifneq ($(findstring $(OS_TARGET),win32,win64),)
 LCL_WIDGETSET=win32
@@ -2263,7 +2259,6 @@ endif
 fpc_makefile_sub2: $(addsuffix _makefile_dirs,$(TARGET_DIRS) $(TARGET_EXAMPLEDIRS))
 fpc_makefile_dirs: fpc_makefile_sub1 fpc_makefile_sub2
 fpc_makefiles: fpc_makefile fpc_makefile_dirs
-all: fpc_all
 debug: fpc_debug
 smart: fpc_smart
 release: fpc_release
@@ -2282,12 +2277,20 @@ distclean: fpc_distclean
 cleanall: fpc_cleanall
 info: fpc_info
 makefiles: fpc_makefiles
-.PHONY: all debug smart release units examples shared install sourceinstall exampleinstall distinstall zipinstall zipsourceinstall zipexampleinstall zipdistinstall distclean cleanall info makefiles
+.PHONY: debug smart release units examples shared install sourceinstall exampleinstall distinstall zipinstall zipsourceinstall zipexampleinstall zipdistinstall distclean cleanall info makefiles
 ifneq ($(wildcard fpcmake.loc),)
 include fpcmake.loc
 endif
 transgui$(EXEEXT): $(patsubst %.lfm,%.lrs,$(wildcard *.lfm)) $(wildcard *.lfm) $(wildcard *.pas)
 %.lrs: %.lfm; $(LAZRES) $@ $<
+have_lazres=$(strip $(wildcard $(LAZRES)))
+ifeq ($(have_lazres),)
+check_lazres:
+	$(MAKE) -C $(LAZARUS_DIR)/tools lazres$(SRCEXEEXT)
+else
+check_lazres:
+endif
+all: fpc_all check_lazres
 extraclean:
 	-$(DEL) $(addprefix $(UNITTARGETDIRPREFIX), *$(OEXT) *$(PPUEXT) *$(RSTEXT) *$(ASMEXT) *$(STATICLIBEXT) *$(SHAREDLIBEXT) *$(PPLEXT) *.or *.res)
 clean: extraclean fpc_clean
