@@ -203,6 +203,10 @@ begin
   ActiveControl:=cbHost;
   cbLanguage.Items.Add(FTranslationLanguage);
   cbLanguage.ItemIndex:=0;
+{$ifdef LCLgtk2}
+  cbLanguage.OnDropDown:=@cbLanguageEnter;
+  cbLanguage.OnMouseEnter:=@cbLanguageEnter;
+{$endif LCLgtk2}
 end;
 
 procedure TOptionsForm.FormShow(Sender: TObject);
