@@ -52,16 +52,26 @@ WizardSmallImageFile=compiler:\WizModernSmallImage-IS.bmp
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
+[Types]
+Name: "full"; Description: "Full installation"
+Name: "compact"; Description: "Compact installation"
+Name: "custom"; Description: "Custom installation"; Flags: iscustom
+
+[Components]
+Name: "app"; Description: "Main application files"; Types: full compact custom; Flags: fixed
+Name: "lang"; Description: "Language files"; Types: full custom
+
 [Tasks]
 Name: regfileext; Description: "{cm:AssocFileExtension,{#MyAppName},.torrent}"; Flags: unchecked
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\..\transgui.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\readme.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\history.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\transgui.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: app
+Source: "..\..\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
+Source: "..\..\readme.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
+Source: "..\..\history.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
+Source: "..\..\lang\transgui.*"; DestDir: "{app}\lang"; Flags: ignoreversion; Components: lang
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -80,4 +90,7 @@ Root: HKCU; Subkey: "Software\Classes\{#MyAppName}\shell\open\command"; ValueTyp
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
+
+[UninstallDelete]
+Type: filesandordirs ; Name: "{localappdata}\{#MyAppName}"
 
