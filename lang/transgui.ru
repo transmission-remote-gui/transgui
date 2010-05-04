@@ -208,3 +208,7 @@
 "KB"="КБ"
 "MB"="МБ"
 "TB"="ТБ"
+"You should restart the application to apply changes"="Необходимо перезапустить программу, чтобы изменения вступили в силу."
+"No host name specified"="Не указан узел."
+"No proxy server specified"="Не укзана прокси-сервер."
+"Language"="Язык"
