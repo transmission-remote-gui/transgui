@@ -793,7 +793,7 @@ begin
   FPathMap.Free;
   FFiles.Free;
   if Application.HasOption('updatelang') then
-    SaveTranslationFile;
+    SupplementTranslationFiles;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
