@@ -26,6 +26,10 @@ interface
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ComCtrls, Buttons;
 
+resourcestring
+  sNoHost = 'No host name specified.';
+  sNoProxy = 'No proxy server specified.';
+
 type
 
   { TOptionsForm }
@@ -103,14 +107,14 @@ begin
   if Trim(cbHost.Text) = '' then begin
     Page.ActivePage:=tabConnection;
     cbHost.SetFocus;
-    MessageDlg('No host name specified.', mtError, [mbOK], 0);
+    MessageDlg(sNoHost, mtError, [mbOK], 0);
     exit;
   end;
   edProxy.Text:=Trim(edProxy.Text);
   if cbUseProxy.Checked and (edProxy.Text = '') then begin
     Page.ActivePage:=tabConnection;
     edProxy.SetFocus;
-    MessageDlg('No proxy server specified.', mtError, [mbOK], 0);
+    MessageDlg(sNoProxy, mtError, [mbOK], 0);
     exit;
   end;
   s:=cbHost.Text;
