@@ -126,7 +126,7 @@ begin
 
   if cbLanguage.Text <> FTranslationLanguage then begin
     if cbLanguage.Text = 'English' then
-      s:=''
+      s:='-'
     else
       s:=FLangList.Values[cbLanguage.Text];
     MainForm.Ini.WriteString('Interface', 'TranslationFile', s);

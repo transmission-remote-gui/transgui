@@ -655,9 +655,12 @@ begin
   try
     FTranslationFileName := aIni.ReadString('Interface', 'TranslationFile', '');
     if FTranslationFileName = '' then
-      FTranslationLanguage := 'English'
+      FTranslationLanguage := LoadDefaultTranslationFile(@OnTranslate)
     else
-      FTranslationLanguage := LoadTranslationFile(ExtractFilePath(ParamStr(0)) + sDefautTranslationDir + DirectorySeparator + FTranslationFileName, @OnTranslate);
+      if FTranslationFileName <> '-' then
+        FTranslationLanguage := LoadTranslationFile(ExtractFilePath(ParamStr(0)) + sDefautTranslationDir + DirectorySeparator + FTranslationFileName, @OnTranslate);
+    if FTranslationLanguage = '' then
+      FTranslationLanguage := 'English'
   finally
     aIni.Free;
   end;
