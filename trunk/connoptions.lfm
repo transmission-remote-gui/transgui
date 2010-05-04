@@ -333,6 +333,7 @@ object OptionsForm: TOptionsForm
         Width = 240
         ItemHeight = 13
         OnEnter = cbLanguageEnter
+        OnMouseDown = cbLanguageMouseDown
         Style = csDropDownList
         TabOrder = 3
       end

@@ -75,6 +75,7 @@ type
     procedure btOKClick(Sender: TObject);
     procedure cbHostSelect(Sender: TObject);
     procedure cbLanguageEnter(Sender: TObject);
+    procedure cbLanguageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure cbUseProxyClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -304,6 +305,12 @@ begin
 end;
 
 procedure TOptionsForm.cbLanguageEnter(Sender: TObject);
+begin
+  if not Assigned(FLangList) then
+    FillLanguageItems;
+end;
+
+procedure TOptionsForm.cbLanguageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if not Assigned(FLangList) then
     FillLanguageItems;
