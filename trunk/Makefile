@@ -2290,7 +2290,7 @@ check_lazres:
 else
 check_lazres:
 endif
-all: fpc_all check_lazres
+all: check_lazres fpc_all
 extraclean:
 	-$(DEL) $(addprefix $(UNITTARGETDIRPREFIX), *$(OEXT) *$(PPUEXT) *$(RSTEXT) *$(ASMEXT) *$(STATICLIBEXT) *$(SHAREDLIBEXT) *$(PPLEXT) *.or *.res)
 clean: extraclean fpc_clean
