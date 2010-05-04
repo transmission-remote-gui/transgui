@@ -1,3 +1,14 @@
+1.4 (May 05, 2010)
+------------------
+[+] Localization support by Alex Cherednichenko, aka Alex7Che.
+[+] Russian translation by Alex Cherednichenko, aka Alex7Che.
+[+] Trackers page.
+[+] Torrent files can be dragged and dropped to the program window.
+[-] Lot of Mac OS X specific bugs were fixed.
+[-] Fixed the "Could not convert variant of type (Null) into type (Int64)" error when the "Seeds" column is hidden. Issues #172 and #187.
+[-] Fixed tracker errors handling for newer versions of the daemon.
+[-] Do not jump to the selected torrent when the list refreshes om linux. Issue #192.
+
 1.3.2 (Jan 09, 2010)
 ------------------
 [-] Fixed x10 progress percentage in some cases. Issue #171.
