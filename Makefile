@@ -2287,18 +2287,23 @@ ifneq ($(wildcard fpcmake.loc),)
 include fpcmake.loc
 endif
 transgui$(EXEEXT): $(patsubst %.lfm,%.lrs,$(wildcard *.lfm)) $(wildcard *.lfm) $(wildcard *.pas)
-%.lrs: %.lfm; -$(LAZRES) $@ $<
+%.lrs: %.lfm; $(LAZRES) $@ $<
 extraclean:
 	-$(DEL) $(addprefix $(UNITTARGETDIRPREFIX), *$(OEXT) *$(PPUEXT) *$(RSTEXT) *$(ASMEXT) *$(STATICLIBEXT) *$(SHAREDLIBEXT) *$(PPLEXT) *.or *.res)
 clean: extraclean fpc_clean
 zipdist: all
 	-$(DEL) -r ./Release/dist
+	-$(MKDIRPROG) ./Release
 	$(MKDIRPROG) ./Release/dist
 	$(MKDIRPROG) ./Release/dist/lang
+	-strip ./transgui$(EXEEXT)
 	$(CPPROG) ./transgui$(EXEEXT) ./Release/dist
+	$(CPPROG) ./readme.txt ./Release/dist
+	$(CPPROG) ./history.txt ./Release/dist
+	$(CPPROG) ./LICENSE.txt ./Release/dist
 	$(CPPROG) ./lang/transgui.* ./Release/dist/lang
 	-$(DEL) ./Release/transgui-$(PROG_VER)-$(FULL_TARGET).zip
-	$(MAKE) -C ./Release/dist -f ../../Makefile int_zip
+	$(MAKE) -C ./Release/dist -f ../../Makefile int_zip ZIP_FILE=transgui-$(PROG_VER)-$(FULL_TARGET).zip
 	-$(DEL) -r ./Release/dist
 int_zip:
-	$(ZIPPROG) -9 -r ../transgui-$(PROG_VER)-$(FULL_TARGET).zip .
+	$(ZIPPROG) -9 -r ../$(ZIP_FILE) .
