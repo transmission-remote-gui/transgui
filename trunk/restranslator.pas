@@ -21,10 +21,11 @@ type
 
   TTranslateStringEvent = procedure(Sender: TResTranslator; const ResourceName: AnsiString; var Accept: boolean);
 
-  { TCorrectedStringList }
+  { TTranslateStringList }
 
-  TCorrectedStringList = class(TStringList)
+  TTranslateStringList = class(TStringList)
   private
+    function CorrectGetName(Index: integer): string;
     function CorrectGetValue(const Name: string): string;
     function ScanQuotSep(P: PChar):integer;
   protected
@@ -34,7 +35,10 @@ type
     function IndexOfName(const Name: string; var Offset: integer): integer;
     function IndexOfName(const Name: string): integer; override;
     procedure LoadFromFile(const FileName: string); override;
+    procedure SaveToFile(const FileName: string); override;
+    procedure Merge(Source: TTranslateStringList; const NamesOnly: boolean = false);
     property CValues[const Name: string]: string read CorrectGetValue;
+    property CNames[Index: integer]: string read CorrectGetName;
   end;
 
   { TResTranslator }
@@ -43,13 +47,15 @@ type
   private
     FIgnoreDelimiters: TWordDelimitersOptions;
     FOnTranslateString: TTranslateStringEvent;
-    FStrResLst:    TCorrectedStringList;
-    FAddedStrings: TCorrectedStringList;
+    FStrResLst:    TTranslateStringList;
+    FAddedStrings: TTranslateStringList;
+    FStrings: TTranslateStringList;
     FTranslationFile: string;
     FModified:     boolean;
     FTranslationLanguage: AnsiString;
     FWordDelims:   TSysCharset;
     function GetAddedStrings: TStringList;
+    function GetStrings: TStringList;
     procedure SetIgnoreDelimiters(const AValue: TWordDelimitersOptions);
     procedure SetOnTranslateString(const AValue: TTranslateStringEvent);
     procedure SetWordDelims(const AValue: TSysCharset);
@@ -61,6 +67,7 @@ type
     procedure SaveFile; overload;
     procedure SaveFile(const aFileName: string); overload;
     property Modified: boolean Read FModified;
+    property Strings: TStringList Read GetStrings;
     property AddedStrings: TStringList Read GetAddedStrings;
     property IgnoreDelimiters: TWordDelimitersOptions Read FIgnoreDelimiters Write SetIgnoreDelimiters;
     property WordDelims: TSysCharset Read FWordDelims Write SetWordDelims;
@@ -71,6 +78,9 @@ type
 function LoadTranslationFile(const TranslationFile: AnsiString; const OnTranslate: TTranslateStringEvent = nil): AnsiString;
 procedure SaveTranslationFile; overload;
 procedure SaveTranslationFile(const aFileName: AnsiString); overload;
+procedure SupplementTranslationFile(const FileName: AnsiString);
+procedure SupplementTranslationFiles; overload;
+procedure SupplementTranslationFiles(const TranslationFilesPath: AnsiString); overload;
 function LoadDefaultTranslationFile(const OnTranslate: TTranslateStringEvent = nil): TFileName;
 function LoadDefaultTranslationFile(const TranslationFilesPath: AnsiString; const OnTranslate: TTranslateStringEvent = nil): TFileName;
 function LoadLanguageTranslation(const Language: AnsiString; const OnTranslate: TTranslateStringEvent = nil): TFileName;
@@ -90,11 +100,14 @@ implementation
 uses
   Forms;
 
+const
+  LineSeparator = '###################';
+
 { procedures and functions }
 
 function ExtractLangName(const aFileName: TFilename): AnsiString;
 begin
-  with TCorrectedStringList.Create(aFileName) do
+  with TTranslateStringList.Create(aFileName) do
     try
       Result := AnsiDequotedStr(CValues[AnsiQuotedStr(sLanguageIDName, QuoteChar)], QuoteChar);
     finally
@@ -147,6 +160,40 @@ begin
   TResTranslator(LRSTranslator).OnTranslateString := OnTranslate;
   SetResourceStrings(@GetResStrings, LRSTranslator);
   Result := TResTranslator(LRSTranslator).TranslationLanguage;
+end;
+
+procedure SupplementTranslationFiles; overload;
+begin
+  SupplementTranslationFiles(ExtractFilePath(ParamStr(0)) + 'lang' + DirectorySeparator);
+end;
+
+procedure SupplementTranslationFile(const FileName: AnsiString);
+var
+  Dst: TTranslateStringList;
+begin
+  if Assigned(LRSTranslator) and (LRSTranslator is TResTranslator) then begin
+    Dst := TTranslateStringList.Create(FileName);
+    try
+      with LRSTranslator as TResTranslator do
+        Dst.Merge(Strings as TTranslateStringList, true);
+      Dst.SaveToFile(FileName);
+    finally
+      Dst.Free;
+    end;
+  end;
+end;
+
+procedure SupplementTranslationFiles(const TranslationFilesPath: AnsiString);
+var
+  Sl: TStringList;
+  i: integer;
+begin
+  if Assigned(LRSTranslator) and (LRSTranslator is TResTranslator) then begin
+    Sl := GetAvailableTranslations(TranslationFilesPath);
+    with Sl do
+      for i := 0 to Count - 1 do
+        SupplementTranslationFile(IncludeTrailingPathDelimiter(TranslationFilesPath) + ValueFromIndex[i]);
+  end;
 end;
 
 function LoadDefaultTranslationFile(const OnTranslate: TTranslateStringEvent): TFileName;
@@ -220,9 +267,9 @@ begin
       result := InternalTranslateString(Value);
 end;
 
-{ TCorrectedStringList }
+{ TTranslateStringList }
 
-function TCorrectedStringList.CorrectGetValue(const Name: string): string;
+function TTranslateStringList.CorrectGetValue(const Name: string): string;
 var
   Index: integer;
   offset: integer;
@@ -233,7 +280,20 @@ begin
     result := Copy(Strings[Index], offset, Length(Strings[Index]));
 end;
 
-function TCorrectedStringList.ScanQuotSep(P: PChar): integer;
+function TTranslateStringList.CorrectGetName(Index: integer): string;
+var
+  P: PChar;
+  Offset: integer;
+begin
+  CheckSpecialChars;
+  Result := '';
+  P := PChar(Strings[Index]);
+  Offset := ScanQuotSep(P);
+  if (Offset > 0) then
+    Result := LeftStr(Strings[Index], offset);
+end;
+
+function TTranslateStringList.ScanQuotSep(P: PChar): integer;
 var
  i, len: integer;
  QuoteCount: integer;
@@ -251,7 +311,7 @@ begin
   end;
 end;
 
-function TCorrectedStringList.DoCompareText(const s1, s2: string): PtrInt;
+function TTranslateStringList.DoCompareText(const s1, s2: string): PtrInt;
 begin
  if CaseSensitive then
    result:=AnsiCompareText(s1,s2)
@@ -259,14 +319,14 @@ begin
    result:=AnsiCompareText(UTF8UpperCase(s1),UTF8UpperCase(s2));
 end;
 
-constructor TCorrectedStringList.Create(const FileName: string);
+constructor TTranslateStringList.Create(const FileName: string);
 begin
   inherited Create;
   CheckSpecialChars;
   LoadFromFile(FileName);
 end;
 
-function TCorrectedStringList.IndexOfName(const Name: string; var Offset: integer): integer;
+function TTranslateStringList.IndexOfName(const Name: string; var Offset: integer): integer;
 var
   P: PChar;
 begin
@@ -286,21 +346,21 @@ begin
   result := -1;
 end;
 
-function TCorrectedStringList.IndexOfName(const Name: string): integer;
+function TTranslateStringList.IndexOfName(const Name: string): integer;
 var
   i: integer;
 begin
   Result:=IndexOfName(Name, i);
 end;
 
-procedure TCorrectedStringList.LoadFromFile(const FileName: string);
+procedure TTranslateStringList.LoadFromFile(const FileName: string);
 var
   FS: TFileStream;
   buff: array[1..3] of char;
 begin
   FS:= TFileStream.Create(UTF8ToSys(FileName), fmOpenRead);
   try
-    // Skip UTF8 headers
+    // Skip UTF8 header
     buff := '';
     FS.Read(buff, SizeOf(UTF8FileHeader));
     if buff <> UTF8FileHeader then
@@ -309,6 +369,40 @@ begin
   finally
     FS.Free;
   end;
+end;
+
+procedure TTranslateStringList.SaveToFile(const FileName: string);
+var
+  FS: TFileStream;
+begin
+  ForceDirectories(ExtractFilePath(FileName));
+  FS := TFileStream.Create(FileName, fmCreate);
+  try
+    FS.WriteBuffer(UTF8FileHeader, SizeOf(UTF8FileHeader));
+    SaveToStream(FS);
+  finally
+    FS.Free;
+  end;
+end;
+
+procedure TTranslateStringList.Merge(Source: TTranslateStringList; const NamesOnly: boolean = false);
+var
+  i: integer;
+  HasAdded: boolean;
+begin
+  CheckSpecialChars;
+  HasAdded := false;
+  for i := 0 to Source.Count - 1 do
+    if (Source.CNames[i] <> '') and (IndexOfName(Source.CNames[i]) = -1) then begin
+      if not HasAdded then begin
+        Append(LineSeparator);
+        HasAdded:= true;
+      end;
+      if NamesOnly then
+        Append(Source.CNames[i] + NameValueSeparator + Source.CNames[i])
+      else
+        Append(Source.Strings[i]);
+    end;
 end;
 
 { TResTranslator }
@@ -320,7 +414,7 @@ begin
   FIgnoreDelimiters := [wdIgnoreTrailing];
   FWordDelims := ['.', ',', ':'];
 
-  FStrResLst  := TCorrectedStringList.Create;
+  FStrResLst  := TTranslateStringList.Create;
   with FStrResLst do begin
     Duplicates := dupIgnore;
     CaseSensitive := False;
@@ -330,19 +424,23 @@ begin
     FTranslationLanguage := AnsiDequotedStr(CValues[AnsiQuotedStr(sLanguageIDName, QuoteChar)], QuoteChar);
   end;
 
-  FAddedStrings := TCorrectedStringList.Create;
+  FAddedStrings := TTranslateStringList.Create;
   with FAddedStrings do begin
     Sorted     := True;
     Duplicates := dupIgnore;
     CaseSensitive := False;
     CheckSpecialChars;
   end;
+
+  FStrings := TTranslateStringList.Create;
+  FStrings.Assign(FStrResLst);
 end;
 
 destructor TResTranslator.Destroy;
 begin
   FStrResLst.Free;
   FAddedStrings.Free;
+  FStrings.Free;
   inherited Destroy;
 end;
 
@@ -385,6 +483,8 @@ begin
       if (CValues[Value] = '') then begin
         with FAddedStrings do
           Append(Value + NameValueSeparator + Value);
+        with FStrings do
+          Append(Value + NameValueSeparator + Value);
         FModified := True;
       end
       else begin
@@ -404,7 +504,14 @@ end;
 
 function TResTranslator.GetAddedStrings: TStringList;
 begin
+//convert TTranslateStringList to TStringList
   Result := FAddedStrings;
+end;
+
+function TResTranslator.GetStrings: TStringList;
+begin
+//convert TTranslateStringList to TStringList
+  Result := FStrings;
 end;
 
 procedure TResTranslator.SetOnTranslateString(const AValue: TTranslateStringEvent);
@@ -453,8 +560,6 @@ begin
 end;
 
 procedure TResTranslator.SaveFile(const aFileName: string);
-const
-  LineSeparator = '###################';
 var
   FS: TFileStream;
 begin
