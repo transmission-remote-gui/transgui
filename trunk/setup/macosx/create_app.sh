@@ -46,6 +46,9 @@ mkdir "$appfolder/Contents/MacOS"
 mkdir "$appfolder/Contents/Resources"
 
 mv $exename "$appfolder/Contents/MacOS"
+mkdir "$appfolder/Contents/MacOS/lang"
+cp ../../lang/transgui.* "$appfolder/Contents/MacOS/lang"
+
 cp PkgInfo "$appfolder/Contents"
 cp transgui.icns "$appfolder/Contents/Resources"
 cat Info.plist | sed -e "s/@prog_ver@/$prog_ver/" > "$appfolder/Contents/Info.plist"
