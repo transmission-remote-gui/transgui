@@ -68,7 +68,7 @@ type
     property OnTranslateString: TTranslateStringEvent Read FOnTranslateString Write SetOnTranslateString;
   end;
 
-procedure LoadTranslationFile(const TranslationFile: AnsiString; const OnTranslate: TTranslateStringEvent = nil);
+function LoadTranslationFile(const TranslationFile: AnsiString; const OnTranslate: TTranslateStringEvent = nil): AnsiString;
 procedure SaveTranslationFile; overload;
 procedure SaveTranslationFile(const aFileName: AnsiString); overload;
 function LoadDefaultTranslationFile(const OnTranslate: TTranslateStringEvent = nil): TFileName;
@@ -81,14 +81,14 @@ function GetAvailableTranslations: TStringList;
 function GetAvailableTranslations(const aSearchPath: AnsiString): TStringList;
 function GetTranslationFileName(const Language: string; AvailableTranslations: TStringList): string;
 
+const
+  sLanguageIDName = 'TranslationLanguage';
+  sDefautTranslationDir = 'lang';
+
 implementation
 
 uses
   Forms;
-
-const
-  sLanguageIDName = 'TranslationLanguage';
-  sDefautTranslationDir = 'lang';
 
 { procedures and functions }
 
@@ -141,11 +141,12 @@ begin
   end;
 end;
 
-procedure LoadTranslationFile(const TranslationFile: AnsiString; const OnTranslate: TTranslateStringEvent = nil);
+function LoadTranslationFile(const TranslationFile: AnsiString; const OnTranslate: TTranslateStringEvent = nil): AnsiString;
 begin
   LRSTranslator := TResTranslator.Create(TranslationFile);
   TResTranslator(LRSTranslator).OnTranslateString := OnTranslate;
   SetResourceStrings(@GetResStrings, LRSTranslator);
+  Result := TResTranslator(LRSTranslator).TranslationLanguage;
 end;
 
 function LoadDefaultTranslationFile(const OnTranslate: TTranslateStringEvent): TFileName;
@@ -326,7 +327,7 @@ begin
     CheckSpecialChars;
     if FileExists(FTranslationFile) then
       LoadFromFile(FTranslationFile);
-    FTranslationLanguage := CValues[AnsiQuotedStr(sLanguageIDName, QuoteChar)];
+    FTranslationLanguage := AnsiDequotedStr(CValues[AnsiQuotedStr(sLanguageIDName, QuoteChar)], QuoteChar);
   end;
 
   FAddedStrings := TCorrectedStringList.Create;
