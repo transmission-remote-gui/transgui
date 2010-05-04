@@ -207,7 +207,7 @@ var
 begin
   LCLGetLanguageIDs(lLang, sLang);
   Result := IncludeTrailingPathDelimiter(TranslationFilesPath) + ExtractFileNameOnly(ParamStr(0))+ '.' + AnsiLowerCase(sLang);
-  LoadTranslationFile(Result, OnTranslate);
+  Result := LoadTranslationFile(Result, OnTranslate);
 end;
 
 function LoadLanguageTranslation(const Language: AnsiString; const OnTranslate: TTranslateStringEvent): TFileName;
