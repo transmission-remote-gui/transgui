@@ -145,9 +145,16 @@ begin
   s:=UTF8Decode(URL);
   Result:=ShellExecute(0, 'open', PChar(s), nil, nil, SW_SHOWNORMAL) > 32;
 {$endif mswindows}
-{$ifdef unix}
-  Result:=UnixOpenURL(URL) = 0;
-{$endif unix}
+
+{$ifdef darwin}
+  Result:=fpSystem('Open ' + URL) = 0;
+{$else darwin}
+
+  {$ifdef unix}
+    Result:=UnixOpenURL(URL) = 0;
+  {$endif unix}
+
+{$endif darwin}
 end;
 
 var
