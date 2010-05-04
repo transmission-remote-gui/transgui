@@ -40,6 +40,7 @@ type
     cbUseProxy: TCheckBox;
     cbShowAddTorrentWindow: TCheckBox;
     cbHost: TComboBox;
+    cbLanguage: TComboBox;
     edProxyPassword: TEdit;
     edProxyPort: TSpinEdit;
     edProxy: TEdit;
@@ -49,6 +50,7 @@ type
     edProxyUserName: TEdit;
     gbTray: TGroupBox;
     edPaths: TMemo;
+    txLanguage: TLabel;
     txPaths: TLabel;
     tabPaths: TTabSheet;
     txProxyPassword: TLabel;
@@ -68,14 +70,18 @@ type
     procedure btDelHostClick(Sender: TObject);
     procedure btOKClick(Sender: TObject);
     procedure cbHostSelect(Sender: TObject);
+    procedure cbLanguageEnter(Sender: TObject);
     procedure cbUseProxyClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure tabConnectionShow(Sender: TObject);
     procedure tabPathsShow(Sender: TObject);
   private
     FCurHost: string;
+    FLangList: TStringList;
+    procedure FillLanguageItems;
   public
     procedure LoadHostSettings(const HostName: string);
     procedure SaveHostSettings(const HostName: string);
@@ -84,7 +90,7 @@ type
 
 implementation
 
-uses Main, synacode;
+uses Main, synacode, ResTranslator, utils;
 
 { TOptionsForm }
 
@@ -112,6 +118,16 @@ begin
   if i >= 0 then
     cbHost.Items.Move(i, 0);
   cbHost.Text:=s;
+
+  if cbLanguage.Text <> FTranslationLanguage then begin
+    if cbLanguage.Text = 'English' then
+      s:=''
+    else
+      s:=FLangList.Values[cbLanguage.Text];
+    MainForm.Ini.WriteString('Interface', 'TranslationFile', s);
+    MessageDlg(sRestartRequired, mtInformation, [mbOk], 0);
+  end;
+
   ModalResult:=mrOk;
 end;
 
@@ -180,6 +196,8 @@ procedure TOptionsForm.FormCreate(Sender: TObject);
 begin
   Page.ActivePageIndex:=0;
   ActiveControl:=cbHost;
+  cbLanguage.Items.Add(FTranslationLanguage);
+  cbLanguage.ItemIndex:=0;
 end;
 
 procedure TOptionsForm.FormShow(Sender: TObject);
@@ -279,6 +297,39 @@ begin
             ((ReadString(Sec, 'ProxyPass', '') = '') and (edProxyPassword.Text <> '')) or
             ((ReadString(Sec, 'ProxyPass', '') <> '') and (edProxyPassword.Text <> '******'));
   end;
+end;
+
+procedure TOptionsForm.cbLanguageEnter(Sender: TObject);
+begin
+  if not Assigned(FLangList) then
+    FillLanguageItems;
+end;
+
+procedure TOptionsForm.FillLanguageItems;
+var
+  i: integer;
+begin
+  AppBusy;
+  cbLanguage.Items.BeginUpdate;
+  try
+    cbLanguage.Items.Clear;
+    cbLanguage.Items.Add('English');
+    FLangList := GetAvailableTranslations;
+    FLangList.Sort;
+    with FLangList do
+      for i := 0 to Count - 1 do
+        cbLanguage.Items.Add(Names[i]);
+    with cbLanguage do
+      ItemIndex:= Items.IndexOf(FTranslationLanguage);
+  finally
+    cbLanguage.Items.EndUpdate;
+  end;
+  AppNormal;
+end;
+
+procedure TOptionsForm.FormDestroy(Sender: TObject);
+begin
+  FLangList.Free;
 end;
 
 initialization

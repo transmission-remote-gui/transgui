@@ -1359,21 +1359,9 @@ object MainForm: TMainForm
     end
     object miTools: TMenuItem
       Caption = 'Tools'
-      object miLanguage: TMenuItem
-        Caption = 'Language'
-        object miLnEnglish: TMenuItem
-          Caption = 'English'
-          GroupIndex = 1
-          RadioItem = True
-          OnClick = miLanguageClick
-        end
-      end
-      object MenuItem34: TMenuItem
-        Action = acSetupColumns
-        OnClick = acSetupColumnsExecute
-      end
-      object MenuItem35: TMenuItem
-        Caption = '-'
+      object MenuItem17: TMenuItem
+        Action = acOptions
+        OnClick = acOptionsExecute
       end
       object MenuItem18: TMenuItem
         Action = acDaemonOptions
@@ -1415,9 +1403,12 @@ object MainForm: TMainForm
         }
         OnClick = acDaemonOptionsExecute
       end
-      object MenuItem17: TMenuItem
-        Action = acOptions
-        OnClick = acOptionsExecute
+      object MenuItem35: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem34: TMenuItem
+        Action = acSetupColumns
+        OnClick = acSetupColumnsExecute
       end
       object MenuItem32: TMenuItem
         Caption = '-'

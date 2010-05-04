@@ -72,7 +72,7 @@ resourcestring
   sUnableExtractFlag = 'Unable to extract flag image.';
   sTrackerWorking = 'Working';
   sTrackerUpdating = 'Updating';
-  sRestartRequired = 'Changing the language requires that Transmission Remote GUI be restarted.';
+  sRestartRequired = 'You should restart the application to apply changes.';
   sRemoveTorrentData = 'Are you sure to remove torrent ''%s'' and all associated DATA?';
   sRemoveTorrent = 'Are you sure to remove torrent ''%s''?';
   sUnableGetFilesList = 'Unable to get files list';
@@ -131,8 +131,6 @@ type
     MenuItem42: TMenuItem;
     MenuItem43: TMenuItem;
     MenuItem44: TMenuItem;
-    miLanguage: TMenuItem;
-    miLnEnglish: TMenuItem;
     pbDownloaded: TPaintBox;
     tabTrackers: TTabSheet;
     txConnErrorLabel: TLabel;
@@ -320,7 +318,6 @@ type
     procedure lvTorrentsCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure lvTorrentsCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
       var DefaultDraw: Boolean);
-    procedure miLanguageClick(Sender: TObject);
     procedure panReconnectResize(Sender: TObject);
     procedure pbDownloadedPaint(Sender: TObject);
     procedure pbDownloadedResize(Sender: TObject);
@@ -408,7 +405,6 @@ type
     procedure lvLeftMouseSelect(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
     function ExecRemoteFile(const FileName: string): boolean;
-    procedure FillLanguageItems;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure UpdateTorrentsList;
@@ -431,6 +427,8 @@ function GetHumanSize(sz: double; RoundTo: integer = 0): string;
 var
   MainForm: TMainForm;
   RpcObj: TRpc;
+  FTranslationFileName: string;
+  FTranslationLanguage: string;
 
 const
   // Torrents list
@@ -635,8 +633,6 @@ var
   FHomeDir: string;
   FIPCFileName: string;
   FRunFileName: string;
-  FTranslationFileName: string;
-  FTranslationLanguage: string;
 
 procedure AddTorrentFile(const FileName: string);
 var
@@ -657,13 +653,11 @@ var
 begin
   aIni:=TIniFile.Create(FHomeDir + ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
   try
-    FTranslationLanguage := aIni.ReadString('Interface', 'Language', '');
-    if FTranslationLanguage = '' then begin
-      FTranslationFileName := LoadDefaultTranslationFile(@OnTranslate);
-      FTranslationLanguage := ExtractLangName(FTranslationFileName);
-    end
-    else if not AnsiStartsText('English', FTranslationLanguage) then
-      FTranslationFileName := LoadLanguageTranslation(FTranslationLanguage, @OnTranslate);
+    FTranslationFileName := aIni.ReadString('Interface', 'TranslationFile', '');
+    if FTranslationFileName = '' then
+      FTranslationLanguage := 'English'
+    else
+      FTranslationLanguage := LoadTranslationFile(ExtractFilePath(ParamStr(0)) + sDefautTranslationDir + DirectorySeparator + FTranslationFileName, @OnTranslate);
   finally
     aIni.Free;
   end;
@@ -784,7 +778,6 @@ begin
   if FCurHost = '' then
     FCurHost:=FIni.ReadString('Connection', 'Host', '');
   FPathMap:=TStringList.Create;
-  FillLanguageItems;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -3872,48 +3865,6 @@ begin
   end;
 
   MessageDlg(sNoPathMapping, mtInformation, [mbOK], 0);
-end;
-
-procedure TMainForm.miLanguageClick(Sender: TObject);
-begin
-  with Sender as TMenuItem do
-    if Not Checked then begin
-      Checked:= true;
-      Ini.WriteString('Interface', 'Language', Caption);
-      MessageDlg(sRestartRequired, mtInformation, [mbOk], 0);
-    end;
-end;
-
-procedure TMainForm.FillLanguageItems;
-var
-  i: integer;
-  mItem: TMenuItem;
-  FLangList: TStringList;
-  s:string;
-begin
-  FLangList := GetAvailableTranslations;
-  try
-    with FLangList do begin
-      miLnEnglish.Checked := (Count = 0) or AnsiStartsText('English', FTranslationLanguage);
-      for i := 0 to Count - 1 do begin
-        mItem := TMenuItem.Create(Self);
-        with mItem do begin
-          Caption:= AnsiDequotedStr(Names[i], QuoteChar);
-          s:= Caption;
-          Name:= 'miLn' + IntToStr(i);
-          RadioItem:= true;
-          GroupIndex:= 1;
-          Checked:= AnsiSameText(FTranslationLanguage, mItem.Caption);
-          if Checked then
-            s:=s;
-          OnClick:= @miLanguageClick;
-        end;
-        miLanguage.Add(mItem);
-      end;
-    end;
-  finally
-    FLangList.Free;
-  end;
 end;
 
 initialization

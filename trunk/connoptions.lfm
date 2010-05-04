@@ -14,6 +14,7 @@ object OptionsForm: TOptionsForm
   Constraints.MinWidth = 300
   OnActivate = FormActivate
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '0.9.28.3'
@@ -37,6 +38,7 @@ object OptionsForm: TOptionsForm
     Width = 75
     Anchors = [akRight, akBottom]
     AutoSize = True
+    Cancel = True
     Caption = 'Cancel'
     Constraints.MinWidth = 75
     ModalResult = 2
@@ -47,9 +49,9 @@ object OptionsForm: TOptionsForm
     Height = 290
     Top = 8
     Width = 361
-    ActivePage = tabPaths
+    ActivePage = tabInterface
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     object tabConnection: TTabSheet
       Caption = 'Connection'
@@ -323,6 +325,24 @@ object OptionsForm: TOptionsForm
         Width = 274
         Caption = 'Show parameters window when adding a new torrent'
         TabOrder = 2
+      end
+      object cbLanguage: TComboBox
+        Left = 104
+        Height = 21
+        Top = 166
+        Width = 240
+        ItemHeight = 13
+        OnEnter = cbLanguageEnter
+        Style = csDropDownList
+        TabOrder = 3
+      end
+      object txLanguage: TLabel
+        Left = 8
+        Height = 14
+        Top = 168
+        Width = 52
+        Caption = 'Language:'
+        ParentColor = False
       end
     end
     object tabPaths: TTabSheet
