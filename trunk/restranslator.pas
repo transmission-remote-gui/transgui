@@ -419,9 +419,10 @@ begin
     Duplicates := dupIgnore;
     CaseSensitive := False;
     CheckSpecialChars;
-    if FileExists(FTranslationFile) then
+    if FileExists(FTranslationFile) then begin
       LoadFromFile(FTranslationFile);
-    FTranslationLanguage := AnsiDequotedStr(CValues[AnsiQuotedStr(sLanguageIDName, QuoteChar)], QuoteChar);
+      FTranslationLanguage := AnsiDequotedStr(CValues[AnsiQuotedStr(sLanguageIDName, QuoteChar)], QuoteChar);
+    end;
   end;
 
   FAddedStrings := TTranslateStringList.Create;
