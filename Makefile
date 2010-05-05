@@ -269,8 +269,20 @@ else
 PROG_VER=$(shell cat VERSION.txt)
 endif
 ifeq ($(LAZARUS_DIR),)
-$(error Lazrus directory is not specified. Use LAZARUS_DIR=<dir> switch.)
+  LAZARUS_DIR=$(strip $(dir $(realpath $(firstword $(strip $(wildcard $(addsuffix /lazbuild$(SRCEXEEXT),$(SEARCHPATH))))))))
+  lazarus_ok=$(strip $(wildcard $(LAZARUS_DIR)/lazbuild))
+  ifeq ($(lazarus_ok),)
+    LAZARUS_DIR=
+    lazarus_ok=$(strip $(wildcard $(HOME)/lazarus/lazbuild))
+    ifneq ($(lazarus_ok),)
+      LAZARUS_DIR=$(HOME)/lazarus
+    endif
+  endif
+  ifeq ($(LAZARUS_DIR),)
+    $(error Lazarus directory was not found. Use LAZARUS_DIR=<dir> switch.)
+  endif
 endif
+$(info Using Lazarus dir: $(LAZARUS_DIR))
 LAZRES=$(LAZARUS_DIR)/tools/lazres$(SRCEXEEXT)
 LCL_WIDGETSET=gtk2
 ifneq ($(findstring $(OS_TARGET),win32,win64),)
