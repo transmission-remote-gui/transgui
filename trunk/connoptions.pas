@@ -76,6 +76,7 @@ type
     procedure cbHostSelect(Sender: TObject);
     procedure cbLanguageEnter(Sender: TObject);
     procedure cbLanguageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure cbLanguageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure cbUseProxyClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -205,7 +206,7 @@ begin
   cbLanguage.ItemIndex:=0;
 {$ifdef LCLgtk2}
   cbLanguage.OnDropDown:=@cbLanguageEnter;
-  cbLanguage.OnMouseEnter:=@cbLanguageEnter;
+  cbLanguage.OnMouseMove:=@cbLanguageMouseMove;
 {$endif LCLgtk2}
 end;
 
@@ -316,8 +317,12 @@ end;
 
 procedure TOptionsForm.cbLanguageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  if not Assigned(FLangList) then
-    FillLanguageItems;
+  cbLanguageEnter(cbLanguage);
+end;
+
+procedure TOptionsForm.cbLanguageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+begin
+  cbLanguageEnter(cbLanguage);
 end;
 
 procedure TOptionsForm.FillLanguageItems;

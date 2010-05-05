@@ -17,7 +17,7 @@ object OptionsForm: TOptionsForm
   OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.3'
+  LCLVersion = '0.9.28.2'
   object btOK: TButton
     Left = 214
     Height = 23
@@ -273,6 +273,14 @@ object OptionsForm: TOptionsForm
         Caption = 'Refresh interval:'
         ParentColor = False
       end
+      object txLanguage: TLabel
+        Left = 8
+        Height = 14
+        Top = 168
+        Width = 52
+        Caption = 'Language:'
+        ParentColor = False
+      end
       object edRefreshInterval: TSpinEdit
         Left = 144
         Height = 21
@@ -336,14 +344,6 @@ object OptionsForm: TOptionsForm
         OnMouseDown = cbLanguageMouseDown
         Style = csDropDownList
         TabOrder = 3
-      end
-      object txLanguage: TLabel
-        Left = 8
-        Height = 14
-        Top = 168
-        Width = 52
-        Caption = 'Language:'
-        ParentColor = False
       end
     end
     object tabPaths: TTabSheet
