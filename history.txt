@@ -1,4 +1,4 @@
-1.4 (May 05, 2010)
+1.4 (May 06, 2010)
 ------------------
 [+] Localization support by Alex Cherednichenko, aka Alex7Che.
 [+] Russian translation by Alex Cherednichenko, aka Alex7Che.
@@ -8,6 +8,8 @@
 [-] Fixed the "Could not convert variant of type (Null) into type (Int64)" error when the "Seeds" column is hidden. Issues #172 and #187.
 [-] Fixed tracker errors handling for newer versions of the daemon.
 [-] Do not jump to the selected torrent when the list refreshes om linux. Issue #192.
+[-] Issue #177: Sorting by "Status" doesn't differentiate "Finished" and "Stopped".
+[-] Issue #212: Sorting by Seeds does not work properly.
 
 1.3.2 (Jan 09, 2010)
 ------------------
