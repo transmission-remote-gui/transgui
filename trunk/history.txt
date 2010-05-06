@@ -1,6 +1,6 @@
 1.4 (May 06, 2010)
 ------------------
-[+] Localization support by Alex Cherednichenko, aka Alex7Che.
+[+] Localization support by Alex Cherednichenko, aka Alex7Che. See http://code.google.com/p/transmisson-remote-gui/wiki/Localization page if you want to make a translation.
 [+] Russian translation by Alex Cherednichenko, aka Alex7Che.
 [+] Trackers page.
 [+] Torrent files can be dragged and dropped to the program window.
