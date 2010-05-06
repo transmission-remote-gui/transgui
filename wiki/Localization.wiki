@@ -1,0 +1,3 @@
+#summary How to translate Transmission Remote GUI
+
+TODO
