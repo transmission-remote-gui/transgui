@@ -15,7 +15,7 @@ object AddTorrentForm: TAddTorrentForm
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.3'
+  LCLVersion = '0.9.28.2'
   object gbSaveAs: TGroupBox
     Left = 8
     Height = 92
@@ -56,7 +56,7 @@ object AddTorrentForm: TAddTorrentForm
     object cbStartTorrent: TCheckBox
       Left = 10
       Height = 17
-      Top = 46
+      Top = 47
       Width = 79
       Caption = 'Start torrent'
       Checked = True
@@ -66,7 +66,7 @@ object AddTorrentForm: TAddTorrentForm
     object edPeerLimit: TSpinEdit
       Left = 376
       Height = 21
-      Top = 44
+      Top = 46
       Width = 62
       Anchors = [akTop, akRight]
       MaxValue = 999
@@ -111,10 +111,10 @@ object AddTorrentForm: TAddTorrentForm
       OnMouseDown = lvFilesMouseDown
     end
     object btSelectAll: TButton
-      Left = 210
+      Left = 178
       Height = 23
       Top = 0
-      Width = 110
+      Width = 126
       Anchors = [akTop, akRight]
       Caption = 'Select all'
       Constraints.MinWidth = 75
@@ -122,10 +122,10 @@ object AddTorrentForm: TAddTorrentForm
       TabOrder = 1
     end
     object btSelectNone: TButton
-      Left = 328
+      Left = 312
       Height = 23
       Top = 0
-      Width = 110
+      Width = 126
       Anchors = [akTop, akRight]
       Caption = 'Select none'
       Constraints.MinWidth = 75
