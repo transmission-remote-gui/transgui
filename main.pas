@@ -1963,6 +1963,12 @@ begin
   ProcessPieces(FLastPieces, FLastPieceCount, FLastDone);
 end;
 
+{$ifdef LCLcarbon}
+type
+  THackApplication = class(TApplication)
+  end;
+{$endif LCLcarbon}
+
 procedure TMainForm.TickTimerTimer(Sender: TObject);
 var
   s: string;
@@ -2015,6 +2021,9 @@ begin
           DoConnect
         else
           txReconnectSecs.Caption:=Format(sReconnect, [FReconnectTimeOut - Round(SecsPerDay*(Now - FReconnectWaitStart))]);
+{$ifdef LCLcarbon}
+     THackApplication(Application).ProcessAsyncCallQueue;
+{$endif LCLcarbon}
   finally
     TickTimer.Enabled:=True;
   end;
