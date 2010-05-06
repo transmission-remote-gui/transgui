@@ -1,20 +1,24 @@
 #labels Featured
 [http://transmisson-remote-gui.googlecode.com/svn/wiki/PeersWin.png]
 
-*Main window with peers list page / Windows XP*
+*Main window with peers list page / Windows 7*
 
 [http://transmisson-remote-gui.googlecode.com/svn/wiki/GeneralLinux.png]
 
-*Main window with general info page / Linux, default GTK2 theme*
+*Main window with general info page / Linux*
+
+[http://transmisson-remote-gui.googlecode.com/svn/wiki/GeneralMacOSX.png]
+
+*Main window with general info page and Russian localization / Mac OS X*
 
 [http://transmisson-remote-gui.googlecode.com/svn/wiki/FilesLinux.png]
 
-*Main window with files list page / Linux, default GTK2 theme*
+*Main window with files list page / Linux*
 
 [http://transmisson-remote-gui.googlecode.com/svn/wiki/AddTorrentWin.png]
 
-*Add torrent window / Windows XP*
+*Add torrent window / Windows 7*
 
 [http://transmisson-remote-gui.googlecode.com/svn/wiki/OptionsWin.png]
 
-*Transmission options / Windows XP*
+*Transmission options / Windows 7*
