@@ -1,5 +1,5 @@
 #summary Version 1.3.2 released
-#labels Featured
+#labels Deprecated
 
 <pre>
 `[-`] Fixed x10 progress percentage in some cases. Issue #171.
