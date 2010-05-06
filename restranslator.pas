@@ -146,7 +146,7 @@ var
   LangName: AnsiString;
 begin
   Result:= TStringList.Create;
-  if FindFirstUTF8(IncludeTrailingPathDelimiter(SearchPath) + '*', faArchive or faReadOnly, Sr) = 0 then
+  if FindFirst(IncludeTrailingPathDelimiter(SearchPath) + '*', faArchive or faReadOnly, Sr) = 0 then
     with Result do begin
       NameValueSeparator:= '=';
       QuoteChar:= '"';
@@ -156,8 +156,8 @@ begin
         LangName:= ExtractLangName(IncludeTrailingPathDelimiter(ExtractFilePath(SearchPath)) + Sr.Name);
         if LangName <> '' then
           Add(LangName + NameValueSeparator + Sr.Name);
-      until FindNextUTF8(Sr) <> 0;
-      FindCloseUTF8(Sr);
+      until FindNext(Sr) <> 0;
+      FindClose(Sr);
     end;
 end;
 
@@ -204,6 +204,7 @@ var
   lLang, sLang, s: string;
 begin
   LCLGetLanguageIDs(lLang, sLang);
+  sLang:=AnsiLowerCase(sLang);
   s:=ExtractFileNameOnly(ParamStr(0));
   if (sLang <> '') and not FileExists(DefaultLangDir + s + '.' + sLang) then
     s:=s + '.' + sLang
@@ -435,7 +436,7 @@ var
   FS: TFileStream;
   buff: array[1..3] of char;
 begin
-  FS:= TFileStream.Create(UTF8ToSys(FileName), fmOpenRead);
+  FS:= TFileStream.Create(FileName, fmOpenRead);
   try
     // Skip UTF8 header
     buff := '';
