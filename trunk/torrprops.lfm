@@ -72,7 +72,7 @@ object TorrPropsForm: TTorrPropsForm
       TabOrder = 0
     end
     object edMaxDown: TSpinEdit
-      Left = 324
+      Left = 318
       Height = 21
       Top = 24
       Width = 66
@@ -91,7 +91,7 @@ object TorrPropsForm: TTorrPropsForm
       TabOrder = 2
     end
     object edMaxUp: TSpinEdit
-      Left = 324
+      Left = 318
       Height = 21
       Top = 56
       Width = 66
@@ -101,7 +101,7 @@ object TorrPropsForm: TTorrPropsForm
       TabOrder = 3
     end
     object edPeerLimit: TSpinEdit
-      Left = 324
+      Left = 318
       Height = 21
       Top = 88
       Width = 66
