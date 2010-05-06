@@ -333,7 +333,9 @@ function TranslateString(const Value: AnsiString): AnsiString;
 begin
   if Assigned(LRSTranslator) and (LRSTranslator is TResTranslator) then
     with LRSTranslator as TResTranslator do
-      result := InternalTranslateString(Value);
+      result := InternalTranslateString(Value)
+  else
+    result := Value;
 end;
 
 { TTranslateStringList }

@@ -2570,7 +2570,7 @@ begin
               if Booleans['lastAnnounceSucceeded'] then
                 s:=sTrackerWorking
               else
-                s:=UTF8Encode(Strings['lastAnnounceResult']);
+                s:=TranslateString(UTF8Encode(Strings['lastAnnounceResult']));
 
           if s = 'Success' then
             s:=sTrackerWorking;
@@ -3567,7 +3567,7 @@ begin
                 if Booleans['lastAnnounceSucceeded'] then
                   s:=sTrackerWorking
                 else
-                  s:=UTF8Encode(Strings['lastAnnounceResult']);
+                  s:=TranslateString(UTF8Encode(Strings['lastAnnounceResult']));
 
             if s = 'Success' then
               s:=sTrackerWorking;
