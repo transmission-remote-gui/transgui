@@ -2488,7 +2488,7 @@ object MainForm: TMainForm
       Default = True
       OnClick = miToggleAppClick
     end
-    object MenuItem25: TMenuItem
+    object miTSep1: TMenuItem
       Caption = '-'
     end
     object MenuItem26: TMenuItem
