@@ -60,7 +60,7 @@ type
     procedure SetIgnoreDelimiters(const AValue: TWordDelimitersOptions);
     procedure SetOnTranslateString(const AValue: TTranslateStringEvent);
     procedure SetWordDelims(const AValue: TSysCharset);
-    function InternalTranslateString(Value: AnsiString): AnsiString;
+    function InternalTranslateString(const Value: AnsiString): AnsiString;
   public
     constructor Create(TranslationFile: AnsiString);
     destructor Destroy; override;
@@ -343,23 +343,24 @@ var
   Index: integer;
   offset: integer;
 begin
-  result := '';
   Index := IndexOfName(Name, offset);
   if Index >= 0  then
-    result := Copy(Strings[Index], offset, Length(Strings[Index]));
+    Result := Copy(Strings[Index], offset, MaxInt)
+  else
+    result := '';
 end;
 
 function TTranslateStringList.CorrectGetName(Index: integer): string;
 var
-  P: PChar;
   Offset: integer;
+  s: string;
 begin
   CheckSpecialChars;
   Result := '';
-  P := PChar(Strings[Index]);
-  Offset := ScanQuotSep(P);
+  s := Strings[Index];
+  Offset := ScanQuotSep(PChar(s));
   if (Offset > 0) then
-    Result := NormaliseQuotedStr(LeftStr(Strings[Index], offset));
+    Result := NormaliseQuotedStr(LeftStr(s, offset));
 end;
 
 function TTranslateStringList.ScanQuotSep(P: PChar): integer;
@@ -407,20 +408,20 @@ end;
 
 function TTranslateStringList.IndexOfName(const Name: string; var Offset: integer): integer;
 var
-  P: PChar;
+  s, n: string;
 begin
   CheckSpecialChars;
   result := 0;
-  while (result < Count) do
-    begin
-    P := PChar(Strings[result]);
-    Offset := ScanQuotSep(P);
-    if (Offset > 0) and AnsiSameText(NormaliseQuotedStr(Name), NormaliseQuotedStr(Copy(Strings[result],1, Offset))) then begin
+  n:=NormaliseQuotedStr(Name);
+  while (result < Count) do begin
+    s:=Strings[result];
+    Offset := ScanQuotSep(PChar(s));
+    if (Offset > 0) and AnsiSameText(n, Copy(s, 1, Offset)) then begin
       inc(Offset, 2);
       exit;
     end;
     inc(result);
-    end;
+  end;
   result := -1;
 end;
 
@@ -435,6 +436,8 @@ procedure TTranslateStringList.LoadFromFile(const FileName: string);
 var
   FS: TFileStream;
   buff: array[1..3] of char;
+  i, j: integer;
+  s: string;
 begin
   FS:= TFileStream.Create(FileName, fmOpenRead);
   try
@@ -446,6 +449,13 @@ begin
     LoadFromStream(FS);
   finally
     FS.Free;
+  end;
+  // Normalize quotations
+  for i:=0 to Count - 1 do begin
+    s:=Strings[i];
+    j:=ScanQuotSep(PChar(s));
+    if j > 0 then
+      Strings[i]:=NormaliseQuotedStr(Copy(s, 1, j)) + NameValueSeparator + NormaliseQuotedStr(Copy(s, j + 2, MaxInt));
   end;
 end;
 
@@ -474,6 +484,8 @@ begin
   for i := 0 to Source.Count - 1 do
     if (Source.CNames[i] <> '') and (IndexOfName(Source.CNames[i]) = -1) then begin
       if not HasAdded then begin
+        if IndexOf(LineSeparator) >= 0 then
+          Delete(IndexOf(LineSeparator));
         Append(LineSeparator);
         HasAdded:= true;
       end;
@@ -524,7 +536,7 @@ begin
   inherited Destroy;
 end;
 
-function TResTranslator.InternalTranslateString(Value: AnsiString): AnsiString;
+function TResTranslator.InternalTranslateString(const Value: AnsiString): AnsiString;
 
   function IsAlpha(Ch: char): boolean; inline;
   begin
@@ -545,7 +557,7 @@ function TResTranslator.InternalTranslateString(Value: AnsiString): AnsiString;
 
 var
   ClearValue: AnsiString;
-  Original: AnsiString;
+  Original, s, n: AnsiString;
 begin
   Original := Value;
   ClearValue := StringReplace(AdjustLineBreaks(Value), LineEnding, '~', [rfReplaceAll]);
@@ -560,20 +572,21 @@ begin
   begin
     with FStrResLst do begin
       if HasSeparator(ClearValue, NameValueSeparator) then
-        Value := AnsiQuotedStr(ClearValue, QuoteChar)
+        n := AnsiQuotedStr(ClearValue, QuoteChar)
       else
-        Value := ClearValue;
+        n := ClearValue;
 
-      if (CValues[Value] = '') then begin
+      s:=CValues[n];
+      if (s = '') then begin
         with FAddedStrings do
-          Append(Value + NameValueSeparator + Value);
+          Append(n + NameValueSeparator + n);
         with FStrings do
-          Append(Value + NameValueSeparator + Value);
+          Append(n + NameValueSeparator + n);
         FModified := True;
         Result := Original;
       end
       else begin
-        Result := StringReplace(Result, ClearValue, AnsiDequotedStr(CValues[Value], QuoteChar), [rfReplaceAll]);
+        Result := StringReplace(Result, ClearValue, AnsiDequotedStr(s, QuoteChar), [rfReplaceAll]);
         Result := StringReplace(Result, '~', LineEnding, [rfReplaceAll]);
       end;
     end;
