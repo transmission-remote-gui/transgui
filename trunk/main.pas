@@ -158,7 +158,7 @@ type
     MenuItem22: TMenuItem;
     MenuItem23: TMenuItem;
     MenuItem24: TMenuItem;
-    MenuItem25: TMenuItem;
+    miTSep1: TMenuItem;
     MenuItem26: TMenuItem;
     MenuItem27: TMenuItem;
     MenuItem28: TMenuItem;
@@ -783,6 +783,10 @@ begin
   if FCurHost = '' then
     FCurHost:=FIni.ReadString('Connection', 'Host', '');
   FPathMap:=TStringList.Create;
+{$ifndef windows}
+  miToggleApp.Visible:=False;
+  miTSep1.Visible:=False;
+{$endif windows}
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
