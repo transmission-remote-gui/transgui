@@ -526,6 +526,7 @@ const
   TR_STATUS_DOWNLOAD     = ( 1 shl 2 ); // Downloading
   TR_STATUS_SEED         = ( 1 shl 3 ); // Seeding
   TR_STATUS_STOPPED      = ( 1 shl 4 ); // Torrent is stopped
+  TR_STATUS_FINISHED     = ( 1 shl 8 ); // Torrent is finished (pseudo status)
 
   TR_SPEEDLIMIT_GLOBAL    = 0;    // only follow the overall speed limit
   TR_SPEEDLIMIT_SINGLE    = 1;    // only follow the per-torrent limit
@@ -1403,10 +1404,9 @@ begin
     TR_STATUS_SEED:
       Result:=sSeeding;
     TR_STATUS_STOPPED:
-      if FTorrents[idxStateImg, TorrentIdx] = imgDone then
-        Result:=sFinished
-      else
-        Result:=sStopped;
+      Result:=sStopped;
+    TR_STATUS_FINISHED:
+      Result:=sFinished;
     else
       Result:=sUnknown;
   end;
@@ -2580,8 +2580,11 @@ begin
       f:=t.Floats['sizeWhenDone'];
       if f <> 0 then
         f:=(f - t.Floats['leftUntilDone'])*100.0/f;
-      if (StateImg = imgDone) and (t.Floats['leftUntilDone'] <> 0) then
-        StateImg:=imgStopped;
+      if StateImg = imgDone then
+        if t.Floats['leftUntilDone'] <> 0 then
+          StateImg:=imgStopped
+        else
+          FTorrents[idxStatus, row]:=TR_STATUS_FINISHED;
     end;
     if f < 0 then
       f:=0;
@@ -2772,10 +2775,8 @@ begin
             Inc(SeedCnt);
             Inc(CompletedCnt);
           end;
-        TR_STATUS_STOPPED:
-          if FTorrents[idxStateImg, i] = imgDone then begin
-            Inc(CompletedCnt);
-          end;
+        TR_STATUS_FINISHED:
+          Inc(CompletedCnt);
       end;
 
       if not VarIsEmpty(FTorrents[idxTracker, i]) then begin
