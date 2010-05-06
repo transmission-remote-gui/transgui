@@ -131,9 +131,9 @@ end;
 
 procedure TDaemonOptionsForm.FormCreate(Sender: TObject);
 begin
-{$ifndef LCLgtk2}
+{$ifdef windows}
   gbGeneral.Caption:='';
-{$endif LCLgtk2}
+{$endif windows}
   cbEncryption.Items.Add(sEncryptionDisabled);
   cbEncryption.Items.Add(sEncryptionEnabled);
   cbEncryption.Items.Add(sEncryptionRequired);

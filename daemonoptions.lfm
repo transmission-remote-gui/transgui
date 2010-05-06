@@ -54,7 +54,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       TabOrder = 0
     end
     object edMaxDown: TSpinEdit
-      Left = 452
+      Left = 446
       Height = 21
       Top = 4
       Width = 66
@@ -73,7 +73,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       TabOrder = 2
     end
     object edMaxUp: TSpinEdit
-      Left = 452
+      Left = 446
       Height = 21
       Top = 36
       Width = 66

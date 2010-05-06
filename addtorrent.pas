@@ -111,9 +111,9 @@ end;
 
 procedure TAddTorrentForm.FormCreate(Sender: TObject);
 begin
-{$ifndef LCLgtk2}
+{$ifdef windows}
   gbSaveAs.Caption:='';
-{$endif LCLgtk2}
+{$endif windows}
 end;
 
 initialization

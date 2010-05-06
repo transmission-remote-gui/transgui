@@ -68,9 +68,9 @@ end;
 
 procedure TTorrPropsForm.FormCreate(Sender: TObject);
 begin
-{$ifndef LCLgtk2}
+{$ifdef windows}
   gbOptions.Caption:='';
-{$endif LCLgtk2}
+{$endif windows}
 end;
 
 initialization
