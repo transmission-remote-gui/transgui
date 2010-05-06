@@ -2,21 +2,21 @@ object AboutForm: TAboutForm
   Left = 426
   Height = 330
   Top = 185
-  Width = 420
+  Width = 451
   HorzScrollBar.Page = 423
   VertScrollBar.Page = 316
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'About'
   ClientHeight = 330
-  ClientWidth = 420
+  ClientWidth = 451
   Constraints.MinHeight = 330
   Constraints.MinWidth = 350
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.3'
+  LCLVersion = '0.9.28.2'
   object btOK: TButton
-    Left = 340
+    Left = 371
     Height = 23
     Top = 302
     Width = 75
@@ -33,7 +33,7 @@ object AboutForm: TAboutForm
     Left = 6
     Height = 289
     Top = 8
-    Width = 409
+    Width = 440
     ActivePage = tabAbout
     Anchors = [akTop, akLeft, akRight, akBottom]
     TabIndex = 0
@@ -41,7 +41,7 @@ object AboutForm: TAboutForm
     object tabAbout: TTabSheet
       Caption = 'About'
       ClientHeight = 263
-      ClientWidth = 401
+      ClientWidth = 432
       object imgTransmission: TImage
         Left = 10
         Height = 48
@@ -500,7 +500,7 @@ object AboutForm: TAboutForm
         Left = 6
         Height = 7
         Top = 179
-        Width = 390
+        Width = 421
         Anchors = [akLeft, akRight, akBottom]
         Shape = bsTopLine
       end
