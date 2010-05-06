@@ -856,6 +856,7 @@ end;
 procedure TMainForm.lvTorrentsColumnClick(Sender: TObject; Column: TListColumn);
 begin
 {$ifdef LCLcarbon}
+  { Workaround for Carbon interface bug }
   if (Now - FColClickTime)*MSecsPerDay < 300 then
     exit;
   FColClickTime:=Now;
@@ -2736,7 +2737,12 @@ begin
     if not IsActive then
       ActiveControl:=lvTorrents;
 
-    FTorrents.Sort(FTorrentsSortColumn, FTorrentsSortDesc);
+    i:=FTorrentsSortColumn;
+    if i = idxSeeds then
+      i:=idxSeedsTotal;
+    if i = idxPeers then
+      i:=idxPeersTotal;
+    FTorrents.Sort(i, FTorrentsSortDesc);
 
     for i:=0 to FTrackers.Count - 1 do
       FTrackers.Objects[i]:=nil;
