@@ -658,7 +658,7 @@ begin
       FTranslationLanguage := LoadDefaultTranslationFile(@OnTranslate)
     else
       if FTranslationFileName <> '-' then
-        FTranslationLanguage := LoadTranslationFile(ExtractFilePath(ParamStr(0)) + sDefautTranslationDir + DirectorySeparator + FTranslationFileName, @OnTranslate);
+        FTranslationLanguage := LoadTranslationFile(DefaultLangDir + FTranslationFileName, @OnTranslate);
     if FTranslationLanguage = '' then
       FTranslationLanguage := 'English'
   finally
@@ -797,6 +797,8 @@ begin
   FFiles.Free;
   if Application.HasOption('updatelang') then
     SupplementTranslationFiles;
+  if Application.HasOption('makelang') then
+    MakeTranslationFile;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
