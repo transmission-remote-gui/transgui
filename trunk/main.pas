@@ -2293,7 +2293,7 @@ end;
 
 function TMainForm.ShowConnOptions: boolean;
 var
-  i, cnt: integer;
+  i, cnt, OldRefreshInterval: integer;
   s: string;
 begin
   Result:=False;
@@ -2320,8 +2320,10 @@ begin
 
     cbShowAddTorrentWindow.Checked:=FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
 
+    OldRefreshInterval:=edRefreshInterval.Value;
+
     if ShowModal = mrOK then begin
-      if (FCurHost <> cbHost.Text) or IsHostSettingsChanged(FCurHost) then begin
+      if (FCurHost <> cbHost.Text) or IsHostSettingsChanged(FCurHost) or (OldRefreshInterval <> edRefreshInterval.Value) then begin
         DoDisconnect;
         FReconnectTimeOut:=-1;
       end;
