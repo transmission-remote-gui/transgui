@@ -2,7 +2,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
   Left = 354
   Height = 340
   Top = 216
-  Width = 542
+  Width = 578
   HorzScrollBar.Page = 409
   VertScrollBar.Page = 302
   VertScrollBar.Range = 169
@@ -10,24 +10,24 @@ object DaemonOptionsForm: TDaemonOptionsForm
   BorderStyle = bsDialog
   Caption = 'Transmission options'
   ClientHeight = 340
-  ClientWidth = 542
+  ClientWidth = 578
   Constraints.MinHeight = 340
   Constraints.MinWidth = 400
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.3'
+  LCLVersion = '0.9.28.2'
   object gbBandwidth: TGroupBox
     Left = 8
     Height = 87
     Top = 212
-    Width = 526
+    Width = 562
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Global bandwidth settings'
     ClientHeight = 69
-    ClientWidth = 522
+    ClientWidth = 558
     TabOrder = 1
     object txKbs1: TLabel
-      Left = 492
+      Left = 528
       Height = 14
       Top = 8
       Width = 22
@@ -36,7 +36,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       ParentColor = False
     end
     object txKbs2: TLabel
-      Left = 492
+      Left = 528
       Height = 14
       Top = 40
       Width = 22
@@ -54,7 +54,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       TabOrder = 0
     end
     object edMaxDown: TSpinEdit
-      Left = 416
+      Left = 452
       Height = 21
       Top = 4
       Width = 66
@@ -73,7 +73,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       TabOrder = 2
     end
     object edMaxUp: TSpinEdit
-      Left = 416
+      Left = 452
       Height = 21
       Top = 36
       Width = 66
@@ -84,7 +84,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
   end
   object btOK: TButton
-    Left = 377
+    Left = 413
     Height = 23
     Top = 310
     Width = 75
@@ -97,7 +97,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     TabOrder = 2
   end
   object btCancel: TButton
-    Left = 459
+    Left = 495
     Height = 23
     Top = 310
     Width = 75
@@ -113,11 +113,11 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Left = 8
     Height = 204
     Top = 4
-    Width = 526
+    Width = 562
     Anchors = [akTop, akLeft, akRight]
     Caption = ' '
     ClientHeight = 186
-    ClientWidth = 522
+    ClientWidth = 558
     TabOrder = 0
     object txDownloadDir: TLabel
       Left = 6
@@ -155,7 +155,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Left = 174
       Height = 21
       Top = 0
-      Width = 340
+      Width = 376
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 0
     end
@@ -163,7 +163,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Left = 174
       Height = 21
       Top = 28
-      Width = 75
+      Width = 90
       MaxValue = 65535
       MinValue = 1
       TabOrder = 1
@@ -173,14 +173,14 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Left = 174
       Height = 21
       Top = 84
-      Width = 340
+      Width = 376
       Anchors = [akTop, akLeft, akRight]
       ItemHeight = 13
       Style = csDropDownList
       TabOrder = 5
     end
     object cbPortForwarding: TCheckBox
-      Left = 258
+      Left = 274
       Height = 17
       Top = 56
       Width = 128
@@ -214,7 +214,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       TabOrder = 7
     end
     object cbRandomPort: TCheckBox
-      Left = 258
+      Left = 274
       Height = 17
       Top = 31
       Width = 193
@@ -233,7 +233,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       TabOrder = 9
     end
     object edSeedRatio: TFloatSpinEdit
-      Left = 448
+      Left = 484
       Height = 21
       Top = 155
       Width = 66
@@ -248,7 +248,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       Left = 174
       Height = 23
       Top = 53
-      Width = 75
+      Width = 90
       Caption = 'Test port'
       OnClick = btTestPortClick
       TabOrder = 3
