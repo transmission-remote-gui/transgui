@@ -6,21 +6,20 @@ appname="Transmission Remote GUI"
 appfolder=../../$appname.app
 lazdir=$1
 
-if [ "$lazdir" = "" ]
+if [ ! "$lazdir" = "" ]
 then
-  echo "Lazarus dir was not specified."
-  exit 1
+  lazdir=LAZARUS_DIR=$lazdir
 fi
 
 # Building Intel version
-make -C ../.. clean LAZARUS_DIR=$lazdir CPU_TARGET=i386
-make -C ../.. LAZARUS_DIR=$lazdir CPU_TARGET=i386
+make -C ../.. clean CPU_TARGET=i386 $lazdir
+make -C ../.. CPU_TARGET=i386 $lazdir
 strip $exename
 mv $exename $exename.386
 
 # Building PowerPC version
-make -C ../.. clean LAZARUS_DIR=$lazdir CPU_TARGET=powerpc
-make -C ../.. LAZARUS_DIR=$lazdir CPU_TARGET=powerpc
+make -C ../.. clean CPU_TARGET=powerpc $lazdir
+make -C ../.. CPU_TARGET=powerpc $lazdir
 strip $exename
 mv $exename $exename.ppc
 
