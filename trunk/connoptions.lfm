@@ -2,14 +2,14 @@ object OptionsForm: TOptionsForm
   Left = 401
   Height = 334
   Top = 186
-  Width = 376
+  Width = 420
   HorzScrollBar.Page = 349
   VertScrollBar.Page = 238
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Options'
   ClientHeight = 334
-  ClientWidth = 376
+  ClientWidth = 420
   Constraints.MinHeight = 334
   Constraints.MinWidth = 300
   OnActivate = FormActivate
@@ -19,7 +19,7 @@ object OptionsForm: TOptionsForm
   Position = poMainFormCenter
   LCLVersion = '0.9.28.2'
   object btOK: TButton
-    Left = 214
+    Left = 258
     Height = 23
     Top = 305
     Width = 75
@@ -32,7 +32,7 @@ object OptionsForm: TOptionsForm
     TabOrder = 1
   end
   object btCancel: TButton
-    Left = 294
+    Left = 338
     Height = 23
     Top = 305
     Width = 75
@@ -48,20 +48,20 @@ object OptionsForm: TOptionsForm
     Left = 8
     Height = 290
     Top = 8
-    Width = 361
-    ActivePage = tabInterface
+    Width = 405
+    ActivePage = tabPaths
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     object tabConnection: TTabSheet
       Caption = 'Connection'
       ClientHeight = 264
-      ClientWidth = 353
+      ClientWidth = 397
       OnShow = tabConnectionShow
       object txPassword: TLabel
         Left = 8
         Height = 14
-        Top = 98
+        Top = 97
         Width = 51
         Caption = 'Password:'
         ParentColor = False
@@ -69,7 +69,7 @@ object OptionsForm: TOptionsForm
       object txUserName: TLabel
         Left = 8
         Height = 14
-        Top = 70
+        Top = 69
         Width = 56
         Caption = 'User name:'
         ParentColor = False
@@ -77,7 +77,7 @@ object OptionsForm: TOptionsForm
       object txPort: TLabel
         Left = 8
         Height = 14
-        Top = 42
+        Top = 41
         Width = 25
         Caption = 'Port:'
         ParentColor = False
@@ -85,7 +85,7 @@ object OptionsForm: TOptionsForm
       object txHost: TLabel
         Left = 8
         Height = 14
-        Top = 14
+        Top = 13
         Width = 66
         Caption = 'Remote host:'
         ParentColor = False
@@ -93,7 +93,7 @@ object OptionsForm: TOptionsForm
       object txProxy: TLabel
         Left = 25
         Height = 14
-        Top = 150
+        Top = 149
         Width = 67
         Caption = 'Proxy server:'
         ParentColor = False
@@ -101,7 +101,7 @@ object OptionsForm: TOptionsForm
       object txProxyPort: TLabel
         Left = 25
         Height = 14
-        Top = 178
+        Top = 177
         Width = 56
         Caption = 'Proxy port:'
         ParentColor = False
@@ -109,7 +109,7 @@ object OptionsForm: TOptionsForm
       object txProxyUserName: TLabel
         Left = 25
         Height = 14
-        Top = 206
+        Top = 205
         Width = 86
         Caption = 'Proxy user name:'
         ParentColor = False
@@ -117,31 +117,31 @@ object OptionsForm: TOptionsForm
       object txProxyPassword: TLabel
         Left = 25
         Height = 14
-        Top = 234
+        Top = 233
         Width = 82
         Caption = 'Proxy password:'
         ParentColor = False
       end
       object edPassword: TEdit
-        Left = 148
+        Left = 180
         Height = 21
         Top = 94
-        Width = 196
+        Width = 208
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword
         PasswordChar = '*'
         TabOrder = 4
       end
       object edUserName: TEdit
-        Left = 148
+        Left = 180
         Height = 21
         Top = 66
-        Width = 196
+        Width = 208
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 3
       end
       object edPort: TSpinEdit
-        Left = 148
+        Left = 180
         Height = 21
         Top = 38
         Width = 70
@@ -160,14 +160,15 @@ object OptionsForm: TOptionsForm
         TabOrder = 5
       end
       object edProxy: TEdit
-        Left = 148
+        Left = 180
         Height = 21
         Top = 146
-        Width = 196
+        Width = 208
+        Anchors = [akTop, akLeft, akRight]
         TabOrder = 6
       end
       object edProxyPort: TSpinEdit
-        Left = 148
+        Left = 180
         Height = 21
         Top = 174
         Width = 70
@@ -177,39 +178,40 @@ object OptionsForm: TOptionsForm
         Value = 65535
       end
       object edProxyUserName: TEdit
-        Left = 148
+        Left = 180
         Height = 21
         Top = 202
-        Width = 196
+        Width = 208
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 8
       end
       object edProxyPassword: TEdit
-        Left = 148
+        Left = 180
         Height = 21
         Top = 230
-        Width = 196
+        Width = 208
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword
         PasswordChar = '*'
         TabOrder = 9
       end
       object cbHost: TComboBox
-        Left = 148
+        Left = 180
         Height = 21
         Top = 10
-        Width = 164
+        Width = 176
         Anchors = [akTop, akLeft, akRight]
         ItemHeight = 13
         OnSelect = cbHostSelect
         TabOrder = 0
       end
       object btDelHost: TBitBtn
-        Left = 316
+        Left = 360
         Height = 23
         Hint = 'Delete host settings'
         Top = 9
         Width = 28
+        Anchors = [akTop, akRight]
         Glyph.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -256,9 +258,9 @@ object OptionsForm: TOptionsForm
     object tabInterface: TTabSheet
       Caption = 'Interface'
       ClientHeight = 264
-      ClientWidth = 353
+      ClientWidth = 397
       object txSeconds: TLabel
-        Left = 224
+        Left = 260
         Height = 14
         Top = 14
         Width = 40
@@ -268,7 +270,7 @@ object OptionsForm: TOptionsForm
       object txRefreshInterval: TLabel
         Left = 8
         Height = 14
-        Top = 14
+        Top = 13
         Width = 82
         Caption = 'Refresh interval:'
         ParentColor = False
@@ -282,7 +284,7 @@ object OptionsForm: TOptionsForm
         ParentColor = False
       end
       object edRefreshInterval: TSpinEdit
-        Left = 144
+        Left = 180
         Height = 21
         Top = 10
         Width = 70
@@ -295,16 +297,16 @@ object OptionsForm: TOptionsForm
         Left = 8
         Height = 85
         Top = 42
-        Width = 336
+        Width = 380
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Tray icon'
         ClientHeight = 67
-        ClientWidth = 332
+        ClientWidth = 376
         TabOrder = 1
         object cbTrayIconAlways: TCheckBox
           Left = 10
           Height = 17
-          Top = 40
+          Top = 42
           Width = 130
           Caption = 'Tray icon always visible'
           TabOrder = 2
@@ -312,7 +314,7 @@ object OptionsForm: TOptionsForm
         object cbTrayMinimize: TCheckBox
           Left = 10
           Height = 17
-          Top = 0
+          Top = 2
           Width = 93
           Caption = 'Minimize to tray'
           TabOrder = 0
@@ -320,7 +322,7 @@ object OptionsForm: TOptionsForm
         object cbTrayClose: TCheckBox
           Left = 10
           Height = 17
-          Top = 20
+          Top = 22
           Width = 80
           Caption = 'Close to tray'
           TabOrder = 1
@@ -335,10 +337,11 @@ object OptionsForm: TOptionsForm
         TabOrder = 2
       end
       object cbLanguage: TComboBox
-        Left = 104
+        Left = 128
         Height = 21
         Top = 166
-        Width = 240
+        Width = 260
+        Anchors = [akTop, akLeft, akRight]
         ItemHeight = 13
         OnEnter = cbLanguageEnter
         OnMouseDown = cbLanguageMouseDown
@@ -349,23 +352,23 @@ object OptionsForm: TOptionsForm
     object tabPaths: TTabSheet
       Caption = 'Paths'
       ClientHeight = 264
-      ClientWidth = 353
+      ClientWidth = 397
       OnShow = tabPathsShow
       object txPaths: TLabel
-        Left = 4
+        Left = 8
         Height = 66
-        Top = 6
-        Width = 344
+        Top = 8
+        Width = 380
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Remote to local path mappings.'#13#10#13#10'Examples:'#13#10'/share=\\pch\share'#13#10'/var/downloads/music=Z:\music'
         ParentColor = False
         WordWrap = True
       end
       object edPaths: TMemo
-        Left = 4
-        Height = 176
+        Left = 8
+        Height = 170
         Top = 82
-        Width = 344
+        Width = 380
         Anchors = [akTop, akLeft, akRight, akBottom]
         TabOrder = 0
       end
