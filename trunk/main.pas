@@ -88,6 +88,7 @@ resourcestring
   sTByte = 'TB';
   sPerSecond = '/s';
   sOf = 'of';
+  sNoTracker = 'No tracker';
 
 type
 
@@ -2628,7 +2629,7 @@ begin
       if t.Arrays['trackerStats'].Count > 0 then
         s:=t.Arrays['trackerStats'].Objects[0].Strings['announce']
       else
-        s:='';
+        s:=sNoTracker;
     end
     else
       if t.IndexOfName('trackers') >= 0 then
