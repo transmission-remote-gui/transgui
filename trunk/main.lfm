@@ -276,10 +276,10 @@ object MainForm: TMainForm
         Width = 300
       end    
       item
-        Width = 100
+        Width = 120
       end    
       item
-        Width = 100
+        Width = 120
       end    
       item
         Width = 50
