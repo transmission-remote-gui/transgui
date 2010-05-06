@@ -1,16 +1,16 @@
 #summary How to make a translation for Transmission Remote GUI
 #labels Featured
 
-Transmission Remote GUI language files are stored in the *lang* subfolder in the program's installation folder (or inside the application bundle on Mac OS X).
+Transmission Remote GUI language files are stored in the *`lang`* subfolder in the program's installation folder (or inside the application bundle on Mac OS X).
 
-To create a new translation make a copy of the *transgui.template* file in the *lang* folder and rename the file copy to *transgui.xx* (xx - language code. *fr* - for French, *it* - for Italian, *es* - for Spanish, etc). Open the language file in a text editor, which can edit files in UTF-8 encoding. Set the *TranslationLanguage* parameter to the localized name of your language. Translate all strings.
+To create a new translation make a copy of the *`transgui.template`* file in the *lang* folder and rename the file copy to *`transgui.xx`* (xx - language code. *`fr`* - for French, *`it`* - for Italian, *`es`* - for Spanish, etc). Open the language file in a text editor, which can edit files in UTF-8 encoding. Set the *`TranslationLanguage`* parameter to the localized name of your language. Translate all strings.
 To test your translation, run the program and choose your language in the program's options.
 Send the finished translation to me and it will be included to the next release of Transmission Remote GUI.
 
-For example, here is a part of the Russian language file *transgui.ru*:
+For example, here is a part of the Russian language file *`transgui.ru`*:
 
 <pre>
-TranslationLanguage=Русский
+`TranslationLanguage`=Русский
 Abort=Abort
 About=О программе
 Active=Активные
