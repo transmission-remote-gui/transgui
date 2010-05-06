@@ -9,9 +9,8 @@ Send the finished translation to me and it will be included to the next release 
 
 For example, here is a part of the Russian language file *transgui.ru*:
 
-{{{
+<pre>
 TranslationLanguage=Русский
-
 Abort=Abort
 About=О программе
 Active=Активные
@@ -19,4 +18,4 @@ Add new torrent=Добавление нового торрента
 Add torrent=Добавить торрент
 Added on=Добавлен
 All=Все
-}}}
+</pre>
