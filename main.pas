@@ -843,7 +843,9 @@ end;
 
 procedure TMainForm.lvFilterResize(Sender: TObject);
 begin
+  lvFilter.ScrollBars:=ssNone;
   lvFilter.Columns[0].Width:=lvFilter.ClientWidth - 1;
+  lvFilter.ScrollBars:=ssAutoVertical;
 end;
 
 procedure TMainForm.lvFilterSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
