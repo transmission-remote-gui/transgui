@@ -34,7 +34,9 @@ uses
 
 begin
   if not CheckAppParams then exit;
+{$ifndef darwin}
   {$I transgui.lrs}
+{$endif darwin}
 
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);

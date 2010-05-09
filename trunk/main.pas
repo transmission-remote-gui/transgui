@@ -711,7 +711,28 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   ws: TWindowState;
+{$ifdef darwin}
+  s: string;
+  pic: TPicture;
+{$endif darwin}
 begin
+{$ifdef darwin}
+  // Load better icon if possible
+  s:=ExtractFilePath(ParamStr(0)) + '..' + DirectorySeparator + 'Resources'
+     + DirectorySeparator + ChangeFileExt(ExtractFileName(ParamStr(0)), '.icns');
+  if FileExists(s) then begin
+    pic:=TPicture.Create;
+    try
+      pic.LoadFromFile(s);
+      try
+        Application.Icon.Assign(pic.Graphic);
+      except
+      end;
+    finally
+      pic.Free;
+    end;
+  end;
+{$endif darwin}
   Application.Title:=AppName;
   Caption:=Application.Title;
   TrayIcon.Icon.Assign(Application.Icon);
