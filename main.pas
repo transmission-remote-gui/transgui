@@ -403,7 +403,6 @@ type
     procedure UrlLabelClick(Sender: TObject);
     procedure CenterReconnectWindow;
     procedure DrawProgressCell(LV: TCustomListView; Item: TListItem; SubItem: Integer);
-    procedure lvLeftMouseSelect(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
     function ExecRemoteFile(const FileName: string): boolean;
   public
@@ -762,8 +761,6 @@ begin
     EdgeOuter:=esRaised;
     Flat:=True;
   end;
-  lvTorrents.OnMouseDown:=@lvLeftMouseSelect;
-  lvFiles.OnMouseDown:=@lvLeftMouseSelect;
   // Cutstom draw do not work on GTK2 yet
   lvTorrents.OnCustomDrawSubItem:=nil;
   lvFiles.OnCustomDrawSubItem:=nil;
@@ -3776,21 +3773,6 @@ begin
   if j = 0 then exit;
   SetLength(Files, j);
   Result:=SetFilePriority(PtrUInt(lvTorrents.Selected.Data), Files, APriority);
-end;
-
-procedure TMainForm.lvLeftMouseSelect(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-var
-  it: TListItem;
-begin
-  if Button = mbRight then
-    with TListView(Sender) do begin
-      it:=GetItemAt(x, y);
-      if Selected <> nil then
-        Selected.Focused:=False;
-      Selected:=it;
-      if it <> nil then
-        it.Focused:=True;
-    end;
 end;
 
 procedure TMainForm.ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
