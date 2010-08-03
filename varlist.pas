@@ -146,8 +146,8 @@ begin
     Result:=0
   else
     case VarType(v1) of
-    varInteger:
-      Result:=integer(v1) - integer(v2);
+    varInteger,varsmallint,varshortint,varbyte,varword,varlongword,varint64,varqword:
+      Result:=Int64(v1) - Int64(v2);
     varDouble,varSingle,varDate:
       Result:=Sign(double(v1) - double(v2));
     else
