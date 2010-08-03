@@ -27,7 +27,7 @@ uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, Spin;
 
 resourcestring
- sPortTestSuccess = 'Incoming port tested sucessfully.';
+ sPortTestSuccess = 'Incoming port tested successfully.';
  sPortTestFailed = 'Incoming port is closed. Check your firewall settings.';
  sEncryptionDisabled = 'Encryption disabled';
  sEncryptionEnabled = 'Encryption enabled';

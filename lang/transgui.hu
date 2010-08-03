@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Magyar
+TranslationLanguage=Magyar
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Távoli és helyi elérési utak kapcsolata.~~Példák:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (megvan %d)
@@ -94,7 +94,7 @@ Host=Host
 in swarm=a rajban
 Inactive=Inaktív
 Incoming port is closed. Check your firewall settings=Bejövő port zárva. Ellenőrízd a tűzfal beállításokat
-Incoming port tested sucessfully=Bejövő port próbája sikerült
+Incoming port tested successfully=Bejövő port próbája sikerült
 Incoming port=Bejövő port
 Information=Információ
 Interface=Interfész

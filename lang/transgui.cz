@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Česky
+TranslationLanguage=Česky
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapování vzdálené cesty na lokalní.~~Příklady:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (hotových %d)
@@ -94,7 +94,7 @@ Host=Host
 in swarm=ve swarmu
 Inactive=Neaktivní
 Incoming port is closed. Check your firewall settings=Příchozí port je zavřený. Zkontrolujte vaše nastavení firewallu
-Incoming port tested sucessfully=Příchozí port úspěšně otestován
+Incoming port tested successfully=Příchozí port úspěšně otestován
 Incoming port=Příchozí port
 Information=Informace
 Interface=Vzhled

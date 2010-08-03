@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Nederlands
+TranslationLanguage=Nederlands
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Remote naar lokale path mappings.~~Voorbeelden:~/share=\\pch\share~/var/downloads/muziek=Z:\muziek"
 %d x %s (have %d)=%d x %s (heb %d)
@@ -94,7 +94,7 @@ Host=Host
 in swarm=in swarm
 Inactive=Niet actief
 Incoming port is closed. Check your firewall settings=Binnenkomende poort is gesloten. Controleer je firewallinstellingen
-Incoming port tested sucessfully=Inkomende poort is goed getest
+Incoming port tested successfully=Inkomende poort is goed getest
 Incoming port=Inkomende port
 Information=Informatie
 Interface=Interface
