@@ -7,7 +7,6 @@ object DownloadForm: TDownloadForm
   HorzScrollBar.Range = 392
   VertScrollBar.Page = 105
   VertScrollBar.Range = 95
-  AutoScroll = False
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Downloading'
@@ -19,7 +18,7 @@ object DownloadForm: TDownloadForm
   OnResize = FormResize
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '0.9.27'
+  LCLVersion = '0.9.28.2'
   object txFileName: TLabel
     Left = 12
     Height = 14

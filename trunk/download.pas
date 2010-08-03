@@ -27,6 +27,10 @@ uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
   httpsend, synsock, ExtCtrls;
 
+resourcestring
+  SDownloadProgress = '%s of %s downloaded';
+  SDownloadProgress2 = '%s downloaded';
+
 type
   TDownloadThread = class;
 
@@ -194,21 +198,18 @@ begin
 end;
 
 procedure TDownloadForm.UpdateTimerTimer(Sender: TObject);
-var
-  s: string;
 begin
-  s:=GetHumanSize(FDownloaded);
   if FTotalSize <> 0 then begin
     pbDownload.Max:=FTotalSize;
     pbDownload.Position:=FDownloaded;
     txPercent.Caption:=Format('%.1f%%', [FDownloaded*100/FTotalSize]);
-    s:=s + ' of ' + GetHumanSize(FTotalSize);
+    txBytes.Caption:=Format(SDownloadProgress, [GetHumanSize(FDownloaded), GetHumanSize(FTotalSize)]);
     txPercent.Show;
   end
   else begin
+    txBytes.Caption:=Format(SDownloadProgress2, [GetHumanSize(FDownloaded)]);
     txPercent.Hide;
   end;
-  txBytes.Caption:=s + ' done';
 end;
 
 procedure TDownloadForm.UpdateStatus(Data: PtrInt);

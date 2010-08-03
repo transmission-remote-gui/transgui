@@ -212,3 +212,7 @@ Working=Izvršavam
 Yes to &All=Da za &sve
 You should restart the application to apply changes=Za primjenu izmjena je potrebno ponovno pokrenuti aplikaciju
 No tracker=No tracker
+###################
+%s downloaded=%s downloaded
+%s of %s downloaded=%s of %s downloaded
+tracker did not respond=tracker did not respond

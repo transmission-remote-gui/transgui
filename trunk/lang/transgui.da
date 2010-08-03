@@ -213,3 +213,6 @@ Yes to &All=Ja til &Alt
 You should restart the application to apply changes=Programmet skal genstartes før ændringerne træder ikraft
 No tracker=Ingen tracker
 tracker did not respond=tracker svarede ikke
+###################
+%s downloaded=%s downloaded
+%s of %s downloaded=%s of %s downloaded
