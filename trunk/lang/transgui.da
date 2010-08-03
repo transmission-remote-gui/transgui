@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Dansk
+TranslationLanguage=Dansk
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Fjernadgang til lokale stier og mapper.~~Eks:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (downloaded %d)
@@ -94,7 +94,7 @@ Host=Host
 in swarm=i sværm
 Inactive=Inaktiv
 Incoming port is closed. Check your firewall settings=Indgående port er lukket. Kontroller firewall'ens indstillinger 
-Incoming port tested sucessfully=Indgående port blev succesfuldt testet
+Incoming port tested successfully=Indgående port blev succesfuldt testet
 Incoming port=Indgående port
 Information=Information
 Interface=Brugerflade

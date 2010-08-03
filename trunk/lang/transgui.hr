@@ -1,4 +1,4 @@
-﻿TranslationLanguage=hrvatski
+TranslationLanguage=hrvatski
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Unesite put do odredišne mape.~~Primjer:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (have %d)
@@ -94,7 +94,7 @@ Host=Posljužitelj
 in swarm=u roju
 Inactive=Neaktinih
 Incoming port is closed. Check your firewall settings=Ulazni port je zatvoren. Provjerite postavke svojega frewalla
-Incoming port tested sucessfully=Ulazni port je uspješno testiran
+Incoming port tested successfully=Ulazni port je uspješno testiran
 Incoming port=Ulazni port
 Information=Informacije
 Interface=Sučelje
