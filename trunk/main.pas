@@ -672,8 +672,12 @@ var
   i: integer;
 begin
   Application.Title:=AppName;
-  FHomeDir:=IncludeTrailingPathDelimiter(GetAppConfigDir(False));
-  ForceDirectories(FHomeDir);
+  if FileExists(ChangeFileExt(ParamStr(0), '.ini')) then
+    FHomeDir:=ExtractFilePath(ParamStr(0)) // Portable mode
+  else begin
+    FHomeDir:=IncludeTrailingPathDelimiter(GetAppConfigDir(False));
+    ForceDirectories(FHomeDir);
+  end;
   FIPCFileName:=FHomeDir + 'ipc.txt';
   FRunFileName:=FHomeDir + 'run';
 
