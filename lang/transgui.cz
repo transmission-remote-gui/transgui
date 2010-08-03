@@ -212,3 +212,7 @@ Working=Běží
 Yes to &All=Ano &Všem
 You should restart the application to apply changes=Aby se projevily změny je třeba aplikaci restartovat
 No tracker=Žádný tracker
+###################
+%s downloaded=%s downloaded
+%s of %s downloaded=%s of %s downloaded
+tracker did not respond=tracker did not respond

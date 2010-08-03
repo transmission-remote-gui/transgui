@@ -213,3 +213,5 @@ No proxy server specified=Не указан прокси-сервер.
 Language=Язык
 No tracker=Нет трекера
 tracker did not respond=Трекер не отвечает
+%s downloaded=%s загружено
+%s of %s downloaded=%s of %s загружено

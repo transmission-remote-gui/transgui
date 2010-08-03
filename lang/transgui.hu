@@ -1,4 +1,4 @@
-TranslationLanguage=Magyar
+﻿TranslationLanguage=Magyar
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Távoli és helyi elérési utak kapcsolata.~~Példák:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (megvan %d)
@@ -213,3 +213,6 @@ Yes to &All=Igen &Mindenre
 You should restart the application to apply changes=Újra kell indítanot a programot, hogy a módosítások érvénybe lépjenek
 No tracker=Nincs követő
 tracker did not respond=követő nem válaszol
+###################
+%s downloaded=%s downloaded
+%s of %s downloaded=%s of %s downloaded

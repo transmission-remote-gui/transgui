@@ -213,3 +213,6 @@ Yes to &All=Ja op &Alles
 You should restart the application to apply changes=Herstart de applicatie om de wijzigingen actief te maken
 No tracker=Geen tracker
 tracker did not respond=tracker antwoord niet
+###################
+%s downloaded=%s downloaded
+%s of %s downloaded=%s of %s downloaded
