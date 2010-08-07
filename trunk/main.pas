@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '1.4';
+  AppVersion = '1.5';
 
 resourcestring
   sShowApp = 'Show';
@@ -317,6 +317,7 @@ type
     procedure gTorrentsDblClick(Sender: TObject);
     procedure gTorrentsDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
     procedure gTorrentsResize(Sender: TObject);
+    procedure gTorrentsSortColumn(Sender: TVarGrid; var ASortCol: integer);
     procedure lvFilesCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure lvFilesCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure lvFilesDblClick(Sender: TObject);
@@ -353,8 +354,6 @@ type
     FStarted: boolean;
     FTorrents: TVarList;
     FFiles: TVarList;
-    FTorrentsSortColumn: integer;
-    FTorrentsSortDesc: boolean;
     FTrackers: TStringList;
     FResolver: TIpResolver;
     FUnZip: TUnZipper;
@@ -377,8 +376,8 @@ type
     procedure DoDisconnect;
     procedure UpdateUI;
     function ShowConnOptions: boolean;
-    procedure SaveColumns(LV: TListView; const AName: string; FullInfo: boolean = False);
-    procedure LoadColumns(LV: TListView; const AName: string; FullInfo: boolean = False);
+    procedure SaveColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = False);
+    procedure LoadColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = False);
     function GetTorrentError(t: TJSONObject): string;
     function SecondsToString(j: integer): string;
     procedure DoAddTorrent(const FileName: Utf8String);
@@ -398,7 +397,6 @@ type
     function GetPeersText(Peers, PeersTotal, Leechers: integer): string;
     function RatioToString(Ratio: double): string;
     function TorrentDateTimeToString(d: Int64): string;
-    procedure UpdateSortColumn(LV: TListView; ColumnID: integer; SortDescending: boolean);
     procedure DoRefresh(All: boolean = False);
     function GetFilesCommonPath(files: TJSONArray): string;
     procedure InternalRemoveTorrent(const Msg, MsgMulti: string; RemoveLocalData: boolean);
@@ -411,7 +409,6 @@ type
     function GetSelectedTorrents: variant;
   public
     procedure FillTorrentsList(list: TJSONArray);
-    procedure UpdateTorrentsList;
     procedure FillPeersList(list: TJSONArray);
     procedure FillFilesList(list, priorities, wanted: TJSONArray; const DownloadDir: WideString);
     procedure UpdateFilesList;
@@ -780,16 +777,13 @@ begin
       WindowState:=wsMaximized;
   end;
 
-//fixme  LoadColumns(lvTorrents, 'TorrentsList', True);
+  LoadColumns(gTorrents, 'TorrentsList', True);
   TorrentColumnsChanged;
+{fixme
   LoadColumns(lvFiles, 'FilesList');
   LoadColumns(lvPeers, 'PeersList');
   LoadColumns(lvTrackers, 'TrackersList');
-
-  FTorrentsSortColumn:=FIni.ReadInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
-  FTorrentsSortDesc:=FIni.ReadBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
-//fixme  UpdateSortColumn(lvTorrents, FTorrentsSortColumn, FTorrentsSortDesc);
-
+}
   acResolveHost.Checked:=FIni.ReadBool('PeersList', 'ResolveHost', True);
   acResolveCountry.Checked:=FIni.ReadBool('PeersList', 'ResolveCountry', True) and (GetGeoIpDatabase <> '');
   acShowCountryFlag.Checked:=FIni.ReadBool('PeersList', 'ShowCountryFlag', True) and (GetFlagsArchive <> '');
@@ -894,18 +888,12 @@ procedure TMainForm.acOpenContainingFolderExecute(Sender: TObject);
 var
   i: integer;
 begin
-//fixme
-{
-  if lvTorrents.Selected = nil then
+  if gTorrents.Items.Count = 0 then
     exit;
-  i:=PtrUInt(lvTorrents.Selected.Data);
-  i:=FTorrents.IndexOf(idxTorrentId, i);
-  if i < 0 then
+  i:=gTorrents.Row;
+  if VarIsEmpty(gTorrents.Items[idxPath, i]) then
     exit;
-  if VarIsEmpty(FTorrents[idxPath, i]) then
-    exit;
-  ExecRemoteFile(FTorrents[idxPath, i]);
-}
+  ExecRemoteFile(gTorrents.Items[idxPath, i]);
 end;
 
 procedure TMainForm.acOpenFileExecute(Sender: TObject);
@@ -1251,13 +1239,12 @@ begin
   FIni.WriteInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition);
   FIni.WriteInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition);
 
-//fixme  SaveColumns(lvTorrents, 'TorrentsList', True);
+  SaveColumns(gTorrents, 'TorrentsList', True);
+{fixme
   SaveColumns(lvFiles, 'FilesList');
   SaveColumns(lvPeers, 'PeersList');
   SaveColumns(lvTrackers, 'TrackersList');
-
-  FIni.WriteInteger('TorrentsList', 'SortColumn', FTorrentsSortColumn);
-  FIni.WriteBool('TorrentsList', 'SortDesc', FTorrentsSortDesc);
+}
 
   FIni.WriteBool('PeersList', 'ResolveHost', acResolveHost.Checked);
   FIni.WriteBool('PeersList', 'ResolveCountry', acResolveCountry.Checked);
@@ -1349,7 +1336,7 @@ end;
 
 function TMainForm.GetTorrentStatus(TorrentIdx: integer): string;
 begin
-  case integer(FTorrents[idxStatus, TorrentIdx]) of
+  case integer(gTorrents.Items[idxStatus, TorrentIdx]) of
     TR_STATUS_CHECK_WAIT:
       Result:=sWaiting;
     TR_STATUS_CHECK:
@@ -1402,30 +1389,6 @@ begin
     Result:=''
   else
     Result:=DateTimeToStr(UnixToDateTime(d) + GetTimeZoneDelta);
-end;
-
-procedure TMainForm.UpdateSortColumn(LV: TListView; ColumnID: integer; SortDescending: boolean);
-var
-  i: integer;
-  s, Asc, Desc: string;
-begin
-  Asc:=UTF8Encode('^ ');
-  Desc:=UTF8Encode('v ');
-  for i:=0 to LV.Columns.Count - 1 do
-    with LV.Columns[i] do begin
-      s:=Caption;
-      if Copy(s, 1, Length(Asc)) = Asc then
-        System.Delete(s, 1, Length(Asc))
-      else
-        if Copy(s, 1, Length(Desc)) = Desc then
-          System.Delete(s, 1, Length(Desc));
-      if ID = ColumnID then
-        if SortDescending then
-          s:=Desc + s
-        else
-          s:=Asc + s;
-      Caption:=s;
-    end;
 end;
 
 procedure TMainForm.DoRefresh(All: boolean);
@@ -1620,16 +1583,8 @@ end;
 
 procedure TMainForm.acSetupColumnsExecute(Sender: TObject);
 begin
-//fixme
-{
-  UpdateSortColumn(lvTorrents, -1, False);
-  try
-    if not SetupColumns(lvTorrents, idxName) then exit;
-  finally
-    UpdateSortColumn(lvTorrents, FTorrentsSortColumn, FTorrentsSortDesc);
-  end;
+  if not SetupColumns(gTorrents, idxName) then exit;
   TorrentColumnsChanged;
-}
 end;
 
 procedure TMainForm.acShowCountryFlagExecute(Sender: TObject);
@@ -1674,8 +1629,11 @@ var
   req, args, t: TJSONObject;
   i, j, id: integer;
 begin
-  AppBusy;
+  gTorrents.RemoveSelection;
+  gTorrentsClick(nil);
   id:=RpcObj.CurTorrentId;
+  if id = 0 then exit;
+  AppBusy;
   with TTorrPropsForm.Create(Self) do
   try
     args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited',
@@ -1785,7 +1743,7 @@ end;
 
 procedure TMainForm.acVerifyTorrentExecute(Sender: TObject);
 var
-  id, i: integer;
+  id: integer;
 begin
   if gTorrents.Items.Count = 0 then exit;
   gTorrents.RemoveSelection;
@@ -1845,61 +1803,52 @@ begin
         Sender.Canvas.Brush.Color:=Sender.Color
       else
         Sender.Canvas.Brush.Color:=FAlterColor;
+    if ACol = 0 then
+      ImageIndex:=integer(Sender.Items[idxStateImg, ARow]);
     if Text = '' then exit;
     case ADataCol of
-      idxName:
-        ImageIndex:=integer(FTorrents[idxStateImg, ARow]);
       idxStatus:
         Text:=GetTorrentStatus(ARow);
       idxSize, idxDownloaded, idxUploaded:
-        Text:=GetHumanSize(FTorrents[ADataCol, ARow]);
+        Text:=GetHumanSize(Sender.Items[ADataCol, ARow]);
       idxDone:
-        Text:=Format('%.1f%%', [double(FTorrents[idxDone, ARow])]);
+        Text:=Format('%.1f%%', [double(Sender.Items[idxDone, ARow])]);
       idxSeeds:
-        if not VarIsNull(FTorrents[idxSeedsTotal, ARow]) then
-          Text:=GetSeedsText(FTorrents[idxSeeds, ARow], FTorrents[idxSeedsTotal, ARow]);
+        if not VarIsNull(Sender.Items[idxSeedsTotal, ARow]) then
+          Text:=GetSeedsText(Sender.Items[idxSeeds, ARow], Sender.Items[idxSeedsTotal, ARow]);
       idxPeers:
-        Text:=GetPeersText(FTorrents[idxPeers, ARow], FTorrents[idxPeersTotal, ARow], FTorrents[idxLeechers, ARow]);
+        Text:=GetPeersText(Sender.Items[idxPeers, ARow], Sender.Items[idxPeersTotal, ARow], Sender.Items[idxLeechers, ARow]);
       idxDownSpeed, idxUpSpeed:
         begin
-          j:=FTorrents[ADataCol, ARow];
+          j:=Sender.Items[ADataCol, ARow];
           if j > 0 then
             Text:=GetHumanSize(j, 1) + sPerSecond
           else
             Text:='';
         end;
       idxETA:
-        Text:=EtaToString(FTorrents[idxETA, ARow]);
+        Text:=EtaToString(Sender.Items[idxETA, ARow]);
       idxRatio:
-        Text:=RatioToString(FTorrents[idxRatio, ARow]);
+        Text:=RatioToString(Sender.Items[idxRatio, ARow]);
+      idxAddedOn, idxCompletedOn, idxLastActive:
+        Text:=TorrentDateTimeToString(FTorrents[ADataCol, ARow]);
     end;
   end;
-
-{
-
-      if not VarIsEmpty(FTorrents[idxTracker, i]) then
-        SetSubItem(idxTracker, FTorrents[idxTracker, i]);
-      SetSubItem(idxTrackerStatus, UTF8Encode(widestring(FTorrents[idxTrackerStatus, i])));
-
-      if not VarIsNull(FTorrents[idxAddedOn, i]) then
-        SetSubItem(idxAddedOn, TorrentDateTimeToString(FTorrents[idxAddedOn, i]));
-
-      if not VarIsNull(FTorrents[idxCompletedOn, i]) then
-        SetSubItem(idxCompletedOn, TorrentDateTimeToString(FTorrents[idxCompletedOn, i]));
-
-      if not VarIsNull(FTorrents[idxLastActive, i]) then
-        SetSubItem(idxLastActive, TorrentDateTimeToString(FTorrents[idxLastActive, i]));
-}
 end;
 
 procedure TMainForm.gTorrentsClick(Sender: TObject);
+var
+  i: integer;
 begin
   RpcObj.Lock;
   try
-    if FTorrents.Count > 0 then
-      RpcObj.CurTorrentId:=gTorrents.Items[idxTorrentId, gTorrents.Row]
+    if gTorrents.Items.Count > 0 then
+      i:=gTorrents.Items[idxTorrentId, gTorrents.Row]
     else
-      RpcObj.CurTorrentId:=0;
+      i:=0;
+    if RpcObj.CurTorrentId = i then
+      exit;
+    RpcObj.CurTorrentId:=i;
   finally
     RpcObj.Unlock;
   end;
@@ -1930,6 +1879,14 @@ begin
     VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
     HSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
   end;
+end;
+
+procedure TMainForm.gTorrentsSortColumn(Sender: TVarGrid; var ASortCol: integer);
+begin
+  if ASortCol = idxSeeds then
+    ASortCol:=idxSeedsTotal;
+  if ASortCol = idxPeers then
+    ASortCol:=idxPeersTotal;
 end;
 
 procedure TMainForm.lvFilesCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
@@ -2232,6 +2189,7 @@ begin
 
     ts:=TextStyle;
     ts.Layout:=tlTop;
+    ts.Alignment:=taLeftJustify;
     TextStyle:=ts;
     h:=TextHeight(s);
     h:=(R.Top + R.Bottom - h) div 2;
@@ -2319,6 +2277,7 @@ begin
   CheckStatus;
   UpdateUI;
   TrayIcon.Hint:=RpcObj.InfoStatus;
+  gTorrents.Items.RowCnt:=0;
   FTorrents.RowCnt:=0;
   lvFilter.Row:=0;
   lvFilter.Items.RowCnt:=StatusFiltersCount;
@@ -2443,26 +2402,24 @@ begin
   end;
 end;
 
-procedure TMainForm.SaveColumns(LV: TListView; const AName: string; FullInfo: boolean);
+procedure TMainForm.SaveColumns(LV: TVarGrid; const AName: string; FullInfo: boolean);
 var
-  i, j: integer;
+  i: integer;
 begin
   for i:=0 to LV.Columns.Count - 1 do
     with LV.Columns[i] do begin
-      FIni.WriteInteger(AName, Format('Id%d', [i]), ID);
-      if Visible or (Tag = 0) then
-        j:=Width
-      else
-        j:=Tag;
-      FIni.WriteInteger(AName, Format('Width%d', [i]), j);
+      FIni.WriteInteger(AName, Format('Id%d', [i]), ID - 1);
+      FIni.WriteInteger(AName, Format('Width%d', [i]), Width);
       if FullInfo then begin
         FIni.WriteInteger(AName, Format('Index%d', [i]), Index);
         FIni.WriteBool(AName, Format('Visible%d', [i]), Visible);
       end;
     end;
+  FIni.WriteInteger(AName, 'SortColumn', LV.SortColumn);
+  FIni.WriteInteger(AName, 'SortOrder', integer(LV.SortOrder));
 end;
 
-procedure TMainForm.LoadColumns(LV: TListView; const AName: string; FullInfo: boolean);
+procedure TMainForm.LoadColumns(LV: TVarGrid; const AName: string; FullInfo: boolean);
 var
   i, j, ColId: integer;
 begin
@@ -2473,21 +2430,20 @@ begin
       if ColId = -1 then continue;
       for j:=0 to LV.Columns.Count - 1 do
         with LV.Columns[j] do
-          if ID = ColId then begin
+          if ID - 1 = ColId then begin
             if FullInfo then begin
               Index:=FIni.ReadInteger(AName, Format('Index%d', [i]), Index);
               Visible:=FIni.ReadBool(AName, Format('Visible%d', [i]), Visible);
             end;
-            if Width <> 0 then
-              Tag:=Width;
-            Tag:=FIni.ReadInteger(AName, Format('Width%d', [i]), Tag);
-            Width:=Tag;
+            Width:=FIni.ReadInteger(AName, Format('Width%d', [i]), Width);
             break;
           end;
     end;
   finally
     LV.Columns.EndUpdate;
   end;
+  LV.SortColumn:=FIni.ReadInteger(AName, 'SortColumn', LV.SortColumn);
+  LV.SortOrder:=TSortOrder(FIni.ReadInteger(AName, 'SortOrder', integer(LV.SortOrder)));
 end;
 
 function TMainForm.GetTorrentError(t: TJSONObject): string;
@@ -2592,18 +2548,19 @@ var
   end;
 
 var
-  FilterIdx: integer;
+  FilterIdx, OldId: integer;
   TrackerFilter: string;
   UpSpeed, DownSpeed: double;
   DownCnt, SeedCnt, CompletedCnt, ActiveCnt: integer;
   IsActive: boolean;
-
 begin
+  if gTorrents.Tag <> 0 then exit;
   if list = nil then begin
     ClearDetailsInfo;
     exit;
   end;
 
+  OldId:=RpcObj.CurTorrentId;
   IsActive:=gTorrents.Enabled;
   gTorrents.Enabled:=True;
   lvFilter.Enabled:=True;
@@ -2633,8 +2590,6 @@ begin
       TrackerFilter:=Trim(Copy(TrackerFilter, 1, i - 1));
   end;
 
-  FTorrents.BeginUpdate;
-  try
   for i:=0 to FTorrents.Count - 1 do
     FTorrents[idxTag, i]:=0;
 
@@ -2802,61 +2757,84 @@ begin
     else
       Inc(i);
 
-  row:=0;
-  for i:=0 to FTorrents.Count - 1 do begin
-    IsActive:=(FTorrents[idxDownSpeed, i] <> 0) or (FTorrents[idxUpSpeed, i] <> 0);
-    if IsActive then
-      Inc(ActiveCnt);
+  gTorrents.BeginUpdate;
+  try
+    for i:=0 to gTorrents.Items.Count - 1 do
+      gTorrents.Items[idxTag, i]:=0;
 
-    case integer(FTorrents[idxStatus, i]) of
-      TR_STATUS_DOWNLOAD:
-        Inc(DownCnt);
-      TR_STATUS_SEED:
-        begin
-          Inc(SeedCnt);
+    for i:=0 to FTorrents.Count - 1 do begin
+      IsActive:=(FTorrents[idxDownSpeed, i] <> 0) or (FTorrents[idxUpSpeed, i] <> 0);
+      if IsActive then
+        Inc(ActiveCnt);
+
+      case integer(FTorrents[idxStatus, i]) of
+        TR_STATUS_DOWNLOAD:
+          Inc(DownCnt);
+        TR_STATUS_SEED:
+          begin
+            Inc(SeedCnt);
+            Inc(CompletedCnt);
+          end;
+        TR_STATUS_FINISHED:
           Inc(CompletedCnt);
-        end;
-      TR_STATUS_FINISHED:
-        Inc(CompletedCnt);
+      end;
+
+      if not VarIsEmpty(FTorrents[idxTracker, i]) then begin
+        s:=FTorrents[idxTracker, i];
+        j:=FTrackers.IndexOf(s);
+        if j < 0 then
+          j:=FTrackers.Add(s);
+        FTrackers.Objects[j]:=TObject(ptruint(FTrackers.Objects[j]) + 1);
+        if (TrackerFilter <> '') and (TrackerFilter <> s) then
+          continue;
+      end;
+
+      case FilterIdx of
+        fltActive:
+          if not IsActive then
+            FTorrents.Delete(i);
+        fltInactive:
+          if IsActive then
+            continue;
+        fltDown:
+          if FTorrents[idxStatus, i] <> TR_STATUS_DOWNLOAD then
+            continue;
+        fltDone:
+          if (FTorrents[idxStateImg, i] <> imgDone) and (FTorrents[idxStatus, i] <> TR_STATUS_SEED) then
+            continue;
+      end;
+
+      if edSearch.Text <> '' then
+        if UTF8Pos(UTF8UpperCase(edSearch.Text), UTF8UpperCase(UTF8Encode(widestring(FTorrents[idxName, i])))) = 0 then
+          continue;
+
+      row:=gTorrents.Items.IndexOf(idxTorrentId, FTorrents[idxTorrentId, i]);
+      if row < 0 then
+        row:=gTorrents.Items.Count;
+      for j:=-TorrentsExtraColumns to FTorrents.ColCnt - 1 do
+        gTorrents.Items[j, row]:=FTorrents[j, i];
+      gTorrents.Items[idxTag, row]:=1;
     end;
 
-    if not VarIsEmpty(FTorrents[idxTracker, i]) then begin
-      s:=FTorrents[idxTracker, i];
-      j:=FTrackers.IndexOf(s);
-      if j < 0 then
-        j:=FTrackers.Add(s);
-      FTrackers.Objects[j]:=TObject(ptruint(FTrackers.Objects[j]) + 1);
-      if (TrackerFilter <> '') and (TrackerFilter <> s) then
-        continue;
-    end;
-
-    case FilterIdx of
-      fltActive:
-        if not IsActive then
-          FTorrents.Delete(i);
-      fltInactive:
-        if IsActive then
-          continue;
-      fltDown:
-        if FTorrents[idxStatus, i] <> TR_STATUS_DOWNLOAD then
-          continue;
-      fltDone:
-        if (FTorrents[idxStateImg, i] <> imgDone) and (FTorrents[idxStatus, i] <> TR_STATUS_SEED) then
-          continue;
-    end;
-
-    if edSearch.Text <> '' then
-      if UTF8Pos(UTF8UpperCase(edSearch.Text), UTF8UpperCase(UTF8Encode(widestring(FTorrents[idxName, i])))) = 0 then
-        continue;
-
-    for j:=-TorrentsExtraColumns to FTorrents.ColCnt - 1 do
-      gTorrents.Items[j, row]:=FTorrents[j, i];
-    Inc(row);
-  end;
-  gTorrents.Items.RowCnt:=row;
+    i:=0;
+    while i < gTorrents.Items.Count do
+      if gTorrents.Items[idxTag, i] = 0 then
+        gTorrents.Items.Delete(i)
+      else
+        Inc(i);
+    gTorrents.Sort;
+    if (gTorrents.Items.Count > 0) and (OldId = 0) then
+      gTorrents.Row:=0;
   finally
-    FTorrents.EndUpdate;
+    gTorrents.EndUpdate;
   end;
+
+  if OldId <> 0 then begin
+    i:=gTorrents.Items.IndexOf(idxTorrentId, OldId);
+    if i >= 0 then
+      gTorrents.Row:=i;
+  end;
+  gTorrentsClick(nil);
 
   lvFilter.Items.BeginUpdate;
   try
@@ -2892,317 +2870,6 @@ begin
 
   TrayIcon.Hint:=Format(sDownloadingSeeding,
         [RpcObj.InfoStatus, LineEnding, DownCnt, SeedCnt, LineEnding, StatusBar.Panels[1].Text, StatusBar.Panels[2].Text]);
-end;
-
-procedure TMainForm.UpdateTorrentsList;
-var
-  it: TListItem;
-{
-  procedure SetSubItem(AID: integer; const Text: string);
-  var
-    idx: integer;
-  begin
-    for idx:=0 to lvTorrents.Columns.Count - 1 do
-      with lvTorrents.Columns[idx] do
-        if ID = AID then begin
-          if not Visible or (Width = 0) then
-            break;
-          if idx = 0 then
-            it.Caption:=Text
-          else
-            if it.SubItems.Count < idx then begin
-              while it.SubItems.Count < idx - 1 do
-                it.SubItems.Add('');
-              it.SubItems.Add(Text);
-            end
-            else
-              it.SubItems[idx-1]:=Text;
-          break;
-        end;
-  end;
-}
-var
-  i, j, FilterIdx: integer;
-  s, TrackerFilter: string;
-  UpSpeed, DownSpeed: double;
-  Cnt, DownCnt, SeedCnt, CompletedCnt, ActiveCnt: integer;
-  IsActive: boolean;
-{$ifdef LCLcarbon}
-  it2: TListItem;
-{$endif LCLcarbon}
-begin
-(*
-//  lvTorrents.BeginUpdate;
-  lvTorrents.Tag:=1;
-  try
-    IsActive:=lvTorrents.Enabled;
-    lvTorrents.Enabled:=True;
-    lvFilter.Enabled:=True;
-{$ifndef LCLgtk2}
-    lvTorrents.Color:=clWindow;
-    lvFilter.Color:=clWindow;
-{$endif LCLgtk2}
-    edSearch.Enabled:=True;
-    edSearch.Color:=clWindow;
-    if not IsActive then
-      ActiveControl:=lvTorrents;
-
-    i:=FTorrentsSortColumn;
-    if i = idxSeeds then
-      i:=idxSeedsTotal;
-    if i = idxPeers then
-      i:=idxPeersTotal;
-    FTorrents.Sort(i, FTorrentsSortDesc);
-
-    for i:=0 to FTrackers.Count - 1 do
-      FTrackers.Objects[i]:=nil;
-
-    UpSpeed:=0;
-    DownSpeed:=0;
-    DownCnt:=0;
-    SeedCnt:=0;
-    CompletedCnt:=0;
-    ActiveCnt:=0;
-    Cnt:=0;
-
-    if lvFilter.Selected <> nil then begin
-      FilterIdx:=lvFilter.Selected.Index;
-      if FilterIdx >= StatusFiltersCount then begin
-        FilterIdx:=fltAll;
-        TrackerFilter:=lvFilter.Selected.Caption;
-        i:=Pos('(', TrackerFilter);
-        if i > 0 then
-          TrackerFilter:=Trim(Copy(TrackerFilter, 1, i - 1));
-      end;
-    end
-    else
-      FilterIdx:=fltAll;
-
-    for i:=0 to FTorrents.Count - 1 do begin
-      IsActive:=(FTorrents[idxDownSpeed, i] <> 0) or (FTorrents[idxUpSpeed, i] <> 0);
-      if IsActive then
-        Inc(ActiveCnt);
-
-      case integer(FTorrents[idxStatus, i]) of
-        TR_STATUS_DOWNLOAD:
-          Inc(DownCnt);
-        TR_STATUS_SEED:
-          begin
-            Inc(SeedCnt);
-            Inc(CompletedCnt);
-          end;
-        TR_STATUS_FINISHED:
-          Inc(CompletedCnt);
-      end;
-
-      if not VarIsEmpty(FTorrents[idxTracker, i]) then begin
-        s:=FTorrents[idxTracker, i];
-        j:=FTrackers.IndexOf(s);
-        if j < 0 then
-          j:=FTrackers.Add(s);
-        FTrackers.Objects[j]:=TObject(ptruint(FTrackers.Objects[j]) + 1);
-        if (TrackerFilter <> '') and (TrackerFilter <> s) then
-          continue;
-      end;
-
-      case FilterIdx of
-        fltActive:
-          if not IsActive then
-            continue;
-        fltInactive:
-          if IsActive then
-            continue;
-        fltDown:
-          if FTorrents[idxStatus, i] <> TR_STATUS_DOWNLOAD then
-            continue;
-        fltDone:
-          if (FTorrents[idxStateImg, i] <> imgDone) and (FTorrents[idxStatus, i] <> TR_STATUS_SEED) then
-            continue;
-      end;
-
-      if edSearch.Text <> '' then
-        if UTF8Pos(UTF8UpperCase(edSearch.Text), UTF8UpperCase(UTF8Encode(widestring(FTorrents[idxName, i])))) = 0 then
-          continue;
-
-      if Cnt >= lvTorrents.Items.Count then begin
-{$ifdef LCLcarbon}
-        // Workaround for carbon interface bug.
-        it2:=lvTorrents.Selected;
-        lvTorrents.Selected:=nil;
-{$endif LCLcarbon}
-        it:=lvTorrents.Items.Add;
-{$ifdef LCLcarbon}
-        lvTorrents.Selected:=it2;
-{$endif LCLcarbon}
-      end
-      else
-        it:=lvTorrents.Items[Cnt];
-
-      SetSubItem(idxName, UTF8Encode(widestring(FTorrents[idxName, i])));
-      if not VarIsNull(FTorrents[idxSize, i]) then
-        SetSubItem(idxSize, GetHumanSize(FTorrents[idxSize, i], 0));
-
-      if not VarIsNull(FTorrents[idxStatus, i]) then
-        SetSubItem(idxStatus, GetTorrentStatus(i));
-
-      SetSubItem(idxDone, Format('%.1f%%', [double(FTorrents[idxDone, i])]));
-
-      if not VarIsNull(FTorrents[idxSeedsTotal, i]) and not VarIsNull(FTorrents[idxSeeds, i]) then
-        SetSubItem(idxSeeds, GetSeedsText(FTorrents[idxSeeds, i], FTorrents[idxSeedsTotal, i]));
-
-      if not VarIsNull(FTorrents[idxPeers, i]) then
-        SetSubItem(idxPeers, GetPeersText(FTorrents[idxPeers, i], FTorrents[idxPeersTotal, i], FTorrents[idxLeechers, i]));
-
-      j:=FTorrents[idxDownSpeed, i];
-      if j > 0 then
-        s:=GetHumanSize(j, 1) + sPerSecond
-      else
-        s:='';
-      SetSubItem(idxDownSpeed, s);
-
-      j:=FTorrents[idxUpSpeed, i];
-      if j > 0 then
-        s:=GetHumanSize(j, 1) + sPerSecond
-      else
-        s:='';
-      SetSubItem(idxUpSpeed, s);
-
-      if not VarIsNull(FTorrents[idxETA, i]) then
-        SetSubItem(idxETA, EtaToString(FTorrents[idxETA, i]));
-
-      if not VarIsNull(FTorrents[idxRatio, i]) then
-        SetSubItem(idxRatio, RatioToString(FTorrents[idxRatio, i]));
-
-      if not VarIsNull(FTorrents[idxDownloaded, i]) then
-        SetSubItem(idxDownloaded, GetHumanSize(FTorrents[idxDownloaded, i]));
-
-      if not VarIsNull(FTorrents[idxUploaded, i]) then
-        SetSubItem(idxUploaded, GetHumanSize(FTorrents[idxUploaded, i]));
-
-      if not VarIsEmpty(FTorrents[idxTracker, i]) then
-        SetSubItem(idxTracker, FTorrents[idxTracker, i]);
-      SetSubItem(idxTrackerStatus, UTF8Encode(widestring(FTorrents[idxTrackerStatus, i])));
-
-      if not VarIsNull(FTorrents[idxAddedOn, i]) then
-        SetSubItem(idxAddedOn, TorrentDateTimeToString(FTorrents[idxAddedOn, i]));
-
-      if not VarIsNull(FTorrents[idxCompletedOn, i]) then
-        SetSubItem(idxCompletedOn, TorrentDateTimeToString(FTorrents[idxCompletedOn, i]));
-
-      if not VarIsNull(FTorrents[idxLastActive, i]) then
-        SetSubItem(idxLastActive, TorrentDateTimeToString(FTorrents[idxLastActive, i]));
-
-      j:=FTorrents[idxTorrentId, i];
-      if cardinal(j) = RpcObj.CurTorrentId then begin
-        it.Selected:=True;
-{$ifdef windows}
-        it.Focused:=False;
-        it.Focused:=True;
-{$endif windows}
-      end;
-
-      DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, i];
-      UpSpeed:=UpSpeed + FTorrents[idxUpSpeed, i];
-
-      it.ImageIndex:=integer(FTorrents[idxStateImg, i]);
-      it.Data:=pointer(ptruint(j));
-      Inc(Cnt);
-    end;
-
-{$ifdef LCLcarbon}
-    // Workaround for carbon interface bug.
-    if lvTorrents.Selected <> nil then
-      j:=lvTorrents.Selected.Index
-    else
-      j:=MaxInt;
-{$endif LCLcarbon}
-    while lvTorrents.Items.Count > Cnt do
-      lvTorrents.Items.Delete(lvTorrents.Items.Count - 1);
-{$ifdef LCLcarbon}
-    if j < lvTorrents.Items.Count then
-      lvTorrents.Items[j].Selected:=True;
-{$endif LCLcarbon}
-  finally
-    lvTorrents.Tag:=0;
-//    lvTorrents.EndUpdate;
-  end;
-
-  lvFilter.Tag:=1;
-  try
-    lvFilter.Items[0].Caption:=Format('%s (%d)', [SAll, FTorrents.Count]);
-    lvFilter.Items[1].Caption:=Format('%s (%d)', [SDownloading, DownCnt]);
-    lvFilter.Items[2].Caption:=Format('%s (%d)', [SCompleted, CompletedCnt]);
-    lvFilter.Items[3].Caption:=Format('%s (%d)', [SActive, ActiveCnt]);
-    lvFilter.Items[4].Caption:=Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt]);
-
-    if StatusFiltersCount >= lvFilter.Items.Count then
-      it:=lvFilter.Items.Add
-    else
-      it:=lvFilter.Items[StatusFiltersCount];
-    it.Data:=pointer(ptrint(-1));
-
-    i:=0;
-    while i < FTrackers.Count do begin
-      j:=ptruint(FTrackers.Objects[i]);
-      if j > 0 then begin
-        if i + StatusFiltersCount + 1 >= lvFilter.Items.Count then begin
-{$ifdef LCLcarbon}
-          // Workaround for carbon interface bug.
-          it2:=lvFilter.Selected;
-          lvFilter.Selected:=nil;
-{$endif LCLcarbon}
-          it:=lvFilter.Items.Add;
-{$ifdef LCLcarbon}
-          lvFilter.Selected:=it2;
-{$endif LCLcarbon}
-          it.ImageIndex:=5;
-        end
-        else
-          it:=lvFilter.Items[i + StatusFiltersCount + 1];
-        s:=FTrackers[i];
-        it.Caption:=Format('%s (%d)', [s, j]);
-        if s = TrackerFilter then
-          it.Selected:=True;
-        Inc(i);
-      end
-      else
-        FTrackers.Delete(i);
-    end;
-{$ifdef LCLcarbon}
-    // Workaround for carbon interface bug.
-    if lvFilter.Selected <> nil then
-      j:=lvFilter.Selected.Index
-    else
-      j:=MaxInt;
-{$endif LCLcarbon}
-    while lvFilter.Items.Count > i + StatusFiltersCount + 1 do
-      lvFilter.Items.Delete(lvFilter.Items.Count - 1);
-{$ifdef LCLcarbon}
-    if j < lvFilter.Items.Count then
-      lvFilter.Items[j].Selected:=True;
-{$endif LCLcarbon}
-  finally
-    lvFilter.Tag:=0;
-  end;
-  if lvFilter.Selected = nil then
-    lvFilter.Items[0].Selected:=True;
-
-  CheckStatus;
-
-  StatusBar.Panels[1].Text:=Format(sDownSpeed, [GetHumanSize(DownSpeed, 1)]);
-  StatusBar.Panels[2].Text:=Format(sUpSpeed, [GetHumanSize(UpSpeed, 1)]);
-
-  TrayIcon.Hint:=Format(sDownloadingSeeding,
-        [RpcObj.InfoStatus, LineEnding, DownCnt, SeedCnt, LineEnding, StatusBar.Panels[1].Text, StatusBar.Panels[2].Text]);
-
-  if (lvTorrents.Selected <> nil) and (PtrUInt(lvTorrents.Selected.Data) <> RpcObj.CurTorrentId) then
-    lvTorrents.Selected:=nil;
-
-  if (RpcObj.CurTorrentId <> 0) and (lvTorrents.Selected = nil) then begin
-    RpcObj.CurTorrentId:=0;
-    ClearDetailsInfo;
-  end;
-*)
 end;
 
 procedure TMainForm.FillPeersList(list: TJSONArray);
@@ -3382,12 +3049,17 @@ var
   s: string;
 begin
   if gTorrents.Items.Count = 0 then exit;
-  ids:=GetSelectedTorrents;
-  if gTorrents.SelCount < 2 then
-    s:=Format(Msg, [UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Items.IndexOf(idxTorrentId, ids[0])]))])
-  else
-    s:=Format(MsgMulti, [gTorrents.SelCount]);
-  if MessageDlg('', s, mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
+  gTorrents.Tag:=1;
+  try
+    ids:=GetSelectedTorrents;
+    if gTorrents.SelCount < 2 then
+      s:=Format(Msg, [UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Items.IndexOf(idxTorrentId, ids[0])]))])
+    else
+      s:=Format(MsgMulti, [gTorrents.SelCount]);
+    if MessageDlg('', s, mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
+  finally
+    gTorrents.Tag:=0;
+  end;
   args:=TJSONObject.Create;
   if RemoveLocalData then
     args.Add('delete-local-data', TJSONIntegerNumber.Create(1));
@@ -3524,23 +3196,23 @@ var
   s: string;
   f: double;
 begin
-  if (FTorrents.Count = 0) or (t = nil) then begin
+  if (gTorrents.Items.Count = 0) or (t = nil) then begin
     ClearDetailsInfo;
     exit;
   end;
-  idx:=FTorrents.IndexOf(idxTorrentId, t.Integers['id']);
+  idx:=gTorrents.Items.IndexOf(idxTorrentId, t.Integers['id']);
   if idx = -1 then begin
     ClearDetailsInfo;
     exit;
   end;
 
-  txDownProgress.Caption:=Format('%.1f%%', [double(FTorrents[idxDone, idx])]);
+  txDownProgress.Caption:=Format('%.1f%%', [double(gTorrents.Items[idxDone, idx])]);
   txDownProgress.AutoSize:=True;
   if RpcObj.RPCVersion >= 5 then
     s:=t.Strings['pieces']
   else
     s:='';
-  ProcessPieces(s, t.Integers['pieceCount'], FTorrents[idxDone, idx]);
+  ProcessPieces(s, t.Integers['pieceCount'], gTorrents.Items[idxDone, idx]);
 
   panTransfer.ChildSizing.Layout:=cclNone;
   txStatus.Caption:=GetTorrentStatus(idx);
@@ -3549,8 +3221,8 @@ begin
   txDownloaded.Caption:=GetHumanSize(t.Floats['downloadedEver']);
   txUploaded.Caption:=GetHumanSize(t.Floats['uploadedEver']);
   txWasted.Caption:=Format(sHashfails, [GetHumanSize(t.Floats['corruptEver']), Round(t.Floats['corruptEver']/t.Floats['pieceSize'])]);
-  txDownSpeed.Caption:=GetHumanSize(FTorrents[idxDownSpeed, idx], 1)+sPerSecond;
-  txUpSpeed.Caption:=GetHumanSize(FTorrents[idxUpSpeed, idx], 1)+sPerSecond;
+  txDownSpeed.Caption:=GetHumanSize(gTorrents.Items[idxDownSpeed, idx], 1)+sPerSecond;
+  txUpSpeed.Caption:=GetHumanSize(gTorrents.Items[idxUpSpeed, idx], 1)+sPerSecond;
   txRatio.Caption:=RatioToString(t.Floats['uploadRatio']);
 
   if RpcObj.RPCVersion < 5 then
@@ -3622,7 +3294,7 @@ begin
   else
     s:=DateTimeToStr(UnixToDateTime(Trunc(f)) + GetTimeZoneDelta);
   txTrackerUpdate.Caption:=s;
-  txTracker.Caption:=string(FTorrents[idxTracker, idx]);
+  txTracker.Caption:=string(gTorrents.Items[idxTracker, idx]);
   if RpcObj.RPCVersion >= 7 then
     if t.Arrays['trackerStats'].Count > 0 then
       i:=t.Arrays['trackerStats'].Objects[0].Integers['seederCount']
@@ -3649,7 +3321,7 @@ begin
 
   panGeneralInfo.ChildSizing.Layout:=cclNone;
 
-  s:=UTF8Encode(widestring(FTorrents[idxName, idx]));
+  s:=UTF8Encode(widestring(gTorrents.Items[idxName, idx]));
   if RpcObj.RPCVersion >= 4 then
     s:=IncludeProperTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir'])) + s;
   txTorrentName.Caption:=s;
@@ -3719,7 +3391,7 @@ begin
     TrackerStats:=TrackersData.Arrays['trackerStats']
   else
     TrackerStats:=nil;
-  tidx:=FTorrents.IndexOf(idxTorrentId, TrackersData.Integers['id']);
+  tidx:=gTorrents.Items.IndexOf(idxTorrentId, TrackersData.Integers['id']);
   if tidx = -1 then begin
     ClearDetailsInfo;
     exit;
@@ -3790,8 +3462,8 @@ begin
       end
       else begin
         if i = 0 then begin
-          SetSubItem(idxTrackersListStatus, UTF8Encode(WideString(FTorrents[idxTrackerStatus, tidx])));
-          SetSubItem(idxTrackersListSeeds, IntToStr(FTorrents[idxSeedsTotal, tidx]));
+          SetSubItem(idxTrackersListStatus, UTF8Encode(WideString(gTorrents.Items[idxTrackerStatus, tidx])));
+          SetSubItem(idxTrackersListSeeds, IntToStr(gTorrents.Items[idxSeedsTotal, tidx]));
         end;
         f:=TrackersData.Floats['nextAnnounceTime'];
       end;

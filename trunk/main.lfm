@@ -255,6 +255,7 @@ object MainForm: TMainForm
       SortColumn = 0
       OnCellAttributes = gTorrentsCellAttributes
       OnDrawCell = gTorrentsDrawCell
+      OnSortColumn = gTorrentsSortColumn
     end
   end
   object StatusBar: TStatusBar

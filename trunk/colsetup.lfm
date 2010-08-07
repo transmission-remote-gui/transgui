@@ -13,7 +13,7 @@ object ColSetupForm: TColSetupForm
   Constraints.MinHeight = 200
   Constraints.MinWidth = 260
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.3'
+  LCLVersion = '0.9.28.2'
   object lstColumns: TCheckListBox
     Left = 8
     Height = 221
