@@ -6,7 +6,6 @@ object MainForm: TMainForm
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
   VertScrollBar.Range = 24
-  ActiveControl = lvTorrents
   AllowDropFiles = True
   Caption = ' '
   ClientHeight = 464
@@ -32,119 +31,6 @@ object MainForm: TMainForm
     ClientWidth = 780
     Constraints.MinHeight = 80
     TabOrder = 0
-    object lvTorrents: TListView
-      Left = 135
-      Height = 122
-      Top = 0
-      Width = 645
-      Align = alClient
-      Columns = <      
-        item
-          Caption = 'Name'
-          Width = 200
-        end      
-        item
-          Alignment = taRightJustify
-          Caption = 'Size'
-          Width = 60
-        end      
-        item
-          Alignment = taCenter
-          Caption = 'Done'
-        end      
-        item
-          Caption = 'Status'
-          Width = 70
-        end      
-        item
-          Alignment = taRightJustify
-          Caption = 'Seeds'
-          Width = 55
-        end      
-        item
-          Alignment = taRightJustify
-          Caption = 'Peers'
-          Width = 55
-        end      
-        item
-          Alignment = taRightJustify
-          Caption = 'Down speed'
-          Width = 75
-        end      
-        item
-          Alignment = taRightJustify
-          Caption = 'Up speed'
-          Width = 75
-        end      
-        item
-          Caption = 'ETA'
-          Width = 80
-        end      
-        item
-          Caption = 'Ratio'
-        end      
-        item
-          Alignment = taRightJustify
-          Caption = 'Downloaded'
-          Tag = 60
-          Visible = False
-          Width = 0
-        end      
-        item
-          Alignment = taRightJustify
-          Caption = 'Uploaded'
-          Tag = 60
-          Visible = False
-          Width = 0
-        end      
-        item
-          Caption = 'Tracker'
-          Tag = 120
-          Visible = False
-          Width = 0
-        end      
-        item
-          Caption = 'Tracker status'
-          Tag = 100
-          Visible = False
-          Width = 0
-        end      
-        item
-          Caption = 'Added on'
-          Tag = 120
-          Visible = False
-          Width = 0
-        end      
-        item
-          Caption = 'Completed on'
-          Tag = 120
-          Visible = False
-          Width = 0
-        end      
-        item
-          Caption = 'Last active'
-          Tag = 120
-          Visible = False
-          Width = 0
-        end>
-      Constraints.MinHeight = 50
-      Constraints.MinWidth = 50
-      HideSelection = False
-      PopupMenu = pmTorrents
-      ReadOnly = True
-      RowSelect = True
-      ScrollBars = ssAutoBoth
-      SmallImages = ImageList16
-      SortType = stData
-      TabOrder = 0
-      ViewStyle = vsReport
-      OnColumnClick = lvTorrentsColumnClick
-      OnCustomDrawItem = lvTorrentsCustomDrawItem
-      OnCustomDrawSubItem = lvTorrentsCustomDrawSubItem
-      OnDblClick = lvTorrentsDblClick
-      OnResize = lvTorrentsResize
-      OnSelectItem = lvTorrentsSelectItem
-    end
     object HSplitter: TSplitter
       Left = 130
       Height = 122
@@ -163,29 +49,6 @@ object MainForm: TMainForm
       ClientHeight = 122
       ClientWidth = 130
       TabOrder = 2
-      object lvFilter: TListView
-        Left = 0
-        Height = 97
-        Top = 0
-        Width = 130
-        Align = alClient
-        Columns = <        
-          item
-            Width = 10
-          end>
-        Constraints.MinWidth = 50
-        HideSelection = False
-        ReadOnly = True
-        RowSelect = True
-        ScrollBars = ssAutoVertical
-        ShowColumnHeaders = False
-        SmallImages = ImageList16
-        TabOrder = 0
-        ViewStyle = vsReport
-        OnCustomDrawItem = lvFilterCustomDrawItem
-        OnResize = lvFilterResize
-        OnSelectItem = lvFilterSelectItem
-      end
       object panSearch: TPanel
         Left = 0
         Height = 21
@@ -198,7 +61,7 @@ object MainForm: TMainForm
         BevelOuter = bvNone
         ClientHeight = 21
         ClientWidth = 130
-        TabOrder = 1
+        TabOrder = 0
         object imgSearch: TImage
           Left = 0
           Height = 21
@@ -264,6 +127,134 @@ object MainForm: TMainForm
           TabOrder = 0
         end
       end
+      object lvFilter: TVarGrid
+        Left = 0
+        Height = 97
+        Top = 0
+        Width = 130
+        Align = alClient
+        Columns = <        
+          item
+            Width = 10
+          end>
+        Constraints.MinWidth = 50
+        FixedCols = 0
+        Options = [goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize]
+        RowCount = 1
+        ScrollBars = ssAutoVertical
+        TabOrder = 1
+        OnClick = lvFilterClick
+        OnResize = lvFilterResize
+        Images = ImageList16
+        OnCellAttributes = lvFilterCellAttributes
+      end
+    end
+    object gTorrents: TVarGrid
+      Left = 135
+      Height = 122
+      Top = 0
+      Width = 645
+      Align = alClient
+      Columns = <      
+        item
+          Title.Caption = 'Name'
+          Width = 200
+        end      
+        item
+          Alignment = taRightJustify
+          Title.Caption = 'Size'
+          Width = 60
+        end      
+        item
+          Alignment = taCenter
+          Title.Caption = 'Done'
+        end      
+        item
+          Title.Caption = 'Status'
+          Width = 70
+        end      
+        item
+          Alignment = taRightJustify
+          Title.Caption = 'Seeds'
+          Width = 55
+        end      
+        item
+          Alignment = taRightJustify
+          Title.Caption = 'Peers'
+          Width = 55
+        end      
+        item
+          Alignment = taRightJustify
+          Title.Caption = 'Down speed'
+          Width = 75
+        end      
+        item
+          Alignment = taRightJustify
+          Title.Caption = 'Up speed'
+          Width = 75
+        end      
+        item
+          Title.Caption = 'ETA'
+          Width = 80
+        end      
+        item
+          Title.Caption = 'Ratio'
+        end      
+        item
+          Alignment = taRightJustify
+          Title.Caption = 'Downloaded'
+          Width = 60
+          Visible = False
+        end      
+        item
+          Alignment = taRightJustify
+          Title.Caption = 'Uploaded'
+          Width = 60
+          Visible = False
+        end      
+        item
+          Title.Caption = 'Tracker'
+          Width = 120
+          Visible = False
+        end      
+        item
+          Title.Caption = 'Tracker status'
+          Width = 100
+          Visible = False
+        end      
+        item
+          Title.Caption = 'Added on'
+          Width = 120
+          Visible = False
+        end      
+        item
+          Title.Caption = 'Completed on'
+          Width = 120
+          Visible = False
+        end      
+        item
+          Title.Caption = 'Last active'
+          Width = 120
+          Visible = False
+        end      
+        item
+          Title.Caption = 'Path'
+          Width = 150
+          Visible = False
+        end>
+      FixedCols = 0
+      Options = [goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
+      PopupMenu = pmTorrents
+      RowCount = 1
+      TabOrder = 0
+      OnClick = gTorrentsClick
+      OnDblClick = gTorrentsDblClick
+      OnResize = gTorrentsResize
+      Images = ImageList16
+      MultiSelect = True
+      SortColumn = 0
+      OnCellAttributes = gTorrentsCellAttributes
+      OnDrawCell = gTorrentsDrawCell
     end
   end
   object StatusBar: TStatusBar
