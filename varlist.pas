@@ -33,24 +33,41 @@ type
   TVarList = class(TList)
   private
     FColCnt: integer;
+    FExtraColumns: integer;
+    FOnDataChanged: TNotifyEvent;
+    FUpdateLockCnt: integer;
     function GetItems(ACol, ARow: integer): variant;
     function GetRowCnt: integer;
+    function GetRowOptions(ARow: integer): integer;
     function GetRows(ARow: integer): variant;
     function GetRow(ARow: integer): PVariant;
+    procedure SetColCnt(const AValue: integer);
+    procedure SetExtraColumns(const AValue: integer);
     procedure SetItems(ACol, ARow: integer; const AValue: variant);
     procedure SetRowCnt(const AValue: integer);
+    procedure SetRowOptions(ARow: integer; const AValue: integer);
+    function IntCols: integer;
+
+  protected
+    procedure DoDataChanged; virtual;
 
   public
     constructor Create(AColCnt, ARowCnt: integer);
+    destructor Destroy; override;
     procedure Clear; override;
     procedure Delete(Index: Integer);
     procedure Sort(ACol: integer; Descending: boolean = False);
     function IndexOf(ACol: integer; const Value: variant): integer;
+    procedure BeginUpdate;
+    procedure EndUpdate;
     property Items[ACol, ARow: integer]: variant read GetItems write SetItems; default;
     property Rows[ARow: integer]: variant read GetRows;
-    property ColCnt: integer read FColCnt;
+    property RowOptions[ARow: integer]: integer read GetRowOptions write SetRowOptions;
+    property ColCnt: integer read FColCnt write SetColCnt;
     property RowCnt: integer read GetRowCnt write SetRowCnt;
     property Count: integer read GetRowCnt;
+    property OnDataChanged: TNotifyEvent read FOnDataChanged write FOnDataChanged;
+    property ExtraColumns: integer read FExtraColumns write SetExtraColumns;
   end;
 
 implementation
@@ -61,12 +78,17 @@ uses Math;
 
 function TVarList.GetItems(ACol, ARow: integer): variant;
 begin
-  Result:=GetRow(ARow)^[ACol];
+  Result:=GetRow(ARow)^[ACol + IntCols];
 end;
 
 function TVarList.GetRowCnt: integer;
 begin
   Result:=inherited GetCount;
+end;
+
+function TVarList.GetRowOptions(ARow: integer): integer;
+begin
+  Result:=GetRow(ARow)^[0];
 end;
 
 function TVarList.GetRows(ARow: integer): variant;
@@ -79,27 +101,68 @@ var
   v: PVariant;
 begin
   if ARow >= Count then
-    SetCount(ARow + 1);
+    SetRowCnt(ARow + 1);
   v:=Get(ARow);
   if v = nil then begin
     v:=GetMem(SizeOf(variant));
     FillChar(v^, SizeOf(variant), 0);
-    v^:=VarArrayCreate([0, FColCnt - 1], varVariant);
+    v^:=VarArrayCreate([0, FColCnt + IntCols - 1], varVariant);
+    v^[0]:=0;
     Put(ARow, v);
   end;
   Result:=v;
 end;
 
+procedure TVarList.SetColCnt(const AValue: integer);
+var
+  i: integer;
+begin
+  if FColCnt = AValue then exit;
+  FColCnt:=AValue;
+  for i:=0 to Count - 1 do
+    VarArrayRedim(GetRow(i)^, FColCnt + IntCols - 1);
+end;
+
+procedure TVarList.SetExtraColumns(const AValue: integer);
+begin
+  if FExtraColumns=AValue then exit;
+  if RowCnt <> 0 then
+    raise Exception.Create('Unable to set extra columns.');
+  FExtraColumns:=AValue;
+end;
+
 procedure TVarList.SetItems(ACol, ARow: integer; const AValue: variant);
 begin
-  GetRow(ARow)^[ACol]:=AValue;
+  GetRow(ARow)^[ACol + IntCols]:=AValue;
+  DoDataChanged;
 end;
 
 procedure TVarList.SetRowCnt(const AValue: integer);
 begin
-  while Count > AValue do
-    Delete(Count - 1);
-  SetCount(AValue);
+  BeginUpdate;
+  try
+    while Count > AValue do
+      Delete(Count - 1);
+    SetCount(AValue);
+  finally
+    EndUpdate;
+  end;
+end;
+
+procedure TVarList.SetRowOptions(ARow: integer; const AValue: integer);
+begin
+  GetRow(ARow)^[0]:=AValue;
+end;
+
+function TVarList.IntCols: integer;
+begin
+  Result:=FExtraColumns + 1;
+end;
+
+procedure TVarList.DoDataChanged;
+begin
+  if Assigned(FOnDataChanged) and (FUpdateLockCnt = 0) then
+    FOnDataChanged(Self);
 end;
 
 constructor TVarList.Create(AColCnt, ARowCnt: integer);
@@ -107,6 +170,12 @@ begin
   inherited Create;
   FColCnt:=AColCnt;
   RowCnt:=ARowCnt;
+end;
+
+destructor TVarList.Destroy;
+begin
+  FOnDataChanged:=nil;
+  inherited Destroy;
 end;
 
 procedure TVarList.Clear;
@@ -122,6 +191,7 @@ begin
     end;
   end;
   inherited Clear;
+  DoDataChanged;
 end;
 
 procedure TVarList.Delete(Index: Integer);
@@ -134,16 +204,23 @@ begin
     FreeMem(v);
   end;
   inherited Delete(Index);
+  DoDataChanged;
 end;
 
-var
-  FSortColumn: integer;
-  FSortDesc: boolean;
-
 function CompareVariants(const v1, v2: variant): integer;
+var
+  v1e, v2e: boolean;
 begin
-  if VarIsNull(v1) or VarIsEmpty(v1) or VarIsNull(v2) or VarIsEmpty(v2) then
+  v1e:=VarIsNull(v1) or VarIsEmpty(v1);
+  v2e:=VarIsNull(v2) or VarIsEmpty(v2);
+  if v1e and v2e then
     Result:=0
+  else
+  if v1e and not v2e then
+    Result:=-1
+  else
+  if not v1e and v2e then
+    Result:=1
   else
     case VarType(v1) of
     varInteger,varsmallint,varshortint,varbyte,varword,varlongword,varint64,varqword:
@@ -154,6 +231,11 @@ begin
       Result:=AnsiCompareText(v1, v2);
     end;
 end;
+
+var
+  _SortColumn: integer;
+  _SortDesc: boolean;
+  _IntCols: integer;
 
 function CompareItems(Item1, Item2: Pointer): Integer;
 var
@@ -166,22 +248,24 @@ begin
   end;
   v1:=Item1;
   v2:=Item2;
-  Result:=CompareVariants(v1^[FSortColumn], v2^[FSortColumn]);
-  i:=0;
+  Result:=CompareVariants(v1^[_SortColumn], v2^[_SortColumn]);
+  i:=_IntCols;
   while (Result = 0) and (i <= VarArrayHighBound(v1^, 1)) do begin
-    if i <> FSortColumn then
+    if i <> _SortColumn then
       Result:=CompareVariants(v1^[i], v2^[i]);
     Inc(i);
   end;
-  if FSortDesc then
+  if _SortDesc then
     Result:=-Result;
 end;
 
 procedure TVarList.Sort(ACol: integer; Descending: boolean);
 begin
-  FSortColumn:=ACol;
-  FSortDesc:=Descending;
+  _SortColumn:=ACol + IntCols;
+  _SortDesc:=Descending;
+  _IntCols:=IntCols;
   inherited Sort(@CompareItems);
+  DoDataChanged;
 end;
 
 function TVarList.IndexOf(ACol: integer; const Value: variant): integer;
@@ -189,11 +273,23 @@ var
   i: integer;
 begin
   for i:=0 to RowCnt - 1 do
-    if Items[ACol, i] = Value then begin
+    if CompareVariants(Items[ACol, i], Value) = 0 then begin
       Result:=i;
       exit;
     end;
   Result:=-1;
+end;
+
+procedure TVarList.BeginUpdate;
+begin
+  Inc(FUpdateLockCnt);
+end;
+
+procedure TVarList.EndUpdate;
+begin
+  Dec(FUpdateLockCnt);
+  if FUpdateLockCnt = 0 then
+    DoDataChanged;
 end;
 
 end.
