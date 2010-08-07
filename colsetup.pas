@@ -24,7 +24,7 @@ unit ColSetup;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, CheckLst, StdCtrls;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, CheckLst, StdCtrls, VarGrid;
 
 type
 
@@ -50,11 +50,11 @@ type
     { public declarations }
   end; 
 
-function SetupColumns(LV: TListView; PersistentColumnId: integer): boolean;
+function SetupColumns(LV: TVarGrid; PersistentColumnId: integer): boolean;
 
 implementation
 
-function SetupColumns(LV: TListView; PersistentColumnId: integer): boolean;
+function SetupColumns(LV: TVarGrid; PersistentColumnId: integer): boolean;
 var
   i, j: integer;
 begin
@@ -63,13 +63,11 @@ begin
     FPersistentColumnId:=PersistentColumnId;
     for i:=0 to LV.Columns.Count - 1 do
       with LV.Columns[i] do begin
-        j:=lstColumns.Items.Add(Caption);
+        j:=lstColumns.Items.Add(Title.Caption);
         lstColumns.Items.Objects[j]:=TObject(ptrint(ID));
         if Width = 0 then
           Visible:=False;
         lstColumns.Checked[j]:=Visible;
-        if Visible or (Width <> 0) then
-          Tag:=Width;
         if ID = PersistentColumnId then
           lstColumns.Checked[j]:=True;
       end;
@@ -83,26 +81,21 @@ begin
             with LV.Columns[j] do
               if ID = ptrint(lstColumns.Items.Objects[i]) then begin
                 Index:=i;
-                if ID = PersistentColumnId then
+                if ID - 1 = PersistentColumnId then
                   lstColumns.Checked[i]:=True;
                 if not Visible and (Visible <> lstColumns.Checked[i]) then begin
                   Visible:=True;
-                  if Width <> 0 then
-                    Tag:=Width;
-                  Width:=0;
-                  if Tag < 32 then
-                    Tag:=32;
-                  Width:=Tag;
+                  if Width < 32 then
+                    Width:=32;
                 end
                 else
                   Visible:=lstColumns.Checked[i];
-                ImageIndex:=0;
-                ImageIndex:=-1;
+                if not Visible and (LV.SortColumn = ID - 1) and (PersistentColumnId >= 0) then
+                  LV.SortColumn:=PersistentColumnId;
                 break;
               end;
       finally
         LV.EndUpdate;
-        LV.Invalidate;
       end;
     end;
   finally

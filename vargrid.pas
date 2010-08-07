@@ -17,6 +17,7 @@ type
 
   TOnCellAttributes = procedure (Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes) of object;
   TOnDrawCellEvent = procedure (Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean) of object;
+  TOnSortColumnEvent = procedure (Sender: TVarGrid; var ASortCol: integer) of object;
 
   { TVarGrid }
 
@@ -32,6 +33,7 @@ type
     FSelCount: integer;
     FAnchor: integer;
     FSortColumn: integer;
+    FOnSortColumn: TOnSortColumnEvent;
 
     function GetRow: integer;
     function GetRowSelected(RowIndex: integer): boolean;
@@ -57,6 +59,8 @@ type
     procedure HeaderClick(IsColumn: Boolean; index: Integer); override;
     procedure AutoAdjustColumn(aCol: Integer); override;
     procedure VisualChange; override;
+    procedure DrawColumnText(aCol,aRow: Integer; aRect: TRect; aState:TGridDrawState); override;
+    procedure DblClick; override;
     procedure SetupCell(ACol, ARow: integer; AState: TGridDrawState; out CellAttribs: TCellAttributes);
 
   public
@@ -133,6 +137,7 @@ type
 
     property OnCellAttributes: TOnCellAttributes read FOnCellAttributes write FOnCellAttributes;
     property OnDrawCell: TOnDrawCellEvent read FOnDrawCell write FOnDrawCell;
+    property OnSortColumn: TOnSortColumnEvent read FOnSortColumn write FOnSortColumn;
   end;
 
 procedure Register;
@@ -405,7 +410,7 @@ var
   pt: TPoint;
 begin
   pt:=MouseToCell(Point(X,Y));
-  if MultiSelect and (pt.x >= FixedCols) and (pt.y >= FixedRows) then begin
+  if MultiSelect and (ssLeft in Shift) and (pt.x >= FixedCols) and (pt.y >= FixedRows) then begin
     if ssCtrl in Shift then begin
       if SelCount = 0 then
         RowSelected[Row]:=True;
@@ -420,6 +425,10 @@ begin
           RemoveSelection;
         FAnchor:=-1;
       end;
+  end;
+  if ssRight in Shift then begin
+    if not (MultiSelect and (SelCount > 1)) and (pt.x >= FixedCols) and (pt.y >= FixedRows) then
+      Row:=pt.y - FixedRows;
   end;
   inherited MouseDown(Button, Shift, X, Y);
 end;
@@ -500,6 +509,51 @@ begin
     DefaultRowHeight:=Canvas.TextHeight('Xy') + 5;
 end;
 
+procedure TVarGrid.DrawColumnText(aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
+var
+  R: TRect;
+  i: integer;
+begin
+  if (gdFixed in aState) and (aRow=0) and (aCol>=FirstGridColumn) then begin
+    R:=aRect;
+    if FSortColumn = ColToDataCol(aCol) then begin
+      R.Right:=R.Left + R.Bottom - R.Top;
+      InflateRect(R, -5, -5);
+      OffsetRect(R, -3, 0);
+      Dec(R.Bottom, 2);
+      aRect.Left:=R.Right + 2;
+    end;
+    inherited DrawColumnText(aCol, aRow, aRect, aState);
+    if FSortColumn = ColToDataCol(aCol) then
+      with Canvas do begin
+        Pen.Color:=clBtnShadow;
+        i:=(R.Left + R.Right) div 2;
+        if SortOrder = soAscending then begin
+          MoveTo(i, R.Top);
+          LineTo(R.Right, R.Bottom);
+          LineTo(R.Left, R.Bottom);
+          LineTo(i, R.Top);
+        end
+        else begin
+          MoveTo(R.TopLeft);
+          LineTo(R.Right, R.Top);
+          LineTo(i, R.Bottom);
+          LineTo(R.TopLeft);
+        end;
+      end;
+  end;
+end;
+
+procedure TVarGrid.DblClick;
+var
+  pt: TPoint;
+begin
+  pt:=MouseToCell(ScreenToClient(Mouse.CursorPos));
+  if (pt.y < FixedRows) and (pt.y = 0) and (Cursor <> crHSplit) then
+    exit;
+  inherited DblClick;
+end;
+
 procedure TVarGrid.SetupCell(ACol, ARow: integer; AState: TGridDrawState; out CellAttribs: TCellAttributes);
 var
   v: variant;
@@ -560,12 +614,14 @@ end;
 
 procedure TVarGrid.Sort;
 var
-  i: integer;
+  i, c: integer;
 begin
   if (FSortColumn >= 0) and (FItems.Count > 0) then begin
-    RemoveSelection;
+    c:=FSortColumn;
+    if Assigned(FOnSortColumn) then
+      FOnSortColumn(Self, c);
     FItems.RowOptions[Row]:=FItems.RowOptions[Row] or roCurRow;
-    FItems.Sort(FSortColumn, SortOrder = soDescending);
+    FItems.Sort(c, SortOrder = soDescending);
     for i:=0 to FItems.Count - 1 do
       if LongBool(FItems.RowOptions[i] and roCurRow) then begin
         FItems.RowOptions[i]:=FItems.RowOptions[i] and not roCurRow;
