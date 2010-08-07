@@ -23,6 +23,7 @@ type
 
   TVarGrid = class(TCustomDrawGrid)
   private
+    FHideSelection: boolean;
     FImages: TImageList;
     FItems: TVarList;
     FItemsChanging: boolean;
@@ -39,6 +40,7 @@ type
     function GetRowSelected(RowIndex: integer): boolean;
     function GetSortOrder: TSortOrder;
     procedure ItemsChanged(Sender: TObject);
+    procedure SetHideSelection(const AValue: boolean);
     procedure SetRow(const AValue: integer);
     procedure SetRowSelected(RowIndex: integer; const AValue: boolean);
     procedure SetSortColumn(const AValue: integer);
@@ -134,6 +136,7 @@ type
     property MultiSelect: boolean read FMultiSelect write FMultiSelect default False;
     property SortColumn: integer read FSortColumn write SetSortColumn default -1;
     property SortOrder: TSortOrder read GetSortOrder write SetSortOrder default soAscending;
+    property HideSelection: boolean read FHideSelection write SetHideSelection default False;
 
     property OnCellAttributes: TOnCellAttributes read FOnCellAttributes write FOnCellAttributes;
     property OnDrawCell: TOnDrawCellEvent read FOnDrawCell write FOnDrawCell;
@@ -188,6 +191,13 @@ begin
   finally
     FItemsChanging:=False;
   end;
+end;
+
+procedure TVarGrid.SetHideSelection(const AValue: boolean);
+begin
+  if FHideSelection=AValue then exit;
+  FHideSelection:=AValue;
+  Invalidate;
 end;
 
 procedure TVarGrid.SetRow(const AValue: integer);
@@ -402,6 +412,8 @@ end;
 
 procedure TVarGrid.PrepareCanvas(aCol, aRow: Integer; aState: TGridDrawState);
 begin
+  if FHideSelection and not Focused then
+    aState:=aState - [gdSelected];
   inherited PrepareCanvas(aCol, aRow, aState);
 end;
 
@@ -427,6 +439,7 @@ begin
       end;
   end;
   if ssRight in Shift then begin
+    SetFocus;
     if not (MultiSelect and (SelCount > 1)) and (pt.x >= FixedCols) and (pt.y >= FixedRows) then
       Row:=pt.y - FixedRows;
   end;
