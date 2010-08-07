@@ -3126,7 +3126,7 @@ var
   f: TJSONObject;
   s, path, dir: string;
   ff: double;
-
+  WasEmpty: boolean;
 begin
   if (list = nil) or (priorities = nil) or (wanted = nil) then begin
     ClearDetailsInfo;
@@ -3137,6 +3137,7 @@ begin
   lvFiles.Color:=clWindow;
   dir:=UTF8Encode(DownloadDir);
   path:=GetFilesCommonPath(list);
+  WasEmpty:=FFiles.Count = 0;
 
   FFiles.BeginUpdate;
   try
@@ -3180,6 +3181,9 @@ begin
   finally
     FFiles.EndUpdate;
   end;
+  lvFiles.Sort;
+  if WasEmpty and (FFiles.Count > 0) then
+    lvFiles.Row:=0;
 end;
 
 procedure TMainForm.FillGeneralInfo(t: TJSONObject);
