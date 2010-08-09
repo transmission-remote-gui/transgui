@@ -2253,7 +2253,7 @@ begin
     j:=(R.Left + R.Right - sz.cx) div 2;
     if i > R.Left then begin
       RR:=Rect(R.Left, R.Top, i, R.Bottom);
-      Font.Color:=clHighlightText;
+      Font.Color:=clWindow;
       TextRect(RR, j, h, s);
     end;
     if i < R.Right then begin
