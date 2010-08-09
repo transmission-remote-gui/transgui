@@ -1606,6 +1606,7 @@ var
   g: TVarGrid;
   s: string;
 begin
+  Application.ProcessMessages;
   if lvTrackers.Focused then
     g:=lvTrackers
   else
