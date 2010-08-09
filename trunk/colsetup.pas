@@ -50,16 +50,18 @@ type
     { public declarations }
   end; 
 
-function SetupColumns(LV: TVarGrid; PersistentColumnId: integer): boolean;
+function SetupColumns(LV: TVarGrid; PersistentColumnId: integer; const GridName: string): boolean;
 
 implementation
 
-function SetupColumns(LV: TVarGrid; PersistentColumnId: integer): boolean;
+function SetupColumns(LV: TVarGrid; PersistentColumnId: integer; const GridName: string): boolean;
 var
   i, j: integer;
 begin
   with TColSetupForm.Create(Application) do
   try
+    if GridName <> '' then
+      Caption:=Caption + ' - ' + GridName;
     FPersistentColumnId:=PersistentColumnId;
     for i:=0 to LV.Columns.Count - 1 do
       with LV.Columns[i] do begin
