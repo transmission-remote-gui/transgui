@@ -5,7 +5,7 @@ unit VarGrid;
 interface
 
 uses
-  Classes, SysUtils, Grids, VarList, Graphics, Controls, LMessages, Forms;
+  Classes, SysUtils, Grids, VarList, Graphics, Controls, LMessages, Forms, StdCtrls;
 
 type
   TVarGrid = class;
@@ -49,6 +49,8 @@ type
     procedure UpdateSelCount;
     procedure SelectRange(OldRow, NewRow: integer);
     procedure CMHintShow(var Message: TCMHintShow); message CM_HINTSHOW;
+    function CellNeedsCheckboxBitmaps(const aCol,aRow: Integer): boolean;
+    procedure DrawCellCheckboxBitmaps(const aCol,aRow: Integer; const aRect: TRect);
 
   protected
     procedure SizeChanged(OldColCount, OldRowCount: Integer); override;
@@ -63,6 +65,8 @@ type
     procedure VisualChange; override;
     procedure DrawColumnText(aCol,aRow: Integer; aRect: TRect; aState:TGridDrawState); override;
     procedure DblClick; override;
+    procedure GetCheckBoxState(const aCol, aRow:Integer; var aState:TCheckboxState); override;
+    procedure SetCheckboxState(const aCol, aRow:Integer; const aState: TCheckboxState); override;
     procedure SetupCell(ACol, ARow: integer; AState: TGridDrawState; out CellAttribs: TCellAttributes);
 
   public
@@ -344,6 +348,26 @@ begin
   end;
 end;
 
+function TVarGrid.CellNeedsCheckboxBitmaps(const aCol, aRow: Integer): boolean;
+var
+  C: TGridColumn;
+begin
+  Result := false;
+  if (aRow>=FixedRows) and Columns.Enabled then begin
+    C := ColumnFromGridColumn(aCol);
+    result := (C<>nil) and (C.ButtonStyle=cbsCheckboxColumn)
+  end;
+end;
+
+procedure TVarGrid.DrawCellCheckboxBitmaps(const aCol, aRow: Integer; const aRect: TRect);
+var
+  AState: TCheckboxState;
+begin
+  AState := cbUnchecked;
+  GetCheckBoxState(aCol, aRow, aState);
+  DrawGridCheckboxBitmaps(aRect, aState);
+end;
+
 procedure TVarGrid.SizeChanged(OldColCount, OldRowCount: Integer);
 begin
   if not FItemsChanging and (FItems <> nil) then begin
@@ -386,19 +410,21 @@ begin
     end;
 
     if DefaultDrawing and dd then begin
-      if (ca.ImageIndex <> -1) and Assigned(FImages) then begin
-        FImages.Draw(Canvas, aRect.Left + 2, (aRect.Bottom + aRect.Top - FImages.Height) div 2, ca.ImageIndex, gdeNormal);
-        Inc(aRect.Left, FImages.Width + 2);
-      end;
-      if (Canvas.TextStyle.Alignment <> taLeftJustify) and (ca.Text <> '') then
-        if (aRect.Right <= aRect.Left) or (aRect.Right - aRect.Left < Canvas.TextWidth(ca.Text) + 9) then begin
-          ts:=Canvas.TextStyle;
-          ts.Alignment:=taLeftJustify;
-          Canvas.TextStyle:=ts;
+      if CellNeedsCheckboxBitmaps(aCol,aRow) then
+        DrawCellCheckboxBitmaps(aCol,aRow,aRect)
+      else begin
+        if (ca.ImageIndex <> -1) and Assigned(FImages) then begin
+          FImages.Draw(Canvas, aRect.Left + 2, (aRect.Bottom + aRect.Top - FImages.Height) div 2, ca.ImageIndex, gdeNormal);
+          Inc(aRect.Left, FImages.Width + 2);
         end;
-      DrawCellText(aCol, aRow, aRect, aState, ca.Text);
-  //    if CellNeedsCheckboxBitmaps(aCol,aRow) then
-  //      DrawCellCheckboxBitmaps(aCol,aRow,aRect);
+        if (Canvas.TextStyle.Alignment <> taLeftJustify) and (ca.Text <> '') then
+          if (aRect.Right <= aRect.Left) or (aRect.Right - aRect.Left < Canvas.TextWidth(ca.Text) + 9) then begin
+            ts:=Canvas.TextStyle;
+            ts.Alignment:=taLeftJustify;
+            Canvas.TextStyle:=ts;
+          end;
+        DrawCellText(aCol, aRow, aRect, aState, ca.Text);
+      end;
     end;
   end;
   if TitleStyle<>tsNative then
@@ -456,6 +482,8 @@ var
 begin
   r:=Row;
   k:=Key;
+  if goRowSelect in Options then
+    Col:=FixedCols;
   inherited KeyDown(Key, Shift);
   if MultiSelect then begin
     if ssCtrl in Shift then begin
@@ -569,6 +597,43 @@ begin
   if (pt.y < FixedRows) and (pt.y = 0) and (Cursor <> crHSplit) then
     exit;
   inherited DblClick;
+end;
+
+procedure TVarGrid.GetCheckBoxState(const aCol, aRow: Integer; var aState: TCheckboxState);
+var
+  s: string;
+begin
+  if (aCol >= FixedCols) and (aRow >= FixedRows) then begin
+    s:=Items[ColToDataCol(aCol), aRow - FixedRows];
+    with Columns[GridColumnFromColumnIndex(aCol)] do
+      if s = ValueChecked then
+        aState:=cbChecked
+      else
+        if s = ValueUnchecked then
+          aState:=cbUnchecked
+        else
+          aState:=cbGrayed;
+  end;
+  inherited GetCheckBoxState(aCol, aRow, aState);
+end;
+
+procedure TVarGrid.SetCheckboxState(const aCol, aRow: Integer; const aState: TCheckboxState);
+var
+  s: string;
+begin
+  if (aCol >= FixedCols) and (aRow >= FixedRows) then begin
+    with Columns[GridColumnFromColumnIndex(aCol)] do
+      case aState of
+        cbUnchecked:
+          s:=ValueUnchecked;
+        cbChecked:
+          s:=ValueChecked;
+        else
+          s:='?';
+      end;
+    Items[ColToDataCol(aCol), aRow - FixedRows]:=s;
+  end;
+  inherited SetCheckboxState(aCol, aRow, aState);
 end;
 
 procedure TVarGrid.SetupCell(ACol, ARow: integer; AState: TGridDrawState; out CellAttribs: TCellAttributes);

@@ -24,7 +24,7 @@ unit AddTorrent;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, Spin;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, VarGrid, Grids;
 
 type
 
@@ -41,55 +41,42 @@ type
     gbContents: TGroupBox;
     edPeerLimit: TSpinEdit;
     txPeerLimit: TLabel;
-    lvFiles: TListView;
+    lvFiles: TVarGrid;
     txDestFolder: TLabel;
     procedure btSelectAllClick(Sender: TObject);
     procedure btSelectNoneClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure lvFilesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure lvFilesMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
   private
   public
     { public declarations }
-  end; 
+  end;
 
 implementation
 
-uses lclintf, lcltype;
+uses lclintf, lcltype, main;
 
 { TAddTorrentForm }
-
-procedure TAddTorrentForm.lvFilesMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-{$ifdef windows}
-var
-  it: TListItem;
-  R: TRect;
-{$endif}
-begin
-{$ifdef windows}
-  it:=TListView(Sender).GetItemAt(X, Y);
-  if it <> nil then begin
-    R:=it.DisplayRect(drBounds);
-    R.Right:=R.Left + (R.Bottom - R.Top);
-    if PtInRect(R, Point(X, Y)) then
-      it.Checked:=not it.Checked;
-  end;
-{$endif}
-end;
 
 procedure TAddTorrentForm.FormShow(Sender: TObject);
 begin
   btSelectAllClick(nil);
+  lvFiles.Sort;
+  if lvFiles.Items.Count > 0 then
+    lvFiles.Row:=0;
 end;
 
-procedure TAddTorrentForm.lvFilesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TAddTorrentForm.lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState;
+  var CellAttribs: TCellAttributes);
 begin
-  if Key = VK_SPACE then begin
-    Key:=0;
-    if lvFiles.Selected = nil then
-      exit;
-    lvFiles.Selected.Checked:=not lvFiles.Selected.Checked;
+  if ARow < 0 then exit;
+  with CellAttribs do begin
+    if Text = '' then exit;
+    case ADataCol of
+      2:
+        Text:=GetHumanSize(double(Sender.Items[ADataCol, ARow]));
+    end;
   end;
 end;
 
@@ -97,20 +84,26 @@ procedure TAddTorrentForm.btSelectAllClick(Sender: TObject);
 var
   i: integer;
 begin
+  lvFiles.Items.BeginUpdate;
   for i:=0 to lvFiles.Items.Count - 1 do
-    lvFiles.Items[i].Checked:=True;
+    lvFiles.Items[0, i]:=1;
+  lvFiles.Items.EndUpdate;
 end;
 
 procedure TAddTorrentForm.btSelectNoneClick(Sender: TObject);
 var
   i: integer;
 begin
+  lvFiles.Items.BeginUpdate;
   for i:=0 to lvFiles.Items.Count - 1 do
-    lvFiles.Items[i].Checked:=False;
+    lvFiles.Items[0, i]:=0;
+  lvFiles.Items.EndUpdate;
 end;
 
 procedure TAddTorrentForm.FormCreate(Sender: TObject);
 begin
+  lvFiles.Items.ExtraColumns:=1;
+  lvFiles.AlternateColor:=FAlterColor;
 {$ifdef windows}
   gbSaveAs.Caption:='';
 {$endif windows}
