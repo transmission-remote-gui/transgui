@@ -966,7 +966,7 @@ var
 
 var
   req, res, args: TJSONObject;
-  id: ptruint;
+  id: integer;
   t, files: TJSONArray;
   i, j: integer;
   fs: TFileStream;
@@ -2939,7 +2939,7 @@ end;
 procedure TMainForm.FillPeersList(list: TJSONArray);
 var
   i, j, row: integer;
-  port: ptruint;
+  port: integer;
   d: TJSONData;
   p: TJSONObject;
   ip: string;
@@ -3346,7 +3346,7 @@ end;
 procedure TMainForm.FillTrackersList(TrackersData: TJSONObject);
 var
   i, tidx, row: integer;
-  id: ptruint;
+  id: integer;
   d: TJSONData;
   t: TJSONObject;
   f: double;
