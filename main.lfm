@@ -852,7 +852,7 @@ object MainForm: TMainForm
       ClientHeight = 263
       ClientWidth = 772
       ImageIndex = 5
-      object lvTrackers: TListView
+      object lvTrackers: TVarGrid
         Left = 0
         Height = 263
         Top = 0
@@ -860,26 +860,27 @@ object MainForm: TMainForm
         Align = alClient
         Columns = <        
           item
-            Caption = 'Name'
+            Title.Caption = 'Name'
             Width = 200
           end        
           item
-            Caption = 'Status'
+            Title.Caption = 'Status'
             Width = 200
           end        
           item
-            Caption = 'Update in'
+            Title.Caption = 'Update in'
             Width = 80
           end        
           item
-            Caption = 'Seeds'
+            Title.Caption = 'Seeds'
           end>
-        ColumnClick = False
-        ReadOnly = True
-        RowSelect = True
-        ScrollBars = ssAutoBoth
+        FixedCols = 0
+        Options = [goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
+        RowCount = 1
         TabOrder = 0
-        ViewStyle = vsReport
+        SortColumn = 0
+        HideSelection = True
+        OnCellAttributes = lvTrackersCellAttributes
       end
     end
     object tabPeers: TTabSheet
@@ -933,11 +934,12 @@ object MainForm: TMainForm
             Width = 80
           end>
         FixedCols = 0
-        Options = [goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize]
+        Options = [goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
         PopupMenu = pmPeers
         RowCount = 1
         TabOrder = 0
         Images = imgFlags
+        SortColumn = 0
         HideSelection = True
         OnCellAttributes = lvPeersCellAttributes
       end

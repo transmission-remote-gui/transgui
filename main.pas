@@ -129,7 +129,7 @@ type
     ImageList16: TImageList;
     FilterTimer: TTimer;
     lvFilter: TVarGrid;
-    lvTrackers: TListView;
+    lvTrackers: TVarGrid;
     MenuItem40: TMenuItem;
     MenuItem41: TMenuItem;
     MenuItem42: TMenuItem;
@@ -325,6 +325,7 @@ type
     procedure lvFilterCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure lvFilterClick(Sender: TObject);
     procedure lvPeersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
+    procedure lvTrackersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure panReconnectResize(Sender: TObject);
     procedure pbDownloadedPaint(Sender: TObject);
     procedure pbDownloadedResize(Sender: TObject);
@@ -485,6 +486,9 @@ const
   idxTrackersListStatus = 1;
   idxTrackersListUpdateIn = 2;
   idxTrackersListSeeds = 3;
+  idxTrackerTag = -1;
+  idxTrackerID = -2;
+  TrackersExtraColumns = 2;
 
   // Filter idices
   fltAll      = 0;
@@ -749,8 +753,9 @@ begin
   FTorrents.ExtraColumns:=TorrentsExtraColumns;
   gTorrents.Items.ExtraColumns:=TorrentsExtraColumns;
   lvFiles.Items.ExtraColumns:=FilesExtraColumns;
-  lvPeers.Items.ExtraColumns:=PeersExtraColumns;
   FFiles:=lvFiles.Items;
+  lvPeers.Items.ExtraColumns:=PeersExtraColumns;
+  lvTrackers.Items.ExtraColumns:=TrackersExtraColumns;
   FIni:=TIniFile.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
   FTrackers:=TStringList.Create;
   FReconnectTimeOut:=-1;
@@ -791,9 +796,8 @@ begin
   TorrentColumnsChanged;
   LoadColumns(lvFiles, 'FilesList');
   LoadColumns(lvPeers, 'PeerList');
-{fixme
   LoadColumns(lvTrackers, 'TrackersList');
-}
+
   acResolveHost.Checked:=FIni.ReadBool('PeersList', 'ResolveHost', True);
   acResolveCountry.Checked:=FIni.ReadBool('PeersList', 'ResolveCountry', True) and (GetGeoIpDatabase <> '');
   acShowCountryFlag.Checked:=FIni.ReadBool('PeersList', 'ShowCountryFlag', True) and (GetFlagsArchive <> '');
@@ -1251,9 +1255,7 @@ begin
   SaveColumns(gTorrents, 'TorrentsList', True);
   SaveColumns(lvFiles, 'FilesList');
   SaveColumns(lvPeers, 'PeerList');
-{fixme
   SaveColumns(lvTrackers, 'TrackersList');
-}
 
   FIni.WriteBool('PeersList', 'ResolveHost', acResolveHost.Checked);
   FIni.WriteBool('PeersList', 'ResolveCountry', acResolveCountry.Checked);
@@ -1962,6 +1964,8 @@ begin
 end;
 
 procedure TMainForm.lvPeersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
+var
+  i: integer;
 begin
   if ARow < 0 then exit;
   with CellAttribs do begin
@@ -1970,6 +1974,44 @@ begin
       ImageIndex:=Sender.Items[idxPeerCountryImage, ARow];
       if ImageIndex = 0 then
         ImageIndex:=-1;
+    end;
+    case ADataCol of
+      idxPeerDone:
+        Text:=Format('%.1f%%', [double(Sender.Items[ADataCol, ARow])*100.0]);
+      idxPeerDownSpeed, idxPeerUpSpeed:
+        begin
+          i:=Sender.Items[ADataCol, ARow];
+          if i > 0 then
+            Text:=GetHumanSize(i, 1) + sPerSecond
+          else
+            Text:='';
+        end;
+    end;
+  end;
+end;
+
+procedure TMainForm.lvTrackersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
+var
+  f: double;
+begin
+  if ARow < 0 then exit;
+  with CellAttribs do begin
+    if Text = '' then exit;
+    case ADataCol of
+      idxTrackersListSeeds:
+        if lvTrackers.Items[ADataCol, ARow] < 0 then
+          Text:='';
+      idxTrackersListUpdateIn:
+        begin
+          f:=double(lvTrackers.Items[ADataCol, ARow]);
+          if f = 0 then
+            Text:='-'
+          else
+          if f = 1 then
+            Text:=sUpdating
+          else
+            Text:=SecondsToString(Trunc(f));
+        end;
     end;
   end;
 end;
@@ -2402,8 +2444,10 @@ begin
         FIni.WriteBool(AName, Format('Visible%d', [i]), Visible);
       end;
     end;
-  FIni.WriteInteger(AName, 'SortColumn', LV.SortColumn);
-  FIni.WriteInteger(AName, 'SortOrder', integer(LV.SortOrder));
+  if LV.SortColumn >= 0 then begin
+    FIni.WriteInteger(AName, 'SortColumn', LV.SortColumn);
+    FIni.WriteInteger(AName, 'SortOrder', integer(LV.SortOrder));
+  end;
 end;
 
 procedure TMainForm.LoadColumns(LV: TVarGrid; const AName: string; FullInfo: boolean);
@@ -2868,14 +2912,16 @@ var
   port: ptruint;
   d: TJSONData;
   p: TJSONObject;
-  s, ip: string;
+  ip: string;
   hostinfo: PHostEntry;
   opt: TResolverOptions;
+  WasEmpty: boolean;
 begin
   if list = nil then begin
     ClearDetailsInfo;
     exit;
   end;
+  WasEmpty:=lvPeers.Items.Count = 0;
   lvPeers.Items.BeginUpdate;
   try
     lvPeers.Enabled:=True;
@@ -2937,25 +2983,12 @@ begin
       lvPeers.Items[idxPeerCountryImage, row]:=j;
       lvPeers.Items[idxPeerClient, row]:=p.Strings['clientName'];
       lvPeers.Items[idxPeerFlags, row]:=p.Strings['flagStr'];
-      lvPeers.Items[idxPeerDone, row]:=Format('%.1f%%', [p.Floats['progress']*100.0]);
+      lvPeers.Items[idxPeerDone, row]:=p.Floats['progress'];
 
-      if p.IndexOfName('rateToClient') >= 0 then begin
-        j:=p.Integers['rateToClient'];
-        if j > 0 then
-          s:=GetHumanSize(j, 1) + sPerSecond
-        else
-          s:='';
-        lvPeers.Items[idxPeerDownSpeed, row]:=UTF8Decode(s);
-      end;
-
-      if p.IndexOfName('rateToPeer') >= 0 then begin
-        j:=p.Integers['rateToPeer'];
-        if j > 0 then
-          s:=GetHumanSize(j, 1) + sPerSecond
-        else
-          s:='';
-        lvPeers.Items[idxPeerUpSpeed, row]:=UTF8Decode(s);
-      end;
+      if p.IndexOfName('rateToClient') >= 0 then
+        lvPeers.Items[idxPeerDownSpeed, row]:=p.Integers['rateToClient'];
+      if p.IndexOfName('rateToPeer') >= 0 then
+        lvPeers.Items[idxPeerUpSpeed, row]:=p.Integers['rateToPeer'];
 
       lvPeers.Items[idxPeerTag, row]:=1;
     end;
@@ -2969,6 +3002,9 @@ begin
   finally
     lvPeers.Items.EndUpdate;
   end;
+  lvPeers.Sort;
+  if WasEmpty and (lvPeers.Items.Count > 0) then
+    lvPeers.Row:=0;
 end;
 
 function TMainForm.GetFilesCommonPath(files: TJSONArray): string;
@@ -3279,28 +3315,14 @@ end;
 
 procedure TMainForm.FillTrackersList(TrackersData: TJSONObject);
 var
-  it: TListItem;
-
-  procedure SetSubItem(idx: integer; const s: string);
-  begin
-    if it.SubItems.Count < idx then begin
-      while it.SubItems.Count < idx - 1 do
-        it.SubItems.Add('');
-      it.SubItems.Add(s);
-    end
-    else
-      it.SubItems[idx-1]:=s;
-  end;
-
-var
-  i, j, tidx: integer;
+  i, tidx, row: integer;
   id: ptruint;
   d: TJSONData;
   t: TJSONObject;
-  tr: array of pointer;
   f: double;
   s: string;
   Trackers, TrackerStats: TJSONArray;
+  WasEmpty: boolean;
 begin
   if TrackersData = nil then begin
     ClearDetailsInfo;
@@ -3317,18 +3339,13 @@ begin
     exit;
   end;
   i:=TrackerStats.Count;
-//  lvTrackers.BeginUpdate;
+  WasEmpty:=lvTrackers.Items.Count = 0;
+  lvTrackers.Items.BeginUpdate;
   try
     lvTrackers.Enabled:=True;
-{$ifndef LCLgtk2}
     lvTrackers.Color:=clWindow;
-{$endif LCLgtk2}
-
-    SetLength(tr, lvTrackers.Items.Count);
-    for i:=0 to lvTrackers.Items.Count - 1 do begin
-      tr[i]:=lvTrackers.Items[i].Data;
-      lvTrackers.Items[i].Data:=nil;
-    end;
+    for i:=0 to lvTrackers.Items.Count - 1 do
+      lvTrackers.Items[idxTrackerTag, i]:=0;
 
     for i:=0 to Trackers.Count - 1 do begin
       d:=Trackers[i];
@@ -3338,16 +3355,12 @@ begin
         id:=t.Integers['id'] + 1
       else
         id:=i + 1;
-      it:=nil;
-      for j:=0 to High(tr) do
-        if id = ptruint(tr[j]) then begin
-          it:=lvTrackers.Items[j];
-          break;
-        end;
-      if it = nil then
-        it:=lvTrackers.Items.Add;
+      row:=lvTrackers.Items.IndexOf(idxTrackerID, id);
+      if row < 0 then
+        row:=lvTrackers.Items.Count;
+      lvTrackers.Items[idxTrackerID, row]:=id;
 
-      it.Caption:=UTF8Encode(t.Strings['announce']);
+      lvTrackers.Items[idxTrackersListName, row]:=t.Strings['announce'];
       if TrackerStats <> nil then begin
         f:=0;
         if i < TrackerStats.Count then
@@ -3365,14 +3378,8 @@ begin
             if s = 'Success' then
               s:=sTrackerWorking;
 
-            SetSubItem(idxTrackersListStatus, s);
-
-            j:=Integers['seederCount'];
-            if j >= 0 then
-              s:=IntToStr(j)
-            else
-              s:='';
-            SetSubItem(idxTrackersListSeeds, s);
+            lvTrackers.Items[idxTrackersListStatus, row]:=UTF8Decode(s);
+            lvTrackers.Items[idxTrackersListSeeds, row]:=Integers['seederCount'];
 
             if integer(Integers['announceState']) in [2, 3] then
               f:=1
@@ -3382,39 +3389,35 @@ begin
       end
       else begin
         if i = 0 then begin
-          SetSubItem(idxTrackersListStatus, UTF8Encode(WideString(gTorrents.Items[idxTrackerStatus, tidx])));
-          SetSubItem(idxTrackersListSeeds, IntToStr(gTorrents.Items[idxSeedsTotal, tidx]));
+          lvTrackers.Items[idxTrackersListStatus, row]:=gTorrents.Items[idxTrackerStatus, tidx];
+          lvTrackers.Items[idxTrackersListSeeds, row]:=gTorrents.Items[idxSeedsTotal, tidx];
         end;
         f:=TrackersData.Floats['nextAnnounceTime'];
       end;
 
-      if f = 0 then
-        s:='-'
-      else
-      if f = 1 then
-        s:=sUpdating
-      else begin
+      if f > 1 then begin
         f:=(UnixToDateTime(Trunc(f)) + GetTimeZoneDelta - Now)*SecsPerDay;
         if f < 0 then
           f:=0;
-        s:=SecondsToString(Trunc(f));
       end;
       if (TrackerStats <> nil) or (i = 0) then
-        SetSubItem(idxTrackersListUpdateIn, s);
+        lvTrackers.Items[idxTrackersListUpdateIn, row]:=f;
 
-      it.Data:=pointer(id);
+      lvTrackers.Items[idxTrackerTag, row]:=1;
     end;
 
     i:=0;
     while i < lvTrackers.Items.Count do
-      if lvTrackers.Items[i].Data = nil then
+      if lvTrackers.Items[idxTrackerTag, i] = 0 then
         lvTrackers.Items.Delete(i)
       else
         Inc(i);
-
   finally
-//    lvTrackers.EndUpdate;
+    lvTrackers.Items.EndUpdate;
   end;
+  lvTrackers.Sort;
+  if WasEmpty and (lvTrackers.Items.Count > 0) then
+    lvTrackers.Row:=0;
 end;
 
 procedure TMainForm.CheckStatus(Fatal: boolean);
