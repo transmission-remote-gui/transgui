@@ -371,9 +371,6 @@ type
     FIni: TIniFile;
     FCurHost: string;
     FPathMap: TStringList;
-{$ifdef LCLcarbon}
-    FColClickTime: TDateTime;
-{$endif LCLcarbon}
 
     procedure DoConnect;
     procedure DoDisconnect;
