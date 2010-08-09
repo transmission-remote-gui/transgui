@@ -201,8 +201,12 @@ begin
 end;
 
 procedure TVarGrid.SetRow(const AValue: integer);
+var
+  i: integer;
 begin
+  i:=LeftCol;
   inherited Row:=AValue + FixedRows;
+  LeftCol:=i;
 end;
 
 function TVarGrid.GetRowSelected(RowIndex: integer): boolean;

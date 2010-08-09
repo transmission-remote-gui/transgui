@@ -1835,7 +1835,7 @@ begin
       idxRatio:
         Text:=RatioToString(Sender.Items[idxRatio, ARow]);
       idxAddedOn, idxCompletedOn, idxLastActive:
-        Text:=TorrentDateTimeToString(FTorrents[ADataCol, ARow]);
+        Text:=TorrentDateTimeToString(Sender.Items[ADataCol, ARow]);
     end;
   end;
 end;
@@ -2781,6 +2781,9 @@ begin
     else
       if VarIsEmpty(FTorrents[idxPath, row]) then
         RpcObj.RequestFullInfo:=True;
+
+    DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, row];
+    UpSpeed:=UpSpeed + FTorrents[idxUpSpeed, row];
 
     FTorrents[idxTag, row]:=1;
   end;
