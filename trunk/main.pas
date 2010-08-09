@@ -371,7 +371,6 @@ type
     FIni: TIniFile;
     FCurHost: string;
     FPathMap: TStringList;
-    FAlterColor: TColor;
 {$ifdef LCLcarbon}
     FColClickTime: TDateTime;
 {$endif LCLcarbon}
@@ -433,6 +432,7 @@ var
   RpcObj: TRpc;
   FTranslationFileName: string;
   FTranslationLanguage: string;
+  FAlterColor: TColor;
 
 const
   // Torrents list
@@ -770,6 +770,8 @@ begin
   lvFilter.FixedRows:=0;
   gTorrents.AlternateColor:=FAlterColor;
   lvFiles.AlternateColor:=FAlterColor;
+  lvPeers.AlternateColor:=FAlterColor;
+  lvTrackers.AlternateColor:=FAlterColor;
 
   DoDisconnect;
   PageInfo.ActivePageIndex:=0;
@@ -1039,15 +1041,15 @@ begin
         edPeerLimit.Value:=t.Objects[0].Integers['maxConnectedPeers'];
         files:=t.Objects[0].Arrays['files'];
         path:=GetFilesCommonPath(files);
+        lvFiles.Items.RowCnt:=files.Count;
         for i:=0 to files.Count - 1 do begin
           res:=files.Objects[i];
           s:=UTF8Encode(res.Strings['name']);
           if (path <> '') and (Copy(s, 1, Length(path)) = path) then
             s:=Copy(s, Length(path) + 1, MaxInt);
-          with lvFiles.Items.Add do begin
-            Caption:=s;
-            SubItems.Add(GetHumanSize(res.Floats['length']));
-          end;
+          lvFiles.Items[1, i]:=s;
+          lvFiles.Items[2, i]:=res.Floats['length'];
+          lvFiles.Items[-1, i]:=i;
         end;
       finally
         args.Free;
@@ -1067,7 +1069,7 @@ begin
         Self.Update;
 
         if OldDownloadDir <> cbDestFolder.Text then begin
-          TorrentAction(id, 'remove');
+          TorrentAction(VarArrayOf([id]), 'remove');
           id:=0;
           args:=TJSONObject.Create;
           args.Add('paused', TJSONIntegerNumber.Create(1));
@@ -1089,8 +1091,8 @@ begin
 
           files:=TJSONArray.Create;
           for i:=0 to lvFiles.Items.Count - 1 do
-            if lvFiles.Items[i].Checked then
-              files.Add(i);
+            if string(lvFiles.Items[0, i]) <> '0' then
+              files.Add(integer(lvFiles.Items[-1, i]));
           if files.Count > 0 then
             args.Add('files-wanted', files)
           else
@@ -1098,8 +1100,8 @@ begin
 
           files:=TJSONArray.Create;
           for i:=0 to lvFiles.Items.Count - 1 do
-            if not lvFiles.Items[i].Checked then
-              files.Add(i);
+            if string(lvFiles.Items[0, i]) = '0' then
+              files.Add(integer(lvFiles.Items[-1, i]));
           if files.Count > 0 then
             args.Add('files-unwanted', files)
           else
@@ -1118,7 +1120,7 @@ begin
         end;
 
         if cbStartTorrent.Checked then
-          TorrentAction(id, 'start');
+          TorrentAction(VarArrayOf([id]), 'start');
 
         tt:=Now;
         while (Now - tt < 2/SecsPerDay) and (id <> 0) do begin
@@ -1154,7 +1156,7 @@ begin
     end;
   finally
     if id <> 0 then
-      TorrentAction(id, 'remove');
+      TorrentAction(VarArrayOf([id]), 'remove');
   end;
 end;
 
