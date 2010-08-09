@@ -2252,7 +2252,7 @@ begin
     h:=(R.Top + R.Bottom - h) div 2;
     RR:=Rect(R.Left, R.Top, i, R.Bottom);
     j:=(R.Left + R.Right - sz.cx) div 2;
-    Font.Color:=clHighlightText;
+    Font.Color:=clWindow;
     TextRect(RR, j, h, s);
 
     RR:=Rect(i, R.Top, R.Right, R.Bottom);
@@ -2853,7 +2853,7 @@ begin
       case FilterIdx of
         fltActive:
           if not IsActive then
-            FTorrents.Delete(i);
+            continue;
         fltInactive:
           if IsActive then
             continue;
