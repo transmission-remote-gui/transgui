@@ -571,7 +571,7 @@ begin
     inherited DrawColumnText(aCol, aRow, aRect, aState);
     if FSortColumn = ColToDataCol(aCol) then
       with Canvas do begin
-        Pen.Color:=cl3DDkShadow;
+        Pen.Color:=clGrayText;
         i:=(R.Left + R.Right) div 2;
         if SortOrder = soAscending then begin
           MoveTo(i, R.Top);
