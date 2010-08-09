@@ -291,11 +291,11 @@ object MainForm: TMainForm
     Height = 290
     Top = 151
     Width = 780
-    ActivePage = tabFiles
+    ActivePage = tabPeers
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 3
+    TabIndex = 2
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -887,7 +887,7 @@ object MainForm: TMainForm
       ClientHeight = 263
       ClientWidth = 772
       ImageIndex = 6
-      object lvPeers: TListView
+      object lvPeers: TVarGrid
         Left = 0
         Height = 263
         Top = 0
@@ -895,45 +895,51 @@ object MainForm: TMainForm
         Align = alClient
         Columns = <        
           item
-            Caption = 'Host'
+            Title.Caption = 'Host'
             Width = 150
           end        
           item
-            Caption = 'Country'
+            Alignment = taRightJustify
+            Title.Caption = 'Port'
+            Width = 50
+            Visible = False
+          end        
+          item
+            Title.Caption = 'Country'
             Width = 100
           end        
           item
-            Caption = 'Client'
+            Title.Caption = 'Client'
             Width = 150
           end        
           item
-            Caption = 'Flags'
+            Title.Caption = 'Flags'
             Width = 70
           end        
           item
             Alignment = taRightJustify
-            Caption = 'Have'
+            Title.Caption = 'Have'
           end        
           item
             Alignment = taRightJustify
-            Caption = 'Up speed'
+            Title.Alignment = taCenter
+            Title.Caption = 'Up speed'
             Width = 80
           end        
           item
             Alignment = taRightJustify
-            Caption = 'Down speed'
+            Title.Alignment = taCenter
+            Title.Caption = 'Down speed'
             Width = 80
           end>
-        ColumnClick = False
+        FixedCols = 0
+        Options = [goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize]
         PopupMenu = pmPeers
-        ReadOnly = True
-        RowSelect = True
-        ScrollBars = ssAutoBoth
-        SmallImages = imgFlags
+        RowCount = 1
         TabOrder = 0
-        ViewStyle = vsReport
-        OnCustomDrawItem = lvPeersCustomDrawItem
-        OnCustomDrawSubItem = lvPeersCustomDrawSubItem
+        Images = imgFlags
+        HideSelection = True
+        OnCellAttributes = lvPeersCellAttributes
       end
     end
     object tabFiles: TTabSheet
