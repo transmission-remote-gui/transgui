@@ -244,7 +244,7 @@ type
     txHashLabel: TLabel;
     panGeneralInfo: TPanel;
     lvFiles: TVarGrid;
-    lvPeers: TListView;
+    lvPeers: TVarGrid;
     MainMenu: TMainMenu;
     MenuItem1: TMenuItem;
     MenuItem10: TMenuItem;
@@ -319,18 +319,12 @@ type
     procedure gTorrentsResize(Sender: TObject);
     procedure gTorrentsSortColumn(Sender: TVarGrid; var ASortCol: integer);
     procedure lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
-    procedure lvFilesCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
-    procedure lvFilesCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure lvFilesDblClick(Sender: TObject);
     procedure lvFilesDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
     procedure lvFilesKeyPress(Sender: TObject; var Key: char);
     procedure lvFilterCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure lvFilterClick(Sender: TObject);
-    procedure lvPeersCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
-    procedure lvPeersCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState; var DefaultDraw: Boolean);
-    procedure lvTorrentsCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
-    procedure lvTorrentsCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
-      var DefaultDraw: Boolean);
+    procedure lvPeersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure panReconnectResize(Sender: TObject);
     procedure pbDownloadedPaint(Sender: TObject);
     procedure pbDownloadedResize(Sender: TObject);
@@ -462,13 +456,18 @@ const
   TorrentsExtraColumns = 6;
 
   // Peers list
-  idxPeerIP = 0;
-  idxPeerCountry = 1;
-  idxPeerClient = 2;
-  idxPeerFlags = 3;
-  idxPeerDone = 4;
-  idxPeerUpSpeed = 5;
-  idxPeerDownSpeed = 6;
+  idxPeerHost = 0;
+  idxPeerPort = 1;
+  idxPeerCountry = 2;
+  idxPeerClient = 3;
+  idxPeerFlags = 4;
+  idxPeerDone = 5;
+  idxPeerUpSpeed = 6;
+  idxPeerDownSpeed = 7;
+  idxPeerTag = -1;
+  idxPeerIP = -2;
+  idxPeerCountryImage = -3;
+  PeersExtraColumns = 3;
 
   // Files list
   idxFileName = 0;
@@ -750,6 +749,7 @@ begin
   FTorrents.ExtraColumns:=TorrentsExtraColumns;
   gTorrents.Items.ExtraColumns:=TorrentsExtraColumns;
   lvFiles.Items.ExtraColumns:=FilesExtraColumns;
+  lvPeers.Items.ExtraColumns:=PeersExtraColumns;
   FFiles:=lvFiles.Items;
   FIni:=TIniFile.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
   FTrackers:=TStringList.Create;
@@ -790,8 +790,8 @@ begin
   LoadColumns(gTorrents, 'TorrentsList', True);
   TorrentColumnsChanged;
   LoadColumns(lvFiles, 'FilesList');
+  LoadColumns(lvPeers, 'PeerList');
 {fixme
-  LoadColumns(lvPeers, 'PeersList');
   LoadColumns(lvTrackers, 'TrackersList');
 }
   acResolveHost.Checked:=FIni.ReadBool('PeersList', 'ResolveHost', True);
@@ -1250,8 +1250,8 @@ begin
 
   SaveColumns(gTorrents, 'TorrentsList', True);
   SaveColumns(lvFiles, 'FilesList');
+  SaveColumns(lvPeers, 'PeerList');
 {fixme
-  SaveColumns(lvPeers, 'PeersList');
   SaveColumns(lvTrackers, 'TrackersList');
 }
 
@@ -1915,29 +1915,6 @@ begin
   end;
 end;
 
-procedure TMainForm.lvFilesCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
-begin
-  if Item.Index and 1 = 0 then
-    Sender.Canvas.Brush.Color:=Sender.Color
-  else
-    Sender.Canvas.Brush.Color:=FAlterColor;
-end;
-
-procedure TMainForm.lvFilesCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
-  var DefaultDraw: Boolean);
-begin
-{
-  if Item.Index and 1 = 0 then
-    Sender.Canvas.Brush.Color:=Sender.Color
-  else
-    Sender.Canvas.Brush.Color:=FAlterColor;
-  if SubItem = 3 then begin
-    DefaultDraw:=False;
-    DrawProgressCell(Sender, Item, SubItem);
-  end;
-}
-end;
-
 procedure TMainForm.lvFilesDblClick(Sender: TObject);
 begin
   acOpenFile.Execute;
@@ -1984,41 +1961,16 @@ begin
   FilterTimer.Enabled:=True;
 end;
 
-procedure TMainForm.lvPeersCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
+procedure TMainForm.lvPeersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
 begin
-  if Item.Index and 1 = 0 then
-    Sender.Canvas.Brush.Color:=Sender.Color
-  else
-    Sender.Canvas.Brush.Color:=FAlterColor;
-end;
-
-procedure TMainForm.lvPeersCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
-  var DefaultDraw: Boolean);
-begin
-  if Item.Index and 1 = 0 then
-    Sender.Canvas.Brush.Color:=Sender.Color
-  else
-    Sender.Canvas.Brush.Color:=FAlterColor;
-end;
-
-procedure TMainForm.lvTorrentsCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
-begin
-  if Item.Index and 1 = 0 then
-    Sender.Canvas.Brush.Color:=Sender.Color
-  else
-    Sender.Canvas.Brush.Color:=FAlterColor;
-end;
-
-procedure TMainForm.lvTorrentsCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState;
-  var DefaultDraw: Boolean);
-begin
-  if Item.Index and 1 = 0 then
-    Sender.Canvas.Brush.Color:=Sender.Color
-  else
-    Sender.Canvas.Brush.Color:=FAlterColor;
-  if SubItem = FDoneColumnIdx then begin
-    DefaultDraw:=False;
-//    DrawProgressCell(Sender, Item, SubItem);
+  if ARow < 0 then exit;
+  with CellAttribs do begin
+    if Text = '' then exit;
+    if ACol = 0 then begin
+      ImageIndex:=Sender.Items[idxPeerCountryImage, ARow];
+      if ImageIndex = 0 then
+        ImageIndex:=-1;
+    end;
   end;
 end;
 
@@ -2341,8 +2293,8 @@ procedure TMainForm.ClearDetailsInfo;
 
 begin
   FFiles.Clear;
-  lvPeers.Clear;
-  lvTrackers.Clear;
+  lvPeers.Items.Clear;
+  lvTrackers.Items.Clear;
   ClearChildren(panGeneralInfo);
   ClearChildren(panTransfer);
   ProcessPieces('', 0, 0);
@@ -2912,25 +2864,10 @@ end;
 
 procedure TMainForm.FillPeersList(list: TJSONArray);
 var
-  it: TListItem;
-
-  procedure SetSubItem(idx: integer; const s: string);
-  begin
-    if it.SubItems.Count < idx then begin
-      while it.SubItems.Count < idx - 1 do
-        it.SubItems.Add('');
-      it.SubItems.Add(s);
-    end
-    else
-      it.SubItems[idx-1]:=s;
-  end;
-
-var
-  i, j: integer;
+  i, j, row: integer;
   port: ptruint;
   d: TJSONData;
   p: TJSONObject;
-  ports: array of pointer;
   s, ip: string;
   hostinfo: PHostEntry;
   opt: TResolverOptions;
@@ -2939,12 +2876,10 @@ begin
     ClearDetailsInfo;
     exit;
   end;
-//  lvPeers.BeginUpdate;
+  lvPeers.Items.BeginUpdate;
   try
     lvPeers.Enabled:=True;
-{$ifndef LCLgtk2}
     lvPeers.Color:=clWindow;
-{$endif LCLgtk2}
     if FResolver = nil then begin
       opt:=[];
       if acResolveHost.Checked then
@@ -2955,67 +2890,54 @@ begin
         FResolver:=TIpResolver.Create(GetGeoIpDatabase, opt);
     end;
 
-    SetLength(ports, lvPeers.Items.Count);
-    for i:=0 to lvPeers.Items.Count - 1 do begin
-      ports[i]:=lvPeers.Items[i].Data;
-      lvPeers.Items[i].Data:=nil;
-    end;
+    for i:=0 to lvPeers.Items.Count - 1 do
+      lvPeers.Items[idxPeerTag, i]:=0;
 
     for i:=0 to list.Count - 1 do begin
       d:=list[i];
       if not (d is TJSONObject) then continue;
       p:=d as TJSONObject;
       ip:=p.Strings['address'];
+      if p.IndexOfName('port') >= 0 then
+        port:=p.Integers['port']
+      else
+        port:=0;
+
+      row:=lvPeers.Items.Count;
+      for j:=0 to lvPeers.Items.Count - 1 do
+        if (ip = lvPeers.Items[idxPeerIP, j]) and (port = lvPeers.Items[idxPeerPort, j]) then begin
+          row:=j;
+          break;
+        end;
+
+      lvPeers.Items[idxPeerIP, row]:=ip;
+      lvPeers.Items[idxPeerPort, row]:=port;
+
       if FResolver <> nil then
         hostinfo:=FResolver.Resolve(ip)
       else
         hostinfo:=nil;
       if hostinfo <> nil then
-        s:=hostinfo^.HostName
+        lvPeers.Items[idxPeerHost, row]:=hostinfo^.HostName
       else
-        s:=ip;
-      if p.IndexOfName('port') >= 0 then
-        port:=p.Integers['port']
-      else
-        port:=0;
-      it:=nil;
-      for j:=0 to High(ports) do
-        if (port = ptruint(ports[j])) and ((lvPeers.Items[j].Caption = s) or (lvPeers.Items[j].Caption = ip)) then begin
-          it:=lvPeers.Items[j];
-          break;
-        end;
-      if it = nil then
-        it:=lvPeers.Items.Add;
-
-      it.Caption:=s;
+        lvPeers.Items[idxPeerHost, row]:=ip;
 
       if hostinfo <> nil then
-        s:=UTF8Encode(hostinfo^.CountryName)
+        lvPeers.Items[idxPeerCountry, row]:=hostinfo^.CountryName
       else
-        s:='';
+        lvPeers.Items[idxPeerCountry, row]:='';
 
-      SetSubItem(idxPeerCountry, s);
       if acShowCountryFlag.Checked and (hostinfo <> nil) then begin
-        if hostinfo^.ImageIndex = 0 then begin
+        if hostinfo^.ImageIndex = 0 then
           hostinfo^.ImageIndex:=GetFlagImage(hostinfo^.CountryCode);
-{$ifdef LCLgtk2}
-          if hostinfo^.ImageIndex <> 0 then begin
-            lvPeers.SmallImages:=nil;
-            lvPeers.SmallImages:=imgFlags;
-          end;
-{$endif}
-        end;
         j:=hostinfo^.ImageIndex
       end
       else
         j:=0;
-      it.ImageIndex:=j;
-
-      SetSubItem(idxPeerClient, UTF8Encode(p.Strings['clientName']));
-
-      SetSubItem(idxPeerFlags, p.Strings['flagStr']);
-
-      SetSubItem(idxPeerDone, Format('%.1f%%', [p.Floats['progress']*100.0]));
+      lvPeers.Items[idxPeerCountryImage, row]:=j;
+      lvPeers.Items[idxPeerClient, row]:=p.Strings['clientName'];
+      lvPeers.Items[idxPeerFlags, row]:=p.Strings['flagStr'];
+      lvPeers.Items[idxPeerDone, row]:=Format('%.1f%%', [p.Floats['progress']*100.0]);
 
       if p.IndexOfName('rateToClient') >= 0 then begin
         j:=p.Integers['rateToClient'];
@@ -3023,7 +2945,7 @@ begin
           s:=GetHumanSize(j, 1) + sPerSecond
         else
           s:='';
-        SetSubItem(idxPeerDownSpeed, s);
+        lvPeers.Items[idxPeerDownSpeed, row]:=UTF8Decode(s);
       end;
 
       if p.IndexOfName('rateToPeer') >= 0 then begin
@@ -3032,21 +2954,20 @@ begin
           s:=GetHumanSize(j, 1) + sPerSecond
         else
           s:='';
-        SetSubItem(idxPeerUpSpeed, s);
+        lvPeers.Items[idxPeerUpSpeed, row]:=UTF8Decode(s);
       end;
 
-      it.Data:=pointer(port);
+      lvPeers.Items[idxPeerTag, row]:=1;
     end;
 
     i:=0;
     while i < lvPeers.Items.Count do
-      if lvPeers.Items[i].Data = nil then
+      if lvPeers.Items[idxPeerTag, row] = 0 then
         lvPeers.Items.Delete(i)
       else
         Inc(i);
-
   finally
-//    lvPeers.EndUpdate;
+    lvPeers.Items.EndUpdate;
   end;
 end;
 
