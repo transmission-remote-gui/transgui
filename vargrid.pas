@@ -571,7 +571,7 @@ begin
     inherited DrawColumnText(aCol, aRow, aRect, aState);
     if FSortColumn = ColToDataCol(aCol) then
       with Canvas do begin
-        Pen.Color:=clBtnShadow;
+        Pen.Color:=cl3DDkShadow;
         i:=(R.Left + R.Right) div 2;
         if SortOrder = soAscending then begin
           MoveTo(i, R.Top);
@@ -666,12 +666,16 @@ begin
   inherited Create(AOwner);
   FixedRows:=1;
   FixedCols:=0;
-  Options:=[goRowSelect, goThumbTracking, goVertLine, goHorzLine, goColSizing, goColMoving, goDblClickAutoSize];
+  Options:=[goRowSelect, goThumbTracking, goVertLine, goHorzLine, goColSizing, goColMoving, goDblClickAutoSize, goFixedHorzLine, goFixedVertLine];
   MouseWheelOption:=mwGrid;
   FItems:=TVarList.Create(1, 0);
   FItems.OnDataChanged:=@ItemsChanged;
   ItemsChanged(nil);
   TitleStyle:=tsNative;
+{$ifdef LCLcarbon}
+  if not (csDesigning in ComponentState) then
+    TitleStyle:=tsLazarus;
+{$endif LCLcarbon}
   FAnchor:=-1;
   FSortColumn:=-1;
   ShowHint:=True;

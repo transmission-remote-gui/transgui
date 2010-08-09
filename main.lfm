@@ -251,7 +251,7 @@ object MainForm: TMainForm
           Visible = False
         end>
       FixedCols = 0
-      Options = [goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
+      Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
       PopupMenu = pmTorrents
       RowCount = 1
       TabOrder = 0
@@ -291,11 +291,11 @@ object MainForm: TMainForm
     Height = 290
     Top = 151
     Width = 780
-    ActivePage = tabPeers
+    ActivePage = tabTrackers
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -875,7 +875,7 @@ object MainForm: TMainForm
             Title.Caption = 'Seeds'
           end>
         FixedCols = 0
-        Options = [goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
+        Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
         PopupMenu = pmTrackers
         RowCount = 1
         TabOrder = 0
@@ -935,7 +935,7 @@ object MainForm: TMainForm
             Width = 80
           end>
         FixedCols = 0
-        Options = [goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
+        Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
         PopupMenu = pmPeers
         RowCount = 1
         TabOrder = 0
@@ -984,7 +984,7 @@ object MainForm: TMainForm
             Width = 100
           end>
         FixedCols = 0
-        Options = [goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
+        Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
         PopupMenu = pmFiles
         RowCount = 1
         TabOrder = 0
