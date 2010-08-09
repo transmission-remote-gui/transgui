@@ -2224,22 +2224,24 @@ begin
   Progress:=double(Sender.Items[ADataCol, ARow]);
   with Sender.Canvas do begin
     R:=ACellRect;
-    FrameRect(R);
+    Pen.Color:=Brush.Color;
+    Rectangle(R);
     InflateRect(R, -1, -1);
 
     s:=Format('%.1f%%', [Progress]);
     sz:=TextExtent(s);
     if sz.cy < R.Bottom - R.Top - 1 then begin
-      FrameRect(R);
+      Rectangle(R);
       InflateRect(R, -1, -1);
     end;
-
-    Brush.Color:=clBtnFace;
-    FrameRect(R);
+    Pen.Color:=clBtnFace;
+    Rectangle(R);
     InflateRect(R, -1, -1);
 
     i:=R.Left + Round(Progress*(R.Right - R.Left)/100.0);
     j:=(R.Top + R.Bottom) div 2;
+    h:=TextHeight(s);
+    h:=(R.Top + R.Bottom - h) div 2;
     cl:=GetLikeColor(clHighlight, 70);
     GradientFill(Rect(R.Left, R.Top, i, j), cl, clHighlight, gdVertical);
     GradientFill(Rect(R.Left, j, i, R.Bottom), clHighlight, cl, gdVertical);
@@ -2248,18 +2250,19 @@ begin
     ts.Layout:=tlTop;
     ts.Alignment:=taLeftJustify;
     TextStyle:=ts;
-    h:=TextHeight(s);
-    h:=(R.Top + R.Bottom - h) div 2;
-    RR:=Rect(R.Left, R.Top, i, R.Bottom);
     j:=(R.Left + R.Right - sz.cx) div 2;
-    Font.Color:=clWindow;
-    TextRect(RR, j, h, s);
-
-    RR:=Rect(i, R.Top, R.Right, R.Bottom);
-    Brush.Color:=Sender.Color;
-    FillRect(RR);
-    Font.Color:=clWindowText;
-    TextRect(RR, j, h, s);
+    if i > R.Left then begin
+      RR:=Rect(R.Left, R.Top, i, R.Bottom);
+      Font.Color:=clHighlightText;
+      TextRect(RR, j, h, s);
+    end;
+    if i < R.Right then begin
+      RR:=Rect(i, R.Top, R.Right, R.Bottom);
+      Brush.Color:=Sender.Color;
+      FillRect(RR);
+      Font.Color:=clWindowText;
+      TextRect(RR, j, h, s);
+    end;
   end;
 end;
 
