@@ -91,6 +91,7 @@ resourcestring
   sPerSecond = '/s';
   sOf = 'of';
   sNoTracker = 'No tracker';
+  sTorrents = 'Torrents';
 
 type
 
@@ -130,12 +131,18 @@ type
     FilterTimer: TTimer;
     lvFilter: TVarGrid;
     lvTrackers: TVarGrid;
+    MenuItem25: TMenuItem;
     MenuItem40: TMenuItem;
     MenuItem41: TMenuItem;
     MenuItem42: TMenuItem;
     MenuItem43: TMenuItem;
     MenuItem44: TMenuItem;
+    MenuItem45: TMenuItem;
+    MenuItem46: TMenuItem;
+    MenuItem47: TMenuItem;
+    MenuItem48: TMenuItem;
     pbDownloaded: TPaintBox;
+    pmTrackers: TPopupMenu;
     tabTrackers: TTabSheet;
     txConnErrorLabel: TLabel;
     panSearch: TPanel;
@@ -373,8 +380,8 @@ type
     procedure DoDisconnect;
     procedure UpdateUI;
     function ShowConnOptions: boolean;
-    procedure SaveColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = False);
-    procedure LoadColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = False);
+    procedure SaveColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
+    procedure LoadColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
     function GetTorrentError(t: TJSONObject): string;
     function SecondsToString(j: integer): string;
     procedure DoAddTorrent(const FileName: Utf8String);
@@ -792,7 +799,7 @@ begin
       WindowState:=wsMaximized;
   end;
 
-  LoadColumns(gTorrents, 'TorrentsList', True);
+  LoadColumns(gTorrents, 'TorrentsList');
   TorrentColumnsChanged;
   LoadColumns(lvFiles, 'FilesList');
   LoadColumns(lvPeers, 'PeerList');
@@ -1252,7 +1259,7 @@ begin
   FIni.WriteInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition);
   FIni.WriteInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition);
 
-  SaveColumns(gTorrents, 'TorrentsList', True);
+  SaveColumns(gTorrents, 'TorrentsList');
   SaveColumns(lvFiles, 'FilesList');
   SaveColumns(lvPeers, 'PeerList');
   SaveColumns(lvTrackers, 'TrackersList');
@@ -1593,9 +1600,27 @@ begin
 end;
 
 procedure TMainForm.acSetupColumnsExecute(Sender: TObject);
+var
+  g: TVarGrid;
+  s: string;
 begin
-  if not SetupColumns(gTorrents, idxName) then exit;
-  TorrentColumnsChanged;
+  if lvTrackers.Focused then
+    g:=lvTrackers
+  else
+  if lvPeers.Focused then
+    g:=lvPeers
+  else
+  if lvFiles.Focused then
+    g:=lvFiles
+  else
+    g:=gTorrents;
+  if g = gTorrents then
+    s:=sTorrents
+  else
+    s:=PageInfo.ActivePage.Caption;
+  if not SetupColumns(g, 0, s) then exit;
+  if g = gTorrents then
+    TorrentColumnsChanged;
 end;
 
 procedure TMainForm.acShowCountryFlagExecute(Sender: TObject);

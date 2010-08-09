@@ -291,11 +291,11 @@ object MainForm: TMainForm
     Height = 290
     Top = 151
     Width = 780
-    ActivePage = tabPeers
+    ActivePage = tabTrackers
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -876,6 +876,7 @@ object MainForm: TMainForm
           end>
         FixedCols = 0
         Options = [goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
+        PopupMenu = pmTrackers
         RowCount = 1
         TabOrder = 0
         SortColumn = 0
@@ -1789,6 +1790,13 @@ object MainForm: TMainForm
       Action = acSetNotDownload
       OnClick = acSetNotDownloadExecute
     end
+    object MenuItem46: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem47: TMenuItem
+      Action = acSetupColumns
+      OnClick = acSetupColumnsExecute
+    end
   end
   object TickTimer: TTimer
     Enabled = False
@@ -2569,11 +2577,27 @@ object MainForm: TMainForm
       Action = acShowCountryFlag
       OnClick = acShowCountryFlagExecute
     end
+    object MenuItem25: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem45: TMenuItem
+      Action = acSetupColumns
+      OnClick = acSetupColumnsExecute
+    end
   end
   object FilterTimer: TTimer
     Interval = 100
     OnTimer = FilterTimerTimer
     left = 76
     top = 28
+  end
+  object pmTrackers: TPopupMenu
+    Images = ImageList16
+    left = 376
+    top = 92
+    object MenuItem48: TMenuItem
+      Action = acSetupColumns
+      OnClick = acSetupColumnsExecute
+    end
   end
 end
