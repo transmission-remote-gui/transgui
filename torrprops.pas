@@ -35,8 +35,10 @@ type
     btOK: TButton;
     cbMaxDown: TCheckBox;
     cbMaxUp: TCheckBox;
+    cbSeedRatio: TCheckBox;
     edMaxUp: TSpinEdit;
     edPeerLimit: TSpinEdit;
+    edSeedRatio: TFloatSpinEdit;
     gbOptions: TGroupBox;
     edMaxDown: TSpinEdit;
     txKbs1: TLabel;
@@ -45,6 +47,7 @@ type
     txPeerLimit: TLabel;
     procedure cbMaxDownClick(Sender: TObject);
     procedure cbMaxUpClick(Sender: TObject);
+    procedure cbSeedRatioClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
     { private declarations }
@@ -64,6 +67,11 @@ end;
 procedure TTorrPropsForm.cbMaxUpClick(Sender: TObject);
 begin
   edMaxUp.Enabled:=cbMaxUp.Checked;
+end;
+
+procedure TTorrPropsForm.cbSeedRatioClick(Sender: TObject);
+begin
+  edSeedRatio.Enabled:=cbSeedRatio.State = cbChecked;
 end;
 
 procedure TTorrPropsForm.FormCreate(Sender: TObject);

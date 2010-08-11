@@ -1851,6 +1851,11 @@ begin
 end;
 
 procedure TMainForm.acTorrentPropsExecute(Sender: TObject);
+const
+  TR_RATIOLIMIT_GLOBAL    = 0; // follow the global settings
+  TR_RATIOLIMIT_SINGLE    = 1; // override the global settings, seeding until a certain ratio
+  TR_RATIOLIMIT_UNLIMITED = 2; // override the global settings, seeding regardless of ratio
+
 var
   req, args, t: TJSONObject;
   i, j, id: integer;
@@ -1864,7 +1869,7 @@ begin
   try
     args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited',
                                   'uploadLimit', 'uploadLimitMode', 'uploadLimited',
-                                  'name', 'maxConnectedPeers']);
+                                  'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit']);
     if args = nil then begin
       CheckStatus(False);
       exit;
@@ -1891,6 +1896,7 @@ begin
           edMaxUp.ValueEmpty:=True
         else
           edMaxUp.Value:=i;
+        cbSeedRatio.Enabled:=False;
       end else begin
         // RPC version 5
         cbMaxDown.Checked:=t.Booleans['downloadLimited'];
@@ -1906,6 +1912,16 @@ begin
           edMaxUp.ValueEmpty:=True
         else
           edMaxUp.Value:=i;
+
+        case t.Integers['seedRatioMode'] of
+          TR_RATIOLIMIT_SINGLE:
+            cbSeedRatio.State:=cbChecked;
+          TR_RATIOLIMIT_UNLIMITED:
+            cbSeedRatio.State:=cbUnchecked;
+          else
+            cbSeedRatio.State:=cbGrayed;
+        end;
+        edSeedRatio.Value:=t.Floats['seedRatioLimit'];
       end;
       edPeerLimit.Value:=t.Integers['maxConnectedPeers'];
     finally
@@ -1913,6 +1929,7 @@ begin
     end;
     cbMaxDownClick(nil);
     cbMaxUpClick(nil);
+    cbSeedRatioClick(nil);
     AppNormal;
     if ShowModal = mrOk then begin
       AppBusy;
@@ -1940,6 +1957,17 @@ begin
             args.Add('downloadLimit', TJSONIntegerNumber.Create(edMaxDown.Value));
           if cbMaxUp.Checked then
             args.Add('uploadLimit', TJSONIntegerNumber.Create(edMaxUp.Value));
+          case cbSeedRatio.State of
+            cbChecked:
+              i:=TR_RATIOLIMIT_SINGLE;
+            cbUnchecked:
+              i:=TR_RATIOLIMIT_UNLIMITED;
+            else
+              i:=TR_RATIOLIMIT_GLOBAL;
+          end;
+          args.Add('seedRatioMode', TJSONIntegerNumber.Create(i));
+          if cbSeedRatio.State = cbChecked then
+            args.Add('seedRatioLimit', TJSONFloatNumber.Create(edSeedRatio.Value));
         end;
         args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
         req.Add('arguments', args);
