@@ -2114,10 +2114,10 @@ begin
     case ADataCol of
       idxFilePriority:
         case integer(FFiles[idxFilePriority, ARow]) of
-          TR_PRI_SKIP:   Text:=sSkip;
-          TR_PRI_LOW:    Text:=sLow;
-          TR_PRI_NORMAL: Text:=sNormal;
-          TR_PRI_HIGH:   Text:=sHigh;
+          TR_PRI_SKIP:   begin Text:=sSkip; ImageIndex:=23; end;
+          TR_PRI_LOW:    begin Text:=sLow; ImageIndex:=24; end;
+          TR_PRI_NORMAL: begin Text:=sNormal; ImageIndex:=25; end;
+          TR_PRI_HIGH:   begin Text:=sHigh; ImageIndex:=26; end;
           else           Text:='???';
         end;
       idxFileSize, idxFileDone:
