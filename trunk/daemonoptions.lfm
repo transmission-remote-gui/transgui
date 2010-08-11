@@ -21,9 +21,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Height = 295
     Top = 8
     Width = 572
-    ActivePage = tabDownload
+    ActivePage = tabBandwidth
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
@@ -40,7 +40,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object edDownloadDir: TEdit
         Left = 8
         Height = 21
-        Top = 26
+        Top = 28
         Width = 548
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 0
@@ -48,7 +48,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object cbIncompleteDir: TCheckBox
         Left = 8
         Height = 17
-        Top = 78
+        Top = 80
         Width = 159
         Caption = 'Directory for incomplete files:'
         OnClick = cbIncompleteDirClick
@@ -57,7 +57,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object edIncompleteDir: TEdit
         Left = 8
         Height = 21
-        Top = 100
+        Top = 103
         Width = 548
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 3
@@ -65,7 +65,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object cbPartExt: TCheckBox
         Left = 8
         Height = 17
-        Top = 54
+        Top = 56
         Width = 203
         Caption = 'Add .part extension to incomplete files'
         TabOrder = 1
@@ -73,7 +73,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object cbSeedRatio: TCheckBox
         Left = 8
         Height = 17
-        Top = 132
+        Top = 134
         Width = 71
         Caption = 'Seed ratio:'
         OnClick = cbSeedRatioClick
@@ -82,7 +82,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object edSeedRatio: TFloatSpinEdit
         Left = 196
         Height = 21
-        Top = 130
+        Top = 132
         Width = 66
         Increment = 0.1
         MaxValue = 9999
@@ -114,13 +114,13 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object txPeerLimit: TLabel
         Left = 8
         Height = 14
-        Top = 140
+        Top = 167
         Width = 80
         Caption = 'Global peer limit:'
         ParentColor = False
       end
       object edPort: TSpinEdit
-        Left = 172
+        Left = 192
         Height = 21
         Top = 10
         Width = 90
@@ -130,75 +130,75 @@ object DaemonOptionsForm: TDaemonOptionsForm
         Value = 1
       end
       object cbEncryption: TComboBox
-        Left = 172
+        Left = 192
         Height = 21
         Top = 66
-        Width = 384
+        Width = 364
         Anchors = [akTop, akLeft, akRight]
         ItemHeight = 13
         Style = csDropDownList
-        TabOrder = 1
+        TabOrder = 4
       end
       object cbPortForwarding: TCheckBox
-        Left = 272
+        Left = 292
         Height = 17
         Top = 38
         Width = 128
         Caption = 'Enable port forwarding'
-        TabOrder = 2
-      end
-      object cbPEX: TCheckBox
-        Left = 172
-        Height = 17
-        Top = 93
-        Width = 125
-        Caption = 'Enable Peer Exchange'
         TabOrder = 3
       end
+      object cbPEX: TCheckBox
+        Left = 192
+        Height = 17
+        Top = 95
+        Width = 125
+        Caption = 'Enable Peer Exchange'
+        TabOrder = 5
+      end
       object edMaxPeers: TSpinEdit
-        Left = 172
+        Left = 192
         Height = 21
-        Top = 137
+        Top = 164
         Width = 66
         MaxValue = 99999
         MinValue = 1
-        TabOrder = 4
+        TabOrder = 8
         Value = 1
       end
       object cbDHT: TCheckBox
-        Left = 172
+        Left = 192
         Height = 17
-        Top = 114
+        Top = 116
         Width = 73
         Caption = 'Enable DHT'
-        TabOrder = 5
+        TabOrder = 6
       end
       object cbRandomPort: TCheckBox
-        Left = 272
+        Left = 292
         Height = 17
         Top = 13
         Width = 193
         Caption = 'Peek random port on daemon launch'
         OnChange = cbRandomPortChange
         OnClick = cbRandomPortClick
-        TabOrder = 6
+        TabOrder = 1
       end
       object btTestPort: TButton
-        Left = 172
+        Left = 192
         Height = 23
         Top = 35
         Width = 90
         Caption = 'Test port'
         OnClick = btTestPortClick
-        TabOrder = 7
+        TabOrder = 2
       end
       object cbBlocklist: TCheckBox
-        Left = 172
+        Left = 192
         Height = 17
-        Top = 162
+        Top = 138
         Width = 90
         Caption = 'Enable blocklist'
-        TabOrder = 8
+        TabOrder = 7
       end
     end
     object tabBandwidth: TTabSheet

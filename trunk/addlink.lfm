@@ -1,12 +1,12 @@
 object AddLinkForm: TAddLinkForm
   Left = 354
-  Height = 86
+  Height = 90
   Top = 193
   Width = 520
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Add torrent link'
-  ClientHeight = 86
+  ClientHeight = 90
   ClientWidth = 520
   Position = poMainFormCenter
   LCLVersion = '0.9.28.2'
@@ -21,7 +21,7 @@ object AddLinkForm: TAddLinkForm
   object btOK: TButton
     Left = 355
     Height = 23
-    Top = 55
+    Top = 59
     Width = 75
     Anchors = [akRight, akBottom]
     AutoSize = True
@@ -34,7 +34,7 @@ object AddLinkForm: TAddLinkForm
   object btCancel: TButton
     Left = 437
     Height = 23
-    Top = 55
+    Top = 59
     Width = 75
     Anchors = [akRight, akBottom]
     AutoSize = True
@@ -47,7 +47,7 @@ object AddLinkForm: TAddLinkForm
   object edLink: TEdit
     Left = 8
     Height = 21
-    Top = 24
+    Top = 28
     Width = 504
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 0
