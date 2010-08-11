@@ -445,6 +445,9 @@ begin
   if FHideSelection and not Focused then
     aState:=aState - [gdSelected];
   inherited PrepareCanvas(aCol, aRow, aState);
+  with Canvas do
+    if (Font.Color = clWindow) and (Brush.Color = clHighlight) then
+      Font.Color:=clHighlightText;
 end;
 
 procedure TVarGrid.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
