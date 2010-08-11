@@ -93,6 +93,7 @@ resourcestring
   sNoTracker = 'No tracker';
   sTorrents = 'Torrents';
   sBlocklistUpdateComplete = 'The block list has been updated successfully.' + LineEnding + 'The list entries count: %d.';
+  sSeveralTorrents = '%d torrents';
 
 type
 
@@ -122,6 +123,7 @@ type
     acOpenContainingFolder: TAction;
     acAddLink: TAction;
     acReannounceTorrent: TAction;
+    acMoveTorrent: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
@@ -149,6 +151,8 @@ type
     MenuItem50: TMenuItem;
     MenuItem51: TMenuItem;
     MenuItem52: TMenuItem;
+    MenuItem53: TMenuItem;
+    MenuItem54: TMenuItem;
     pbDownloaded: TPaintBox;
     pmTrackers: TPopupMenu;
     tabTrackers: TTabSheet;
@@ -300,6 +304,7 @@ type
     procedure acAddLinkExecute(Sender: TObject);
     procedure acAddTorrentExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
+    procedure acMoveTorrentExecute(Sender: TObject);
     procedure acOpenContainingFolderExecute(Sender: TObject);
     procedure acOpenFileExecute(Sender: TObject);
     procedure acOptionsExecute(Sender: TObject);
@@ -419,6 +424,7 @@ type
     procedure ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
     function ExecRemoteFile(const FileName: string): boolean;
     function GetSelectedTorrents: variant;
+    procedure FillDownloadDirs(CB: TComboBox);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -537,7 +543,7 @@ implementation
 
 uses
   AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, utils, TorrProps, DaemonOptions, About,
-  ToolWin, download, ColSetup, types, AddLink;
+  ToolWin, download, ColSetup, types, AddLink, MoveTorrent;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -913,6 +919,84 @@ begin
     DoConnect;
 end;
 
+procedure TMainForm.acMoveTorrentExecute(Sender: TObject);
+var
+  ids: variant;
+  i: integer;
+  s: string;
+  req: TJSONObject;
+  aids: TJSONArray;
+  args: TJSONObject;
+  ok: boolean;
+  t: TDateTime;
+begin
+  AppBusy;
+  with TMoveTorrentForm.Create(Self) do
+  try
+    gTorrents.Tag:=1;
+    FillDownloadDirs(edTorrentDir);
+    if gTorrents.SelCount = 0 then
+      gTorrents.RowSelected[gTorrents.Row]:=True;
+    ids:=GetSelectedTorrents;
+    i:=gTorrents.Items.IndexOf(idxTorrentId, ids[0]);
+    if VarIsEmpty(gTorrents.Items[idxPath, i]) then
+      exit;
+    edTorrentDir.Text:=UTF8Decode(widestring(gTorrents.Items[idxPath, i]));
+    if gTorrents.SelCount > 1 then
+      s:=Format(sSeveralTorrents, [gTorrents.SelCount])
+    else
+      s:=UTF8Decode(widestring(gTorrents.Items[idxName, i]));
+    Caption:=Caption + ' - ' + s;
+    AppNormal;
+    if ShowModal = mrOk then begin
+      Application.ProcessMessages;
+      AppBusy;
+      req:=TJSONObject.Create;
+      try
+        req.Add('method', 'torrent-set-location');
+        args:=TJSONObject.Create;
+        aids:=TJSONArray.Create;
+        for i:=VarArrayLowBound(ids, 1) to VarArrayHighBound(ids, 1) do
+          aids.Add(integer(ids[i]));
+        args.Add('ids', aids);
+        args.Add('location', TJSONString.Create(UTF8Decode(edTorrentDir.Text)));
+        args.Add('move', TJSONIntegerNumber.Create(integer(cbMoveData.Checked) and 1));
+        req.Add('arguments', args);
+        args:=RpcObj.SendRequest(req, False);
+        args.Free;
+      finally
+        req.Free;
+      end;
+      gTorrents.Tag:=0;
+      AppNormal;
+      if args = nil then
+        CheckStatus(False)
+      else begin
+        ok:=False;
+        t:=Now;
+        with gTorrents do
+          while not ok and not Application.Terminated and (Now - t < 20/SecsPerDay) do begin
+            RpcObj.RequestFullInfo:=True;
+            DoRefresh(True);
+            Sleep(200);
+            Application.ProcessMessages;
+            ok:=True;
+            for i:=0 to Items.Count - 1 do
+              if RowSelected[i] then begin
+                if VarIsEmpty(Items[idxPath, i]) or (AnsiCompareText(UTF8Encode(widestring(Items[idxPath, i])), edTorrentDir.Text) <> 0) then begin
+                  ok:=False;
+                  break;
+                end;
+              end;
+          end;
+      end;
+    end;
+  finally
+    gTorrents.Tag:=0;
+    Free;
+  end;
+end;
+
 procedure TMainForm.acOpenContainingFolderExecute(Sender: TObject);
 var
   i: integer;
@@ -995,7 +1079,7 @@ var
   req, res, args: TJSONObject;
   id: integer;
   t, files: TJSONArray;
-  i, j: integer;
+  i: integer;
   fs: TFileStream;
   s, OldDownloadDir, IniSec, path: string;
   tt: TDateTime;
@@ -1024,15 +1108,7 @@ begin
     with TAddTorrentForm.Create(Self) do
     try
       IniSec:='AddTorrent.' + RpcObj.Http.TargetHost;
-      j:=FIni.ReadInteger(IniSec, 'FolderCount', 0);
-      for i:=0 to j - 1 do begin
-        s:=FIni.ReadString(IniSec, Format('Folder%d', [i]), '');
-        if s <> '' then
-          cbDestFolder.Items.Add(s);
-      end;
-      if cbDestFolder.Items.Count > 0 then
-        cbDestFolder.ItemIndex:=0;
-
+      FillDownloadDirs(cbDestFolder);
       if cbDestFolder.Text = '' then begin
         req:=TJSONObject.Create;
         try
@@ -2475,6 +2551,7 @@ begin
   acRemoveTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
   acRemoveTorrentAndData.Enabled:=acRemoveTorrent.Enabled and (RpcObj.RPCVersion >= 4);
   acReannounceTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 5);
+  acMoveTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 6);
   acTorrentProps.Enabled:=acRemoveTorrent.Enabled;
   acOpenContainingFolder.Enabled:=acTorrentProps.Enabled;
   acSetHighPriority.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0) and
@@ -2711,6 +2788,7 @@ begin
   acRemoveTorrentAndData.Visible:=RpcObj.RPCVersion >= 4;
   acReannounceTorrent.Visible:=RpcObj.RPCVersion >= 5;
   acUpdateBlocklist.Visible:=RpcObj.Connected and (RpcObj.RPCVersion >= 5);
+  acMoveTorrent.Visible:=RpcObj.Connected and (RpcObj.RPCVersion >= 6);
   if list = nil then begin
     ClearDetailsInfo;
     exit;
@@ -3830,6 +3908,23 @@ begin
         end;
     end;
   end;
+end;
+
+procedure TMainForm.FillDownloadDirs(CB: TComboBox);
+var
+  i, j: integer;
+  s, IniSec: string;
+begin
+  CB.Items.Clear;
+  IniSec:='AddTorrent.' + RpcObj.Http.TargetHost;
+  j:=FIni.ReadInteger(IniSec, 'FolderCount', 0);
+  for i:=0 to j - 1 do begin
+    s:=FIni.ReadString(IniSec, Format('Folder%d', [i]), '');
+    if s <> '' then
+      CB.Items.Add(s);
+  end;
+  if CB.Items.Count > 0 then
+    CB.ItemIndex:=0;
 end;
 
 initialization

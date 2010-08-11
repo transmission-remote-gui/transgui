@@ -26,9 +26,6 @@ type
     { public declarations }
   end; 
 
-var
-  AddLinkForm: TAddLinkForm;
-
 implementation
 
 { TAddLinkForm }

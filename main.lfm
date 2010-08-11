@@ -1406,6 +1406,9 @@ object MainForm: TMainForm
         Action = acVerifyTorrent
         OnClick = acVerifyTorrentExecute
       end
+      object MenuItem54: TMenuItem
+        Action = acMoveTorrent
+      end
       object MenuItem21: TMenuItem
         Action = acTorrentProps
         OnClick = acTorrentPropsExecute
@@ -1646,6 +1649,11 @@ object MainForm: TMainForm
       Caption = 'Update blocklist'
       OnExecute = acUpdateBlocklistExecute
     end
+    object acMoveTorrent: TAction
+      Category = 'Torrent'
+      Caption = 'Set data location...'
+      OnExecute = acMoveTorrentExecute
+    end
   end
   object TorrentsListTimer: TTimer
     Enabled = False
@@ -1802,6 +1810,9 @@ object MainForm: TMainForm
     object MenuItem11: TMenuItem
       Action = acVerifyTorrent
       OnClick = acVerifyTorrentExecute
+    end
+    object MenuItem53: TMenuItem
+      Action = acMoveTorrent
     end
     object MenuItem19: TMenuItem
       Caption = '-'
