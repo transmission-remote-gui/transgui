@@ -1275,6 +1275,7 @@ begin
           Application.ProcessMessages;
           i:=gTorrents.Items.IndexOf(idxTorrentId, id);
           if i >= 0 then begin
+            gTorrents.RemoveSelection;
             gTorrents.Row:=i;
             RpcObj.CurTorrentId:=id;
             gTorrents.SetFocus;

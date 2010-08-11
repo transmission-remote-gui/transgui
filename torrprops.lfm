@@ -126,6 +126,7 @@ object TorrPropsForm: TTorrPropsForm
       Height = 21
       Top = 119
       Width = 66
+      Anchors = [akTop, akRight]
       Increment = 0.1
       MaxValue = 9999
       MinValue = 0
