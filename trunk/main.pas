@@ -2494,14 +2494,9 @@ begin
     R:=ACellRect;
     Pen.Color:=Brush.Color;
     Rectangle(R);
-    InflateRect(R, -1, -1);
-
     s:=Format('%.1f%%', [Progress]);
     sz:=TextExtent(s);
-    if sz.cy < R.Bottom - R.Top - 1 then begin
-      Rectangle(R);
-      InflateRect(R, -1, -1);
-    end;
+    InflateRect(R, -1, -1);
     Pen.Color:=clBtnFace;
     Rectangle(R);
     InflateRect(R, -1, -1);
