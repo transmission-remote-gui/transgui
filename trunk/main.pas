@@ -4044,6 +4044,7 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
       p:=Format('/select,"%s"', [s]);
       s:='explorer.exe';
 {$else}
+      p:='';
       s:=ExtractFilePath(s);
 {$endif mswindows}
     end;
