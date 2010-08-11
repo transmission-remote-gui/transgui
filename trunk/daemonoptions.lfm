@@ -2,7 +2,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
   Left = 354
   Height = 340
   Top = 216
-  Width = 578
+  Width = 586
   HorzScrollBar.Page = 409
   VertScrollBar.Page = 302
   VertScrollBar.Range = 169
@@ -10,81 +10,272 @@ object DaemonOptionsForm: TDaemonOptionsForm
   BorderStyle = bsDialog
   Caption = 'Transmission options'
   ClientHeight = 340
-  ClientWidth = 578
+  ClientWidth = 586
   Constraints.MinHeight = 340
   Constraints.MinWidth = 400
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '0.9.28.2'
-  object gbBandwidth: TGroupBox
+  object Page: TPageControl
     Left = 8
-    Height = 87
-    Top = 212
-    Width = 562
+    Height = 295
+    Top = 8
+    Width = 572
+    ActivePage = tabDownload
     Anchors = [akTop, akLeft, akRight, akBottom]
-    Caption = 'Global bandwidth settings'
-    ClientHeight = 69
-    ClientWidth = 558
-    TabOrder = 1
-    object txKbs1: TLabel
-      Left = 528
-      Height = 14
-      Top = 8
-      Width = 22
-      Anchors = [akTop, akRight]
-      Caption = 'KB/s'
-      ParentColor = False
+    TabIndex = 0
+    TabOrder = 0
+    object tabDownload: TTabSheet
+      Caption = 'Download'
+      ClientHeight = 269
+      ClientWidth = 564
+      object txDownloadDir: TLabel
+        Left = 8
+        Height = 14
+        Top = 8
+        Width = 67
+        Caption = 'Download dir:'
+        ParentColor = False
+      end
+      object edDownloadDir: TEdit
+        Left = 8
+        Height = 21
+        Top = 26
+        Width = 548
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 0
+      end
+      object cbIncompleteDir: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 78
+        Width = 159
+        Caption = 'Directory for incomplete files:'
+        OnClick = cbIncompleteDirClick
+        TabOrder = 2
+      end
+      object edIncompleteDir: TEdit
+        Left = 8
+        Height = 21
+        Top = 100
+        Width = 548
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 3
+      end
+      object cbPartExt: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 54
+        Width = 203
+        Caption = 'Add .part extension to incomplete files'
+        TabOrder = 1
+      end
+      object cbSeedRatio: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 132
+        Width = 71
+        Caption = 'Seed ratio:'
+        OnClick = cbSeedRatioClick
+        TabOrder = 4
+      end
+      object edSeedRatio: TFloatSpinEdit
+        Left = 196
+        Height = 21
+        Top = 130
+        Width = 66
+        Increment = 0.1
+        MaxValue = 9999
+        MinValue = 0
+        TabOrder = 5
+        Value = 0
+      end
     end
-    object txKbs2: TLabel
-      Left = 528
-      Height = 14
-      Top = 40
-      Width = 22
-      Anchors = [akTop, akRight]
-      Caption = 'KB/s'
-      ParentColor = False
+    object tabNetwork: TTabSheet
+      Caption = 'Network'
+      ClientHeight = 269
+      ClientWidth = 564
+      object txPort: TLabel
+        Left = 8
+        Height = 14
+        Top = 13
+        Width = 71
+        Caption = 'Incoming port:'
+        ParentColor = False
+      end
+      object txEncryption: TLabel
+        Left = 8
+        Height = 14
+        Top = 69
+        Width = 56
+        Caption = 'Encryption:'
+        ParentColor = False
+      end
+      object txPeerLimit: TLabel
+        Left = 8
+        Height = 14
+        Top = 140
+        Width = 80
+        Caption = 'Global peer limit:'
+        ParentColor = False
+      end
+      object edPort: TSpinEdit
+        Left = 172
+        Height = 21
+        Top = 10
+        Width = 90
+        MaxValue = 65535
+        MinValue = 1
+        TabOrder = 0
+        Value = 1
+      end
+      object cbEncryption: TComboBox
+        Left = 172
+        Height = 21
+        Top = 66
+        Width = 384
+        Anchors = [akTop, akLeft, akRight]
+        ItemHeight = 13
+        Style = csDropDownList
+        TabOrder = 1
+      end
+      object cbPortForwarding: TCheckBox
+        Left = 272
+        Height = 17
+        Top = 38
+        Width = 128
+        Caption = 'Enable port forwarding'
+        TabOrder = 2
+      end
+      object cbPEX: TCheckBox
+        Left = 172
+        Height = 17
+        Top = 93
+        Width = 125
+        Caption = 'Enable Peer Exchange'
+        TabOrder = 3
+      end
+      object edMaxPeers: TSpinEdit
+        Left = 172
+        Height = 21
+        Top = 137
+        Width = 66
+        MaxValue = 99999
+        MinValue = 1
+        TabOrder = 4
+        Value = 1
+      end
+      object cbDHT: TCheckBox
+        Left = 172
+        Height = 17
+        Top = 114
+        Width = 73
+        Caption = 'Enable DHT'
+        TabOrder = 5
+      end
+      object cbRandomPort: TCheckBox
+        Left = 272
+        Height = 17
+        Top = 13
+        Width = 193
+        Caption = 'Peek random port on daemon launch'
+        OnChange = cbRandomPortChange
+        OnClick = cbRandomPortClick
+        TabOrder = 6
+      end
+      object btTestPort: TButton
+        Left = 172
+        Height = 23
+        Top = 35
+        Width = 90
+        Caption = 'Test port'
+        OnClick = btTestPortClick
+        TabOrder = 7
+      end
+      object cbBlocklist: TCheckBox
+        Left = 172
+        Height = 17
+        Top = 162
+        Width = 90
+        Caption = 'Enable blocklist'
+        TabOrder = 8
+      end
     end
-    object cbMaxDown: TCheckBox
-      Left = 6
-      Height = 17
-      Top = 6
-      Width = 147
-      Caption = 'Maximum download speed:'
-      OnClick = cbMaxDownClick
-      TabOrder = 0
-    end
-    object edMaxDown: TSpinEdit
-      Left = 446
-      Height = 21
-      Top = 4
-      Width = 66
-      Anchors = [akTop, akRight]
-      Increment = 10
-      MaxValue = 999999
-      TabOrder = 1
-    end
-    object cbMaxUp: TCheckBox
-      Left = 6
-      Height = 17
-      Top = 38
-      Width = 133
-      Caption = 'Maximum upload speed:'
-      OnClick = cbMaxUpClick
-      TabOrder = 2
-    end
-    object edMaxUp: TSpinEdit
-      Left = 446
-      Height = 21
-      Top = 36
-      Width = 66
-      Anchors = [akTop, akRight]
-      Increment = 10
-      MaxValue = 999999
-      TabOrder = 3
+    object tabBandwidth: TTabSheet
+      Caption = 'Bandwidth'
+      ClientHeight = 269
+      ClientWidth = 564
+      object gbBandwidth: TGroupBox
+        Left = 8
+        Height = 86
+        Top = 6
+        Width = 547
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Global bandwidth settings'
+        ClientHeight = 68
+        ClientWidth = 543
+        TabOrder = 0
+        object txKbs1: TLabel
+          Left = 513
+          Height = 14
+          Top = 7
+          Width = 22
+          Anchors = [akTop, akRight]
+          Caption = 'KB/s'
+          ParentColor = False
+        end
+        object txKbs2: TLabel
+          Left = 513
+          Height = 14
+          Top = 40
+          Width = 22
+          Anchors = [akTop, akRight]
+          Caption = 'KB/s'
+          ParentColor = False
+        end
+        object cbMaxDown: TCheckBox
+          Left = 6
+          Height = 17
+          Top = 6
+          Width = 147
+          Caption = 'Maximum download speed:'
+          OnClick = cbMaxDownClick
+          TabOrder = 0
+        end
+        object edMaxDown: TSpinEdit
+          Left = 432
+          Height = 21
+          Top = 4
+          Width = 66
+          Anchors = [akTop, akRight]
+          Increment = 10
+          MaxValue = 999999
+          TabOrder = 1
+        end
+        object cbMaxUp: TCheckBox
+          Left = 6
+          Height = 17
+          Top = 38
+          Width = 133
+          Caption = 'Maximum upload speed:'
+          OnClick = cbMaxUpClick
+          TabOrder = 2
+        end
+        object edMaxUp: TSpinEdit
+          Left = 431
+          Height = 21
+          Top = 36
+          Width = 66
+          Anchors = [akTop, akRight]
+          Increment = 10
+          MaxValue = 999999
+          TabOrder = 3
+        end
+      end
     end
   end
   object btOK: TButton
-    Left = 413
+    Left = 423
     Height = 23
     Top = 310
     Width = 75
@@ -93,11 +284,11 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Caption = 'OK'
     Constraints.MinWidth = 75
     Default = True
-    ModalResult = 1
-    TabOrder = 2
+    OnClick = btOKClick
+    TabOrder = 1
   end
   object btCancel: TButton
-    Left = 495
+    Left = 505
     Height = 23
     Top = 310
     Width = 75
@@ -107,151 +298,6 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Caption = 'Cancel'
     Constraints.MinWidth = 75
     ModalResult = 2
-    TabOrder = 3
-  end
-  object gbGeneral: TGroupBox
-    Left = 8
-    Height = 204
-    Top = 4
-    Width = 562
-    Anchors = [akTop, akLeft, akRight]
-    Caption = ' '
-    ClientHeight = 186
-    ClientWidth = 558
-    TabOrder = 0
-    object txDownloadDir: TLabel
-      Left = 6
-      Height = 14
-      Top = 4
-      Width = 67
-      Caption = 'Download dir:'
-      ParentColor = False
-    end
-    object txPort: TLabel
-      Left = 6
-      Height = 14
-      Top = 35
-      Width = 71
-      Caption = 'Incoming port:'
-      ParentColor = False
-    end
-    object txEncryption: TLabel
-      Left = 6
-      Height = 14
-      Top = 87
-      Width = 56
-      Caption = 'Encryption:'
-      ParentColor = False
-    end
-    object txPeerLimit: TLabel
-      Left = 6
-      Height = 14
-      Top = 158
-      Width = 80
-      Caption = 'Global peer limit:'
-      ParentColor = False
-    end
-    object edDownloadDir: TEdit
-      Left = 174
-      Height = 21
-      Top = 0
-      Width = 376
-      Anchors = [akTop, akLeft, akRight]
-      TabOrder = 0
-    end
-    object edPort: TSpinEdit
-      Left = 174
-      Height = 21
-      Top = 28
-      Width = 90
-      MaxValue = 65535
-      MinValue = 1
-      TabOrder = 1
-      Value = 12345
-    end
-    object cbEncryption: TComboBox
-      Left = 174
-      Height = 21
-      Top = 84
-      Width = 376
-      Anchors = [akTop, akLeft, akRight]
-      ItemHeight = 13
-      Style = csDropDownList
-      TabOrder = 5
-    end
-    object cbPortForwarding: TCheckBox
-      Left = 274
-      Height = 17
-      Top = 56
-      Width = 128
-      Caption = 'Enable port forwarding'
-      TabOrder = 4
-    end
-    object cbPEX: TCheckBox
-      Left = 174
-      Height = 17
-      Top = 111
-      Width = 125
-      Caption = 'Enable Peer Exchange'
-      TabOrder = 6
-    end
-    object edMaxPeers: TSpinEdit
-      Left = 174
-      Height = 21
-      Top = 155
-      Width = 66
-      MaxValue = 99999
-      MinValue = 1
-      TabOrder = 8
-      Value = 1
-    end
-    object cbDHT: TCheckBox
-      Left = 174
-      Height = 17
-      Top = 132
-      Width = 73
-      Caption = 'Enable DHT'
-      TabOrder = 7
-    end
-    object cbRandomPort: TCheckBox
-      Left = 274
-      Height = 17
-      Top = 31
-      Width = 193
-      Caption = 'Peek random port on daemon launch'
-      OnChange = cbRandomPortChange
-      OnClick = cbRandomPortClick
-      TabOrder = 2
-    end
-    object cbSeedRatio: TCheckBox
-      Left = 262
-      Height = 17
-      Top = 157
-      Width = 71
-      Caption = 'Seed ratio:'
-      OnClick = cbSeedRatioClick
-      TabOrder = 9
-    end
-    object edSeedRatio: TFloatSpinEdit
-      Left = 484
-      Height = 21
-      Top = 155
-      Width = 66
-      Anchors = [akTop, akRight]
-      Increment = 0.1
-      MaxValue = 9999
-      MinValue = 0
-      TabOrder = 10
-      Value = 0
-    end
-    object btTestPort: TButton
-      Left = 174
-      Height = 23
-      Top = 53
-      Width = 90
-      Caption = 'Test port'
-      OnClick = btTestPortClick
-      TabOrder = 3
-    end
+    TabOrder = 2
   end
 end

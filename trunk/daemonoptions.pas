@@ -24,7 +24,7 @@ unit DaemonOptions;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, Spin;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, Spin, ComCtrls;
 
 resourcestring
  sPortTestSuccess = 'Incoming port tested successfully.';
@@ -32,6 +32,8 @@ resourcestring
  sEncryptionDisabled = 'Encryption disabled';
  sEncryptionEnabled = 'Encryption enabled';
  sEncryptionRequired = 'Encryption required';
+ SNoDownloadDir = 'The downloads directory was not specified.';
+ SNoIncompleteDir = 'The directory for incomplete files was not specified.';
 
 type
 
@@ -41,29 +43,38 @@ type
     btCancel: TButton;
     btOK: TButton;
     btTestPort: TButton;
+    cbBlocklist: TCheckBox;
+    cbDHT: TCheckBox;
+    cbEncryption: TComboBox;
     cbMaxDown: TCheckBox;
     cbMaxUp: TCheckBox;
-    cbEncryption: TComboBox;
-    cbPortForwarding: TCheckBox;
     cbPEX: TCheckBox;
-    cbDHT: TCheckBox;
+    cbPortForwarding: TCheckBox;
     cbRandomPort: TCheckBox;
+    cbIncompleteDir: TCheckBox;
+    cbPartExt: TCheckBox;
     cbSeedRatio: TCheckBox;
     edDownloadDir: TEdit;
+    edIncompleteDir: TEdit;
     edMaxDown: TSpinEdit;
+    edMaxPeers: TSpinEdit;
     edMaxUp: TSpinEdit;
+    edPort: TSpinEdit;
     edSeedRatio: TFloatSpinEdit;
     gbBandwidth: TGroupBox;
-    gbGeneral: TGroupBox;
+    Page: TPageControl;
+    tabNetwork: TTabSheet;
+    tabBandwidth: TTabSheet;
+    tabDownload: TTabSheet;
+    txDownloadDir: TLabel;
+    txEncryption: TLabel;
     txKbs1: TLabel;
     txKbs2: TLabel;
-    edMaxPeers: TSpinEdit;
     txPeerLimit: TLabel;
-    txEncryption: TLabel;
     txPort: TLabel;
-    edPort: TSpinEdit;
-    txDownloadDir: TLabel;
+    procedure btOKClick(Sender: TObject);
     procedure btTestPortClick(Sender: TObject);
+    procedure cbIncompleteDirClick(Sender: TObject);
     procedure cbMaxDownClick(Sender: TObject);
     procedure cbMaxUpClick(Sender: TObject);
     procedure cbRandomPortChange(Sender: TObject);
@@ -110,6 +121,34 @@ begin
   end;
 end;
 
+procedure TDaemonOptionsForm.btOKClick(Sender: TObject);
+begin
+  edDownloadDir.Text:=Trim(edDownloadDir.Text);
+  if edDownloadDir.Text = '' then begin
+    Page.ActivePage:=tabDownload;
+    edDownloadDir.SetFocus;
+    MessageDlg(SNoDownloadDir, mtError, [mbOK], 0);
+    exit;
+  end;
+  edIncompleteDir.Text:=Trim(edIncompleteDir.Text);
+  if cbIncompleteDir.Checked and (edIncompleteDir.Text = '') then begin
+    Page.ActivePage:=tabDownload;
+    edIncompleteDir.SetFocus;
+    MessageDlg(SNoIncompleteDir, mtError, [mbOK], 0);
+    exit;
+  end;
+  ModalResult:=mrOK;
+end;
+
+procedure TDaemonOptionsForm.cbIncompleteDirClick(Sender: TObject);
+begin
+  edIncompleteDir.Enabled:=cbIncompleteDir.Checked;
+  if edIncompleteDir.Enabled then
+    edIncompleteDir.Color:=clWindow
+  else
+    edIncompleteDir.ParentColor:=True;
+end;
+
 procedure TDaemonOptionsForm.cbMaxUpClick(Sender: TObject);
 begin
   edMaxUp.Enabled:=cbMaxUp.Checked;
@@ -131,9 +170,7 @@ end;
 
 procedure TDaemonOptionsForm.FormCreate(Sender: TObject);
 begin
-{$ifdef windows}
-  gbGeneral.Caption:='';
-{$endif windows}
+  Page.ActivePageIndex:=0;
   cbEncryption.Items.Add(sEncryptionDisabled);
   cbEncryption.Items.Add(sEncryptionEnabled);
   cbEncryption.Items.Add(sEncryptionRequired);
