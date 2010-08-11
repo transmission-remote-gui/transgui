@@ -2161,10 +2161,10 @@ begin
       4: ImageIndex:=imgStopped;
       else
         if Text <> '' then
-          if ARow > StatusFiltersCount + 1 + FTrackers.Count then
-            ImageIndex:=22
+          if ARow >= Sender.Items.Count - FTrackers.Count then
+            ImageIndex:=5
           else
-            ImageIndex:=5;
+            ImageIndex:=22;
     end;
   end;
 end;
@@ -2802,7 +2802,7 @@ end;
 
 procedure TMainForm.FillTorrentsList(list: TJSONArray);
 var
-  i, j, row, id, StateImg: integer;
+  i, j, row, crow, id, StateImg: integer;
   t: TJSONObject;
   f: double;
   ExistingRow: boolean;
@@ -2874,7 +2874,7 @@ begin
   if VarIsNull(lvFilter.Items[0, FilterIdx]) then
     Dec(FilterIdx);
   if FilterIdx >= StatusFiltersCount then
-    if FilterIdx >= StatusFiltersCount + FTrackers.Count + 1 then begin
+    if FilterIdx < lvFilter.Items.Count - FTrackers.Count then begin
       PathFilter:=UTF8Encode(widestring(lvFilter.Items[-1, FilterIdx]));
       FilterIdx:=fltAll;
     end
@@ -3148,6 +3148,7 @@ begin
   end;
   gTorrentsClick(nil);
 
+  crow:=lvFilter.Row;
   lvFilter.Items.BeginUpdate;
   try
     lvFilter.Items[0, 0]:=UTF8Decode(Format('%s (%d)', [SAll, list.Count]));
@@ -3156,39 +3157,46 @@ begin
     lvFilter.Items[0, 3]:=UTF8Decode(Format('%s (%d)', [SActive, ActiveCnt]));
     lvFilter.Items[0, 4]:=UTF8Decode(Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt]));
 
-    lvFilter.Items[0, StatusFiltersCount]:=NULL;
-
-    i:=0;
-    while i < FTrackers.Count do begin
-      j:=ptruint(FTrackers.Objects[i]);
-      if j > 0 then begin
-        lvFilter.Items[0, i + StatusFiltersCount + 1]:=Format('%s (%d)', [FTrackers[i], j]);
-        if FTrackers[i] = TrackerFilter then
-          lvFilter.Row:=i + StatusFiltersCount + 1;
-        Inc(i);
-      end
-      else
-        FTrackers.Delete(i);
-    end;
-    j:=StatusFiltersCount + 1 + FTrackers.Count;
+    j:=StatusFiltersCount;
     lvFilter.Items[0, j]:=NULL;
     Inc(j);
 
     for i:=0 to Paths.Count - 1 do begin
       s:=ExtractFileName(Paths[i]);
-      for row:=StatusFiltersCount + FTrackers.Count + 2 to j - 1 do
+      for row:=StatusFiltersCount + 1 to j - 1 do
         if ExtractFileName(UTF8Encode(widestring(lvFilter.Items[-1, row]))) = s then begin
           s:=Paths[i];
-          lvFilter.Items[0, row]:=UTF8Decode(Format('%s (%d)', [UTF8Encode(widestring(lvFilter.Items[-1, row])), ptruint(Paths.Objects[row - (StatusFiltersCount + FTrackers.Count + 2)])]));
+          lvFilter.Items[0, row]:=UTF8Decode(Format('%s (%d)', [UTF8Encode(widestring(lvFilter.Items[-1, row])), ptruint(Paths.Objects[row - StatusFiltersCount - 1])]));
         end;
       lvFilter.Items[0, j]:=UTF8Decode(Format('%s (%d)', [s, ptruint(Paths.Objects[i])]));
       lvFilter.Items[-1, j]:=UTF8Decode(Paths[i]);
+      if Paths[i] = PathFilter then
+        crow:=j;
       Inc(j);
     end;
-    lvFilter.Items.RowCnt:=j;
+
+    row:=j;
+    lvFilter.Items[0, row]:=NULL;
+    Inc(row);
+
+    i:=0;
+    while i < FTrackers.Count do begin
+      j:=ptruint(FTrackers.Objects[i]);
+      if j > 0 then begin
+        lvFilter.Items[0, row]:=Format('%s (%d)', [FTrackers[i], j]);
+        if FTrackers[i] = TrackerFilter then
+          crow:=row;
+        Inc(i);
+        Inc(row);
+      end
+      else
+        FTrackers.Delete(i);
+    end;
+    lvFilter.Items.RowCnt:=row;
   finally
     lvFilter.Items.EndUpdate;
   end;
+  lvFilter.Row:=crow;
 
   CheckStatus;
 
