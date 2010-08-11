@@ -92,6 +92,7 @@ resourcestring
   sOf = 'of';
   sNoTracker = 'No tracker';
   sTorrents = 'Torrents';
+  sBlocklistUpdateComplete = 'The block list has been updated successfully.' + LineEnding + 'The list entries count: %d.';
 
 type
 
@@ -121,6 +122,7 @@ type
     acOpenContainingFolder: TAction;
     acAddLink: TAction;
     acReannounceTorrent: TAction;
+    acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
     acVerifyTorrent: TAction;
@@ -146,6 +148,7 @@ type
     MenuItem49: TMenuItem;
     MenuItem50: TMenuItem;
     MenuItem51: TMenuItem;
+    MenuItem52: TMenuItem;
     pbDownloaded: TPaintBox;
     pmTrackers: TPopupMenu;
     tabTrackers: TTabSheet;
@@ -319,6 +322,7 @@ type
     procedure acStopAllTorrentsExecute(Sender: TObject);
     procedure acStopTorrentExecute(Sender: TObject);
     procedure acTorrentPropsExecute(Sender: TObject);
+    procedure acUpdateBlocklistExecute(Sender: TObject);
     procedure acUpdateGeoIPExecute(Sender: TObject);
     procedure acVerifyTorrentExecute(Sender: TObject);
     procedure ApplicationPropertiesException(Sender: TObject; E: Exception);
@@ -1810,6 +1814,27 @@ begin
   end;
 end;
 
+procedure TMainForm.acUpdateBlocklistExecute(Sender: TObject);
+var
+  req: TJSONObject;
+  res: TJSONObject;
+begin
+  Application.ProcessMessages;
+  AppBusy;
+  req:=TJSONObject.Create;
+  try
+    req.Add('method', 'blocklist-update');
+    res:=RpcObj.SendRequest(req, True);
+    AppNormal;
+    if res = nil then
+      CheckStatus(False);
+    MessageDlg(Format(sBlocklistUpdateComplete, [res.Integers[('blocklist-size')]]), mtInformation, [mbOK], 0);
+    res.Free;
+  finally
+    req.Free;
+  end;
+end;
+
 procedure TMainForm.acUpdateGeoIPExecute(Sender: TObject);
 begin
   if DownloadGeoIpDatabase(True) then
@@ -2423,9 +2448,9 @@ begin
   acStartTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
   acStopTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
   acVerifyTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
-  acReannounceTorrent.Enabled:=acVerifyTorrent.Enabled;
   acRemoveTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
   acRemoveTorrentAndData.Enabled:=acRemoveTorrent.Enabled and (RpcObj.RPCVersion >= 4);
+  acReannounceTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 5);
   acTorrentProps.Enabled:=acRemoveTorrent.Enabled;
   acOpenContainingFolder.Enabled:=acTorrentProps.Enabled;
   acSetHighPriority.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0) and
@@ -2435,6 +2460,7 @@ begin
   acOpenFile.Enabled:=acSetHighPriority.Enabled and (lvFiles.SelCount < 2);
   acSetNotDownload.Enabled:=acSetHighPriority.Enabled;
   acSetupColumns.Enabled:=RpcObj.Connected;
+  acUpdateBlocklist.Enabled:=RpcObj.Connected and (RpcObj.RPCVersion >= 5);
 end;
 
 function TMainForm.ShowConnOptions: boolean;
@@ -2660,6 +2686,7 @@ begin
   if gTorrents.Tag <> 0 then exit;
   acRemoveTorrentAndData.Visible:=RpcObj.RPCVersion >= 4;
   acReannounceTorrent.Visible:=RpcObj.RPCVersion >= 5;
+  acUpdateBlocklist.Visible:=RpcObj.Connected and (RpcObj.RPCVersion >= 5);
   if list = nil then begin
     ClearDetailsInfo;
     exit;

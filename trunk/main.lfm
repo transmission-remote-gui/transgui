@@ -1464,6 +1464,10 @@ object MainForm: TMainForm
         }
         OnClick = acDaemonOptionsExecute
       end
+      object MenuItem52: TMenuItem
+        Action = acUpdateBlocklist
+        OnClick = acUpdateBlocklistExecute
+      end
       object MenuItem35: TMenuItem
         Caption = '-'
       end
@@ -1636,6 +1640,11 @@ object MainForm: TMainForm
       Category = 'Torrent'
       Caption = 'Reannounce (get more peers)'
       OnExecute = acReannounceTorrentExecute
+    end
+    object acUpdateBlocklist: TAction
+      Category = 'Tools'
+      Caption = 'Update blocklist'
+      OnExecute = acUpdateBlocklistExecute
     end
   end
   object TorrentsListTimer: TTimer
