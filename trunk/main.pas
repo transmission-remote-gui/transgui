@@ -943,11 +943,11 @@ begin
     i:=gTorrents.Items.IndexOf(idxTorrentId, ids[0]);
     if VarIsEmpty(gTorrents.Items[idxPath, i]) then
       exit;
-    edTorrentDir.Text:=UTF8Decode(widestring(gTorrents.Items[idxPath, i]));
+    edTorrentDir.Text:=UTF8Encode(widestring(gTorrents.Items[idxPath, i]));
     if gTorrents.SelCount > 1 then
       s:=Format(sSeveralTorrents, [gTorrents.SelCount])
     else
-      s:=UTF8Decode(widestring(gTorrents.Items[idxName, i]));
+      s:=UTF8Encode(widestring(gTorrents.Items[idxName, i]));
     Caption:=Caption + ' - ' + s;
     AppNormal;
     if ShowModal = mrOk then begin
