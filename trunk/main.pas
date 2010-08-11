@@ -483,14 +483,15 @@ const
   idxLastActive = 16;
   idxPath = 17;
   idxPriority = 18;
+  idxSizeToDowload = 19;
+  idxTorrentId = 20;
 
-  idxTorrentId = -1;
-  idxTag = -2;
-  idxSeedsTotal = -3;
-  idxLeechers = -4;
-  idxPeersTotal = -5;
-  idxStateImg = -6;
-  TorrentsExtraColumns = 6;
+  idxTag = -1;
+  idxSeedsTotal = -2;
+  idxLeechers = -3;
+  idxPeersTotal = -4;
+  idxStateImg = -5;
+  TorrentsExtraColumns = 5;
 
   // Peers list
   idxPeerHost = 0;
@@ -548,10 +549,11 @@ const
 
   StatusFiltersCount = 5;
 
-  TorrentFieldsMap: array[idxName..idxPriority] of string =
+  TorrentFieldsMap: array[idxName..idxTorrentId] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
      'peersGettingFromUs,leechers,peersKnown', 'rateDownload', 'rateUpload', 'eta', 'uploadRatio',
-     'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority');
+     'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority',
+     '', '');
 
 implementation
 
@@ -2049,7 +2051,7 @@ begin
     case ADataCol of
       idxStatus:
         Text:=GetTorrentStatus(ARow);
-      idxSize, idxDownloaded, idxUploaded:
+      idxSize, idxDownloaded, idxUploaded, idxSizeToDowload:
         Text:=GetHumanSize(Sender.Items[ADataCol, ARow]);
       idxDone:
         Text:=Format('%.1f%%', [double(Sender.Items[idxDone, ARow])]);
@@ -2994,6 +2996,7 @@ begin
     GetTorrentValue(idxUpSpeed, 'rateUpload', vtInteger);
 
     GetTorrentValue(idxSize, 'totalSize', vtExtended);
+    GetTorrentValue(idxSizeToDowload, 'sizeWhenDone', vtExtended);
     GetTorrentValue(idxSeeds, 'peersSendingToUs', vtInteger);
     GetTorrentValue(idxPeers, 'peersGettingFromUs', vtInteger);
     GetTorrentValue(idxPeersTotal, 'peersKnown', vtInteger);

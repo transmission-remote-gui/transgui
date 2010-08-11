@@ -164,13 +164,13 @@ object MainForm: TMainForm
         end      
         item
           Alignment = taRightJustify
-          Title.Alignment = taCenter
+          Title.Alignment = taLeftJustify
           Title.Caption = 'Size'
           Width = 60
         end      
         item
           Alignment = taCenter
-          Title.Alignment = taCenter
+          Title.Alignment = taLeftJustify
           Title.Caption = 'Done'
         end      
         item
@@ -179,25 +179,25 @@ object MainForm: TMainForm
         end      
         item
           Alignment = taRightJustify
-          Title.Alignment = taCenter
+          Title.Alignment = taLeftJustify
           Title.Caption = 'Seeds'
           Width = 55
         end      
         item
           Alignment = taRightJustify
-          Title.Alignment = taCenter
+          Title.Alignment = taLeftJustify
           Title.Caption = 'Peers'
           Width = 55
         end      
         item
           Alignment = taRightJustify
-          Title.Alignment = taCenter
+          Title.Alignment = taLeftJustify
           Title.Caption = 'Down speed'
           Width = 75
         end      
         item
           Alignment = taRightJustify
-          Title.Alignment = taCenter
+          Title.Alignment = taLeftJustify
           Title.Caption = 'Up speed'
           Width = 75
         end      
@@ -216,7 +216,7 @@ object MainForm: TMainForm
         end      
         item
           Alignment = taRightJustify
-          Title.Alignment = taCenter
+          Title.Alignment = taLeftJustify
           Title.Caption = 'Uploaded'
           Width = 60
           Visible = False
@@ -252,8 +252,23 @@ object MainForm: TMainForm
           Visible = False
         end      
         item
+          Alignment = taLeftJustify
+          Title.Alignment = taLeftJustify
           Title.Caption = 'Priority'
-          Width = 100
+          Width = 90
+          Visible = False
+        end      
+        item
+          Alignment = taRightJustify
+          Title.Alignment = taLeftJustify
+          Title.Caption = 'Size to download'
+          Width = 60
+          Visible = False
+        end      
+        item
+          Alignment = taRightJustify
+          Title.Alignment = taLeftJustify
+          Title.Caption = 'ID'
           Visible = False
         end>
       FixedCols = 0
@@ -297,11 +312,11 @@ object MainForm: TMainForm
     Height = 290
     Top = 151
     Width = 780
-    ActivePage = tabFiles
+    ActivePage = tabTrackers
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 3
+    TabIndex = 1
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -930,13 +945,13 @@ object MainForm: TMainForm
           end        
           item
             Alignment = taRightJustify
-            Title.Alignment = taCenter
+            Title.Alignment = taLeftJustify
             Title.Caption = 'Up speed'
             Width = 80
           end        
           item
             Alignment = taRightJustify
-            Title.Alignment = taCenter
+            Title.Alignment = taLeftJustify
             Title.Caption = 'Down speed'
             Width = 80
           end>
@@ -969,13 +984,13 @@ object MainForm: TMainForm
           end        
           item
             Alignment = taRightJustify
-            Title.Alignment = taCenter
+            Title.Alignment = taLeftJustify
             Title.Caption = 'Size'
             Width = 80
           end        
           item
             Alignment = taCenter
-            Title.Alignment = taCenter
+            Title.Alignment = taLeftJustify
             Title.Caption = 'Done'
             Width = 70
           end        
