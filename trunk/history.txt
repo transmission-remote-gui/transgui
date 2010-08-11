@@ -1,3 +1,33 @@
+2.0 (Aug 11, 2010)
+------------------
+[+] Implemented the "Set location" command for torrents. Issue #110.
+[+] Support for adding a torrent via a URL or a magnet link. Issue #106, Issue #161.
+[+] Implemented filtering by download dir. It can be used as torrent labels. Issue #23.
+[+] Implemented changing of torrents priority. Issue #215.
+[+] Multiselect in the torrents list.
+[+] Added the "Reannounce (get more peers)" command for torrents. Issue #78.
+[+] Implemented the "Update blocklist" function. Issue #70.
+[+] Implemented per torrent seed ratio. Issue #201.
+[+] Added the following daemon options: "Enable blocklist", "Add .part extension to incomplete files", "Directory for incomplete files".
+[+] Added the "Priority", "Size to download" and "ID" columns to the torrents list. Issue #228, #245, #255.
+[+] Progress bars in the torrents and files lists are available on all platforms.
+[+] Sorting in the trackers, peers, files lists.
+[+] The columns setup window can be invoked for trackers, peers and files lists.
+[+] Icons for priorities.
+[+] Portable mode support. If the program finds the transgui.ini file in the same folder as the binary file, then it will store all configuration and data files in the program's folder, instead of the folder in a user profile.
+[+] Croatian translation by Tomislav Spoljaric.
+[+] Hungarian translation by zgyivi.
+[+] Czech translation by schunkac.
+[+] Dutch translation by Omkomarijke.
+[+] Danish translation by wilhjelm.
+[*] Disabled the "Close to tray" option on non-Windows platforms.
+[*] The "Open containing folder" command now highlights the active file in Windows Explorer window. Issue #145.
+[-] Fixed sorting by the Status column. Issue #253.
+[-] Fixed the "Invalid floating point operation" error when clicking on a torrent added via a magnet link. Issue #223.
+[-] Fixed the "Access violation" error when switching to the Trackers tab on old version of Transmission. Issue #231.
+[-] The "Open containing folder" command now properly handle torrents with sub-folders. Issue #222.
+[-] Lot of other bugs were fixed.
+
 1.4 (May 06, 2010)
 ------------------
 [+] Localization support by Alex Cherednichenko, aka Alex7Che. See http://code.google.com/p/transmisson-remote-gui/wiki/Localization page if you want to make a translation.
