@@ -120,6 +120,7 @@ type
     acOpenFile: TAction;
     acOpenContainingFolder: TAction;
     acAddLink: TAction;
+    acReannounceTorrent: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
     acVerifyTorrent: TAction;
@@ -143,6 +144,8 @@ type
     MenuItem47: TMenuItem;
     MenuItem48: TMenuItem;
     MenuItem49: TMenuItem;
+    MenuItem50: TMenuItem;
+    MenuItem51: TMenuItem;
     pbDownloaded: TPaintBox;
     pmTrackers: TPopupMenu;
     tabTrackers: TTabSheet;
@@ -300,6 +303,7 @@ type
     procedure acDisconnectExecute(Sender: TObject);
     procedure acExitExecute(Sender: TObject);
     procedure acDaemonOptionsExecute(Sender: TObject);
+    procedure acReannounceTorrentExecute(Sender: TObject);
     procedure acRemoveTorrentAndDataExecute(Sender: TObject);
     procedure acRemoveTorrentExecute(Sender: TObject);
     procedure acResolveCountryExecute(Sender: TObject);
@@ -1578,6 +1582,11 @@ begin
   end;
 end;
 
+procedure TMainForm.acReannounceTorrentExecute(Sender: TObject);
+begin
+  TorrentAction(GetSelectedTorrents, 'reannounce');
+end;
+
 procedure TMainForm.acRemoveTorrentAndDataExecute(Sender: TObject);
 begin
   InternalRemoveTorrent(sRemoveTorrentData, sRemoveTorrentDataMulti, True);
@@ -2414,6 +2423,7 @@ begin
   acStartTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
   acStopTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
   acVerifyTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
+  acReannounceTorrent.Enabled:=acVerifyTorrent.Enabled;
   acRemoveTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
   acRemoveTorrentAndData.Enabled:=acRemoveTorrent.Enabled and (RpcObj.RPCVersion >= 4);
   acTorrentProps.Enabled:=acRemoveTorrent.Enabled;
@@ -2648,6 +2658,8 @@ var
   IsActive: boolean;
 begin
   if gTorrents.Tag <> 0 then exit;
+  acRemoveTorrentAndData.Visible:=RpcObj.RPCVersion >= 4;
+  acReannounceTorrent.Visible:=RpcObj.RPCVersion >= 5;
   if list = nil then begin
     ClearDetailsInfo;
     exit;
