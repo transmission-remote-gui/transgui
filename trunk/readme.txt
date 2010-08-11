@@ -17,7 +17,7 @@ Transmission Remote GUI is feature rich cross platform front-end to remotely con
 Transmission Remote GUI is developed using Lazarus RAD and Free Pascal compiler.
 
 Features:
- * Native application for Windows and Linux (GTK2)
+ * Native application for Windows, Linux and MacOS X
  * uTorrent-like interface
  * Select files to download
  * Choose files priority
@@ -38,7 +38,7 @@ There are precompiled program's binaries for i386 and x86_64 Linux architectures
 - Download a .zip archive for your architecture.
 - Unzip it to your home dir.
 - Create a desktop or menu shortcut to the transgui executable.
-  * (If needed change the transgui file permissions to executable).
+  * (If needed, change the transgui file permissions to executable).
 - Run the program using the created shortcut.
 
 Harder way.
@@ -46,12 +46,10 @@ Harder way.
 Build the program by yourself.
 - Make sure you have working Lazarus and Free Pascal compiler installed.
   * Free Pascal Compiler 2.4 and Lazarus 0.9.28.2 is used to develop Transmission Remote GUI. You may use different versions of FPC and Lazarus at your own risk.
-- Download sources archive and extract it to some folder or perform svn checkout.
-- Run Lazarus IDE, open transgui project and build it.
+- Download the sources archive and extract it to some folder or perform svn checkout. 
+- Open terminal/command line prompt and cd to the sources folder;
+- Execute "make" command to build the application;
+- Execute "make zipdist" command to create a release .zip archive in the "Release" sub-folder. 
 
-Or to build from command line:
- * Open terminal/command line prompt and cd to the sources folder;
- * Execute lazbuild transgui.lpi command to build the application. 
-
-More info here:
+More information about building here:
 http://code.google.com/p/transmisson-remote-gui/wiki/Building
