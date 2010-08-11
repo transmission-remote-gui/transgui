@@ -48,7 +48,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="14">
+    <Units Count="15">
       <Unit0>
         <Filename Value="transgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -135,6 +135,13 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="ResTranslator"/>
       </Unit13>
+      <Unit14>
+        <Filename Value="addlink.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AddLinkForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="AddLink"/>
+      </Unit14>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
