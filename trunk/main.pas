@@ -3406,7 +3406,6 @@ begin
     ClearDetailsInfo;
     exit;
   end;
-  i:=TrackerStats.Count;
   WasEmpty:=lvTrackers.Items.Count = 0;
   lvTrackers.Items.BeginUpdate;
   try
