@@ -4082,6 +4082,7 @@ begin
     exit;
   end;
 
+  ForceAppNormal;
   MessageDlg(sNoPathMapping, mtInformation, [mbOK], 0);
 end;
 
