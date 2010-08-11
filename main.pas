@@ -1490,6 +1490,7 @@ begin
             cbDHT.Checked:=args.Integers['dht-enabled'] <> 0;
             cbSeedRatio.Checked:=args.Integers['seedRatioLimited'] <> 0;
             edSeedRatio.Value:=args.Floats['seedRatioLimit'];
+            cbBlocklist.Checked:=args.Integers['blocklist-enabled'] <> 0;
           end
           else begin
             // RPC versions prior to v5
@@ -1501,7 +1502,21 @@ begin
             cbSeedRatio.Enabled:=False;
             edSeedRatio.Enabled:=False;
             btTestPort.Enabled:=False;
+            cbBlocklist.Enabled:=False;
           end;
+
+          if RpcObj.RPCVersion >= 7 then begin
+            cbIncompleteDir.Checked:=args.Integers['incomplete-dir-enabled'] <> 0;
+            edIncompleteDir.Text:=args.Strings['incomplete-dir'];
+          end
+          else
+            cbIncompleteDir.Enabled:=False;
+          cbIncompleteDirClick(nil);
+
+          if RpcObj.RPCVersion >= 8 then
+            cbPartExt.Checked:=args.Integers['rename-partial-files'] <> 0
+          else
+            cbPartExt.Enabled:=False;
 
           cbPortForwarding.Checked:=args.Integers['port-forwarding-enabled'] <> 0;
 
@@ -1562,13 +1577,22 @@ begin
           args.Add('peer-port-random-on-start', TJSONIntegerNumber.Create(integer(cbRandomPort.Checked) and 1));
           args.Add('dht-enabled', TJSONIntegerNumber.Create(integer(cbDHT.Checked) and 1));
           args.Add('seedRatioLimited', TJSONIntegerNumber.Create(integer(cbSeedRatio.Checked) and 1));
-          args.Add('seedRatioLimit', TJSONFloatNumber.Create(edSeedRatio.Value));
+          if cbSeedRatio.Checked then
+            args.Add('seedRatioLimit', TJSONFloatNumber.Create(edSeedRatio.Value));
+          args.Add('blocklist-enabled', TJSONIntegerNumber.Create(integer(cbBlocklist.Checked) and 1));
         end
         else begin
           args.Add('peer-limit', TJSONIntegerNumber.Create(edMaxPeers.Value));
           args.Add('port', TJSONIntegerNumber.Create(edPort.Value));
           args.Add('pex-allowed', TJSONIntegerNumber.Create(integer(cbPEX.Checked) and 1));
         end;
+        if RpcObj.RPCVersion >= 7 then begin
+          args.Add('incomplete-dir-enabled', TJSONIntegerNumber.Create(integer(cbIncompleteDir.Checked) and 1));
+          if cbIncompleteDir.Checked then
+            args.Add('incomplete-dir', TJSONString.Create(UTF8Decode(edIncompleteDir.Text)));
+        end;
+        if RpcObj.RPCVersion >= 8 then
+          args.Add('rename-partial-files', TJSONIntegerNumber.Create(integer(cbPartExt.Checked) and 1));
         req.Add('arguments', args);
         args:=RpcObj.SendRequest(req, False);
         if args = nil then begin
