@@ -94,6 +94,7 @@ resourcestring
   sTorrents = 'Torrents';
   sBlocklistUpdateComplete = 'The block list has been updated successfully.' + LineEnding + 'The list entries count: %d.';
   sSeveralTorrents = '%d torrents';
+  sUnableToExecute = 'Unable to execute "%s".';
 
 type
 
@@ -422,7 +423,7 @@ type
     procedure CenterReconnectWindow;
     procedure DrawProgressCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const ACellRect: TRect);
     procedure ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
-    function ExecRemoteFile(const FileName: string): boolean;
+    function ExecRemoteFile(const FileName: string; SelectFile: boolean): boolean;
     function GetSelectedTorrents: variant;
     procedure FillDownloadDirs(CB: TComboBox);
   public
@@ -930,6 +931,8 @@ var
   ok: boolean;
   t: TDateTime;
 begin
+  if gTorrents.Items.Count = 0 then
+    exit;
   AppBusy;
   with TMoveTorrentForm.Create(Self) do
   try
@@ -999,20 +1002,55 @@ end;
 
 procedure TMainForm.acOpenContainingFolderExecute(Sender: TObject);
 var
-  i: integer;
+  res: TJSONObject;
+  p, s: string;
+  sel: boolean;
+  files: TJSONArray;
 begin
   if gTorrents.Items.Count = 0 then
     exit;
-  i:=gTorrents.Row;
-  if VarIsEmpty(gTorrents.Items[idxPath, i]) then
-    exit;
-  ExecRemoteFile(gTorrents.Items[idxPath, i]);
+  Application.ProcessMessages;
+  AppBusy;
+  if lvFiles.Focused and (lvFiles.Items.Count > 0) then begin
+    p:=UTF8Encode(widestring(lvFiles.Items[idxFileFullPath, lvFiles.Row]));
+    sel:=True;
+  end
+  else begin
+    sel:=False;
+    gTorrents.RemoveSelection;
+    res:=RpcObj.RequestInfo(gTorrents.Items[idxTorrentId, gTorrents.Row], ['files', 'downloadDir']);
+    if res = nil then
+      CheckStatus(False)
+    else
+      try
+        with res.Arrays['torrents'].Objects[0] do begin
+          files:=Arrays['files'];
+          if files.Count = 0 then exit;
+          if files.Count = 1 then begin
+            p:=UTF8Encode((files[0] as TJSONObject).Strings['name']);
+            sel:=True;
+          end
+          else begin
+            s:=GetFilesCommonPath(files);
+            repeat
+              p:=s;
+              s:=ExtractFilePath(p);
+            until (s = '') or (s = p);
+          end;
+          p:=IncludeTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + p;
+        end;
+      finally
+        res.Free;
+      end;
+  end;
+  ExecRemoteFile(p, sel);
+  AppNormal;
 end;
 
 procedure TMainForm.acOpenFileExecute(Sender: TObject);
 begin
   if lvFiles.Items.Count = 0 then exit;
-  ExecRemoteFile(FFiles[idxFileFullPath, lvFiles.Row]);
+  ExecRemoteFile(UTF8Encode(widestring(FFiles[idxFileFullPath, lvFiles.Row])), False);
 end;
 
 procedure TMainForm.acOptionsExecute(Sender: TObject);
@@ -3318,7 +3356,7 @@ begin
       FFiles[idxFileId, row]:=i;
 
       s:=UTF8Encode(f.Strings['name']);
-      FFiles[idxFileFullPath, row]:=IncludeProperTrailingPathDelimiter(dir) + s;
+      FFiles[idxFileFullPath, row]:=UTF8Decode(IncludeProperTrailingPathDelimiter(dir) + s);
       if (path <> '') and (Copy(s, 1, Length(path)) = path) then
         s:=Copy(s, Length(path) + 1, MaxInt);
 
@@ -3858,7 +3896,27 @@ begin
   end;
 end;
 
-function TMainForm.ExecRemoteFile(const FileName: string): boolean;
+function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): boolean;
+
+  procedure _Exec(s: string);
+  var
+    p: string;
+  begin
+    AppBusy;
+    if SelectFile and FileExistsUTF8(s) then begin
+{$ifdef mswindows}
+      p:=Format('/select,"%s"', [s]);
+      s:='explorer.exe';
+{$else}
+      s:=ExtractFilePath(s);
+{$endif mswindows}
+    end;
+    Result:=OpenURL(s, p);
+    AppNormal;
+    if not Result then
+      MessageDlg(Format(sUnableToExecute, [s]), mtError, [mbOK], 0);
+  end;
+
 var
   i, j: integer;
   s, ss: string;
@@ -3877,14 +3935,14 @@ begin
         end;
         ss:=StringReplace(ss, '/', DirectorySeparator, [rfReplaceAll]);
         ss:=StringReplace(ss, '\', DirectorySeparator, [rfReplaceAll]);
-        Result:=OpenURL(ss);
+        _Exec(ss);
         exit;
       end;
     end;
   end;
 
   if FileExistsUTF8(FileName) or DirectoryExistsUTF8(FileName) then begin
-    Result:=OpenURL(FileName);
+    _Exec(FileName);
     exit;
   end;
 

@@ -38,7 +38,7 @@ function GetTimeZoneDelta: TDateTime;
 procedure ShowTaskbarButton;
 procedure HideTaskbarButton;
 
-function OpenURL(const URL: string): boolean;
+function OpenURL(const URL: string; const Params: string = ''): boolean;
 
 procedure AppBusy;
 procedure AppNormal;
@@ -135,15 +135,16 @@ begin
 end;
 {$endif unix}
 
-function OpenURL(const URL: string): boolean;
+function OpenURL(const URL, Params: string): boolean;
 {$ifdef mswindows}
 var
-  s: string;
+  s, p: string;
 {$endif mswindows}
 begin
 {$ifdef mswindows}
   s:=UTF8Decode(URL);
-  Result:=ShellExecute(0, 'open', PChar(s), nil, nil, SW_SHOWNORMAL) > 32;
+  p:=UTF8Decode(Params);
+  Result:=ShellExecute(0, 'open', PChar(s), PChar(p), nil, SW_SHOWNORMAL) > 32;
 {$endif mswindows}
 
 {$ifdef darwin}
