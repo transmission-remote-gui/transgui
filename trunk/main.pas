@@ -2131,12 +2131,14 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+{$ifdef mswindows}
   if FIni.ReadBool('Interface', 'TrayClose', False) then begin
     CloseAction:=caHide;
     HideApp;
     UpdateTray;
     exit;
   end;
+{$endif mswindows}
   BeforeCloseApp;
 end;
 
@@ -2413,10 +2415,11 @@ begin
     LoadHostSettings(FCurHost);
 
     edRefreshInterval.Value:=FIni.ReadInteger('Interface', 'RefreshInterval', 5);
-    cbTrayClose.Checked:=FIni.ReadBool('Interface', 'TrayClose', False);
 {$ifdef windows}
+    cbTrayClose.Checked:=FIni.ReadBool('Interface', 'TrayClose', False);
     cbTrayMinimize.Checked:=FIni.ReadBool('Interface', 'TrayMinimize', True);
 {$else}
+    cbTrayClose.Enabled:=False;
     cbTrayMinimize.Enabled:=False;
 {$endif}
     cbTrayIconAlways.Checked:=FIni.ReadBool('Interface', 'TrayIconAlways', True);
@@ -2440,8 +2443,8 @@ begin
         Ini.WriteString('Hosts', Format('Host%d', [i + 1]), cbHost.Items[i]);
 
       FIni.WriteInteger('Interface', 'RefreshInterval', edRefreshInterval.Value);
-      FIni.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
 {$ifdef windows}
+      FIni.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
       FIni.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
 {$endif}
       FIni.WriteBool('Interface', 'TrayIconAlways', cbTrayIconAlways.Checked);
