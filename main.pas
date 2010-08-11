@@ -2461,7 +2461,9 @@ end;
 
 procedure TMainForm.TrayIconDblClick(Sender: TObject);
 begin
+{$ifdef mswindows}
   miToggleApp.Click;
+{$endif mswindows}
 end;
 
 procedure TMainForm.UrlLabelClick(Sender: TObject);
