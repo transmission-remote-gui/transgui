@@ -871,9 +871,7 @@ end;
 
 procedure TMainForm.lvFilterResize(Sender: TObject);
 begin
-  lvFilter.ScrollBars:=ssNone;
-  lvFilter.Columns[0].Width:=lvFilter.ClientWidth - 1;
-  lvFilter.ScrollBars:=ssAutoVertical;
+  lvFilter.Columns[0].Width:=lvFilter.ClientWidth;
 end;
 
 procedure TMainForm.miAboutClick(Sender: TObject);
@@ -2647,7 +2645,7 @@ begin
   if FilterIdx >= StatusFiltersCount then begin
     TrackerFilter:=lvFilter.Items[0, FilterIdx];
     FilterIdx:=fltAll;
-    i:=Pos('(', TrackerFilter);
+    i:=RPos('(', TrackerFilter);
     if i > 0 then
       TrackerFilter:=Trim(Copy(TrackerFilter, 1, i - 1));
   end;
@@ -2719,7 +2717,7 @@ begin
       if f <> 0 then
         f:=(f - t.Floats['leftUntilDone'])*100.0/f;
       if StateImg = imgDone then
-        if t.Floats['leftUntilDone'] <> 0 then
+        if (t.Floats['leftUntilDone'] <> 0) or (t.Floats['sizeWhenDone'] = 0) then
           StateImg:=imgStopped
         else
           FTorrents[idxStatus, row]:=TR_STATUS_FINISHED;
@@ -2774,7 +2772,7 @@ begin
     end
     else
       if t.IndexOfName('trackers') >= 0 then
-        s:=t.Arrays['trackers'].Objects[0].Strings['announce']
+        s:=UTF8Encode(t.Arrays['trackers'].Objects[0].Strings['announce'])
       else begin
         s:='';
         if VarIsEmpty(FTorrents[idxTracker, row]) then
@@ -2800,7 +2798,7 @@ begin
       j:=Pos(':', s);
       if j > 0 then
         System.Delete(s, j, MaxInt);
-      FTorrents[idxTracker, row]:=s;
+      FTorrents[idxTracker, row]:=UTF8Decode(s);
     end;
 
     if t.IndexOfName('downloadDir') >= 0 then
@@ -2887,12 +2885,13 @@ begin
         gTorrents.Items.Delete(i)
       else
         Inc(i);
-    gTorrents.Sort;
-    if (gTorrents.Items.Count > 0) and (OldId = 0) then
-      gTorrents.Row:=0;
   finally
     gTorrents.EndUpdate;
   end;
+
+  gTorrents.Sort;
+  if (gTorrents.Items.Count > 0) and (OldId = 0) then
+    gTorrents.Row:=0;
 
   if OldId <> 0 then begin
     i:=gTorrents.Items.IndexOf(idxTorrentId, OldId);
@@ -3207,7 +3206,12 @@ begin
   txRemaining.Caption:=EtaToString(t.Integers['eta']);
   txDownloaded.Caption:=GetHumanSize(t.Floats['downloadedEver']);
   txUploaded.Caption:=GetHumanSize(t.Floats['uploadedEver']);
-  txWasted.Caption:=Format(sHashfails, [GetHumanSize(t.Floats['corruptEver']), Round(t.Floats['corruptEver']/t.Floats['pieceSize'])]);
+  f:=t.Floats['pieceSize'];
+  if f > 0 then
+    i:=Round(t.Floats['corruptEver']/f)
+  else
+    i:=0;
+  txWasted.Caption:=Format(sHashfails, [GetHumanSize(t.Floats['corruptEver']), i]);
   txDownSpeed.Caption:=GetHumanSize(gTorrents.Items[idxDownSpeed, idx], 1)+sPerSecond;
   txUpSpeed.Caption:=GetHumanSize(gTorrents.Items[idxUpSpeed, idx], 1)+sPerSecond;
   txRatio.Caption:=RatioToString(t.Floats['uploadRatio']);
@@ -3281,7 +3285,7 @@ begin
   else
     s:=DateTimeToStr(UnixToDateTime(Trunc(f)) + GetTimeZoneDelta);
   txTrackerUpdate.Caption:=s;
-  txTracker.Caption:=string(gTorrents.Items[idxTracker, idx]);
+  txTracker.Caption:=UTF8Encode(widestring(gTorrents.Items[idxTracker, idx]));
   if RpcObj.RPCVersion >= 7 then
     if t.Arrays['trackerStats'].Count > 0 then
       i:=t.Arrays['trackerStats'].Objects[0].Integers['seederCount']
