@@ -119,6 +119,7 @@ type
     acRemoveTorrentAndData: TAction;
     acOpenFile: TAction;
     acOpenContainingFolder: TAction;
+    acAddLink: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
     acVerifyTorrent: TAction;
@@ -141,9 +142,11 @@ type
     MenuItem46: TMenuItem;
     MenuItem47: TMenuItem;
     MenuItem48: TMenuItem;
+    MenuItem49: TMenuItem;
     pbDownloaded: TPaintBox;
     pmTrackers: TPopupMenu;
     tabTrackers: TTabSheet;
+    ToolButton9: TToolButton;
     txConnErrorLabel: TLabel;
     panSearch: TPanel;
     panFilter: TPanel;
@@ -288,6 +291,7 @@ type
     tabGeneral: TTabSheet;
     TorrentsListTimer: TTimer;
     tabFiles: TTabSheet;
+    procedure acAddLinkExecute(Sender: TObject);
     procedure acAddTorrentExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
     procedure acOpenContainingFolderExecute(Sender: TObject);
@@ -525,7 +529,7 @@ implementation
 
 uses
   AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, utils, TorrProps, DaemonOptions, About,
-  ToolWin, download, ColSetup, types;
+  ToolWin, download, ColSetup, types, AddLink;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -930,6 +934,19 @@ begin
   DoAddTorrent(OpenTorrentDlg.FileName);
 end;
 
+procedure TMainForm.acAddLinkExecute(Sender: TObject);
+begin
+  AppBusy;
+  with TAddLinkForm.Create(Self) do
+  try
+    AppNormal;
+    if ShowModal = mrOk then
+      DoAddTorrent(edLink.Text);
+  finally
+    Free;
+  end;
+end;
+
 procedure TMainForm.DoAddTorrent(const FileName: Utf8String);
 var
   torrent: string;
@@ -942,7 +959,10 @@ var
     req:=TJSONObject.Create;
     try
       req.Add('method', 'torrent-add');
-      args.Add('metainfo', TJSONString.Create(torrent));
+      if torrent = '-' then
+        args.Add('filename', TJSONString.Create(FileName))
+      else
+        args.Add('metainfo', TJSONString.Create(torrent));
       req.Add('arguments', args);
       args:=RpcObj.SendRequest(req);
       if args <> nil then
@@ -959,6 +979,10 @@ var
       CheckStatus(False);
   end;
 
+const
+  Protocols: array [1..2] of string =
+    ('http:', 'magnet:');
+
 var
   req, res, args: TJSONObject;
   id: integer;
@@ -971,15 +995,23 @@ var
 begin
   AppBusy;
   id:=0;
+  s:=AnsiLowerCase(FileName);
+  for i:=Low(Protocols) to High(Protocols) do
+    if Copy(s, 1, Length(Protocols[i])) = Protocols[i] then begin
+      torrent:='-';
+      break;
+    end;
 
-  fs:=TFileStream.Create(UTF8ToSys(FileName), fmOpenRead or fmShareDenyNone);
-  try
-    SetLength(torrent, fs.Size);
-    fs.ReadBuffer(PChar(torrent)^, Length(torrent));
-  finally
-    fs.Free;
+  if torrent <> '-' then begin
+    fs:=TFileStream.Create(UTF8ToSys(FileName), fmOpenRead or fmShareDenyNone);
+    try
+      SetLength(torrent, fs.Size);
+      fs.ReadBuffer(PChar(torrent)^, Length(torrent));
+    finally
+      fs.Free;
+    end;
+    torrent:=EncodeBase64(torrent);
   end;
-  torrent:=EncodeBase64(torrent);
   try
     with TAddTorrentForm.Create(Self) do
     try
@@ -2375,6 +2407,7 @@ end;
 procedure TMainForm.UpdateUI;
 begin
   acAddTorrent.Enabled:=RpcObj.Connected;
+  acAddLink.Enabled:=RpcObj.Connected;
   acDaemonOptions.Enabled:=RpcObj.Connected;
   acStartAllTorrents.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
   acStopAllTorrents.Enabled:=acStartAllTorrents.Enabled;

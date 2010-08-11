@@ -28,7 +28,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms
   { you can add units after this }, Main, LResources, rpc, AddTorrent, ConnOptions, varlist,
-  TorrProps, DaemonOptions, About, IpResolver, download, ColSetup, utils, ResTranslator, trcomp;
+  TorrProps, DaemonOptions, About, IpResolver, download, ColSetup, utils, ResTranslator, trcomp, AddLink;
 
 {$IFDEF WINDOWS}{$R transgui.rc}{$ENDIF}
 
