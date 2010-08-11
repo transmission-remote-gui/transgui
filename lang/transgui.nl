@@ -1,4 +1,4 @@
-TranslationLanguage=Nederlands
+﻿TranslationLanguage=Nederlands
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Remote naar lokale path mappings.~~Voorbeelden:~/share=\\pch\share~/var/downloads/muziek=Z:\muziek"
 %d x %s (have %d)=%d x %s (heb %d)
@@ -213,6 +213,33 @@ Yes to &All=Ja op &Alles
 You should restart the application to apply changes=Herstart de applicatie om de wijzigingen actief te maken
 No tracker=Geen tracker
 tracker did not respond=tracker antwoord niet
-###################
 %s downloaded=%s downloaded
 %s of %s downloaded=%s of %s downloaded
+###################
+%d torrents=%d torrents
+Add .part extension to incomplete files=Add .part extension to incomplete files
+Add torrent link=Add torrent link
+Are you sure to remove %d selected torrents and all their associated DATA?=Are you sure to remove %d selected torrents and all their associated DATA?
+Are you sure to remove %d selected torrents?=Are you sure to remove %d selected torrents?
+Bandwidth=Bandwidth
+Directory for incomplete files=Directory for incomplete files
+Download=Download
+Enable blocklist=Enable blocklist
+ID=ID
+Move torrent data from current location to new location=Move torrent data from current location to new location
+Network=Network
+New location for torrent data=New location for torrent data
+No link was specified=No link was specified
+No torrent location was specified=No torrent location was specified
+Path=Path
+Reannounce (get more peers)=Reannounce (get more peers)
+Set data location=Set data location
+Size to download=Size to download
+The block list has been updated successfully.~The list entries count: %d=The block list has been updated successfully.~The list entries count: %d
+The directory for incomplete files was not specified=The directory for incomplete files was not specified
+The downloads directory was not specified=The downloads directory was not specified
+Torrent data location=Torrent data location
+Torrents=Torrents
+Unable to execute "%s"=Unable to execute "%s"
+Update blocklist=Update blocklist
+URL of a .torrent file or a magnet link=URL of a .torrent file or a magnet link
