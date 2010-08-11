@@ -349,6 +349,7 @@ type
     procedure lvFilesKeyPress(Sender: TObject; var Key: char);
     procedure lvFilterCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure lvFilterClick(Sender: TObject);
+    procedure lvFilterDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
     procedure lvPeersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure lvTrackersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure panReconnectResize(Sender: TObject);
@@ -361,7 +362,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure lvFilterCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure lvFilterResize(Sender: TObject);
     procedure miAboutClick(Sender: TObject);
     procedure miCopyLabelClick(Sender: TObject);
@@ -389,6 +389,7 @@ type
     FIni: TIniFile;
     FCurHost: string;
     FPathMap: TStringList;
+    FLastFilerIndex: integer;
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -781,9 +782,10 @@ begin
   lvTrackers.Items.ExtraColumns:=TrackersExtraColumns;
   FIni:=TIniFile.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
   FTrackers:=TStringList.Create;
+  FTrackers.Sorted:=True;
   FReconnectTimeOut:=-1;
   FAlterColor:=GetLikeColor(gTorrents.Color, -$10);
-  lvFilter.FixedRows:=0;
+  lvFilter.Items.ExtraColumns:=1;
   gTorrents.AlternateColor:=FAlterColor;
   lvFiles.AlternateColor:=FAlterColor;
   lvPeers.AlternateColor:=FAlterColor;
@@ -868,24 +870,6 @@ begin
     TickTimer.Enabled:=True;
   end;
   UpdateTray;
-end;
-
-procedure TMainForm.lvFilterCustomDrawItem(Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
-var
-  i: integer;
-  R: TRect;
-begin
-  DefaultDraw:=Item.Data = nil;
-  if DefaultDraw then exit;
-
-  with lvFilter.Canvas do begin
-    Brush.Color:=lvFilter.Color;
-    R:=Item.DisplayRect(drBounds);
-    FillRect(R);
-    i:=(R.Bottom + R.Top) div 2;
-    Brush.Color:=clBtnFace;
-    FillRect(Rect(4, i - 1, Sender.ClientWidth - 4, i + 1));
-  end;
 end;
 
 procedure TMainForm.lvFilterResize(Sender: TObject);
@@ -2177,7 +2161,10 @@ begin
       4: ImageIndex:=imgStopped;
       else
         if Text <> '' then
-          ImageIndex:=5;
+          if ARow > StatusFiltersCount + 1 + FTrackers.Count then
+            ImageIndex:=22
+          else
+            ImageIndex:=5;
     end;
   end;
 end;
@@ -2185,9 +2172,35 @@ end;
 procedure TMainForm.lvFilterClick(Sender: TObject);
 begin
   if VarIsNull(lvFilter.Items[0, lvFilter.Row]) then
-    lvFilter.Row:=lvFilter.Row - 1;
+    if FLastFilerIndex > lvFilter.Row then
+      lvFilter.Row:=lvFilter.Row - 1
+    else
+      lvFilter.Row:=lvFilter.Row + 1;
+  FLastFilerIndex:=lvFilter.Row;
   FilterTimer.Enabled:=False;
   FilterTimer.Enabled:=True;
+end;
+
+procedure TMainForm.lvFilterDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect;
+  var ADefaultDrawing: boolean);
+var
+  i: integer;
+  RR: TRect;
+begin
+  ADefaultDrawing:=not VarIsNull(Sender.Items[0, ARow]);
+  if ADefaultDrawing then exit;
+
+  with lvFilter.Canvas do begin
+    Brush.Color:=lvFilter.Color;
+    FillRect(R);
+    i:=(R.Bottom + R.Top) div 2;
+    Brush.Color:=clBtnFace;
+    RR:=R;
+    InflateRect(RR, -4, 0);
+    RR.Top:=i - 1;
+    RR.Bottom:=i + 1;
+    FillRect(RR);
+  end;
 end;
 
 procedure TMainForm.lvPeersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
@@ -2817,10 +2830,11 @@ var
 
 var
   FilterIdx, OldId: integer;
-  TrackerFilter: string;
+  TrackerFilter, PathFilter: string;
   UpSpeed, DownSpeed: double;
   DownCnt, SeedCnt, CompletedCnt, ActiveCnt: integer;
   IsActive: boolean;
+  Paths: TStringList;
 begin
   if gTorrents.Tag <> 0 then exit;
   acRemoveTorrentAndData.Visible:=RpcObj.RPCVersion >= 4;
@@ -2832,6 +2846,9 @@ begin
     exit;
   end;
 
+  Paths:=TStringList.Create;
+  try
+  Paths.Sorted:=True;
   OldId:=RpcObj.CurTorrentId;
   IsActive:=gTorrents.Enabled;
   gTorrents.Enabled:=True;
@@ -2854,13 +2871,20 @@ begin
   ActiveCnt:=0;
 
   FilterIdx:=lvFilter.Row;
-  if FilterIdx >= StatusFiltersCount then begin
-    TrackerFilter:=lvFilter.Items[0, FilterIdx];
-    FilterIdx:=fltAll;
-    i:=RPos('(', TrackerFilter);
-    if i > 0 then
-      TrackerFilter:=Trim(Copy(TrackerFilter, 1, i - 1));
-  end;
+  if VarIsNull(lvFilter.Items[0, FilterIdx]) then
+    Dec(FilterIdx);
+  if FilterIdx >= StatusFiltersCount then
+    if FilterIdx >= StatusFiltersCount + FTrackers.Count + 1 then begin
+      PathFilter:=UTF8Encode(widestring(lvFilter.Items[-1, FilterIdx]));
+      FilterIdx:=fltAll;
+    end
+    else begin
+      TrackerFilter:=UTF8Encode(widestring(lvFilter.Items[0, FilterIdx]));
+      FilterIdx:=fltAll;
+      i:=RPos('(', TrackerFilter);
+      if i > 0 then
+        TrackerFilter:=Trim(Copy(TrackerFilter, 1, i - 1));
+    end;
 
   for i:=0 to FTorrents.Count - 1 do
     FTorrents[idxTag, i]:=0;
@@ -3019,6 +3043,15 @@ begin
       if VarIsEmpty(FTorrents[idxPath, row]) then
         RpcObj.RequestFullInfo:=True;
 
+    if not VarIsEmpty(FTorrents[idxPath, row]) then begin
+      s:=UTF8Encode(widestring(FTorrents[idxPath, row]));
+      j:=Paths.IndexOf(s);
+      if j < 0 then
+        Paths.AddObject(s, TObject(1))
+      else
+        Paths.Objects[j]:=TObject(PtrInt(Paths.Objects[j]) + 1);
+    end;
+
     DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, row];
     UpSpeed:=UpSpeed + FTorrents[idxUpSpeed, row];
 
@@ -3055,7 +3088,7 @@ begin
       end;
 
       if not VarIsEmpty(FTorrents[idxTracker, i]) then begin
-        s:=FTorrents[idxTracker, i];
+        s:=UTF8Encode(FTorrents[idxTracker, i]);
         j:=FTrackers.IndexOf(s);
         if j < 0 then
           j:=FTrackers.Add(s);
@@ -3063,6 +3096,9 @@ begin
         if (TrackerFilter <> '') and (TrackerFilter <> s) then
           continue;
       end;
+
+      if (PathFilter <> '') and not VarIsEmpty(FTorrents[idxPath, i]) and (UTF8Decode(PathFilter) <> FTorrents[idxPath, i]) then
+        continue;
 
       case FilterIdx of
         fltActive:
@@ -3134,7 +3170,22 @@ begin
       else
         FTrackers.Delete(i);
     end;
-    lvFilter.Items.RowCnt:=StatusFiltersCount + 1 + FTrackers.Count;
+    j:=StatusFiltersCount + 1 + FTrackers.Count;
+    lvFilter.Items[0, j]:=NULL;
+    Inc(j);
+
+    for i:=0 to Paths.Count - 1 do begin
+      s:=ExtractFileName(Paths[i]);
+      for row:=StatusFiltersCount + FTrackers.Count + 2 to j - 1 do
+        if ExtractFileName(UTF8Encode(widestring(lvFilter.Items[-1, row]))) = s then begin
+          s:=Paths[i];
+          lvFilter.Items[0, row]:=UTF8Decode(Format('%s (%d)', [UTF8Encode(widestring(lvFilter.Items[-1, row])), ptruint(Paths.Objects[row - (StatusFiltersCount + FTrackers.Count + 2)])]));
+        end;
+      lvFilter.Items[0, j]:=UTF8Decode(Format('%s (%d)', [s, ptruint(Paths.Objects[i])]));
+      lvFilter.Items[-1, j]:=UTF8Decode(Paths[i]);
+      Inc(j);
+    end;
+    lvFilter.Items.RowCnt:=j;
   finally
     lvFilter.Items.EndUpdate;
   end;
@@ -3146,6 +3197,9 @@ begin
 
   TrayIcon.Hint:=Format(sDownloadingSeeding,
         [RpcObj.InfoStatus, LineEnding, DownCnt, SeedCnt, LineEnding, StatusBar.Panels[1].Text, StatusBar.Panels[2].Text]);
+  finally
+    Paths.Free;
+  end;
 end;
 
 procedure TMainForm.FillPeersList(list: TJSONArray);
