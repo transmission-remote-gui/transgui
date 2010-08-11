@@ -399,6 +399,7 @@ type
     FCurHost: string;
     FPathMap: TStringList;
     FLastFilerIndex: integer;
+    FFilterChanged: boolean;
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -2390,6 +2391,7 @@ end;
 procedure TMainForm.FilterTimerTimer(Sender: TObject);
 begin
   FilterTimer.Enabled:=False;
+  FFilterChanged:=True;
   DoRefresh(True);
 end;
 
@@ -3206,8 +3208,12 @@ begin
   if OldId <> 0 then begin
     i:=gTorrents.Items.IndexOf(idxTorrentId, OldId);
     if i >= 0 then
-      gTorrents.Row:=i;
+      gTorrents.Row:=i
+    else
+      if FFilterChanged and (gTorrents.Items.Count > 0) then
+        gTorrents.Row:=0;
   end;
+  FFilterChanged:=False;
   gTorrentsClick(nil);
 
   crow:=lvFilter.Row;
