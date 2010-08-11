@@ -164,6 +164,11 @@
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
+      <Checks>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
       <Optimizations>
         <OptimizationLevel Value="0"/>
       </Optimizations>
@@ -182,6 +187,7 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
+      <CustomOptions Value="-Sa"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

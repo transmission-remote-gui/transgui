@@ -140,9 +140,9 @@ type
     lvTrackers: TVarGrid;
     MenuItem25: TMenuItem;
     MenuItem40: TMenuItem;
-    MenuItem41: TMenuItem;
+    pmSepOpen2: TMenuItem;
     MenuItem42: TMenuItem;
-    MenuItem43: TMenuItem;
+    pmSepOpen1: TMenuItem;
     MenuItem44: TMenuItem;
     MenuItem45: TMenuItem;
     MenuItem46: TMenuItem;
@@ -154,6 +154,16 @@ type
     MenuItem52: TMenuItem;
     MenuItem53: TMenuItem;
     MenuItem54: TMenuItem;
+    MenuItem55: TMenuItem;
+    MenuItem56: TMenuItem;
+    MenuItem58: TMenuItem;
+    MenuItem59: TMenuItem;
+    MenuItem60: TMenuItem;
+    MenuItem61: TMenuItem;
+    MenuItem62: TMenuItem;
+    miPriority: TMenuItem;
+    pmiPriority: TMenuItem;
+    MenuItem57: TMenuItem;
     pbDownloaded: TPaintBox;
     pmTrackers: TPopupMenu;
     tabTrackers: TTabSheet;
@@ -381,7 +391,6 @@ type
     FUnZip: TUnZipper;
     FReconnectWaitStart: TDateTime;
     FReconnectTimeOut: integer;
-    FDoneColumnIdx: integer;
     FTorrentProgress: TBitmap;
     FLastPieces: string;
     FLastPieceCount: integer;
@@ -427,6 +436,7 @@ type
     function ExecRemoteFile(const FileName: string; SelectFile: boolean): boolean;
     function GetSelectedTorrents: variant;
     procedure FillDownloadDirs(CB: TComboBox);
+    function PriorityToStr(p: integer; var ImageIndex: integer): string;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -437,6 +447,7 @@ type
     function TorrentAction(const TorrentIds: variant; const AAction: string; args: TJSONObject = nil): boolean;
     function SetFilePriority(TorrentId: integer; const Files: array of integer; const APriority: string): boolean;
     function SetCurrentFilePriority(const APriority: string): boolean;
+    procedure SetTorrentPriority(APriority: integer);
     procedure ClearDetailsInfo;
     property Ini: TIniFile read FIni;
   end;
@@ -471,6 +482,7 @@ const
   idxCompletedOn = 15;
   idxLastActive = 16;
   idxPath = 17;
+  idxPriority = 18;
 
   idxTorrentId = -1;
   idxTag = -2;
@@ -536,10 +548,10 @@ const
 
   StatusFiltersCount = 5;
 
-  TorrentFieldsMap: array[idxName..idxLastActive] of string =
+  TorrentFieldsMap: array[idxName..idxPriority] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
      'peersGettingFromUs,leechers,peersKnown', 'rateDownload', 'rateUpload', 'eta', 'uploadRatio',
-     'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate');
+     'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority');
 
 implementation
 
@@ -1461,16 +1473,15 @@ var
   i: integer;
   s: string;
 begin
-  FDoneColumnIdx:=-1;
   s:='';
   for i:=0 to gTorrents.Columns.Count - 1 do
     with gTorrents.Columns[i] do
       if Visible and (Width > 0) then begin
-        if s <> '' then
-          s:=s + ',';
-        s:=s + TorrentFieldsMap[ID];
-        if ID = idxDone then
-          FDoneColumnIdx:=Index;
+        if TorrentFieldsMap[ID - 1] <> '' then begin
+          if s <> '' then
+            s:=s + ',';
+          s:=s + TorrentFieldsMap[ID - 1];
+        end;
       end;
   RpcObj.TorrentFields:=s;
   DoRefresh(True);
@@ -1745,17 +1756,29 @@ end;
 
 procedure TMainForm.acSetHighPriorityExecute(Sender: TObject);
 begin
-  SetCurrentFilePriority('high');
+  Application.ProcessMessages;
+  if lvFiles.Focused then
+    SetCurrentFilePriority('high')
+  else
+    SetTorrentPriority(TR_PRI_HIGH);
 end;
 
 procedure TMainForm.acSetLowPriorityExecute(Sender: TObject);
 begin
-  SetCurrentFilePriority('low');
+  Application.ProcessMessages;
+  if lvFiles.Focused then
+    SetCurrentFilePriority('low')
+  else
+    SetTorrentPriority(TR_PRI_LOW);
 end;
 
 procedure TMainForm.acSetNormalPriorityExecute(Sender: TObject);
 begin
-  SetCurrentFilePriority('normal');
+  Application.ProcessMessages;
+  if lvFiles.Focused then
+    SetCurrentFilePriority('normal')
+  else
+    SetTorrentPriority(TR_PRI_NORMAL);
 end;
 
 procedure TMainForm.acSetNotDownloadExecute(Sender: TObject);
@@ -2049,6 +2072,8 @@ begin
         Text:=RatioToString(Sender.Items[idxRatio, ARow]);
       idxAddedOn, idxCompletedOn, idxLastActive:
         Text:=TorrentDateTimeToString(Sender.Items[ADataCol, ARow]);
+      idxPriority:
+        Text:=PriorityToStr(Sender.Items[ADataCol, ARow], ImageIndex);
     end;
   end;
 end;
@@ -2113,13 +2138,7 @@ begin
     if Text = '' then exit;
     case ADataCol of
       idxFilePriority:
-        case integer(FFiles[idxFilePriority, ARow]) of
-          TR_PRI_SKIP:   begin Text:=sSkip; ImageIndex:=23; end;
-          TR_PRI_LOW:    begin Text:=sLow; ImageIndex:=24; end;
-          TR_PRI_NORMAL: begin Text:=sNormal; ImageIndex:=25; end;
-          TR_PRI_HIGH:   begin Text:=sHigh; ImageIndex:=26; end;
-          else           Text:='???';
-        end;
+        Text:=PriorityToStr(FFiles[idxFilePriority, ARow], ImageIndex);
       idxFileSize, idxFileDone:
         Text:=GetHumanSize(FFiles[ADataCol, ARow]);
       idxFileProgress:
@@ -2604,12 +2623,15 @@ begin
   acReannounceTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 5);
   acMoveTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 6);
   acTorrentProps.Enabled:=acRemoveTorrent.Enabled;
-  acOpenContainingFolder.Enabled:=acTorrentProps.Enabled;
+  acOpenContainingFolder.Enabled:=acTorrentProps.Enabled and (RpcObj.RPCVersion >= 4);
+  pmiPriority.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
+  miPriority.Enabled:=pmiPriority.Enabled;
   acSetHighPriority.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0) and
-                      (lvFiles.Items.Count > 0) and (PageInfo.ActivePage = tabFiles);
+                      ( ( not lvFiles.Focused and (RpcObj.RPCVersion >=5) ) or
+                        ((lvFiles.Items.Count > 0) and (PageInfo.ActivePage = tabFiles)) );
   acSetNormalPriority.Enabled:=acSetHighPriority.Enabled;
   acSetLowPriority.Enabled:=acSetHighPriority.Enabled;
-  acOpenFile.Enabled:=acSetHighPriority.Enabled and (lvFiles.SelCount < 2);
+  acOpenFile.Enabled:=acSetHighPriority.Enabled and (lvFiles.SelCount < 2) and (RpcObj.RPCVersion >= 4);
   acSetNotDownload.Enabled:=acSetHighPriority.Enabled;
   acSetupColumns.Enabled:=RpcObj.Connected;
   acUpdateBlocklist.Enabled:=RpcObj.Connected and (RpcObj.RPCVersion >= 5);
@@ -2841,6 +2863,12 @@ begin
   acReannounceTorrent.Visible:=RpcObj.RPCVersion >= 5;
   acUpdateBlocklist.Visible:=RpcObj.Connected and (RpcObj.RPCVersion >= 5);
   acMoveTorrent.Visible:=RpcObj.Connected and (RpcObj.RPCVersion >= 6);
+  pmiPriority.Visible:=RpcObj.Connected and (RpcObj.RPCVersion >= 5);
+  miPriority.Visible:=pmiPriority.Visible;
+  acOpenContainingFolder.Visible:=RpcObj.Connected and (RpcObj.RPCVersion >= 4);
+  acOpenFile.Visible:=acOpenContainingFolder.Visible;
+  pmSepOpen1.Visible:=acOpenContainingFolder.Visible;
+  pmSepOpen2.Visible:=acOpenContainingFolder.Visible;
   if list = nil then begin
     ClearDetailsInfo;
     exit;
@@ -3052,6 +3080,9 @@ begin
         Paths.Objects[j]:=TObject(PtrInt(Paths.Objects[j]) + 1);
     end;
 
+    if t.IndexOfName('bandwidthPriority') >= 0 then
+      FTorrents[idxPriority, row]:=t.Integers['bandwidthPriority'];
+
     DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, row];
     UpSpeed:=UpSpeed + FTorrents[idxUpSpeed, row];
 
@@ -3176,8 +3207,10 @@ begin
     end;
 
     row:=j;
-    lvFilter.Items[0, row]:=NULL;
-    Inc(row);
+    if row > StatusFiltersCount + 1 then begin
+      lvFilter.Items[0, row]:=NULL;
+      Inc(row);
+    end;
 
     i:=0;
     while i < FTrackers.Count do begin
@@ -3866,6 +3899,16 @@ begin
   Result:=SetFilePriority(RpcObj.CurTorrentId, Files, APriority);
 end;
 
+procedure TMainForm.SetTorrentPriority(APriority: integer);
+var
+  args: TJSONObject;
+begin
+  if gTorrents.Items.Count = 0 then exit;
+  args:=TJSONObject.Create;
+  args.Add('bandwidthPriority', TJSONIntegerNumber.Create(APriority));
+  TorrentAction(GetSelectedTorrents, 'set', args);
+end;
+
 procedure TMainForm.ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
 const
   MaxPieces = 4000;
@@ -4045,6 +4088,17 @@ begin
   end;
   if CB.Items.Count > 0 then
     CB.ItemIndex:=0;
+end;
+
+function TMainForm.PriorityToStr(p: integer; var ImageIndex: integer): string;
+begin
+  case p of
+    TR_PRI_SKIP:   begin Result:=sSkip; ImageIndex:=23; end;
+    TR_PRI_LOW:    begin Result:=sLow; ImageIndex:=24; end;
+    TR_PRI_NORMAL: begin Result:=sNormal; ImageIndex:=25; end;
+    TR_PRI_HIGH:   begin Result:=sHigh; ImageIndex:=26; end;
+    else           Result:='???';
+  end;
 end;
 
 initialization
