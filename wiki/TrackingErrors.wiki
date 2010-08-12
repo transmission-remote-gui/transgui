@@ -1,0 +1,15 @@
+#summary How to get a call stack to track a error.
+
+Often it is not possible to find and fix a error, if a user just reports: "I have the error X, when I try to do Y".
+
+It is needed to provide more details, like a call stack information with line numbers.
+
+
+To do that:
+ * Build the program using Lazarus IDE as described [Building here].
+ * Run the program from the IDE by pressing the {{{F9}}} key or choosing {{{Run > Run}}} from the menu.
+ * When the error will occur press the {{{Break}}} button in the error window.
+ * Open the Call stack window using the {{{View > Debug windows > Call Stack}}} menu item.
+ * Choose the {{{Max 50}}} on the toolbar of the Call Stack window.
+ * Press the {{{Copy All}}} button to copy the call stack information to the clipboard.
+ * Paste this call stack information to your bug report.
