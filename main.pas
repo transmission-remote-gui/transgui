@@ -1195,7 +1195,7 @@ begin
           s:=UTF8Encode(res.Strings['name']);
           if (path <> '') and (Copy(s, 1, Length(path)) = path) then
             s:=Copy(s, Length(path) + 1, MaxInt);
-          lvFiles.Items[1, i]:=s;
+          lvFiles.Items[1, i]:=UTF8Decode(s);
           lvFiles.Items[2, i]:=res.Floats['length'];
           lvFiles.Items[-1, i]:=i;
         end;
