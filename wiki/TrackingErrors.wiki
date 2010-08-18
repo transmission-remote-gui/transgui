@@ -2,7 +2,7 @@
 
 Often it is not possible to find and fix a error, if a user just reports: "I have the error X, when I try to do Y".
 
-It is needed to provide more details, like a call stack information with line numbers.
+It is needed to provide more details, like call stack information with line numbers.
 
 
 To do that:
