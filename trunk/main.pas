@@ -3109,7 +3109,7 @@ begin
     end;
 
     if t.IndexOfName('downloadDir') >= 0 then
-      FTorrents[idxPath, row]:=t.Strings['downloadDir']
+      FTorrents[idxPath, row]:=UTF8Decode(ExcludeTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir'])))
     else
       if VarIsEmpty(FTorrents[idxPath, row]) then
         RpcObj.RequestFullInfo:=True;
