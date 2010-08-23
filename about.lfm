@@ -598,12 +598,12 @@ object AboutForm: TAboutForm
     object tabLicense: TTabSheet
       Caption = 'License'
       ClientHeight = 263
-      ClientWidth = 401
+      ClientWidth = 432
       object edLicense: TMemo
         Left = 4
         Height = 255
         Top = 4
-        Width = 393
+        Width = 424
         Align = alClient
         BorderSpacing.Around = 4
         Lines.Strings = (

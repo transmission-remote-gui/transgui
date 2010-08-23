@@ -39,6 +39,7 @@ type
     procedure btDownClick(Sender: TObject);
     procedure btOkClick(Sender: TObject);
     procedure btUpClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure lstColumnsClick(Sender: TObject);
     procedure lstColumnsClickCheck(Sender: TObject);
   private
@@ -53,6 +54,8 @@ type
 function SetupColumns(LV: TVarGrid; PersistentColumnId: integer; const GridName: string): boolean;
 
 implementation
+
+uses main;
 
 function SetupColumns(LV: TVarGrid; PersistentColumnId: integer; const GridName: string): boolean;
 var
@@ -128,6 +131,11 @@ end;
 procedure TColSetupForm.btUpClick(Sender: TObject);
 begin
   MoveItem(-1);
+end;
+
+procedure TColSetupForm.FormCreate(Sender: TObject);
+begin
+  Font.Size:=MainForm.Font.Size;
 end;
 
 procedure TColSetupForm.lstColumnsClick(Sender: TObject);

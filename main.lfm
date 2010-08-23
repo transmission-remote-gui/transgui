@@ -301,11 +301,11 @@ object MainForm: TMainForm
     Height = 290
     Top = 151
     Width = 780
-    ActivePage = tabTrackers
+    ActivePage = tabGeneral
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
