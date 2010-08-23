@@ -2666,6 +2666,7 @@ var
   e: boolean;
 begin
   e:=RpcObj.Connected and (Screen.ActiveForm = Self);
+  acSelectAll.Enabled:=e;
   acAddTorrent.Enabled:=e;
   acAddLink.Enabled:=e;
   acDaemonOptions.Enabled:=e;
