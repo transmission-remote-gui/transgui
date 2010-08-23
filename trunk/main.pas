@@ -537,6 +537,7 @@ const
   fltDone     = 2;
   fltActive   = 3;
   fltInactive = 4;
+  fltStopped  = 5;
 
   // Status images
   imgDown      = 9;
@@ -545,13 +546,13 @@ const
   imgSeedError = 12;
   imgError     = 13;
   imgDone      = 14;
-  imgStopped   = 15;
+  imgStopped   = 29;
   imgDownQueue = 16;
   imgSeedQueue = 17;
   imgAll       = 19;
   imgActive    = 20;
 
-  StatusFiltersCount = 5;
+  StatusFiltersCount = 6;
 
   TorrentFieldsMap: array[idxName..idxTorrentId] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
@@ -2231,7 +2232,8 @@ begin
       1: ImageIndex:=imgDown;
       2: ImageIndex:=imgSeed;
       3: ImageIndex:=imgActive;
-      4: ImageIndex:=imgStopped;
+      4: ImageIndex:=15;
+      5: ImageIndex:=imgStopped;
       else
         if Text <> '' then
           if ARow >= Sender.Items.Count - FTrackers.Count then
@@ -2610,6 +2612,7 @@ begin
     Items[0, 2]:=UTF8Decode(SCompleted);
     Items[0, 3]:=UTF8Decode(SActive);
     Items[0, 4]:=UTF8Decode(SInactive);
+    Items[0, 5]:=UTF8Decode(sStopped);
   end;
   edSearch.Enabled:=False;
   edSearch.Color:=Self.Color;
@@ -2904,7 +2907,7 @@ var
   FilterIdx, OldId: integer;
   TrackerFilter, PathFilter: string;
   UpSpeed, DownSpeed: double;
-  DownCnt, SeedCnt, CompletedCnt, ActiveCnt: integer;
+  DownCnt, SeedCnt, CompletedCnt, ActiveCnt, StoppedCnt: integer;
   IsActive: boolean;
   Paths: TStringList;
 begin
@@ -2947,6 +2950,7 @@ begin
   SeedCnt:=0;
   CompletedCnt:=0;
   ActiveCnt:=0;
+  StoppedCnt:=0;
 
   FilterIdx:=lvFilter.Row;
   if VarIsNull(lvFilter.Items[0, FilterIdx]) then
@@ -3169,6 +3173,9 @@ begin
           Inc(CompletedCnt);
       end;
 
+      if FTorrents[idxStateImg, i] = imgStopped then
+        Inc(StoppedCnt);
+
       if not VarIsEmpty(FTorrents[idxTracker, i]) then begin
         s:=UTF8Encode(FTorrents[idxTracker, i]);
         j:=FTrackers.IndexOf(s);
@@ -3194,6 +3201,9 @@ begin
             continue;
         fltDone:
           if (FTorrents[idxStateImg, i] <> imgDone) and (FTorrents[idxStatus, i] <> TR_STATUS_SEED) then
+            continue;
+        fltStopped:
+          if FTorrents[idxStateImg, i] <> imgStopped then
             continue;
       end;
 
@@ -3242,6 +3252,7 @@ begin
     lvFilter.Items[0, 2]:=UTF8Decode(Format('%s (%d)', [SCompleted, CompletedCnt]));
     lvFilter.Items[0, 3]:=UTF8Decode(Format('%s (%d)', [SActive, ActiveCnt]));
     lvFilter.Items[0, 4]:=UTF8Decode(Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt]));
+    lvFilter.Items[0, 5]:=UTF8Decode(Format('%s (%d)', [sStopped, StoppedCnt]));
 
     j:=StatusFiltersCount;
     lvFilter.Items[0, j]:=NULL;
