@@ -125,6 +125,7 @@ type
     acAddLink: TAction;
     acReannounceTorrent: TAction;
     acMoveTorrent: TAction;
+    acSelectAll: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
@@ -140,6 +141,7 @@ type
     lvTrackers: TVarGrid;
     MenuItem25: TMenuItem;
     MenuItem40: TMenuItem;
+    MenuItem41: TMenuItem;
     pmSepOpen2: TMenuItem;
     MenuItem42: TMenuItem;
     pmSepOpen1: TMenuItem;
@@ -327,6 +329,7 @@ type
     procedure acRemoveTorrentExecute(Sender: TObject);
     procedure acResolveCountryExecute(Sender: TObject);
     procedure acResolveHostExecute(Sender: TObject);
+    procedure acSelectAllExecute(Sender: TObject);
     procedure acSetHighPriorityExecute(Sender: TObject);
     procedure acSetLowPriorityExecute(Sender: TObject);
     procedure acSetNormalPriorityExecute(Sender: TObject);
@@ -1756,6 +1759,15 @@ begin
   acResolveHost.Checked:=not acResolveHost.Checked;
   FreeAndNil(FResolver);
   DoRefresh;
+end;
+
+procedure TMainForm.acSelectAllExecute(Sender: TObject);
+begin
+  Application.ProcessMessages;
+  if lvFiles.Focused then
+    lvFiles.SelectAll
+  else
+    gTorrents.SelectAll;
 end;
 
 procedure TMainForm.acSetHighPriorityExecute(Sender: TObject);
