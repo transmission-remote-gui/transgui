@@ -442,8 +442,11 @@ begin
 end;
 
 procedure TVarGrid.PrepareCanvas(aCol, aRow: Integer; aState: TGridDrawState);
+var
+  F: TCustomForm;
 begin
-  if FHideSelection and not Focused and (FSelCount = 0) then
+  F:=GetParentForm(Self);
+  if FHideSelection and (FSelCount = 0) and (F <> nil) and (F.ActiveControl <> Self) then
     aState:=aState - [gdSelected];
   inherited PrepareCanvas(aCol, aRow, aState);
   with Canvas do
