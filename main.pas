@@ -2662,32 +2662,35 @@ begin
 end;
 
 procedure TMainForm.UpdateUI;
+var
+  e: boolean;
 begin
-  acAddTorrent.Enabled:=RpcObj.Connected;
-  acAddLink.Enabled:=RpcObj.Connected;
-  acDaemonOptions.Enabled:=RpcObj.Connected;
-  acStartAllTorrents.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
+  e:=RpcObj.Connected and (Screen.ActiveForm = Self);
+  acAddTorrent.Enabled:=e;
+  acAddLink.Enabled:=e;
+  acDaemonOptions.Enabled:=e;
+  acStartAllTorrents.Enabled:=e and (gTorrents.Items.Count > 0);
   acStopAllTorrents.Enabled:=acStartAllTorrents.Enabled;
-  acStartTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
-  acStopTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
-  acVerifyTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
-  acRemoveTorrent.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
+  acStartTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
+  acStopTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
+  acVerifyTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
+  acRemoveTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
   acRemoveTorrentAndData.Enabled:=acRemoveTorrent.Enabled and (RpcObj.RPCVersion >= 4);
   acReannounceTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 5);
   acMoveTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 6);
   acTorrentProps.Enabled:=acRemoveTorrent.Enabled;
   acOpenContainingFolder.Enabled:=acTorrentProps.Enabled and (RpcObj.RPCVersion >= 4);
-  pmiPriority.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0);
+  pmiPriority.Enabled:=e and (gTorrents.Items.Count > 0);
   miPriority.Enabled:=pmiPriority.Enabled;
-  acSetHighPriority.Enabled:=RpcObj.Connected and (gTorrents.Items.Count > 0) and
+  acSetHighPriority.Enabled:=e and (gTorrents.Items.Count > 0) and
                       ( ( not lvFiles.Focused and (RpcObj.RPCVersion >=5) ) or
                         ((lvFiles.Items.Count > 0) and (PageInfo.ActivePage = tabFiles)) );
   acSetNormalPriority.Enabled:=acSetHighPriority.Enabled;
   acSetLowPriority.Enabled:=acSetHighPriority.Enabled;
   acOpenFile.Enabled:=acSetHighPriority.Enabled and (lvFiles.SelCount < 2) and (RpcObj.RPCVersion >= 4);
   acSetNotDownload.Enabled:=acSetHighPriority.Enabled;
-  acSetupColumns.Enabled:=RpcObj.Connected;
-  acUpdateBlocklist.Enabled:=RpcObj.Connected and (RpcObj.RPCVersion >= 5);
+  acSetupColumns.Enabled:=e;
+  acUpdateBlocklist.Enabled:=e and (RpcObj.RPCVersion >= 5);
 end;
 
 function TMainForm.ShowConnOptions: boolean;
