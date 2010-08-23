@@ -78,6 +78,10 @@ begin
 end;
 
 procedure TAboutForm.FormCreate(Sender: TObject);
+{$ifdef lclcarbon}
+var
+  s: string;
+{$endif lclcarbon}
 begin
   Font.Size:=MainForm.Font.Size;
   txAppName.Font.Size:=Font.Size + 2;
@@ -86,6 +90,12 @@ begin
   txAppName.Caption:=AppName;
   txVersion.Caption:=Format(txVersion.Caption, [AppVersion]);
   Page.ActivePageIndex:=0;
+{$ifdef lclcarbon}
+  s:=edLicense.Text;
+  edLicense.Text:='';
+  edLicense.HandleNeeded;
+  edLicense.Text:=s;
+{$endif lclcarbon}
 end;
 
 procedure TAboutForm.imgDonateClick(Sender: TObject);
