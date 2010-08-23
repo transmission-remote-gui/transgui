@@ -3,10 +3,6 @@
 
 *Main window with peers list page / Windows 7*
 
-[http://transmisson-remote-gui.googlecode.com/svn/wiki/GeneralLinux.png]
-
-*Main window with general info page / Linux*
-
 [http://transmisson-remote-gui.googlecode.com/svn/wiki/GeneralMacOSX.png]
 
 *Main window with general info page and Russian localization / Mac OS X*
