@@ -810,6 +810,8 @@ begin
   Font.Size:=11;
 {$else}
   Font.Size:=Screen.SystemFont.Size;
+  if Font.Size = 0 then
+    Font.Size:=8;
 {$endif darwin}
   Application.Title:=AppName;
   Caption:=Application.Title;
