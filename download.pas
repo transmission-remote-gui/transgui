@@ -75,14 +75,13 @@ type
     procedure WriteToFile;
   protected
     procedure Execute; override;
-
   end;
 
 function DownloadFile(const URL, DestFolder: string; const DestFileName: string = ''): boolean;
 
 implementation
 
-uses Main;
+uses Main, rpc;
 
 function DownloadFile(const URL, DestFolder: string; const DestFileName: string): boolean;
 var
@@ -137,6 +136,12 @@ begin
   try
     FHttp:=THTTPSend.Create;
     try
+      if RpcObj.Http.ProxyHost <> '' then begin
+        FHttp.ProxyHost:=RpcObj.Http.ProxyHost;
+        FHttp.ProxyPort:=RpcObj.Http.ProxyPort;
+        FHttp.ProxyUser:=RpcObj.Http.ProxyUser;
+        FHttp.ProxyPass:=RpcObj.Http.ProxyPass;
+      end;
       FHttp.Sock.OnMonitor:=@DoMonitor;
       if FHttp.HTTPMethod('GET', FUrl) then begin
         FForm.FDownloaded:=FHttp.DownloadSize;
