@@ -4055,47 +4055,59 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
     p: string;
   begin
     AppBusy;
-    if SelectFile and FileExistsUTF8(s) then begin
+    if SelectFile then
+      if FileExistsUTF8(s) then begin
 {$ifdef mswindows}
-      p:=Format('/select,"%s"', [s]);
-      s:='explorer.exe';
+        p:=Format('/select,"%s"', [s]);
+        s:='explorer.exe';
 {$else}
-      p:='';
-      s:=ExtractFilePath(s);
+        p:='';
+        s:=ExtractFilePath(s);
 {$endif mswindows}
-    end;
+      end
+      else begin
+        p:='';
+        s:=ExtractFilePath(s);
+      end;
     Result:=OpenURL(s, p);
     AppNormal;
-    if not Result then
+    if not Result then begin
+      ForceAppNormal;
       MessageDlg(Format(sUnableToExecute, [s]), mtError, [mbOK], 0);
+    end;
+  end;
+
+  function _FixSeparators(const p: string): string;
+  begin
+    Result:=StringReplace(p, '/', DirectorySeparator, [rfReplaceAll]);
+    Result:=StringReplace(Result, '\', DirectorySeparator, [rfReplaceAll]);
   end;
 
 var
   i, j: integer;
-  s, ss: string;
+  s, ss, fn: string;
 begin
+  fn:=_FixSeparators(FileName);
   for i:=0 to FPathMap.Count - 1 do begin
     s:=FPathMap[i];
     j:=Pos('=', s);
     if j > 0 then begin
-      ss:=Copy(s, 1, j - 1);
-      if (ss = FileName) or (Pos(IncludeProperTrailingPathDelimiter(ss), FileName) = 1) then begin
-        if ss = FileName then
+      ss:=_FixSeparators(Copy(s, 1, j - 1));
+      if (ss = fn) or (Pos(IncludeProperTrailingPathDelimiter(ss), fn) = 1) then begin
+        if ss = fn then
           ss:=Copy(s, j + 1, MaxInt)
         else begin
           ss:=IncludeProperTrailingPathDelimiter(ss);
-          ss:=IncludeTrailingPathDelimiter(Copy(s, j + 1, MaxInt)) + Copy(FileName, Length(ss) + 1, MaxInt);
+          ss:=IncludeTrailingPathDelimiter(Copy(s, j + 1, MaxInt)) + Copy(fn, Length(ss) + 1, MaxInt);
         end;
-        ss:=StringReplace(ss, '/', DirectorySeparator, [rfReplaceAll]);
-        ss:=StringReplace(ss, '\', DirectorySeparator, [rfReplaceAll]);
-        _Exec(ss);
+        _Exec(_FixSeparators(ss));
         exit;
       end;
     end;
   end;
 
-  if FileExistsUTF8(FileName) or DirectoryExistsUTF8(FileName) then begin
-    _Exec(FileName);
+  if FileExistsUTF8(fn) or DirectoryExistsUTF8(fn) then begin
+    _Exec(fn);
     exit;
   end;
 
