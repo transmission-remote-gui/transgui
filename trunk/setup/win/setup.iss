@@ -28,8 +28,8 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 
-VersionInfoVersion={#GetFileVersion(SourcePath+'..\units\transgui.exe')}
-VersionInfoTextVersion={#GetFileVersion(SourcePath+'..\units\transgui.exe')}
+VersionInfoVersion={#GetFileVersion(SourcePath+'..\..\transgui.exe')}
+VersionInfoTextVersion={#GetFileVersion(SourcePath+'..\..\transgui.exe')}
 
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
