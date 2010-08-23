@@ -719,7 +719,7 @@ procedure TRpc.Disconnect;
 begin
   if Assigned(RpcThread) then begin
     RpcThread.Terminate;
-    while FConnected do begin
+    while Assigned(RpcThread) do begin
       Application.ProcessMessages;
       Sleep(20);
     end;
