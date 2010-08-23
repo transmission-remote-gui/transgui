@@ -163,6 +163,7 @@ end;
 
 procedure TDownloadForm.FormCreate(Sender: TObject);
 begin
+  Font.Size:=MainForm.Font.Size;
   FThread:=TDownloadThread.Create(True);
   FThread.FreeOnTerminate:=True;
   FThread.FForm:=Self;

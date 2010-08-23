@@ -102,6 +102,7 @@ end;
 
 procedure TAddTorrentForm.FormCreate(Sender: TObject);
 begin
+  Font.Size:=MainForm.Font.Size;
   lvFiles.Items.ExtraColumns:=1;
   lvFiles.AlternateColor:=FAlterColor;
 {$ifdef windows}

@@ -806,8 +806,15 @@ begin
     end;
   end;
 {$endif darwin}
+{$ifdef darwin}
+  Font.Size:=11;
+{$else}
+  Font.Size:=Screen.SystemFont.Size;
+{$endif darwin}
   Application.Title:=AppName;
   Caption:=Application.Title;
+  txTransferHeader.Font.Size:=Font.Size + 2;
+  txTorrentHeader.Font.Size:=txTransferHeader.Font.Size;
   TrayIcon.Icon.Assign(Application.Icon);
   RpcObj:=TRpc.Create;
   FTorrents:=TVarList.Create(gTorrents.Columns.Count, 0);
@@ -843,6 +850,8 @@ begin
   txTorrentHeader.Color:=txTransferHeader.Color;
   txTransferHeader.Caption:=' ' + txTransferHeader.Caption;
   txTorrentHeader.Caption:=' ' + txTorrentHeader.Caption;
+  txTransferHeader.Height:=txTransferHeader.Canvas.TextHeight(txTransferHeader.Caption) + 2;
+  txTorrentHeader.Height:=txTorrentHeader.Canvas.TextHeight(txTorrentHeader.Caption) + 2;
 
   if FIni.ReadInteger('MainForm', 'State', -1) = -1 then
     Position:=poScreenCenter

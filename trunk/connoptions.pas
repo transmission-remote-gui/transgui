@@ -200,6 +200,7 @@ end;
 
 procedure TOptionsForm.FormCreate(Sender: TObject);
 begin
+  Font.Size:=MainForm.Font.Size;
   Page.ActivePageIndex:=0;
   ActiveControl:=cbHost;
   cbLanguage.Items.Add(FTranslationLanguage);

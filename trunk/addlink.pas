@@ -20,6 +20,7 @@ type
     edLink: TEdit;
     txLink: TLabel;
     procedure btOKClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -27,6 +28,8 @@ type
   end; 
 
 implementation
+
+uses main;
 
 { TAddLinkForm }
 
@@ -39,6 +42,11 @@ begin
     exit;
   end;
   ModalResult:=mrOK;
+end;
+
+procedure TAddLinkForm.FormCreate(Sender: TObject);
+begin
+  Font.Size:=MainForm.Font.Size;
 end;
 
 initialization

@@ -79,6 +79,9 @@ end;
 
 procedure TAboutForm.FormCreate(Sender: TObject);
 begin
+  Font.Size:=MainForm.Font.Size;
+  txAppName.Font.Size:=Font.Size + 2;
+  txHomePage.Font.Size:=Font.Size;
   BorderStyle:=bsSizeable;
   txAppName.Caption:=AppName;
   txVersion.Caption:=Format(txVersion.Caption, [AppVersion]);

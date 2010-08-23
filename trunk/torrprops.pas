@@ -57,6 +57,8 @@ type
 
 implementation
 
+uses main;
+
 { TTorrPropsForm }
 
 procedure TTorrPropsForm.cbMaxDownClick(Sender: TObject);
@@ -76,6 +78,7 @@ end;
 
 procedure TTorrPropsForm.FormCreate(Sender: TObject);
 begin
+  Font.Size:=MainForm.Font.Size;
 {$ifdef windows}
   gbOptions.Caption:='';
 {$endif windows}

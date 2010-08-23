@@ -21,9 +21,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Height = 295
     Top = 8
     Width = 572
-    ActivePage = tabBandwidth
+    ActivePage = tabNetwork
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'

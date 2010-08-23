@@ -170,6 +170,7 @@ end;
 
 procedure TDaemonOptionsForm.FormCreate(Sender: TObject);
 begin
+  Font.Size:=MainForm.Font.Size;
   Page.ActivePageIndex:=0;
   cbEncryption.Items.Add(sEncryptionDisabled);
   cbEncryption.Items.Add(sEncryptionEnabled);
