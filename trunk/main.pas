@@ -690,12 +690,10 @@ procedure AddTorrentFile(const FileName: string);
 var
   h: THandle;
 begin
-  if FileExistsUTF8(FileName) then begin
-    h:=FileCreate(FIPCFileName, fmCreate);
-    if h <> THandle(-1) then begin
-      FileWrite(h, FileName[1], Length(FileName));
-      FileClose(h);
-    end;
+  h:=FileCreate(FIPCFileName, fmCreate);
+  if h <> THandle(-1) then begin
+    FileWrite(h, FileName[1], Length(FileName));
+    FileClose(h);
   end;
 end;
 
@@ -718,9 +716,27 @@ begin
   end;
 end;
 
+function IsProtocolSupported(const url: string): boolean;
+const
+  Protocols: array [1..2] of string =
+    ('http:', 'magnet:');
+var
+  i: integer;
+  s: string;
+begin
+  s:=AnsiLowerCase(url);
+  for i:=Low(Protocols) to High(Protocols) do
+    if Copy(s, 1, Length(Protocols[i])) = Protocols[i] then begin
+      Result:=True;
+      exit;
+    end;
+  Result:=False;
+end;
+
 function CheckAppParams: boolean;
 var
   i: integer;
+  s: string;
 begin
   Application.Title:=AppName;
   if FileExists(ChangeFileExt(ParamStr(0), '.ini')) then
@@ -732,9 +748,11 @@ begin
   FIPCFileName:=FHomeDir + 'ipc.txt';
   FRunFileName:=FHomeDir + 'run';
 
-  if ParamCount > 0 then
-    AddTorrentFile(ParamStrUTF8(1));
-
+  if ParamCount > 0 then begin
+    s:=ParamStrUTF8(1);
+    if IsProtocolSupported(s) or FileExistsUTF8(s) then
+      AddTorrentFile(s);
+  end;
   if FileExists(FRunFileName) then begin
     if not FileExists(FIPCFileName) then
       FileClose(FileCreate(FIPCFileName, fmCreate));
@@ -1111,10 +1129,6 @@ var
       CheckStatus(False);
   end;
 
-const
-  Protocols: array [1..2] of string =
-    ('http:', 'magnet:');
-
 var
   req, res, args: TJSONObject;
   id: integer;
@@ -1127,14 +1141,9 @@ var
 begin
   AppBusy;
   id:=0;
-  s:=AnsiLowerCase(FileName);
-  for i:=Low(Protocols) to High(Protocols) do
-    if Copy(s, 1, Length(Protocols[i])) = Protocols[i] then begin
-      torrent:='-';
-      break;
-    end;
-
-  if torrent <> '-' then begin
+  if IsProtocolSupported(FileName) then
+    torrent:='-'
+  else begin
     fs:=TFileStream.Create(UTF8ToSys(FileName), fmOpenRead or fmShareDenyNone);
     try
       SetLength(torrent, fs.Size);
@@ -2077,7 +2086,8 @@ end;
 
 procedure TMainForm.FormDropFiles(Sender: TObject; const FileNames: array of String);
 begin
-  AddTorrentFile(FileNames[0]);
+  if FileExistsUTF8(FileNames[0]) then
+    AddTorrentFile(FileNames[0]);
 end;
 
 procedure TMainForm.gTorrentsCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState;
@@ -2379,10 +2389,8 @@ begin
       if s = '' then
         exit;
 
-      if FileExistsUTF8(s) then begin
-        TickTimer.Enabled:=True;
-        DoAddTorrent(s);
-      end;
+      TickTimer.Enabled:=True;
+      DoAddTorrent(s);
     end;
 
     if RpcObj.Connected then
