@@ -1,3 +1,16 @@
+2.1 (Aug 24, 2010)
+------------------
+[+] Ctrl+A selects all torrents/files. Issue #259.
+[+] Added the "Stopped" filter for torrents. Issue #268.
+[+] Support for adding magnet and URL links via the command line. Issue #261.
+[+] French, Spanish, Latvian, Portuguese Brazilian translations.
+[*] Use smaller font on Mac OS X. Issue #267.
+[*] Use proxy settings for GeoIP database download. Issue #278.
+[-] Improper update of the peer list. Issue #264.
+[-] Incorrect encoding of file names in the Add torrent window.
+[-] Problem to "Open containing folder" from the torrents list for some path mappings. Issue #260. 
+[-] Improper filtering by path in some cases. Issue #262.
+
 2.0 (Aug 11, 2010)
 ------------------
 [+] Implemented the "Set location" command for torrents. Issue #110.
