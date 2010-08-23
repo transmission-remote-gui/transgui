@@ -3367,7 +3367,7 @@ begin
 
     i:=0;
     while i < lvPeers.Items.Count do
-      if lvPeers.Items[idxPeerTag, row] = 0 then
+      if lvPeers.Items[idxPeerTag, i] = 0 then
         lvPeers.Items.Delete(i)
       else
         Inc(i);
