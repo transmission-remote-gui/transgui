@@ -73,6 +73,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure RemoveSelection;
+    procedure SelectAll;
     procedure Sort; reintroduce;
     function ColToDataCol(ACol: integer): integer;
 
@@ -442,7 +443,7 @@ end;
 
 procedure TVarGrid.PrepareCanvas(aCol, aRow: Integer; aState: TGridDrawState);
 begin
-  if FHideSelection and not Focused then
+  if FHideSelection and not Focused and (FSelCount = 0) then
     aState:=aState - [gdSelected];
   inherited PrepareCanvas(aCol, aRow, aState);
   with Canvas do
@@ -699,6 +700,14 @@ begin
   for i:=0 to FItems.Count - 1 do
     RowSelected[i]:=False;
   FSelCount:=0;
+end;
+
+procedure TVarGrid.SelectAll;
+var
+  i: integer;
+begin
+  for i:=0 to FItems.Count - 1 do
+    RowSelected[i]:=True;
 end;
 
 procedure TVarGrid.Sort;
