@@ -1,11 +1,12 @@
 object MainForm: TMainForm
-  Left = 273
+  Left = 231
   Height = 484
   Top = 155
   Width = 780
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
   VertScrollBar.Range = 24
+  ActiveControl = panTop
   AllowDropFiles = True
   Caption = ' '
   ClientHeight = 464
@@ -19,6 +20,7 @@ object MainForm: TMainForm
   OnDropFiles = FormDropFiles
   OnResize = FormResize
   OnShow = FormShow
+  OnWindowStateChange = FormWindowStateChange
   LCLVersion = '0.9.28.2'
   object panTop: TPanel
     Left = 0

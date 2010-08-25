@@ -75,6 +75,8 @@ procedure ShowTaskbarButton;
 begin
 {$ifdef mswindows}
   ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_SHOW);
+{$else}
+  Application.MainForm.Show;
 {$endif mswindows}
 end;
 
@@ -82,6 +84,8 @@ procedure HideTaskbarButton;
 begin
 {$ifdef mswindows}
   ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_HIDE);
+{$else}
+  Application.MainForm.Hide;
 {$endif mswindows}
 end;
 
