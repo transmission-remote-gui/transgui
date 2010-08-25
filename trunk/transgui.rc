@@ -1,6 +1,6 @@
 1 VERSIONINFO
-FILEVERSION 2,1,0,0
-PRODUCTVERSION 2,1,0,0
+FILEVERSION 2,1,1,0
+PRODUCTVERSION 2,1,1,0
 {
  BLOCK "StringFileInfo"
  {
@@ -9,13 +9,13 @@ PRODUCTVERSION 2,1,0,0
    VALUE "Comments", "\000"
    VALUE "CompanyName", "Yury Sidorov\000"
    VALUE "FileDescription", "Transmission Remote GUI\000"
-   VALUE "FileVersion", "2.1.0.0\000"
+   VALUE "FileVersion", "2.1.1.0\000"
    VALUE "InternalName", "transgui\000"
    VALUE "LegalCopyright", "Copyright (c) 2008-2010 by Yury Sidorov\000"
    VALUE "LegalTrademarks", "\000"
    VALUE "OriginalFilename", "transgui.exe\000"
    VALUE "ProductName", "Transmission Remote GUI\000"
-   VALUE "ProductVersion", "2.1.0.0\000"
+   VALUE "ProductVersion", "2.1.1.0\000"
   }
  }
  BLOCK "VarFileInfo"

@@ -1,3 +1,7 @@
+2.1.1 (Aug 25, 2010)
+--------------------
+[*] Speed optimizations. The program can now easily handle thousands torrents. Issue #281.
+
 2.1 (Aug 24, 2010)
 ------------------
 [+] Ctrl+A selects all torrents/files. Issue #259.
