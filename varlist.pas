@@ -58,8 +58,12 @@ type
     procedure Delete(Index: Integer);
     procedure Sort(ACol: integer; Descending: boolean = False);
     function IndexOf(ACol: integer; const Value: variant): integer;
+    function SortedIndexOf(ACol: integer; const Value: variant): integer;
+    function Find(ACol: integer; const Value: variant; var Index: Integer): Boolean;
     procedure BeginUpdate;
     procedure EndUpdate;
+    procedure InsertRow(ARow: integer);
+    function IsUpdating: boolean;
     property Items[ACol, ARow: integer]: variant read GetItems write SetItems; default;
     property Rows[ARow: integer]: variant read GetRows;
     property RowOptions[ARow: integer]: integer read GetRowOptions write SetRowOptions;
@@ -280,6 +284,38 @@ begin
   Result:=-1;
 end;
 
+function TVarList.SortedIndexOf(ACol: integer; const Value: variant): integer;
+begin
+  Result:=-1;
+  if not Find(ACol, Value, Result) then
+    Result:=-1;
+end;
+
+function TVarList.Find(ACol: integer; const Value: variant; var Index: Integer): Boolean;
+var
+  L, R, I: Integer;
+  CompareRes: PtrInt;
+begin
+  Result := false;
+  L := 0;
+  R := Count - 1;
+  while (L<=R) do
+  begin
+    I := L + (R - L) div 2;
+    CompareRes := CompareVariants(Value, Items[ACol, I]);
+    if (CompareRes>0) then
+      L := I+1
+    else begin
+      R := I-1;
+      if (CompareRes=0) then begin
+         Result := true;
+         L := I; // forces end of while loop
+      end;
+    end;
+  end;
+  Index := L;
+end;
+
 procedure TVarList.BeginUpdate;
 begin
   Inc(FUpdateLockCnt);
@@ -290,6 +326,16 @@ begin
   Dec(FUpdateLockCnt);
   if FUpdateLockCnt = 0 then
     DoDataChanged;
+end;
+
+procedure TVarList.InsertRow(ARow: integer);
+begin
+  inherited Insert(ARow, nil);
+end;
+
+function TVarList.IsUpdating: boolean;
+begin
+  Result:=FUpdateLockCnt > 0;
 end;
 
 end.

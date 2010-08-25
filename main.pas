@@ -2148,6 +2148,7 @@ procedure TMainForm.gTorrentsClick(Sender: TObject);
 var
   i: integer;
 begin
+  if gTorrents.Tag <> 0 then exit;
   RpcObj.Lock;
   try
     if gTorrents.Items.Count > 0 then
@@ -2941,7 +2942,20 @@ begin
     ClearDetailsInfo;
     exit;
   end;
-
+{
+  for i:=1 to 1000 do begin
+    t:=TJSONObject.Create;
+    t.Integers['id']:=i + 10000;
+    t.Strings['name']:=Format('ZName %d', [i]);
+    t.Integers['status']:=TR_STATUS_STOPPED;
+    t.Arrays['trackerStats']:=TJSONArray.Create;
+    t.Floats['sizeWhenDone']:=0;
+    t.Floats['leftUntilDone']:=0;
+    t.Integers['rateDownload']:=0;
+    t.Integers['rateUpload']:=0;
+    list.Add(t);
+  end;
+}
   Paths:=TStringList.Create;
   try
   Paths.Sorted:=True;
@@ -2991,11 +3005,9 @@ begin
 
     t:=list[i] as TJSONObject;
     id:=t.Integers['id'];
-    row:=FTorrents.Count;
-    j:=FTorrents.IndexOf(idxTorrentId, id);
-    ExistingRow:=j >= 0;
-    if ExistingRow then
-      row:=j;
+    ExistingRow:=FTorrents.Find(idxTorrentId, id, row);
+    if not ExistingRow then
+      FTorrents.InsertRow(row);
 
     FTorrents[idxTorrentId, row]:=t.Integers['id'];
 
@@ -3166,10 +3178,12 @@ begin
     else
       Inc(i);
 
-  gTorrents.BeginUpdate;
+  gTorrents.Items.BeginUpdate;
   try
     for i:=0 to gTorrents.Items.Count - 1 do
       gTorrents.Items[idxTag, i]:=0;
+
+    gTorrents.Items.Sort(idxTorrentId);
 
     for i:=0 to FTorrents.Count - 1 do begin
       IsActive:=(FTorrents[idxDownSpeed, i] <> 0) or (FTorrents[idxUpSpeed, i] <> 0);
@@ -3226,9 +3240,8 @@ begin
         if UTF8Pos(UTF8UpperCase(edSearch.Text), UTF8UpperCase(UTF8Encode(widestring(FTorrents[idxName, i])))) = 0 then
           continue;
 
-      row:=gTorrents.Items.IndexOf(idxTorrentId, FTorrents[idxTorrentId, i]);
-      if row < 0 then
-        row:=gTorrents.Items.Count;
+      if not gTorrents.Items.Find(idxTorrentId, FTorrents[idxTorrentId, i], row) then
+        gTorrents.Items.InsertRow(row);
       for j:=-TorrentsExtraColumns to FTorrents.ColCnt - 1 do
         gTorrents.Items[j, row]:=FTorrents[j, i];
       gTorrents.Items[idxTag, row]:=1;
@@ -3240,23 +3253,24 @@ begin
         gTorrents.Items.Delete(i)
       else
         Inc(i);
-  finally
-    gTorrents.EndUpdate;
-  end;
 
-  gTorrents.Sort;
-  if (gTorrents.Items.Count > 0) and (OldId = 0) then
-    gTorrents.Row:=0;
-
-  if OldId <> 0 then begin
-    i:=gTorrents.Items.IndexOf(idxTorrentId, OldId);
-    if i >= 0 then
-      gTorrents.Row:=i
-    else
-      if FFilterChanged and (gTorrents.Items.Count > 0) then
+    gTorrents.Sort;
+    if gTorrents.Items.Count > 0 then begin
+      if OldId <> 0 then begin
+        i:=gTorrents.Items.IndexOf(idxTorrentId, OldId);
+        if i >= 0 then
+          gTorrents.Row:=i
+        else
+          if FFilterChanged then
+            OldId:=0;
+      end;
+      if OldId = 0 then
         gTorrents.Row:=0;
+    end;
+    FFilterChanged:=False;
+  finally
+    gTorrents.Items.EndUpdate;
   end;
-  FFilterChanged:=False;
   gTorrentsClick(nil);
 
   crow:=lvFilter.Row;
@@ -3330,7 +3344,7 @@ var
   port: integer;
   d: TJSONData;
   p: TJSONObject;
-  ip: string;
+  ip, s: string;
   hostinfo: PHostEntry;
   opt: TResolverOptions;
   WasEmpty: boolean;
@@ -3357,6 +3371,7 @@ begin
     for i:=0 to lvPeers.Items.Count - 1 do
       lvPeers.Items[idxPeerTag, i]:=0;
 
+    lvPeers.Items.Sort(idxPeerIP);
     for i:=0 to list.Count - 1 do begin
       d:=list[i];
       if not (d is TJSONObject) then continue;
@@ -3367,14 +3382,10 @@ begin
       else
         port:=0;
 
-      row:=lvPeers.Items.Count;
-      for j:=0 to lvPeers.Items.Count - 1 do
-        if (ip = lvPeers.Items[idxPeerIP, j]) and (port = lvPeers.Items[idxPeerPort, j]) then begin
-          row:=j;
-          break;
-        end;
-
-      lvPeers.Items[idxPeerIP, row]:=ip;
+      s:=ip + ':' + IntToStr(port);
+      if not lvPeers.Items.Find(idxPeerIP, s, row) then
+        lvPeers.Items.InsertRow(row);
+      lvPeers.Items[idxPeerIP, row]:=s;
       lvPeers.Items[idxPeerPort, row]:=port;
 
       if FResolver <> nil then
@@ -3417,12 +3428,12 @@ begin
         lvPeers.Items.Delete(i)
       else
         Inc(i);
+    lvPeers.Sort;
+    if WasEmpty and (lvPeers.Items.Count > 0) then
+      lvPeers.Row:=0;
   finally
     lvPeers.Items.EndUpdate;
   end;
-  lvPeers.Sort;
-  if WasEmpty and (lvPeers.Items.Count > 0) then
-    lvPeers.Row:=0;
 end;
 
 function TMainForm.GetFilesCommonPath(files: TJSONArray): string;
@@ -3522,12 +3533,13 @@ begin
     for i:=0 to FFiles.Count - 1 do
       FFiles[idxFileTag, i]:=0;
 
+    FFiles.Sort(idxFileId);
+
     for i:=0 to list.Count - 1 do begin
       d:=list[i];
       f:=d as TJSONObject;
-      row:=FFiles.IndexOf(idxFileId, i);
-      if row < 0 then
-        row:=FFiles.Count;
+      if not FFiles.Find(idxFileId, i, row) then
+        FFiles.InsertRow(row);
       FFiles[idxFileTag, row]:=1;
       FFiles[idxFileId, row]:=i;
 
@@ -3556,12 +3568,13 @@ begin
         FFiles.Delete(i)
       else
         Inc(i);
+
+    lvFiles.Sort;
+    if WasEmpty and (FFiles.Count > 0) then
+      lvFiles.Row:=0;
   finally
     FFiles.EndUpdate;
   end;
-  lvFiles.Sort;
-  if WasEmpty and (FFiles.Count > 0) then
-    lvFiles.Row:=0;
 end;
 
 procedure TMainForm.FillGeneralInfo(t: TJSONObject);
@@ -3769,6 +3782,7 @@ begin
     for i:=0 to lvTrackers.Items.Count - 1 do
       lvTrackers.Items[idxTrackerTag, i]:=0;
 
+    lvTrackers.Items.Sort(idxTrackerID);
     for i:=0 to Trackers.Count - 1 do begin
       d:=Trackers[i];
       if not (d is TJSONObject) then continue;
@@ -3777,11 +3791,9 @@ begin
         id:=t.Integers['id'] + 1
       else
         id:=i + 1;
-      row:=lvTrackers.Items.IndexOf(idxTrackerID, id);
-      if row < 0 then
-        row:=lvTrackers.Items.Count;
+      if not lvTrackers.Items.Find(idxTrackerID, id, row) then
+        lvTrackers.Items.InsertRow(row);
       lvTrackers.Items[idxTrackerID, row]:=id;
-
       lvTrackers.Items[idxTrackersListName, row]:=t.Strings['announce'];
       if TrackerStats <> nil then begin
         f:=0;
@@ -3834,12 +3846,13 @@ begin
         lvTrackers.Items.Delete(i)
       else
         Inc(i);
+
+    lvTrackers.Sort;
+    if WasEmpty and (lvTrackers.Items.Count > 0) then
+      lvTrackers.Row:=0;
   finally
     lvTrackers.Items.EndUpdate;
   end;
-  lvTrackers.Sort;
-  if WasEmpty and (lvTrackers.Items.Count > 0) then
-    lvTrackers.Row:=0;
 end;
 
 procedure TMainForm.CheckStatus(Fatal: boolean);
