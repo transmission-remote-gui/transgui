@@ -350,6 +350,7 @@ type
     procedure ApplicationPropertiesRestore(Sender: TObject);
     procedure edSearchChange(Sender: TObject);
     procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
+    procedure FormWindowStateChange(Sender: TObject);
     procedure gTorrentsCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure gTorrentsClick(Sender: TObject);
     procedure gTorrentsDblClick(Sender: TObject);
@@ -881,10 +882,10 @@ begin
   if FCurHost = '' then
     FCurHost:=FIni.ReadString('Connection', 'Host', '');
   FPathMap:=TStringList.Create;
-{$ifndef windows}
+{$ifdef darwin}
   miToggleApp.Visible:=False;
   miTSep1.Visible:=False;
-{$endif windows}
+{$endif darwin}
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -2079,10 +2080,10 @@ end;
 
 procedure TMainForm.ApplicationPropertiesMinimize(Sender: TObject);
 begin
-{$ifdef windows}
+{$ifndef darwin}
   if FIni.ReadBool('Interface', 'TrayMinimize', True) then
     HideApp;
-{$endif windows}
+{$endif darwin}
   UpdateTray;
 end;
 
@@ -2100,6 +2101,16 @@ procedure TMainForm.FormDropFiles(Sender: TObject; const FileNames: array of Str
 begin
   if FileExistsUTF8(FileNames[0]) then
     AddTorrentFile(FileNames[0]);
+end;
+
+procedure TMainForm.FormWindowStateChange(Sender: TObject);
+begin
+{$ifdef lclgtk2}
+  if WindowState = wsMinimized then
+    ApplicationPropertiesMinimize(nil)
+  else
+    ApplicationPropertiesRestore(nil);
+{$endif lclgtk2}
 end;
 
 procedure TMainForm.gTorrentsCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState;
@@ -2432,14 +2443,14 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-{$ifdef mswindows}
+{$ifndef darwin}
   if FIni.ReadBool('Interface', 'TrayClose', False) then begin
     CloseAction:=caHide;
     HideApp;
     UpdateTray;
     exit;
   end;
-{$endif mswindows}
+{$endif darwin}
   BeforeCloseApp;
 end;
 
@@ -2496,9 +2507,9 @@ end;
 
 procedure TMainForm.TrayIconDblClick(Sender: TObject);
 begin
-{$ifdef mswindows}
+{$ifndef darwin}
   miToggleApp.Click;
-{$endif mswindows}
+{$endif darwin}
 end;
 
 procedure TMainForm.UrlLabelClick(Sender: TObject);
@@ -2725,7 +2736,7 @@ begin
     LoadHostSettings(FCurHost);
 
     edRefreshInterval.Value:=FIni.ReadInteger('Interface', 'RefreshInterval', 5);
-{$ifdef windows}
+{$ifndef darwin}
     cbTrayClose.Checked:=FIni.ReadBool('Interface', 'TrayClose', False);
     cbTrayMinimize.Checked:=FIni.ReadBool('Interface', 'TrayMinimize', True);
 {$else}
@@ -2753,7 +2764,7 @@ begin
         Ini.WriteString('Hosts', Format('Host%d', [i + 1]), cbHost.Items[i]);
 
       FIni.WriteInteger('Interface', 'RefreshInterval', edRefreshInterval.Value);
-{$ifdef windows}
+{$ifndef darwin}
       FIni.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
       FIni.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
 {$endif}
