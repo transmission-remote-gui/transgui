@@ -55,6 +55,7 @@ type
     FSortColumn: integer;
     FOnSortColumn: TOnSortColumnEvent;
     FRow: integer;
+    FHintCell: TPoint;
 
     function GetRow: integer;
     function GetRowSelected(RowIndex: integer): boolean;
@@ -78,6 +79,7 @@ type
     procedure ColRowMoved(IsColumn: Boolean; FromIndex,ToIndex: Integer); override;
     procedure PrepareCanvas(aCol,aRow: Integer; aState:TGridDrawState); override;
     procedure MouseDown(Button: TMouseButton; Shift:TShiftState; X,Y:Integer); override;
+    procedure MouseMove(Shift: TShiftState; X,Y: Integer);override;
     procedure KeyDown(var Key : Word; Shift : TShiftState); override;
     procedure DoOnCellAttributes(ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure HeaderClick(IsColumn: Boolean; index: Integer); override;
@@ -371,6 +373,7 @@ begin
             Dec(R.Left);
             HintPos:=ClientToScreen(R.TopLeft);
           end;
+          FHintCell:=pt;
         end
         else
           Message.Result:=1;
@@ -513,6 +516,18 @@ begin
       Row:=pt.y - FixedRows;
   end;
   inherited MouseDown(Button, Shift, X, Y);
+end;
+
+procedure TVarGrid.MouseMove(Shift: TShiftState; X, Y: Integer);
+var
+  pt: TPoint;
+begin
+  inherited MouseMove(Shift, X, Y);
+  pt:=MouseToCell(Point(x, y));
+  if (FHintCell.x <> -1) and ((FHintCell.x <> pt.x) or (FHintCell.y <> pt.y)) then begin
+    Application.CancelHint;
+    FHintCell.x:=-1;
+  end;
 end;
 
 procedure TVarGrid.KeyDown(var Key: Word; Shift: TShiftState);
@@ -703,6 +718,7 @@ end;
 constructor TVarGrid.Create(AOwner: TComponent);
 begin
   FRow:=-1;
+  FHintCell.x:=-1;
   inherited Create(AOwner);
   FixedRows:=1;
   FixedCols:=0;
