@@ -54,6 +54,7 @@ type
     FAnchor: integer;
     FSortColumn: integer;
     FOnSortColumn: TOnSortColumnEvent;
+    FRow: integer;
 
     function GetRow: integer;
     function GetRowSelected(RowIndex: integer): boolean;
@@ -193,6 +194,10 @@ begin
     OldRows:=RowCount;
     OldCols:=Columns.Count;
     RowCount:=FItems.RowCnt + FixedRows;
+    if FRow <> -1 then begin
+      Row:=FRow;
+      FRow:=-1;
+    end;
     UpdateSelCount;
     while Columns.Count > FItems.ColCnt do
       Columns.Delete(Columns.Count - 1);
@@ -228,9 +233,13 @@ procedure TVarGrid.SetRow(const AValue: integer);
 var
   i: integer;
 begin
-  i:=LeftCol;
-  inherited Row:=AValue + FixedRows;
-  LeftCol:=i;
+  if FItems.IsUpdating then
+    FRow:=AValue
+  else begin
+    i:=LeftCol;
+    inherited Row:=AValue + FixedRows;
+    LeftCol:=i;
+  end;
 end;
 
 function TVarGrid.GetRowSelected(RowIndex: integer): boolean;
@@ -245,7 +254,11 @@ end;
 
 function TVarGrid.GetRow: integer;
 begin
-  Result:=inherited Row - FixedRows;
+  if FItems.IsUpdating and (FRow <> -1) then
+    Result:=FRow
+  else begin
+    Result:=inherited Row - FixedRows;
+  end;
 end;
 
 procedure TVarGrid.SetRowSelected(RowIndex: integer; const AValue: boolean);
@@ -689,6 +702,7 @@ end;
 
 constructor TVarGrid.Create(AOwner: TComponent);
 begin
+  FRow:=-1;
   inherited Create(AOwner);
   FixedRows:=1;
   FixedCols:=0;
@@ -740,15 +754,18 @@ begin
     c:=FSortColumn;
     if Assigned(FOnSortColumn) then
       FOnSortColumn(Self, c);
-    FItems.RowOptions[Row]:=FItems.RowOptions[Row] or roCurRow;
+    if not FItems.IsUpdating and (Row >= 0) and (Row < FItems.Count) then
+      FItems.RowOptions[Row]:=FItems.RowOptions[Row] or roCurRow;
     FItems.Sort(c, SortOrder = soDescending);
-    for i:=0 to FItems.Count - 1 do
-      if LongBool(FItems.RowOptions[i] and roCurRow) then begin
-        FItems.RowOptions[i]:=FItems.RowOptions[i] and not roCurRow;
-        Row:=i;
-        break;
-      end;
-    Invalidate;
+    if not FItems.IsUpdating then begin
+      for i:=0 to FItems.Count - 1 do
+        if LongBool(FItems.RowOptions[i] and roCurRow) then begin
+          FItems.RowOptions[i]:=FItems.RowOptions[i] and not roCurRow;
+          Row:=i;
+          break;
+        end;
+      Invalidate;
+    end;
   end;
 end;
 
