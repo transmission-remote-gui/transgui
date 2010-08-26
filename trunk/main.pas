@@ -758,7 +758,7 @@ begin
   if FileExists(FRunFileName) then begin
     if not FileExists(FIPCFileName) then
       FileClose(FileCreate(FIPCFileName, fmCreate));
-    for i:=1 to 10 do
+    for i:=1 to 50 do
       if not FileExists(FIPCFileName) then begin
         Result:=False;
         exit;
