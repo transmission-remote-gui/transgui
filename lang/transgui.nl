@@ -215,7 +215,6 @@ No tracker=Geen tracker
 tracker did not respond=tracker antwoord niet
 %s downloaded=%s downloaded
 %s of %s downloaded=%s of %s downloaded
-###################
 %d torrents=%d torrents
 Add .part extension to incomplete files=Add .part extension to incomplete files
 Add torrent link=Add torrent link
@@ -243,3 +242,5 @@ Torrents=Torrents
 Unable to execute "%s"=Unable to execute "%s"
 Update blocklist=Update blocklist
 URL of a .torrent file or a magnet link=URL of a .torrent file or a magnet link
+###################
+Columns setup=Columns setup
