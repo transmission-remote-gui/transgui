@@ -76,7 +76,7 @@ begin
 {$ifdef mswindows}
   ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_SHOW);
 {$else}
-  Application.MainForm.Show;
+  Application.MainForm.Visible:=True;
 {$endif mswindows}
 end;
 
@@ -85,7 +85,7 @@ begin
 {$ifdef mswindows}
   ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_HIDE);
 {$else}
-  Application.MainForm.Hide;
+  Application.MainForm.Visible:=False;
 {$endif mswindows}
 end;
 
