@@ -53,3 +53,9 @@ Build the program by yourself.
 
 More information about building here:
 http://code.google.com/p/transmisson-remote-gui/wiki/Building
+
+COMMAND LINE PARAMETERS
+
+You can specify path to a .torrent file or a magnet link as a command line parameter. The program will add the specified torrent.
+
+-hidden : Start the program hidden. Only the program's tray icon will be visible.
