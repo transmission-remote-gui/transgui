@@ -886,6 +886,10 @@ begin
   miToggleApp.Visible:=False;
   miTSep1.Visible:=False;
 {$endif darwin}
+  if Application.HasOption('hidden') then begin
+    ApplicationProperties.ShowMainForm:=False;
+    FormShow(nil);
+  end;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -2689,7 +2693,7 @@ procedure TMainForm.UpdateUI;
 var
   e: boolean;
 begin
-  e:=RpcObj.Connected and (Screen.ActiveForm = Self);
+  e:=RpcObj.Connected and ((Screen.ActiveForm = Self) or not Visible);
   acSelectAll.Enabled:=e;
   acAddTorrent.Enabled:=e;
   acAddLink.Enabled:=e;
