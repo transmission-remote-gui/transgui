@@ -242,3 +242,6 @@ Torrents=Torrents
 Unable to execute "%s"=No se pudo ejecutar "%s"
 Update blocklist=Actualizar lista negra
 URL of a .torrent file or a magnet link=URL de archivo .torrent o enlace magnético
+###################
+Columns setup=Columns setup
+Connecting to daemon=Connecting to daemon

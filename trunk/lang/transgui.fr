@@ -1,4 +1,4 @@
-TranslationLanguage=Français
+﻿TranslationLanguage=Français
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Correspondances entre système de fichier distant et local.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (%d obtenus)
@@ -242,3 +242,5 @@ Torrents=Torrents
 Unable to execute "%s"=Impossible d'exécuter "%s"
 Update blocklist=Mettre à jour la liste de bloquage
 URL of a .torrent file or a magnet link=URL d'un fichier .torrent ou magnet link
+###################
+Columns setup=Columns setup
