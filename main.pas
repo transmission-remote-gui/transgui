@@ -1355,6 +1355,7 @@ begin
   ShowTaskbarButton;
   if WindowState = wsMinimized then
     Application.Restore;
+  Application.ProcessMessages;
   Show;
   Application.BringToFront;
   BringToFront;
