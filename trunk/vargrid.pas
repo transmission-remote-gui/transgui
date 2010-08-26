@@ -606,6 +606,7 @@ begin
   inherited VisualChange;
   if HandleAllocated then
     DefaultRowHeight:=Canvas.TextHeight('Xy') + 5;
+  UpdateColumnsMap;
 end;
 
 procedure TVarGrid.DrawColumnText(aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
