@@ -3222,7 +3222,7 @@ begin
         Inc(StoppedCnt);
 
       if not VarIsEmpty(FTorrents[idxTracker, i]) then begin
-        s:=UTF8Encode(FTorrents[idxTracker, i]);
+        s:=UTF8Encode(widestring(FTorrents[idxTracker, i]));
         j:=FTrackers.IndexOf(s);
         if j < 0 then
           j:=FTrackers.Add(s);
@@ -3327,7 +3327,7 @@ begin
     while i < FTrackers.Count do begin
       j:=ptruint(FTrackers.Objects[i]);
       if j > 0 then begin
-        lvFilter.Items[0, row]:=Format('%s (%d)', [FTrackers[i], j]);
+        lvFilter.Items[0, row]:=UTF8Decode(Format('%s (%d)', [FTrackers[i], j]));
         if FTrackers[i] = TrackerFilter then
           crow:=row;
         Inc(i);
