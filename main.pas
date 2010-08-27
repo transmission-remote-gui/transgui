@@ -3218,7 +3218,7 @@ begin
           Inc(CompletedCnt);
       end;
 
-      if FTorrents[idxStateImg, i] = imgStopped then
+      if integer(FTorrents[idxStateImg, i]) in [imgStopped, imgDone] then
         Inc(StoppedCnt);
 
       if not VarIsEmpty(FTorrents[idxTracker, i]) then begin
@@ -3248,7 +3248,7 @@ begin
           if (FTorrents[idxStateImg, i] <> imgDone) and (FTorrents[idxStatus, i] <> TR_STATUS_SEED) then
             continue;
         fltStopped:
-          if FTorrents[idxStateImg, i] <> imgStopped then
+          if not (integer(FTorrents[idxStateImg, i]) in [imgStopped, imgDone]) then
             continue;
       end;
 
