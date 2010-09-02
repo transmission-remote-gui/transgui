@@ -512,8 +512,11 @@ begin
   end;
   if ssRight in Shift then begin
     SetFocus;
-    if not (MultiSelect and (SelCount > 1)) and (pt.x >= FixedCols) and (pt.y >= FixedRows) then
+    if not (MultiSelect and (SelCount > 1)) and (pt.x >= FixedCols) and (pt.y >= FixedRows) then begin
+      if SelCount > 0 then
+        RemoveSelection;
       Row:=pt.y - FixedRows;
+    end;
   end;
   inherited MouseDown(Button, Shift, X, Y);
 end;
