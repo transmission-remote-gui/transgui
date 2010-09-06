@@ -166,6 +166,14 @@ var
 
 function DefaultLangDir: AnsiString;
 {$ifdef unix}
+  function _IsLangDir(const dir: string): boolean;
+  var
+    sr: TSearchRec;
+  begin
+    Result:=FindFirst(dir + ExtractFileNameOnly(ParamStr(0)) + '.*', faAnyFile, sr) = 0;
+    FindClose(sr);
+  end;
+
 var
   s: string;
 {$endif unix}
@@ -173,13 +181,13 @@ begin
   if FDefaultLangDir = '' then begin
     FDefaultLangDir:=ExtractFilePath(ParamStr(0)) + 'lang' + DirectorySeparator;
 {$ifdef unix}
-    if not DirectoryExists(FDefaultLangDir) then begin
-      s:='/usr/share/' + ExtractFileNameWithoutExt(ParamStr(0)) + '/lang/';
-      if DirectoryExists(s) then
+    if not _IsLangDir(FDefaultLangDir) then begin
+      s:='/usr/share/' + ExtractFileNameOnly(ParamStr(0)) + '/lang/';
+      if _IsLangDir(s) then
         FDefaultLangDir:=s
       else begin
-        s:='/usr/local/share/' + ExtractFileNameWithoutExt(ParamStr(0)) + '/lang/';
-        if DirectoryExists(s) then
+        s:='/usr/local/share/' + ExtractFileNameOnly(ParamStr(0)) + '/lang/';
+        if _IsLangDir(s) then
           FDefaultLangDir:=s;
       end;
     end;
