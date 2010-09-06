@@ -161,9 +161,31 @@ begin
     end;
 end;
 
+var
+  FDefaultLangDir: AnsiString;
+
 function DefaultLangDir: AnsiString;
+{$ifdef unix}
+var
+  s: string;
+{$endif unix}
 begin
-  Result := ExtractFilePath(ParamStr(0)) + 'lang' + DirectorySeparator;
+  if FDefaultLangDir = '' then begin
+    FDefaultLangDir:=ExtractFilePath(ParamStr(0)) + 'lang' + DirectorySeparator;
+{$ifdef unix}
+    if not DirectoryExists(FDefaultLangDir) then begin
+      s:='/usr/share/' + ExtractFileNameWithoutExt(ParamStr(0)) + '/lang/';
+      if DirectoryExists(s) then
+        FDefaultLangDir:=s
+      else begin
+        s:='/usr/local/share/' + ExtractFileNameWithoutExt(ParamStr(0)) + '/lang/';
+        if DirectoryExists(s) then
+          FDefaultLangDir:=s;
+      end;
+    end;
+{$endif unix}
+  end;
+  Result:=FDefaultLangDir;
 end;
 
 function GetResStrings(Name, Value: AnsiString; Hash: longint; P: pointer): AnsiString;
