@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Français
+TranslationLanguage=Français
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Correspondances entre système de fichier distant et local.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (%d obtenus)
@@ -56,9 +56,9 @@ Donate to support further development=Faire un don en soutien des futurs dévelo
 Donate via Plimus=Faire un don via Plimus
 Done=Accompli
 Don't download=Ne pas télécharger
-Down limit=Débit ⇩ max
-Down speed=Débit ⇩
-Down=⇩
+Down limit=Débit tel max
+Down speed=Débit tel
+Down=tel
 Download complete=Réception terminée
 Download dir=Dossier de réception
 Download speed=Vitesse réception
@@ -190,9 +190,9 @@ Unable to extract flag image=Échec à l'extraction de l'image du drapeau
 Unable to find path mapping.~Use program's options to setup path mappings=Échec de correspondance de chemins.~Utilisez les options du programme pour configurer les correspondances.
 Unable to get files list=Échec d'obtention de la liste de fichiers
 Unknown=Inconnu
-Up limit=Débit ⇧ max
-Up speed=Débit ⇧
-Up=⇧
+Up limit=Débit env max
+Up speed=Débit env
+Up=env
 Update complete=Mise à jour terminée
 Update GeoIP database=Mettre à jour la base GeoIP
 Update in=Mettre à jour dans
@@ -242,5 +242,4 @@ Torrents=Torrents
 Unable to execute "%s"=Impossible d'exécuter "%s"
 Update blocklist=Mettre à jour la liste de bloquage
 URL of a .torrent file or a magnet link=URL d'un fichier .torrent ou magnet link
-###################
-Columns setup=Columns setup
+Columns setup=Configurer les colonnes
