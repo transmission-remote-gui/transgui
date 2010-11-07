@@ -103,6 +103,7 @@ type
     RefreshNow: TRefreshType;
     RequestFullInfo: boolean;
     ReconnectAllowed: boolean;
+    RequestStartTime: TDateTime;
 
     constructor Create;
     destructor Destroy; override;
@@ -487,6 +488,7 @@ var
   i, j: integer;
   locked: boolean;
 begin
+  RequestStartTime:=Now;
   Status:='';
   Result:=nil;
   for i:=1 to 2 do begin
@@ -579,6 +581,7 @@ begin
         end;
       end;
     finally
+      RequestStartTime:=0;
       if locked then
         HttpLock.Leave;
     end;
@@ -728,6 +731,7 @@ begin
       Sleep(20);
     end;
   end;
+  RequestStartTime:=0;
 end;
 
 end.
