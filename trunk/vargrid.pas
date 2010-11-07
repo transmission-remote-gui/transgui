@@ -87,6 +87,7 @@ type
     procedure VisualChange; override;
     procedure DrawColumnText(aCol,aRow: Integer; aRect: TRect; aState:TGridDrawState); override;
     procedure DblClick; override;
+    procedure Click; override;
     procedure GetCheckBoxState(const aCol, aRow:Integer; var aState:TCheckboxState); override;
     procedure SetCheckboxState(const aCol, aRow:Integer; const aState: TCheckboxState); override;
     procedure SetupCell(ACol, ARow: integer; AState: TGridDrawState; out CellAttribs: TCellAttributes);
@@ -655,6 +656,12 @@ begin
   if (pt.y < FixedRows) and (pt.y = 0) and (Cursor <> crHSplit) then
     exit;
   inherited DblClick;
+end;
+
+procedure TVarGrid.Click;
+begin
+  if Assigned(OnClick) then
+    OnClick(Self);
 end;
 
 procedure TVarGrid.GetCheckBoxState(const aCol, aRow: Integer; var aState: TCheckboxState);
