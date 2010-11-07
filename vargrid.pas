@@ -513,8 +513,8 @@ begin
   end;
   if ssRight in Shift then begin
     SetFocus;
-    if not (MultiSelect and (SelCount > 1)) and (pt.x >= FixedCols) and (pt.y >= FixedRows) then begin
-      if SelCount > 0 then
+    if (pt.x >= FixedCols) and (pt.y >= FixedRows) then begin
+      if MultiSelect and (SelCount > 0) and not RowSelected[pt.y - FixedRows] then
         RemoveSelection;
       Row:=pt.y - FixedRows;
     end;
