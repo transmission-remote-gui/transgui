@@ -2744,7 +2744,7 @@ begin
   acStartTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
   acStopTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
   acVerifyTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
-  acRemoveTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
+  acRemoveTorrent.Enabled:=e and (gTorrents.Items.Count > 0) and not edSearch.Focused;
   acRemoveTorrentAndData.Enabled:=acRemoveTorrent.Enabled and (RpcObj.RPCVersion >= 4);
   acReannounceTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 5);
   acMoveTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 6);
