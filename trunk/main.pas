@@ -142,6 +142,7 @@ type
     MenuItem25: TMenuItem;
     MenuItem40: TMenuItem;
     MenuItem41: TMenuItem;
+    pbStatus: TPaintBox;
     pmSepOpen2: TMenuItem;
     MenuItem42: TMenuItem;
     pmSepOpen1: TMenuItem;
@@ -169,6 +170,7 @@ type
     pbDownloaded: TPaintBox;
     pmTrackers: TPopupMenu;
     tabTrackers: TTabSheet;
+    AnimateTimer: TTimer;
     ToolButton9: TToolButton;
     txConnErrorLabel: TLabel;
     panSearch: TPanel;
@@ -344,6 +346,7 @@ type
     procedure acUpdateBlocklistExecute(Sender: TObject);
     procedure acUpdateGeoIPExecute(Sender: TObject);
     procedure acVerifyTorrentExecute(Sender: TObject);
+    procedure AnimateTimerTimer(Sender: TObject);
     procedure ApplicationPropertiesException(Sender: TObject; E: Exception);
     procedure ApplicationPropertiesIdle(Sender: TObject; var Done: Boolean);
     procedure ApplicationPropertiesMinimize(Sender: TObject);
@@ -366,6 +369,7 @@ type
     procedure lvFilterDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
     procedure lvPeersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure lvTrackersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
+    procedure pbStatusPaint(Sender: TObject);
     procedure panReconnectResize(Sender: TObject);
     procedure pbDownloadedPaint(Sender: TObject);
     procedure pbDownloadedResize(Sender: TObject);
@@ -404,6 +408,8 @@ type
     FPathMap: TStringList;
     FLastFilerIndex: integer;
     FFilterChanged: boolean;
+    FStatusBmp: TBitmap;
+    FStatusImgIndex: integer;
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -837,6 +843,7 @@ begin
   lvFiles.AlternateColor:=FAlterColor;
   lvPeers.AlternateColor:=FAlterColor;
   lvTrackers.AlternateColor:=FAlterColor;
+  FStatusImgIndex:=30;
 
   DoDisconnect;
   PageInfo.ActivePageIndex:=0;
@@ -901,6 +908,7 @@ begin
   FUnZip.Free;
   RpcObj.Free;
   FTorrentProgress.Free;
+  FStatusBmp.Free;
   FPathMap.Free;
   FTorrents.Free;
   if Application.HasOption('updatelang') then
@@ -2068,6 +2076,19 @@ begin
   TorrentAction(VarArrayOf([id]), 'verify');
 end;
 
+procedure TMainForm.AnimateTimerTimer(Sender: TObject);
+begin
+  if RpcObj.RequestStartTime = 0 then begin
+    pbStatus.Visible:=False;
+    AnimateTimer.Enabled:=False;
+    exit;
+  end;
+  Inc(FStatusImgIndex);
+  if FStatusImgIndex > 37 then
+    FStatusImgIndex:=30;
+  pbStatus.Invalidate;
+end;
+
 procedure TMainForm.ApplicationPropertiesException(Sender: TObject; E: Exception);
 begin
   ForceAppNormal;
@@ -2359,6 +2380,21 @@ begin
   end;
 end;
 
+procedure TMainForm.pbStatusPaint(Sender: TObject);
+begin
+  if FStatusBmp = nil then begin
+    FStatusBmp:=TBitmap.Create;
+    FStatusBmp.Width:=pbStatus.Width;
+    FStatusBmp.Height:=pbStatus.Height;
+  end;
+  with FStatusBmp.Canvas do begin
+    Brush.Color:=clBtnFace;
+    FillRect(pbStatus.ClientRect);
+    ImageList16.Draw(FStatusBmp.Canvas, (pbStatus.Width - ImageList16.Width) div 2, (pbStatus.Height - ImageList16.Height) div 2, FStatusImgIndex);
+  end;
+  pbStatus.Canvas.Draw(0, 0, FStatusBmp);
+end;
+
 procedure TMainForm.panReconnectResize(Sender: TObject);
 begin
   panReconnectFrame.BoundsRect:=panReconnect.ClientRect;
@@ -2431,6 +2467,11 @@ begin
           DoConnect
         else
           txReconnectSecs.Caption:=Format(sReconnect, [FReconnectTimeOut - Round(SecsPerDay*(Now - FReconnectWaitStart))]);
+
+    if not pbStatus.Visible and (RpcObj.RequestStartTime <> 0) and (Now - RpcObj.RequestStartTime >= 1/SecsPerDay) then begin
+      pbStatus.Visible:=True;
+      AnimateTimer.Enabled:=True;
+    end;
 {$ifdef LCLcarbon}
      THackApplication(Application).ProcessAsyncCallQueue;
 {$endif LCLcarbon}
