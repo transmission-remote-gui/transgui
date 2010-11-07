@@ -718,6 +718,10 @@ end;
 procedure TRpc.Disconnect;
 begin
   if Assigned(RpcThread) then begin
+    try
+      Http.Sock.CloseSocket;
+    except
+    end;
     RpcThread.Terminate;
     while Assigned(RpcThread) do begin
       Application.ProcessMessages;
