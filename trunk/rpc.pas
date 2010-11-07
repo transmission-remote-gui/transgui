@@ -488,13 +488,13 @@ var
   i, j: integer;
   locked: boolean;
 begin
-  RequestStartTime:=Now;
   Status:='';
   Result:=nil;
   for i:=1 to 2 do begin
     HttpLock.Enter;
     locked:=True;
     try
+      RequestStartTime:=Now;
       Http.Document.Clear;
       s:=req.AsJSON;
       Http.Document.Write(PChar(s)^, Length(s));
