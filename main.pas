@@ -3609,7 +3609,9 @@ begin
       ff:=f.Floats['length'];
       FFiles[idxFileSize, row]:=ff;
       FFiles[idxFileDone, row]:=f.Floats['bytesCompleted'];
-      if ff <> 0 then
+      if ff = 0 then
+        ff:=100.0
+      else
         ff:=double(FFiles[idxFileDone, row])*100.0/ff;
       FFiles[idxFileProgress, row]:=Int(ff*10.0)/10.0;
 
