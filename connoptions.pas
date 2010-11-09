@@ -242,13 +242,17 @@ begin
     edPort.Value:=ReadInteger(Sec, 'Port', 9091);
     edUserName.Text:=ReadString(Sec, 'UserName', '');
     if ReadString(Sec, 'Password', '') <> '' then
-      edPassword.Text:='******';
+      edPassword.Text:='******'
+    else
+      edPassword.Text:='';
     cbUseProxy.Checked:=ReadBool(Sec, 'UseProxy', False);
     edProxy.Text:=ReadString(Sec, 'ProxyHost', '');
     edProxyPort.Value:=ReadInteger(Sec, 'ProxyPort', 8080);
     edProxyUserName.Text:=ReadString(Sec, 'ProxyUser', '');
     if ReadString(Sec, 'ProxyPass', '') <> '' then
-      edProxyPassword.Text:='******';
+      edProxyPassword.Text:='******'
+    else
+      edProxyPassword.Text:='';
     edPaths.Text:=StringReplace(ReadString(Sec, 'PathMap', ''), '|', LineEnding, [rfReplaceAll]);
   end;
 end;
