@@ -1909,14 +1909,18 @@ const
 var
   req, args, t: TJSONObject;
   i, j, id: integer;
+  ids: TJSONArray;
+  TorrentIds: variant;
+  s: string;
 begin
-  gTorrents.RemoveSelection;
   gTorrentsClick(nil);
   id:=RpcObj.CurTorrentId;
   if id = 0 then exit;
   AppBusy;
   with TTorrPropsForm.Create(Self) do
   try
+    gTorrents.Tag:=1;
+    TorrentIds:=GetSelectedTorrents;
     args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited',
                                   'uploadLimit', 'uploadLimitMode', 'uploadLimited',
                                   'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit']);
@@ -1927,7 +1931,14 @@ begin
     try
       t:=args.Arrays['torrents'].Objects[0];
 
-      txName.Caption:=txName.Caption + ' ' + UTF8Encode(t.Strings['name']);
+      if gTorrents.SelCount > 1 then begin
+        s:=Format(sSeveralTorrents, [gTorrents.SelCount]);
+        Caption:=Caption + ' - ' + s;
+      end
+      else
+        s:=UTF8Encode(t.Strings['name']);
+
+      txName.Caption:=txName.Caption + ' ' + s;
       if RpcObj.RPCVersion<5 then
       begin
         // RPC versions prior to v5
@@ -1988,7 +1999,10 @@ begin
       try
         req.Add('method', 'torrent-set');
         args:=TJSONObject.Create;
-        args.Add('ids', TJSONArray.Create([id]));
+        ids:=TJSONArray.Create;
+        for i:=VarArrayLowBound(TorrentIds, 1) to VarArrayHighBound(TorrentIds, 1) do
+          ids.Add(integer(TorrentIds[i]));
+        args.Add('ids', ids);
 
         if RpcObj.RPCVersion < 5 then
         begin
@@ -2035,6 +2049,7 @@ begin
       AppNormal;
     end;
   finally
+    gTorrents.Tag:=0;
     Free;
   end;
 end;
