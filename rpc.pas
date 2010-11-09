@@ -139,11 +139,11 @@ var
 begin
   try
     GetStatusInfo;
-    if Status <> '' then
-      Terminate
-    else
+    if Status = '' then
       FRpc.FConnected:=True;
     NotifyCheckStatus;
+    if not FRpc.FConnected then
+      Terminate;
 
     t:=Now - 1;
     while not Terminated do begin
@@ -239,7 +239,8 @@ end;
 
 procedure TRpcThread.NotifyCheckStatus;
 begin
-  Application.QueueAsyncCall(@CheckStatusHandler, 0);
+  if not Terminated then
+    Application.QueueAsyncCall(@CheckStatusHandler, 0);
 end;
 
 procedure TRpcThread.CheckStatusHandler(Data: PtrInt);
@@ -468,6 +469,7 @@ begin
   HttpLock:=TCriticalSection.Create;
   Http:=THTTPSend.Create;
   Http.Protocol:='1.1';
+  Http.Timeout:=20000;
   RefreshNow:=rtNone;
 end;
 
@@ -519,21 +521,47 @@ begin
         end;
 
         if Http.ResultCode <> 200 then begin
-          SetString(s, Http.Document.Memory, Http.Document.Size);
-          s:=StringReplace(s, '<p>', LineEnding, [rfReplaceAll, rfIgnoreCase]);
-          s:=StringReplace(s, '</p>', '', [rfReplaceAll, rfIgnoreCase]);
-          s:=StringReplace(s, '<h1>', '', [rfReplaceAll, rfIgnoreCase]);
-          s:=StringReplace(s, '</h1>', '', [rfReplaceAll, rfIgnoreCase]);
-          if s <> '' then
-            Status:=s
+          if Http.Headers.Count > 0 then begin
+            SetString(s, Http.Document.Memory, Http.Document.Size);
+            j:=Pos('<body>', LowerCase(s));
+            if j > 0 then
+              System.Delete(s, 1, j - 1);
+            s:=StringReplace(s, #13#10, '', [rfReplaceAll]);
+            s:=StringReplace(s, #13, '', [rfReplaceAll]);
+            s:=StringReplace(s, #10, '', [rfReplaceAll]);
+            s:=StringReplace(s, '<br>', LineEnding, [rfReplaceAll, rfIgnoreCase]);
+            s:=StringReplace(s, '</p>', LineEnding, [rfReplaceAll, rfIgnoreCase]);
+            s:=StringReplace(s, '</h1>', LineEnding, [rfReplaceAll, rfIgnoreCase]);
+            s:=StringReplace(s, '<li>', LineEnding+'* ', [rfReplaceAll, rfIgnoreCase]);
+            j:=1;
+            while j <= Length(s) do begin
+              if s[j] = '<' then begin
+                while (j <= Length(s)) and (s[j] <> '>') do
+                  System.Delete(s, j, 1);
+                System.Delete(s, j, 1);
+              end
+              else
+                Inc(j);
+            end;
+          end
           else
-            Status:=Http.ResultString;
+            s:='';
+          if s = '' then begin
+            s:=Http.ResultString;
+            if s = '' then
+              if Http.ResultCode = 0 then
+                s:='Invalid server response.'
+              else
+                s:=Format('HTTP error: %d', [Http.ResultCode]);
+          end;
+          Status:=s;
           break;
         end;
         Http.Document.Position:=0;
         jp:=TJSONParser.Create(Http.Document);
         HttpLock.Leave;
         locked:=False;
+        RequestStartTime:=0;
         try
           try
             obj:=jp.Parse;
@@ -721,16 +749,17 @@ end;
 procedure TRpc.Disconnect;
 begin
   if Assigned(RpcThread) then begin
+    RpcThread.Terminate;
     try
       Http.Sock.CloseSocket;
     except
     end;
-    RpcThread.Terminate;
     while Assigned(RpcThread) do begin
       Application.ProcessMessages;
       Sleep(20);
     end;
   end;
+  Status:='';
   RequestStartTime:=0;
 end;
 
