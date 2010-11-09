@@ -2684,7 +2684,6 @@ begin
 end;
 
 procedure TMainForm.DoDisconnect;
-
 begin
   TorrentsListTimer.Enabled:=False;
   FilterTimer.Enabled:=False;
