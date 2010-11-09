@@ -52,6 +52,7 @@ resourcestring
   sDownloadComplete = 'Download complete';
   sUpdateComplete = 'Update complete.';
   sTorrentVerification = 'Torrent verification may take a long time.' + LineEnding + 'Are you sure to start verification of torrent ''%s''?';
+  sTorrentsVerification = 'Torrents verification may take a long time.' + LineEnding + 'Are you sure to start verification of %d torrents?';
   sReconnect = 'Reconnect in %d seconds.';
   sDisconnected = 'Disconnected';
   sConnectingToDaemon = 'Connecting to daemon...';
@@ -2067,13 +2068,23 @@ end;
 
 procedure TMainForm.acVerifyTorrentExecute(Sender: TObject);
 var
-  id: integer;
+  ids: variant;
+  s: string;
 begin
   if gTorrents.Items.Count = 0 then exit;
-  gTorrents.RemoveSelection;
-  id:=gTorrents.Items[idxTorrentId, gTorrents.Row];
-  if MessageDlg('', Format(sTorrentVerification, [UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Row]))]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
-  TorrentAction(VarArrayOf([id]), 'verify');
+  gTorrents.Tag:=1;
+  try
+    ids:=GetSelectedTorrents;
+    if gTorrents.SelCount < 2 then
+      s:=Format(sTorrentVerification, [UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Items.IndexOf(idxTorrentId, ids[0])]))])
+    else
+      s:=Format(sTorrentsVerification, [gTorrents.SelCount]);
+    if MessageDlg('', s, mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then
+      exit;
+  finally
+    gTorrents.Tag:=0;
+  end;
+  TorrentAction(ids, 'verify');
 end;
 
 procedure TMainForm.AnimateTimerTimer(Sender: TObject);
