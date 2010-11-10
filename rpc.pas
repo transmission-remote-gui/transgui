@@ -24,7 +24,7 @@ unit rpc;
 interface
 
 uses
-  Classes, SysUtils, Forms, httpsend, syncobjs, fpjson, jsonparser;
+  Classes, SysUtils, Forms, httpsend, syncobjs, fpjson, jsonparser, ssl_openssl;
 
 resourcestring
   sTransmissionAt = 'Transmission%s at %s:%s';

@@ -2701,7 +2701,11 @@ begin
     RpcObj.Http.ProxyUser:='';
     RpcObj.Http.ProxyPass:='';
   end;
-  RpcObj.Url:=Format('http://%s:%d/transmission/rpc', [FCurHost, FIni.ReadInteger(Sec, 'Port', 9091)]);
+  if FIni.ReadBool(Sec, 'UseSSL', False) then
+    RpcObj.Url:='https'
+  else
+    RpcObj.Url:='http';
+  RpcObj.Url:=Format('%s://%s:%d/transmission/rpc', [RpcObj.Url, FCurHost, FIni.ReadInteger(Sec, 'Port', 9091)]);
 
   RpcObj.RefreshInterval:=FIni.ReadInteger('Interface', 'RefreshInterval', 5);
   if RpcObj.RefreshInterval < 1 then

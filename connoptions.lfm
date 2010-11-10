@@ -130,7 +130,7 @@ object OptionsForm: TOptionsForm
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword
         PasswordChar = '*'
-        TabOrder = 4
+        TabOrder = 5
       end
       object edUserName: TEdit
         Left = 180
@@ -138,7 +138,7 @@ object OptionsForm: TOptionsForm
         Top = 66
         Width = 208
         Anchors = [akTop, akLeft, akRight]
-        TabOrder = 3
+        TabOrder = 4
       end
       object edPort: TSpinEdit
         Left = 180
@@ -157,7 +157,7 @@ object OptionsForm: TOptionsForm
         Width = 101
         Caption = 'Use proxy server'
         OnClick = cbUseProxyClick
-        TabOrder = 5
+        TabOrder = 6
       end
       object edProxy: TEdit
         Left = 180
@@ -165,7 +165,7 @@ object OptionsForm: TOptionsForm
         Top = 146
         Width = 208
         Anchors = [akTop, akLeft, akRight]
-        TabOrder = 6
+        TabOrder = 7
       end
       object edProxyPort: TSpinEdit
         Left = 180
@@ -174,7 +174,7 @@ object OptionsForm: TOptionsForm
         Width = 70
         MaxValue = 65535
         MinValue = 1
-        TabOrder = 7
+        TabOrder = 8
         Value = 65535
       end
       object edProxyUserName: TEdit
@@ -183,7 +183,7 @@ object OptionsForm: TOptionsForm
         Top = 202
         Width = 208
         Anchors = [akTop, akLeft, akRight]
-        TabOrder = 8
+        TabOrder = 9
       end
       object edProxyPassword: TEdit
         Left = 180
@@ -193,7 +193,7 @@ object OptionsForm: TOptionsForm
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword
         PasswordChar = '*'
-        TabOrder = 9
+        TabOrder = 10
       end
       object cbHost: TComboBox
         Left = 180
@@ -253,6 +253,14 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 1
+      end
+      object cbSSL: TCheckBox
+        Left = 260
+        Height = 17
+        Top = 40
+        Width = 56
+        Caption = 'Use SSL'
+        TabOrder = 3
       end
     end
     object tabInterface: TTabSheet

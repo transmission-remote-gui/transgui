@@ -45,6 +45,7 @@ type
     cbShowAddTorrentWindow: TCheckBox;
     cbHost: TComboBox;
     cbLanguage: TComboBox;
+    cbSSL: TCheckBox;
     edProxyPassword: TEdit;
     edProxyPort: TSpinEdit;
     edProxy: TEdit;
@@ -240,6 +241,7 @@ begin
     if not SectionExists(Sec) then
       Sec:='Connection';
     edPort.Value:=ReadInteger(Sec, 'Port', 9091);
+    cbSSL.Checked:=ReadBool(Sec, 'UseSSL', False);
     edUserName.Text:=ReadString(Sec, 'UserName', '');
     if ReadString(Sec, 'Password', '') <> '' then
       edPassword.Text:='******'
@@ -266,6 +268,7 @@ begin
   with MainForm.Ini do begin
     Sec:='Connection.' + HostName;
     WriteString(Sec, 'Host', HostName);
+    WriteBool(Sec, 'UseSSL', cbSSL.Checked);
     WriteInteger(Sec, 'Port', edPort.Value);
     WriteString(Sec, 'UserName', edUserName.Text);
     if edPassword.Text <> '******' then begin
@@ -302,6 +305,7 @@ begin
     if not SectionExists(Sec) then
       Sec:='Connection';
     Result:=(edPort.Value <> ReadInteger(Sec, 'Port', 9091)) or
+            (cbSSL.Checked <> ReadBool(Sec, 'UseSSL', False)) or
             (edUserName.Text <> ReadString(Sec, 'UserName', '')) or
             ((ReadString(Sec, 'Password', '') = '') and (edPassword.Text <> '')) or
             ((ReadString(Sec, 'Password', '') <> '') and (edPassword.Text <> '******')) or
