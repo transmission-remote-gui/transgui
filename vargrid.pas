@@ -175,7 +175,7 @@ procedure Register;
 
 implementation
 
-uses Variants, LCLType, Math, GraphType, lclintf;
+uses Variants, LCLType, Math, GraphType, lclintf {$ifdef LCLcarbon} , carbonproc {$endif LCLcarbon};
 
 const
   roSelected = 1;
@@ -493,32 +493,39 @@ end;
 procedure TVarGrid.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   pt: TPoint;
+  IsCtrl: boolean;
 begin
+{$ifdef LCLcarbon}
+  IsCtrl:=ssMeta in GetCarbonShiftState;
+{$else}
+  IsCtrl:=ssCtrl in Shift;
+{$endif LCLcarbon}
   pt:=MouseToCell(Point(X,Y));
-  if MultiSelect and (ssLeft in Shift) and (pt.x >= FixedCols) and (pt.y >= FixedRows) then begin
-    if ssCtrl in Shift then begin
-      if SelCount = 0 then
-        RowSelected[Row]:=True;
-      RowSelected[pt.y - FixedRows]:=not RowSelected[pt.y - FixedRows];
-      FAnchor:=-1;
-    end
-    else
-      if ssShift in Shift then
-        SelectRange(Row, pt.y - FixedRows)
-      else begin
-        if SelCount > 0 then
-          RemoveSelection;
-        FAnchor:=-1;
-      end;
-  end;
-  if ssRight in Shift then begin
+  if (ssRight in Shift) {$ifdef darwin} or (Shift*[ssLeft, ssCtrl] = [ssLeft, ssCtrl]) {$endif} then begin
     SetFocus;
     if (pt.x >= FixedCols) and (pt.y >= FixedRows) then begin
       if MultiSelect and (SelCount > 0) and not RowSelected[pt.y - FixedRows] then
         RemoveSelection;
       Row:=pt.y - FixedRows;
     end;
-  end;
+  end
+  else
+    if MultiSelect and (ssLeft in Shift) and (pt.x >= FixedCols) and (pt.y >= FixedRows) then begin
+      if IsCtrl then begin
+        if SelCount = 0 then
+          RowSelected[Row]:=True;
+        RowSelected[pt.y - FixedRows]:=not RowSelected[pt.y - FixedRows];
+        FAnchor:=-1;
+      end
+      else
+        if ssShift in Shift then
+          SelectRange(Row, pt.y - FixedRows)
+        else begin
+          if SelCount > 0 then
+            RemoveSelection;
+          FAnchor:=-1;
+        end;
+    end;
   inherited MouseDown(Button, Shift, X, Y);
 end;
 
