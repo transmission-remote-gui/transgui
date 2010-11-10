@@ -85,7 +85,10 @@ uses
   Classes,
   synafpc,
 {$IFNDEF MSWINDOWS}
-  Libc, SysUtils;
+  {$IFNDEF FPC}
+    Libc,
+  {$ENDIF}
+  SysUtils;
 {$ELSE}
   Windows;
 {$ENDIF}
