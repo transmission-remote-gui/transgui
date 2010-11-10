@@ -486,8 +486,12 @@ begin
     aState:=aState - [gdSelected];
   inherited PrepareCanvas(aCol, aRow, aState);
   with Canvas do
-    if (Font.Color = clWindow) and (Brush.Color = clHighlight) then
+    if (Font.Color = clWindow) and (Brush.Color = clHighlight) then begin
       Font.Color:=clHighlightText;
+{$ifdef LCLgtk2}
+      Brush.Color:=ColorToRGB(Brush.Color); // Workaround for LCL bug
+{$endif LCLgtk2}
+    end;
 end;
 
 procedure TVarGrid.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
