@@ -94,6 +94,7 @@ resourcestring
   sBlocklistUpdateComplete = 'The block list has been updated successfully.' + LineEnding + 'The list entries count: %d.';
   sSeveralTorrents = '%d torrents';
   sUnableToExecute = 'Unable to execute "%s".';
+  sSSLLoadError = 'Unable to load OpenSSL library fieles: %s and %s';
 
 type
 
@@ -574,7 +575,7 @@ implementation
 
 uses
   AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, utils, TorrProps, DaemonOptions, About,
-  ToolWin, download, ColSetup, types, AddLink, MoveTorrent;
+  ToolWin, download, ColSetup, types, AddLink, MoveTorrent, ssl_openssl_lib;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -2701,8 +2702,13 @@ begin
     RpcObj.Http.ProxyUser:='';
     RpcObj.Http.ProxyPass:='';
   end;
-  if FIni.ReadBool(Sec, 'UseSSL', False) then
-    RpcObj.Url:='https'
+  if FIni.ReadBool(Sec, 'UseSSL', False) then begin
+    RpcObj.Url:='https';
+    if not IsSSLloaded then begin
+      MessageDlg(Format(sSSLLoadError, [DLLSSLName, DLLUtilName]), mtError, [mbOK], 0);
+      exit;
+    end;
+  end
   else
     RpcObj.Url:='http';
   RpcObj.Url:=Format('%s://%s:%d/transmission/rpc', [RpcObj.Url, FCurHost, FIni.ReadInteger(Sec, 'Port', 9091)]);
