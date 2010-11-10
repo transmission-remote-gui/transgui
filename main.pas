@@ -753,12 +753,16 @@ var
   pid: SizeUInt;
 begin
   Application.Title:=AppName;
-  if FileExists(ChangeFileExt(ParamStr(0), '.ini')) then
-    FHomeDir:=ExtractFilePath(ParamStr(0)) // Portable mode
-  else begin
-    FHomeDir:=IncludeTrailingPathDelimiter(GetAppConfigDir(False));
-    ForceDirectories(FHomeDir);
-  end;
+  FHomeDir:=Application.GetOptionValue('home');
+  if FHomeDir = '' then begin
+    if FileExists(ChangeFileExt(ParamStr(0), '.ini')) then
+      FHomeDir:=ExtractFilePath(ParamStr(0)) // Portable mode
+    else
+      FHomeDir:=IncludeTrailingPathDelimiter(GetAppConfigDir(False));
+  end
+  else
+    FHomeDir:=IncludeTrailingPathDelimiter(FHomeDir);
+  ForceDirectories(FHomeDir);
   FIPCFileName:=FHomeDir + 'ipc.txt';
   FRunFileName:=FHomeDir + 'run';
 
