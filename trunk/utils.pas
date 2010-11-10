@@ -132,9 +132,7 @@ begin
   WrkProcess:=TProcess.Create(nil);
   try
     WrkProcess.Options:=[poNoConsole];
-    WrkProcess.CommandLine:=Comando +
-                            ' ' +
-                            NomeFile;
+    WrkProcess.CommandLine:=Comando + ' "' + NomeFile + '"';
     WrkProcess.Execute;
     Result:=WrkProcess.ExitStatus;
   finally
