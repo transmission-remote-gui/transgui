@@ -905,10 +905,6 @@ begin
   if FCurHost = '' then
     FCurHost:=FIni.ReadString('Connection', 'Host', '');
   FPathMap:=TStringList.Create;
-{$ifdef darwin}
-  miToggleApp.Visible:=False;
-  miTSep1.Visible:=False;
-{$endif darwin}
   if Application.HasOption('hidden') then begin
     ApplicationProperties.ShowMainForm:=False;
     FormShow(nil);
@@ -1373,6 +1369,7 @@ begin
 {$ifdef darwin}
   acShowApp.Visible:=False;
   acHideApp.Visible:=False;
+  miTSep1.Visible:=False;
 {$else}
   acHideApp.Visible:=Visible and (WindowState <> wsMinimized);
 {$endif darwin}
@@ -2613,7 +2610,9 @@ end;
 
 procedure TMainForm.TrayIconDblClick(Sender: TObject);
 begin
+{$ifndef darwin}
   acShowApp.Execute;
+{$endif darwin}
 end;
 
 procedure TMainForm.UrlLabelClick(Sender: TObject);
