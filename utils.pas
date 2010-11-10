@@ -44,6 +44,10 @@ procedure AppBusy;
 procedure AppNormal;
 procedure ForceAppNormal;
 
+{$ifdef mswindows}
+procedure AllowSetForegroundWindow(dwProcessId: DWORD);
+{$endif mswindows}
+
 implementation
 
 function GetTimeZoneDelta: TDateTime;
@@ -185,6 +189,19 @@ begin
   BusyCount:=0;
   AppNormal;
 end;
+
+{$ifdef mswindows}
+procedure AllowSetForegroundWindow(dwProcessId: DWORD);
+type
+  TAllowSetForegroundWindow = function(dwProcessId: DWORD): BOOL; stdcall;
+var
+  _AllowSetForegroundWindow: TAllowSetForegroundWindow;
+begin
+  _AllowSetForegroundWindow:=TAllowSetForegroundWindow(GetProcAddress(GetModuleHandle('user32.dll'), 'AllowSetForegroundWindow'));
+  if Assigned(_AllowSetForegroundWindow) then
+    _AllowSetForegroundWindow(dwProcessId);
+end;
+{$endif mswindows}
 
 end.
 
