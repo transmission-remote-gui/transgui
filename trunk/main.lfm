@@ -1,5 +1,5 @@
 object MainForm: TMainForm
-  Left = 231
+  Left = 223
   Height = 484
   Top = 155
   Width = 780
@@ -1160,7 +1160,7 @@ object MainForm: TMainForm
     left = 8
     top = 28
     object miTorrent: TMenuItem
-      Caption = 'Torrent'
+      Caption = '&Torrent'
       object miConnect: TMenuItem
         Action = acConnect
         Bitmap.Data = {
@@ -1567,7 +1567,7 @@ object MainForm: TMainForm
       end
     end
     object miTools: TMenuItem
-      Caption = 'Tools'
+      Caption = 'T&ools'
       object MenuItem17: TMenuItem
         Action = acOptions
         OnClick = acOptionsExecute
@@ -1636,7 +1636,7 @@ object MainForm: TMainForm
       end
     end
     object miHelp: TMenuItem
-      Caption = 'Help'
+      Caption = '&Help'
       object miAbout: TMenuItem
         Caption = 'About...'
         OnClick = miAboutClick
@@ -1653,7 +1653,7 @@ object MainForm: TMainForm
     end
     object acAddTorrent: TAction
       Category = 'Torrent'
-      Caption = 'Add torrent...'
+      Caption = '&Add torrent...'
       Hint = 'Add torrent'
       ImageIndex = 0
       OnExecute = acAddTorrentExecute
@@ -1718,7 +1718,7 @@ object MainForm: TMainForm
       OnExecute = acDaemonOptionsExecute
     end
     object acExit: TAction
-      Caption = 'Exit'
+      Caption = 'E&xit'
       OnExecute = acExitExecute
     end
     object acResolveHost: TAction
@@ -1749,7 +1749,7 @@ object MainForm: TMainForm
     end
     object acVerifyTorrent: TAction
       Category = 'Torrent'
-      Caption = 'Verify'
+      Caption = '&Verify'
       Hint = 'Verify torrent'
       OnExecute = acVerifyTorrentExecute
     end
