@@ -746,6 +746,8 @@ function CheckAppParams: boolean;
 var
   i: integer;
   s: string;
+  h: THandle;
+  pid: SizeUInt;
 begin
   Application.Title:=AppName;
   if FileExists(ChangeFileExt(ParamStr(0), '.ini')) then
@@ -763,6 +765,14 @@ begin
       AddTorrentFile(s);
   end;
   if FileExists(FRunFileName) then begin
+    h:=FileOpen(FRunFileName, fmOpenRead or fmShareDenyNone);
+    if FileRead(h, pid, SizeOf(pid)) = SizeOf(pid) then begin
+{$ifdef mswindows}
+      AllowSetForegroundWindow(pid);
+{$endif mswindows}
+    end;
+    FileClose(h);
+
     if not FileExists(FIPCFileName) then
       FileClose(FileCreate(FIPCFileName, fmCreate));
     for i:=1 to 50 do
@@ -773,9 +783,12 @@ begin
       else
         Sleep(200);
   end
-  else
-    FileClose(FileCreate(FRunFileName, fmCreate));
-
+  else begin
+    h:=FileCreate(FRunFileName, fmCreate);
+    pid:=GetProcessID;
+    FileWrite(h, pid, SizeOf(pid));
+    FileClose(h);
+  end;
   LoadTranslation;
 
   SizeNames[1]:=sByte;
@@ -1357,7 +1370,14 @@ begin
 end;
 
 procedure TMainForm.HideApp;
+var
+  i: integer;
 begin
+  for i:=0 to Screen.FormCount - 1 do
+    with Screen.Forms[i] do
+      if fsModal in FormState then
+        exit;
+
   if WindowState <> wsMinimized then
     Hide;
   HideTaskbarButton;
@@ -2481,6 +2501,7 @@ begin
       if s = '' then
         exit;
 
+      Application.ProcessMessages;
       TickTimer.Enabled:=True;
       DoAddTorrent(s);
     end;
