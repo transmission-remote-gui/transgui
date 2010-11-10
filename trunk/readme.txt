@@ -59,3 +59,4 @@ COMMAND LINE PARAMETERS
 You can specify path to a .torrent file or a magnet link as a command line parameter. The program will add the specified torrent.
 
 -hidden : Start the program hidden. Only the program's tray icon will be visible.
+--home=<home_dir> : Specifies a home directory for the program. All program's settings are stored in the home directory. You can run multiple instances of the program by specifying different home directories.
