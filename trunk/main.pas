@@ -33,8 +33,6 @@ const
   AppVersion = '2.2';
 
 resourcestring
-  sShowApp = 'Show';
-  sHideApp = 'Hide';
   sAll = 'All';
   sWaiting = 'Waiting';
   sVerifying = 'Verifying';
@@ -127,6 +125,8 @@ type
     acReannounceTorrent: TAction;
     acMoveTorrent: TAction;
     acSelectAll: TAction;
+    acShowApp: TAction;
+    acHideApp: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
@@ -143,6 +143,8 @@ type
     MenuItem25: TMenuItem;
     MenuItem40: TMenuItem;
     MenuItem41: TMenuItem;
+    MenuItem43: TMenuItem;
+    MenuItem63: TMenuItem;
     pbStatus: TPaintBox;
     pmSepOpen2: TMenuItem;
     MenuItem42: TMenuItem;
@@ -209,7 +211,6 @@ type
     MenuItem35: TMenuItem;
     MenuItem36: TMenuItem;
     MenuItem37: TMenuItem;
-    miToggleApp: TMenuItem;
     miAbout: TMenuItem;
     miHelp: TMenuItem;
     panTop: TPanel;
@@ -320,6 +321,7 @@ type
     procedure acAddLinkExecute(Sender: TObject);
     procedure acAddTorrentExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
+    procedure acHideAppExecute(Sender: TObject);
     procedure acMoveTorrentExecute(Sender: TObject);
     procedure acOpenContainingFolderExecute(Sender: TObject);
     procedure acOpenFileExecute(Sender: TObject);
@@ -338,6 +340,7 @@ type
     procedure acSetNormalPriorityExecute(Sender: TObject);
     procedure acSetNotDownloadExecute(Sender: TObject);
     procedure acSetupColumnsExecute(Sender: TObject);
+    procedure acShowAppExecute(Sender: TObject);
     procedure acShowCountryFlagExecute(Sender: TObject);
     procedure acStartAllTorrentsExecute(Sender: TObject);
     procedure acStartTorrentExecute(Sender: TObject);
@@ -384,7 +387,6 @@ type
     procedure lvFilterResize(Sender: TObject);
     procedure miAboutClick(Sender: TObject);
     procedure miCopyLabelClick(Sender: TObject);
-    procedure miToggleAppClick(Sender: TObject);
     procedure PageInfoChange(Sender: TObject);
     procedure TorrentsListTimerTimer(Sender: TObject);
     procedure pmFilesPopup(Sender: TObject);
@@ -979,6 +981,11 @@ begin
     DoConnect;
 end;
 
+procedure TMainForm.acHideAppExecute(Sender: TObject);
+begin
+  HideApp;
+end;
+
 procedure TMainForm.acMoveTorrentExecute(Sender: TObject);
 var
   ids: variant;
@@ -1363,10 +1370,12 @@ end;
 procedure TMainForm.UpdateTray;
 begin
   TrayIcon.Visible:=not Self.Visible or (WindowState = wsMinimized) or FIni.ReadBool('Interface', 'TrayIconAlways', True);
-  if Visible and (WindowState <> wsMinimized) then
-    miToggleApp.Caption:=SHideApp
-  else
-    miToggleApp.Caption:=SShowApp;
+{$ifdef darwin}
+  acShowApp.Visible:=False;
+  acHideApp.Visible:=False;
+{$else}
+  acHideApp.Visible:=Visible and (WindowState <> wsMinimized);
+{$endif darwin}
 end;
 
 procedure TMainForm.HideApp;
@@ -1381,9 +1390,12 @@ begin
   if WindowState <> wsMinimized then
     Hide;
   HideTaskbarButton;
+  UpdateTray;
 end;
 
 procedure TMainForm.ShowApp;
+var
+  i: integer;
 begin
   ShowTaskbarButton;
   if WindowState = wsMinimized then
@@ -1392,6 +1404,11 @@ begin
   Show;
   Application.BringToFront;
   BringToFront;
+  for i:=0 to Screen.FormCount - 1 do
+    with Screen.Forms[i] do
+      if fsModal in FormState then
+        BringToFront;
+  UpdateTray;
 end;
 
 procedure TMainForm.DownloadFinished(const TorrentName: string);
@@ -1881,6 +1898,11 @@ begin
   if not SetupColumns(g, 0, s) then exit;
   if g = gTorrents then
     TorrentColumnsChanged;
+end;
+
+procedure TMainForm.acShowAppExecute(Sender: TObject);
+begin
+  ShowApp;
 end;
 
 procedure TMainForm.acShowCountryFlagExecute(Sender: TObject);
@@ -2547,15 +2569,6 @@ begin
   BeforeCloseApp;
 end;
 
-procedure TMainForm.miToggleAppClick(Sender: TObject);
-begin
-  if miToggleApp.Caption = SHideApp then
-    HideApp
-  else
-    ShowApp;
-  UpdateTray;
-end;
-
 procedure TMainForm.PageInfoChange(Sender: TObject);
 begin
   RpcObj.Lock;
@@ -2600,9 +2613,7 @@ end;
 
 procedure TMainForm.TrayIconDblClick(Sender: TObject);
 begin
-{$ifndef darwin}
-  miToggleApp.Click;
-{$endif darwin}
+  acShowApp.Execute;
 end;
 
 procedure TMainForm.UrlLabelClick(Sender: TObject);

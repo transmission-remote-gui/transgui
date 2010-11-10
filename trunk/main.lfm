@@ -1815,6 +1815,14 @@ object MainForm: TMainForm
       OnExecute = acSelectAllExecute
       ShortCut = 16449
     end
+    object acShowApp: TAction
+      Caption = 'Show'
+      OnExecute = acShowAppExecute
+    end
+    object acHideApp: TAction
+      Caption = 'Hide'
+      OnExecute = acHideAppExecute
+    end
   end
   object TorrentsListTimer: TTimer
     Enabled = False
@@ -3672,9 +3680,14 @@ object MainForm: TMainForm
   object pmTray: TPopupMenu
     left = 460
     top = 88
-    object miToggleApp: TMenuItem
+    object MenuItem43: TMenuItem
+      Action = acShowApp
       Default = True
-      OnClick = miToggleAppClick
+      OnClick = acShowAppExecute
+    end
+    object MenuItem63: TMenuItem
+      Action = acHideApp
+      OnClick = acHideAppExecute
     end
     object miTSep1: TMenuItem
       Caption = '-'
