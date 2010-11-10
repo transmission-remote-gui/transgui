@@ -750,12 +750,12 @@ procedure TRpc.Disconnect;
 begin
   if Assigned(RpcThread) then begin
     RpcThread.Terminate;
-    try
-      Http.Sock.CloseSocket;
-    except
-    end;
     while Assigned(RpcThread) do begin
       Application.ProcessMessages;
+      try
+        Http.Sock.CloseSocket;
+      except
+      end;
       Sleep(20);
     end;
   end;
