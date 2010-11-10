@@ -123,7 +123,10 @@ begin
     dmGnome:
       Comando:='gnome-open';
     dmKde:
-      Comando:='kfmclient exec';
+      if FileExists('/usr/bin/kioclient') then
+        Comando:='/usr/bin/kioclient exec'
+      else
+        Comando:='kfmclient exec';
   end;
 
   if Comando = '' then
