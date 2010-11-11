@@ -1,4 +1,4 @@
-TranslationLanguage=Magyar
+﻿TranslationLanguage=Magyar
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Távoli és helyi elérési utak kapcsolata.~~Példák:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (megvan %d)
@@ -241,5 +241,10 @@ Torrents=Torrents
 Unable to execute "%s"=Nem sikerült futtatni: "%s"
 Update blocklist=Tiltólista frissítése
 URL of a .torrent file or a magnet link=URL of a .torrent file or a magnet link
-###################
 Columns setup=Oszlopot beállítása
+Add torrent=Add torrent
+Delete a .torrent file after after a successful addition=Delete a .torrent file after after a successful addition
+Torrent=Torrent
+Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Torrents verification may take a long time.~Are you sure to start verification of %d torrents?
+Unable to load OpenSSL library files: %s and %s=Unable to load OpenSSL library files: %s and %s
+Use SSL=Use SSL

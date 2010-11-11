@@ -1,4 +1,4 @@
-TranslationLanguage=Română
+﻿TranslationLanguage=Română
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Maparea căilor de la distanţă către local.~~Exemple:~/share=\\pch\share~/var/downloads/muzica=Z:\muzica"
 %d x %s (have %d)=%d x %s (have %d)
@@ -242,3 +242,9 @@ Unable to execute "%s"=Imposibil de executat "%s"
 Update blocklist=Actualizează lista neagră
 URL of a .torrent file or a magnet link=URL al unui fişier .torrent sau legătură
 Columns setup=Setare coloane
+Add torrent=Add torrent
+Delete a .torrent file after after a successful addition=Delete a .torrent file after after a successful addition
+Torrent=Torrent
+Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Torrents verification may take a long time.~Are you sure to start verification of %d torrents?
+Unable to load OpenSSL library files: %s and %s=Unable to load OpenSSL library files: %s and %s
+Use SSL=Use SSL
