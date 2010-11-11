@@ -30,7 +30,7 @@ cp ../../LICENSE.txt ./Resources/License.txt
 echo Creating package...
 
 mkdir ./image
-$pm --root $proot --id com.transgui --version $prog_ver --title "Transmission Remote GUI $prog_ver" --resources ./Resources --target 10.4 --no-relocate --out ./image/transgui.pkg
+$pm --root $proot --info ./package.plist --version $prog_ver --title "Transmission Remote GUI $prog_ver" --resources ./Resources --target 10.4 --no-relocate --out ./image/transgui.pkg
 rm -r ./Resources
 rm -r "$proot"
 
