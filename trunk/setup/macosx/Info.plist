@@ -13,7 +13,6 @@
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>en</string>
-		<string>ru</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>Transmission Remote GUI</string>
