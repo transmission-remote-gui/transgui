@@ -114,8 +114,8 @@ end;
 
 function UnixOpenURL(const NomeFile: String):Integer;
 var
-  WrkProcess:TProcess;
-  Comando:String;
+  WrkProcess: TProcess;
+  Comando, fn: String;
 begin
   Result:=-1;
   Comando:='';
@@ -132,10 +132,14 @@ begin
   if Comando = '' then
     exit;
 
+  fn:=NomeFile;
+  if Pos('://', fn) > 0 then
+    fn:=StringReplace(fn, '#', '%23', [rfReplaceAll]);
+
   WrkProcess:=TProcess.Create(nil);
   try
     WrkProcess.Options:=[poNoConsole];
-    WrkProcess.CommandLine:=Comando + ' "' + NomeFile + '"';
+    WrkProcess.CommandLine:=Comando + ' "' + fn + '"';
     WrkProcess.Execute;
     Result:=WrkProcess.ExitStatus;
   finally
