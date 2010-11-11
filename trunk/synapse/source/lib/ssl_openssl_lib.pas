@@ -106,8 +106,13 @@ const
 {$ELSE}
 var
   {$IFNDEF MSWINDOWS}
-  DLLSSLName: string = 'libssl.so';
-  DLLUtilName: string = 'libcrypto.so';
+    {$IFDEF DARWIN}
+    DLLSSLName: string = 'libssl.dylib';
+    DLLUtilName: string = 'libcrypto.dylib';
+    {$ELSE}
+    DLLSSLName: string = 'libssl.so';
+    DLLUtilName: string = 'libcrypto.so';
+    {$ENDIF}
   {$ELSE}
   DLLSSLName: string = 'ssleay32.dll';
   DLLSSLName2: string = 'libssl32.dll';
@@ -1730,7 +1735,7 @@ begin
 {$ELSE}
       SSLLibHandle := LoadLib(DLLSSLName);
       SSLUtilHandle := LoadLib(DLLUtilName);
-  {$IFNDEF LINUX}
+  {$IFDEF MSWINDOWS}
       if (SSLLibHandle = 0) then
         SSLLibHandle := LoadLib(DLLSSLName2);
   {$ENDIF}
