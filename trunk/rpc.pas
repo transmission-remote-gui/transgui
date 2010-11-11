@@ -469,7 +469,7 @@ begin
   HttpLock:=TCriticalSection.Create;
   Http:=THTTPSend.Create;
   Http.Protocol:='1.1';
-  Http.Timeout:=20000;
+  Http.Timeout:=30000;
   RefreshNow:=rtNone;
 end;
 
