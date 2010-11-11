@@ -101,7 +101,7 @@ end;
 procedure TAboutForm.imgDonateClick(Sender: TObject);
 begin
   AppBusy;
-  OpenURL('https://www.plimus.com/jsp/buynow.jsp?contractId=2343710');
+  OpenURL('https://www.plimus.com/jsp/buynow.jsp?contractId=2343710&paymentMethod=paypal');
   AppNormal;
 end;
 
