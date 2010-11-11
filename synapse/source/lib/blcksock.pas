@@ -1,5 +1,5 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 009.008.002 |
+| Project : Ararat Synapse                                       | 009.008.003 |
 |==============================================================================|
 | Content: Library base                                                        |
 |==============================================================================|
@@ -2087,8 +2087,8 @@ begin
   if WithSize then
   begin
     l := Stream.Size - Stream.Position;;
-    if Indy then
-      l := SwapBytes(l);
+    if not Indy then
+      l := synsock.HToNL(l);
   end;
   repeat
     {$IFDEF CIL}

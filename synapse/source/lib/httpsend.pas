@@ -110,7 +110,7 @@ type
     function ReadIdentity(Size: Integer): Boolean;
     function ReadChunked: Boolean;
     procedure ParseCookies;
-    function PrepareHeaders: string;
+    function PrepareHeaders: AnsiString;
     function InternalDoConnect(needssl: Boolean): Boolean;
     function InternalConnect(needssl: Boolean): Boolean;
   public
@@ -328,13 +328,13 @@ begin
     FResultString := '';
 end;
 
-function THTTPSend.PrepareHeaders: string;
+function THTTPSend.PrepareHeaders: AnsiString;
 begin
   if FProtocol = '0.9' then
     Result := FHeaders[0] + CRLF
   else
 {$IFNDEF MSWINDOWS}
-    Result := AdjustLineBreaks(FHeaders.Text, tlbsCRLF);
+    Result := {$IFDEF UNICODE}AnsiString{$ENDIF}(AdjustLineBreaks(FHeaders.Text, tlbsCRLF));
 {$ELSE}
     Result := FHeaders.Text;
 {$ENDIF}
@@ -381,7 +381,7 @@ var
   ToClose: Boolean;
   Size: Integer;
   Prot, User, Pass, Host, Port, Path, Para, URI: string;
-  s, su: string;
+  s, su: AnsiString;
   HttpTunnel: Boolean;
   n: integer;
   pp: string;
