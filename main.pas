@@ -1344,6 +1344,8 @@ begin
         end;
 
         id:=0;
+        if FIni.ReadBool('Interface', 'DeleteTorrentFile', False) and not IsProtocolSupported(FileName) then
+          DeleteFile(UTF8ToSys(FileName));
 
         FIni.WriteInteger(IniSec, 'PeerLimit', edPeerLimit.Value);
         i:=cbDestFolder.Items.IndexOf(cbDestFolder.Text);
@@ -2862,6 +2864,7 @@ begin
     cbTrayIconAlways.Checked:=FIni.ReadBool('Interface', 'TrayIconAlways', True);
 
     cbShowAddTorrentWindow.Checked:=FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
+    cbDeleteTorrentFile.Checked:=FIni.ReadBool('Interface', 'DeleteTorrentFile', False);
 
     OldRefreshInterval:=edRefreshInterval.Value;
 
@@ -2887,6 +2890,7 @@ begin
       FIni.WriteBool('Interface', 'TrayIconAlways', cbTrayIconAlways.Checked);
 
       FIni.WriteBool('Interface', 'ShowAddTorrentWindow', cbShowAddTorrentWindow.Checked);
+      FIni.WriteBool('Interface', 'DeleteTorrentFile', cbDeleteTorrentFile.Checked);
 
       if not RpcObj.Connected then
         DoConnect;

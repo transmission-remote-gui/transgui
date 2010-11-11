@@ -49,9 +49,9 @@ object OptionsForm: TOptionsForm
     Height = 290
     Top = 8
     Width = 405
-    ActivePage = tabConnection
+    ActivePage = tabInterface
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object tabConnection: TTabSheet
       Caption = 'Connection'
@@ -286,7 +286,7 @@ object OptionsForm: TOptionsForm
       object txLanguage: TLabel
         Left = 8
         Height = 14
-        Top = 168
+        Top = 198
         Width = 52
         Caption = 'Language:'
         ParentColor = False
@@ -344,17 +344,25 @@ object OptionsForm: TOptionsForm
         Caption = 'Show parameters window when adding a new torrent'
         TabOrder = 2
       end
+      object cbDeleteTorrentFile: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 158
+        Width = 272
+        Caption = 'Delete a .torrent file after after a successful addition'
+        TabOrder = 3
+      end
       object cbLanguage: TComboBox
         Left = 128
         Height = 21
-        Top = 166
+        Top = 196
         Width = 260
         Anchors = [akTop, akLeft, akRight]
         ItemHeight = 13
         OnEnter = cbLanguageEnter
         OnMouseDown = cbLanguageMouseDown
         Style = csDropDownList
-        TabOrder = 3
+        TabOrder = 4
       end
     end
     object tabPaths: TTabSheet

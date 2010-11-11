@@ -43,6 +43,7 @@ type
     cbTrayClose: TCheckBox;
     cbUseProxy: TCheckBox;
     cbShowAddTorrentWindow: TCheckBox;
+    cbDeleteTorrentFile: TCheckBox;
     cbHost: TComboBox;
     cbLanguage: TComboBox;
     cbSSL: TCheckBox;
