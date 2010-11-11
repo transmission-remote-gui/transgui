@@ -1,4 +1,4 @@
-TranslationLanguage=Norsk
+﻿TranslationLanguage=Norsk
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Fjern til lokal banerelasjon.~~For eksempel:~/share=\\pch\share~/var/downloads/musikk=Z:\musikk"
 %d x %s (have %d)=%d x %s (har %d)
@@ -242,3 +242,9 @@ Unable to execute "%s"=Kunne ikke kjøre "%s"
 Update blocklist=Oppdater blokkeringsliste
 URL of a .torrent file or a magnet link=URL til en .torrent-fil eller en magnet-link
 Columns setup=Kolonneoppsett
+Add torrent=Add torrent
+Delete a .torrent file after after a successful addition=Delete a .torrent file after after a successful addition
+Torrent=Torrent
+Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Torrents verification may take a long time.~Are you sure to start verification of %d torrents?
+Unable to load OpenSSL library files: %s and %s=Unable to load OpenSSL library files: %s and %s
+Use SSL=Use SSL

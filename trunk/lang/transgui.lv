@@ -1,4 +1,4 @@
-TranslationLanguage=Latviešu
+﻿TranslationLanguage=Latviešu
 
 %dd, %dh=%dd, %ds
 %dh, %dm=%ds, %dmin
@@ -241,6 +241,11 @@ URL of a .torrent file or a magnet link=URL .torrent failam vai magnet saite
 Move torrent data from current location to new location=Pārvietot torrenta datus no dotās vietas uz jaunu
 New location for torrent data=Jaunā torrenta datu atrašanās vieta
 Torrent data location=Torrenta datu atrašanās vieta
-###################
 Columns setup=Kolonu uzstādīšana
 KB=KB
+Add torrent=Add torrent
+Delete a .torrent file after after a successful addition=Delete a .torrent file after after a successful addition
+Torrent=Torrent
+Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Torrents verification may take a long time.~Are you sure to start verification of %d torrents?
+Unable to load OpenSSL library files: %s and %s=Unable to load OpenSSL library files: %s and %s
+Use SSL=Use SSL

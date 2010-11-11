@@ -1,4 +1,4 @@
-TranslationLanguage=Русский
+﻿TranslationLanguage=Русский
 
 %dd, %dh=%dд, %dч
 %dh, %dm=%dч, %dмин
@@ -242,3 +242,9 @@ Move torrent data from current location to new location=Переместить �
 New location for torrent data=Новое расположение данных торрента
 Torrent data location=Расположение данных торрента
 Columns setup=Настройка столбцов
+Add torrent=Добвление торрента
+Torrent=Торрент
+Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Проверка торрентов может занять много времени.~Вы уверены, что хотите проверить %d торрентов?
+Unable to load OpenSSL library files: %s and %s=Невозможно загрузить файлы библиотеки OpenSSL: %s и %s
+Delete a .torrent file after after a successful addition=Удалять .torrent файл после успешного добавления
+Use SSL=Использовать SSL

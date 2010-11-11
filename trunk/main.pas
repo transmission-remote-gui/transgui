@@ -94,7 +94,7 @@ resourcestring
   sBlocklistUpdateComplete = 'The block list has been updated successfully.' + LineEnding + 'The list entries count: %d.';
   sSeveralTorrents = '%d torrents';
   sUnableToExecute = 'Unable to execute "%s".';
-  sSSLLoadError = 'Unable to load OpenSSL library fieles: %s and %s';
+  sSSLLoadError = 'Unable to load OpenSSL library files: %s and %s';
 
 type
 
@@ -691,6 +691,8 @@ begin
         Accept:=False;
         exit;
       end;
+  if Accept and (Copy(ResourceName, Length(ResourceName) - 8, MaxInt) = '.Category') then
+    Accept:=False;
 end;
 
 var
