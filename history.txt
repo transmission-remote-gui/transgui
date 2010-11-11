@@ -1,3 +1,28 @@
+2.2 (Nov 11, 2010)
+------------------
+[+] Added a wait animation to the right side of the toolbar. The animation is shown when a daemon response takes more than 1 second.
+[+] Added SSL support. Issue #227.
+[+] Verification of selected torrents. Issue #312.
+[+] Allow changing properties for multiple selected torrents. Issue #322.
+[+] Added option "Delete a .torrent file after after a successful addition". Patch by reardonia with some modifications. Issue #329.
+[+] Added a new command line option. --home=<home_dir> : Specifies a home directory for the program. All program's settings are stored in the home directory. You can run multiple instances of the program by specifying different home directories.
+[+] Added Norwegian translation by anoteng. Issue #293.
+[+] Added German translation by dboxtester. Issue #302.
+[+] Added Romanian translation by contactdanielro. Issue #340.
+[*] Speedup disconnection.
+[*] Better connection errors handling.
+[*] Added 2 separate items to the tray icon menu: Show and Hide. Double click on menu shows the application.
+[*] Use the Command key for multi-selection on MacOS. Issue #344.
+[*] Do not ask an Administrator password during installation on Mac OS X.
+[*] Resolve names using hosts file on unix.
+[-] Pressing the Delete key when editing the search/filter asks to delete the currently selected torrent. Issue #330.
+[-] Files with 0 bytes length always shown as 0% downloaded in the file status panel. Issue #321.
+[-] Changing torrent selection using keyboard did not work properly after changing sort order. Issue #338.
+[-] The dialog for downloading torrent is not brought up over GUI if GUI was minimized and restored. Issue #336.
+[-] Properly restore the running instance of application when adding a new torrent via file association on Windows.
+[-] Fixed opening files/folders with spaces on Linux. Issue #291.
+[-] Selection was not visible on some GTK themes. Issue #320.
+
 2.1.1 (Aug 26, 2010)
 --------------------
 [+] Added the -hidden command line parameter to start the program hidden. Only the program's tray icon will be visible. Issue #36.
