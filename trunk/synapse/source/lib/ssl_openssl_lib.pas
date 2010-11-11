@@ -1,5 +1,5 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 003.006.001 |
+| Project : Ararat Synapse                                       | 003.006.002 |
 |==============================================================================|
 | Content: SSL support by OpenSSL                                              |
 |==============================================================================|
@@ -85,10 +85,11 @@ uses
   Classes,
   synafpc,
 {$IFNDEF MSWINDOWS}
-  {$IFNDEF FPC}
-    Libc,
+  {$IFDEF FPC}
+  BaseUnix, SysUtils;
+  {$ELSE}
+   Libc, SysUtils;
   {$ENDIF}
-  SysUtils;
 {$ELSE}
   Windows;
 {$ENDIF}

@@ -1,5 +1,5 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.001.002 |
+| Project : Ararat Synapse                                       | 001.001.003 |
 |==============================================================================|
 | Content: Socket Independent Platform Layer - FreePascal definition include   |
 |==============================================================================|
@@ -250,11 +250,13 @@ const
 
   MSG_OOB       = sockets.MSG_OOB;      // Process out-of-band data.
   MSG_PEEK      = sockets.MSG_PEEK;     // Peek at incoming messages.
-{$ifdef darwin}
-  MSG_NOSIGNAL  = 0;
-{$else}
-  MSG_NOSIGNAL  = sockets.MSG_NOSIGNAL; // Do not generate SIGPIPE.
-{$endif darwin}
+  {$ifdef DARWIN}
+  MSG_NOSIGNAL  = $20000;  // Do not generate SIGPIPE.
+                           // Works under MAC OS X, but is undocumented,
+                           // So FPC doesn't include it
+  {$else}
+   MSG_NOSIGNAL  = sockets.MSG_NOSIGNAL; // Do not generate SIGPIPE.
+  {$endif}
 
 const
   WSAEINTR = ESysEINTR;

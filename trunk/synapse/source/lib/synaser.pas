@@ -1,5 +1,5 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 007.004.000 |
+| Project : Ararat Synapse                                       | 007.005.000 |
 |==============================================================================|
 | Content: Serial port support                                                 |
 |==============================================================================|
@@ -44,9 +44,9 @@
 |==============================================================================}
 
 {: @abstract(Serial port communication library)
-This unit contains a class that implements serial port communication for Windows
- or Linux. This class provides numerous methods with same name and functionality
-  as methods of the Ararat Synapse TCP/IP library.
+This unit contains a class that implements serial port communication 
+ for Windows, Linux, Unix or MacOSx. This class provides numerous methods with 
+ same name and functionality as methods of the Ararat Synapse TCP/IP library.
 
 The following is a small example how establish a connection by modem (in this
 case with my USB modem):
@@ -73,6 +73,13 @@ case with my USB modem):
 {$IFDEF WIN32}
   {$IFNDEF MSWINDOWS}
     {$DEFINE MSWINDOWS}
+  {$ENDIF}
+{$ENDIF}
+
+//Kylix does not known UNIX define
+{$IFDEF LINUX}
+  {$IFNDEF UNIX}
+    {$DEFINE UNIX}
   {$ENDIF}
 {$ENDIF}
 
@@ -189,10 +196,14 @@ type
   PDCB = ^TDCB;
 
 const
-{$IFDEF LINUX}
-  MaxRates = 30;
+{$IFDEF UNIX}
+  {$IFDEF DARWIN}
+  MaxRates = 18;  //MAC
+  {$ELSE}
+   MaxRates = 30; //UNIX
+  {$ENDIF}
 {$ELSE}
-  MaxRates = 19;  //FPC on some platforms not know high speeds?
+  MaxRates = 19;  //WIN
 {$ENDIF}
   Rates: array[0..MaxRates, 0..1] of cardinal =
   (
@@ -214,9 +225,10 @@ const
     (38400, B38400),
     (57600, B57600),
     (115200, B115200),
-    (230400, B230400),
-    (460800, B460800)
-{$IFDEF LINUX}
+    (230400, B230400)
+{$IFNDEF DARWIN}
+    ,(460800, B460800)
+  {$IFDEF UNIX}
     ,(500000, B500000),
     (576000, B576000),
     (921600, B921600),
@@ -228,8 +240,14 @@ const
     (3000000, B3000000),
     (3500000, B3500000),
     (4000000, B4000000)
+  {$ENDIF}
 {$ENDIF}
     );
+{$ENDIF}
+
+{$IFDEF DARWIN}
+const // From fcntl.h
+  O_SYNC = $0080;  { synchronous writes }
 {$ENDIF}
 
 const
@@ -310,11 +328,9 @@ type
     procedure GetComNr(Value: string); virtual;
     function PreTestFailing: boolean; virtual;{HGJ}
     function TestCtrlLine: Boolean; virtual;
-{$IFNDEF MSWINDOWS}
+{$IFDEF UNIX}    
     procedure DcbToTermios(const dcb: TDCB; var term: termios); virtual;
     procedure TermiosToDcb(const term: termios; var dcb: TDCB); virtual;
-{$ENDIF}
-{$IFDEF LINUX}
     function ReadLockfile: integer; virtual;
     function LockfileName: String; virtual;
     procedure CreateLockfile(PidNr: integer); virtual;
@@ -325,7 +341,7 @@ type
     {: data Control Block with communication parameters. Usable only when you
      need to call API directly.}
     DCB: Tdcb;
-{$IFNDEF MSWINDOWS}
+{$IFDEF UNIX}
     TermiosStruc: termios;
 {$ENDIF}
     {:Object constructor.}
@@ -603,7 +619,7 @@ type
 
     {:Raise Synaser error with ErrNumber code. Usually used by internal routines.}
     procedure RaiseSynaError(ErrNumber: integer); virtual;
-{$IFDEF LINUX}
+{$IFDEF UNIX}
     function  cpomComportAccessible: boolean; virtual;{HGJ}
     procedure cpomReleaseComport; virtual; {HGJ}
 {$ENDIF}
@@ -764,7 +780,7 @@ end;
 
 class function TBlockSerial.GetVersion: string;
 begin
-	Result := 'SynaSer 7.4.0';
+	Result := 'SynaSer 7.5.0';
 end;
 
 procedure TBlockSerial.CloseSocket;
@@ -778,7 +794,7 @@ begin
   end;
   if InstanceActive then
   begin
-    {$IFDEF LINUX}
+    {$IFDEF UNIX}
     if FLinuxLock then
       cpomReleaseComport;
     {$ENDIF}
@@ -933,7 +949,7 @@ begin
     SerialCheck(-1)
   else
     SerialCheck(0);
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
   if FLastError <> sOK then
     if FLinuxLock then
       cpomReleaseComport;
@@ -968,7 +984,7 @@ begin
   begin
     SetSynaError(ErrNoDeviceAnswer);
     FileClose(FHandle);         {HGJ}
-    {$IFDEF LINUX}
+    {$IFDEF UNIX}
     if FLinuxLock then
       cpomReleaseComport;                {HGJ}
     {$ENDIF}                             {HGJ}
@@ -1807,7 +1823,8 @@ function TBlockSerial.CanRead(Timeout: integer): boolean;
 begin
   Result := WaitingData > 0;
   if not Result then
-    Result := CanEvent(EV_RXCHAR, Timeout);
+    Result := CanEvent(EV_RXCHAR, Timeout) or (WaitingData > 0);
+    //check WaitingData again due some broken virtual ports
   if Result then
     DoStatus(HR_CanRead, '');
 end;
@@ -1918,7 +1935,11 @@ begin
   {$IFNDEF FPC}
   SerialCheck(ioctl(FHandle, TCFLSH, TCIOFLUSH));
   {$ELSE}
-  SerialCheck(fpioctl(FHandle, TCFLSH, TCIOFLUSH));
+    {$IFDEF DARWIN}
+    SerialCheck(fpioctl(FHandle, TCIOflush, TCIOFLUSH));
+    {$ELSE}
+    SerialCheck(fpioctl(FHandle, TCFLSH, TCIOFLUSH));
+    {$ENDIF}
   {$ENDIF}
   FBuffer := '';
   ExceptCheck;
@@ -2154,7 +2175,7 @@ end;
   Ownership Manager.
 }
 
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 
 function TBlockSerial.LockfileName: String;
 var
