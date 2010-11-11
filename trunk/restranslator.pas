@@ -482,6 +482,11 @@ begin
   finally
     FS.Free;
   end;
+
+  i:=IndexOf(LineSeparator);
+  if i >= 0 then
+    Delete(i);
+
   // Normalize quotations
   for i:=0 to Count - 1 do begin
     s:=Strings[i];
@@ -508,19 +513,11 @@ end;
 procedure TTranslateStringList.Merge(Source: TTranslateStringList; const NamesOnly: boolean = false);
 var
   i: integer;
-  HasAdded: boolean;
 begin
   CheckSpecialChars;
-  HasAdded := false;
   Source.Sort;
   for i := 0 to Source.Count - 1 do
     if (Source.CNames[i] <> '') and (IndexOfName(Source.CNames[i]) = -1) then begin
-      if not HasAdded then begin
-        if IndexOf(LineSeparator) >= 0 then
-          Delete(IndexOf(LineSeparator));
-        Append(LineSeparator);
-        HasAdded:= true;
-      end;
       if NamesOnly then
         Append(Source.CNames[i] + NameValueSeparator + Source.CNames[i])
       else
@@ -697,15 +694,7 @@ begin
   FS := TFileStream.Create(aFileName, fmCreate);
   try
     FS.WriteBuffer(UTF8FileHeader, SizeOf(UTF8FileHeader));
-    with FStrResLst do begin
-      while IndexOf(LineSeparator) >= 0 do
-        Delete(IndexOf(LineSeparator));
-      SaveToStream(FS);
-      if (Count > 0) and (FAddedStrings.Count > 0) then begin
-        FS.WriteBuffer(LineSeparator, Length(LineSeparator));
-        FS.WriteBuffer(string(LineEnding)[1], Length(LineEnding));
-      end;
-    end;
+    FStrResLst.SaveToStream(FS);
     FAddedStrings.SaveToStream(FS);
   finally
     FS.Free;
