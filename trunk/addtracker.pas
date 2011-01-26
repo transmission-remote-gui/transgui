@@ -5,7 +5,7 @@ unit AddTracker;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ButtonPanel, StdCtrls;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ButtonPanel, StdCtrls, ExtCtrls;
 
 resourcestring
   STrackerProps = 'Tracker properties';
@@ -18,6 +18,7 @@ type
   TAddTrackerForm = class(TForm)
     Buttons: TButtonPanel;
     edTracker: TEdit;
+    Panel1: TPanel;
     txTrackerURL: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
