@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '2.2';
+  AppVersion = '2.3';
 
 resourcestring
   sAll = 'All';

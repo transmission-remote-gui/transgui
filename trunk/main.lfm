@@ -3673,6 +3673,7 @@ object MainForm: TMainForm
     BalloonFlags = bfInfo
     BalloonTimeout = 10000
     PopUpMenu = pmTray
+    OnClick = TrayIconDblClick
     OnDblClick = TrayIconDblClick
     left = 456
     top = 56
