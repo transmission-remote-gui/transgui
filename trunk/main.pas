@@ -95,6 +95,7 @@ resourcestring
   sSeveralTorrents = '%d torrents';
   sUnableToExecute = 'Unable to execute "%s".';
   sSSLLoadError = 'Unable to load OpenSSL library files: %s and %s';
+  SRemoveTracker = 'Are you sure to remove tracker ''%s''?';
 
 type
 
@@ -128,6 +129,9 @@ type
     acSelectAll: TAction;
     acShowApp: TAction;
     acHideApp: TAction;
+    acAddTracker: TAction;
+    acEditTracker: TAction;
+    acDelTracker: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
@@ -146,6 +150,10 @@ type
     MenuItem41: TMenuItem;
     MenuItem43: TMenuItem;
     MenuItem63: TMenuItem;
+    MenuItem64: TMenuItem;
+    MenuItem65: TMenuItem;
+    MenuItem66: TMenuItem;
+    MenuItem67: TMenuItem;
     pbStatus: TPaintBox;
     pmSepOpen2: TMenuItem;
     MenuItem42: TMenuItem;
@@ -321,7 +329,10 @@ type
     tabFiles: TTabSheet;
     procedure acAddLinkExecute(Sender: TObject);
     procedure acAddTorrentExecute(Sender: TObject);
+    procedure acAddTrackerExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
+    procedure acDelTrackerExecute(Sender: TObject);
+    procedure acEditTrackerExecute(Sender: TObject);
     procedure acHideAppExecute(Sender: TObject);
     procedure acMoveTorrentExecute(Sender: TObject);
     procedure acOpenContainingFolderExecute(Sender: TObject);
@@ -374,6 +385,8 @@ type
     procedure lvFilterDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
     procedure lvPeersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure lvTrackersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
+    procedure lvTrackersDblClick(Sender: TObject);
+    procedure lvTrackersKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure pbStatusPaint(Sender: TObject);
     procedure panReconnectResize(Sender: TObject);
     procedure pbDownloadedPaint(Sender: TObject);
@@ -453,6 +466,7 @@ type
     procedure FillDownloadDirs(CB: TComboBox);
     function PriorityToStr(p: integer; var ImageIndex: integer): string;
     procedure SetRefreshInterval;
+    procedure AddTracker(EditMode: boolean);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -576,7 +590,7 @@ implementation
 
 uses
   AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, utils, TorrProps, DaemonOptions, About,
-  ToolWin, download, ColSetup, types, AddLink, MoveTorrent, ssl_openssl_lib;
+  ToolWin, download, ColSetup, types, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -985,6 +999,42 @@ begin
     DoConnect;
 end;
 
+procedure TMainForm.acDelTrackerExecute(Sender: TObject);
+var
+  req, args: TJSONObject;
+  id, torid: integer;
+begin
+  id:=lvTrackers.Items[idxTrackerID, lvTrackers.Row];
+  torid:=RpcObj.CurTorrentId;
+  if MessageDlg('', Format(SRemoveTracker, [UTF8Encode(widestring(lvTrackers.Items[idxTrackersListName, lvTrackers.Row]))]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
+  AppBusy;
+  Self.Update;
+  req:=TJSONObject.Create;
+  try
+    req.Add('method', 'torrent-set');
+    args:=TJSONObject.Create;
+    args.Add('ids', TJSONArray.Create([torid]));
+    args.Add('trackerRemove', TJSONArray.Create([id]));
+    req.Add('arguments', args);
+    args:=nil;
+    args:=RpcObj.SendRequest(req, False);
+    if args = nil then begin
+      CheckStatus(False);
+      exit;
+    end;
+    args.Free;
+  finally
+    req.Free;
+  end;
+  DoRefresh;
+  AppNormal;
+end;
+
+procedure TMainForm.acEditTrackerExecute(Sender: TObject);
+begin
+  AddTracker(True);
+end;
+
 procedure TMainForm.acHideAppExecute(Sender: TObject);
 begin
   HideApp;
@@ -1132,6 +1182,11 @@ procedure TMainForm.acAddTorrentExecute(Sender: TObject);
 begin
   if not OpenTorrentDlg.Execute then exit;
   DoAddTorrent(OpenTorrentDlg.FileName);
+end;
+
+procedure TMainForm.acAddTrackerExecute(Sender: TObject);
+begin
+  AddTracker(False);
 end;
 
 procedure TMainForm.acAddLinkExecute(Sender: TObject);
@@ -2456,6 +2511,19 @@ begin
   end;
 end;
 
+procedure TMainForm.lvTrackersDblClick(Sender: TObject);
+begin
+  acEditTracker.Execute;
+end;
+
+procedure TMainForm.lvTrackersKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_DELETE then begin
+    Key:=0;
+    acDelTracker.Execute;
+  end;
+end;
+
 procedure TMainForm.pbStatusPaint(Sender: TObject);
 begin
   if FStatusBmp = nil then begin
@@ -2821,7 +2889,7 @@ begin
   acRemoveTorrentAndData.Enabled:=acRemoveTorrent.Enabled and (RpcObj.RPCVersion >= 4);
   acReannounceTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 5);
   acMoveTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 6);
-  acTorrentProps.Enabled:=acRemoveTorrent.Enabled;
+  acTorrentProps.Enabled:=acVerifyTorrent.Enabled;
   acOpenContainingFolder.Enabled:=acTorrentProps.Enabled and (RpcObj.RPCVersion >= 4);
   pmiPriority.Enabled:=e and (gTorrents.Items.Count > 0);
   miPriority.Enabled:=pmiPriority.Enabled;
@@ -2834,6 +2902,9 @@ begin
   acSetNotDownload.Enabled:=acSetHighPriority.Enabled;
   acSetupColumns.Enabled:=e;
   acUpdateBlocklist.Enabled:=e and (RpcObj.RPCVersion >= 5);
+  acAddTracker.Enabled:=acTorrentProps.Enabled and (RpcObj.RPCVersion >= 10);
+  acEditTracker.Enabled:=acAddTracker.Enabled and (lvTrackers.Items.Count > 0);
+  acDelTracker.Enabled:=acEditTracker.Enabled;
 end;
 
 function TMainForm.ShowConnOptions: boolean;
@@ -3924,9 +3995,9 @@ begin
       if not (d is TJSONObject) then continue;
       t:=d as TJSONObject;
       if t.IndexOfName('id') >= 0 then
-        id:=t.Integers['id'] + 1
+        id:=t.Integers['id']
       else
-        id:=i + 1;
+        id:=i;
       if not lvTrackers.Items.Find(idxTrackerID, id, row) then
         lvTrackers.Items.InsertRow(row);
       lvTrackers.Items[idxTrackerID, row]:=id;
@@ -4356,6 +4427,53 @@ begin
   if i < 1 then
     i:=1;
   RpcObj.RefreshInterval:=i/SecsPerDay;
+end;
+
+procedure TMainForm.AddTracker(EditMode: boolean);
+var
+  req, args: TJSONObject;
+  id, torid: integer;
+begin
+  AppBusy;
+  with TAddTrackerForm.Create(Self) do
+  try
+    id:=0;
+    torid:=RpcObj.CurTorrentId;
+    if EditMode then begin
+      Caption:=STrackerProps;
+      edTracker.Text:=UTF8Encode(widestring(lvTrackers.Items[idxTrackersListName, lvTrackers.Row]));
+      id:=lvTrackers.Items[idxTrackerID, lvTrackers.Row];
+    end;
+    AppNormal;
+    if ShowModal = mrOk then begin
+      AppBusy;
+      Self.Update;
+      req:=TJSONObject.Create;
+      try
+        req.Add('method', 'torrent-set');
+        args:=TJSONObject.Create;
+        args.Add('ids', TJSONArray.Create([torid]));
+        if EditMode then
+          args.Add('trackerReplace', TJSONArray.Create([id, UTF8Decode(edTracker.Text)]))
+        else
+          args.Add('trackerAdd', TJSONArray.Create([UTF8Decode(edTracker.Text)]));
+        req.Add('arguments', args);
+        args:=nil;
+        args:=RpcObj.SendRequest(req, False);
+        if args = nil then begin
+          CheckStatus(False);
+          exit;
+        end;
+        args.Free;
+      finally
+        req.Free;
+      end;
+      DoRefresh;
+      AppNormal;
+    end;
+  finally
+    Free;
+  end;
 end;
 
 initialization
