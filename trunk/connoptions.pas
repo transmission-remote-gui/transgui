@@ -51,6 +51,7 @@ type
     edProxyPort: TSpinEdit;
     edProxy: TEdit;
     edRefreshInterval: TSpinEdit;
+    edRefreshIntervalMin: TSpinEdit;
     edUserName: TEdit;
     edPassword: TEdit;
     edProxyUserName: TEdit;
@@ -65,8 +66,10 @@ type
     Page: TPageControl;
     tabConnection: TTabSheet;
     tabInterface: TTabSheet;
+    txRefreshIntervalMin: TLabel;
     txSeconds: TLabel;
     txRefreshInterval: TLabel;
+    txSeconds2: TLabel;
     txUserName: TLabel;
     txPort: TLabel;
     edPort: TSpinEdit;
