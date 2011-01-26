@@ -2696,6 +2696,16 @@ begin
   Sec:='Connection.' + FCurHost;
   if not FIni.SectionExists(Sec) then
     Sec:='Connection';
+  if FIni.ReadBool(Sec, 'UseSSL', False) then begin
+    RpcObj.InitSSL;
+    if not IsSSLloaded then begin
+      MessageDlg(Format(sSSLLoadError, [DLLSSLName, DLLUtilName]), mtError, [mbOK], 0);
+      exit;
+    end;
+    RpcObj.Url:='https';
+  end
+  else
+    RpcObj.Url:='http';
   RpcObj.Http.UserName:=FIni.ReadString(Sec, 'UserName', '');
   RpcObj.Http.Password:=DecodeBase64(FIni.ReadString(Sec, 'Password', ''));
   if FIni.ReadBool(Sec, 'UseProxy', False) then begin
@@ -2710,15 +2720,6 @@ begin
     RpcObj.Http.ProxyUser:='';
     RpcObj.Http.ProxyPass:='';
   end;
-  if FIni.ReadBool(Sec, 'UseSSL', False) then begin
-    RpcObj.Url:='https';
-    if not IsSSLloaded then begin
-      MessageDlg(Format(sSSLLoadError, [DLLSSLName, DLLUtilName]), mtError, [mbOK], 0);
-      exit;
-    end;
-  end
-  else
-    RpcObj.Url:='http';
   RpcObj.Url:=Format('%s://%s:%d/transmission/rpc', [RpcObj.Url, FCurHost, FIni.ReadInteger(Sec, 'Port', 9091)]);
 
   RpcObj.RefreshInterval:=FIni.ReadInteger('Interface', 'RefreshInterval', 5);

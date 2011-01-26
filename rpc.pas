@@ -92,6 +92,7 @@ type
     procedure SetInfoStatus(const AValue: string);
     procedure SetStatus(const AValue: string);
     procedure SetTorrentFields(const AValue: string);
+    procedure CreateHttp;
   public
     Http: THTTPSend;
     HttpLock: TCriticalSection;
@@ -107,6 +108,7 @@ type
 
     constructor Create;
     destructor Destroy; override;
+    procedure InitSSL;
 
     procedure Lock;
     procedure Unlock;
@@ -128,7 +130,7 @@ type
 
 implementation
 
-uses Main;
+uses Main, ssl_openssl_lib, synafpc, blcksock;
 
 { TRpcThread }
 
@@ -467,10 +469,8 @@ begin
   inherited;
   FLock:=TCriticalSection.Create;
   HttpLock:=TCriticalSection.Create;
-  Http:=THTTPSend.Create;
-  Http.Protocol:='1.1';
-  Http.Timeout:=30000;
   RefreshNow:=rtNone;
+  CreateHttp;
 end;
 
 destructor TRpc.Destroy;
@@ -479,6 +479,32 @@ begin
   HttpLock.Free;
   FLock.Free;
   inherited Destroy;
+end;
+
+procedure TRpc.InitSSL;
+{$ifdef unix}
+{$ifndef darwin}
+var
+  hLib1, hLib2: TLibHandle;
+{$endif darwin}
+{$endif unix}
+begin
+  if IsSSLloaded then exit;
+{$ifdef unix}
+{$ifndef darwin}
+  hlib1:=LoadLibrary('libssl.so.0.9.8');
+  hlib2:=LoadLibrary('libcrypto.so.0.9.8');
+  if (hLib1 <> 0) and (hLib2 <> 0) then begin
+    DLLSSLName:='libssl.so.0.9.8';
+    DLLUtilName:='libcrypto.so.0.9.8';
+  end;
+  FreeLibrary(hLib2);
+  FreeLibrary(hLib1);
+{$endif darwin}
+{$endif unix}
+  if InitSSLInterface then
+    SSLImplementation := TSSLOpenSSL;
+  CreateHttp;
 end;
 
 function TRpc.SendRequest(req: TJSONObject; ReturnArguments: boolean): TJSONObject;
@@ -720,6 +746,14 @@ begin
   finally
     Unlock;
   end;
+end;
+
+procedure TRpc.CreateHttp;
+begin
+  Http.Free;
+  Http:=THTTPSend.Create;
+  Http.Protocol:='1.1';
+  Http.Timeout:=30000;
 end;
 
 procedure TRpc.Lock;
