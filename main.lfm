@@ -303,11 +303,11 @@ object MainForm: TMainForm
     Height = 290
     Top = 151
     Width = 780
-    ActivePage = tabGeneral
+    ActivePage = tabTrackers
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -891,6 +891,8 @@ object MainForm: TMainForm
         PopupMenu = pmTrackers
         RowCount = 1
         TabOrder = 0
+        OnDblClick = lvTrackersDblClick
+        OnKeyDown = lvTrackersKeyDown
         SortColumn = 0
         HideSelection = True
         OnCellAttributes = lvTrackersCellAttributes
@@ -1823,6 +1825,21 @@ object MainForm: TMainForm
       Caption = 'Hide'
       OnExecute = acHideAppExecute
     end
+    object acAddTracker: TAction
+      Category = 'Trackers'
+      Caption = 'Add tracker...'
+      OnExecute = acAddTrackerExecute
+    end
+    object acEditTracker: TAction
+      Category = 'Trackers'
+      Caption = 'Edit tracker...'
+      OnExecute = acEditTrackerExecute
+    end
+    object acDelTracker: TAction
+      Category = 'Trackers'
+      Caption = 'Remove tracker'
+      OnExecute = acDelTrackerExecute
+    end
   end
   object TorrentsListTimer: TTimer
     Enabled = False
@@ -2164,6 +2181,7 @@ object MainForm: TMainForm
     end
   end
   object ApplicationProperties: TApplicationProperties
+    ShowButtonGlyphs = sbgSystem
     OnException = ApplicationPropertiesException
     OnIdle = ApplicationPropertiesIdle
     OnMinimize = ApplicationPropertiesMinimize
@@ -3778,6 +3796,20 @@ object MainForm: TMainForm
     Images = ImageList16
     left = 376
     top = 92
+    object MenuItem65: TMenuItem
+      Action = acAddTracker
+      OnClick = acAddTrackerExecute
+    end
+    object MenuItem66: TMenuItem
+      Action = acEditTracker
+      OnClick = acEditTrackerExecute
+    end
+    object MenuItem67: TMenuItem
+      Action = acDelTracker
+    end
+    object MenuItem64: TMenuItem
+      Caption = '-'
+    end
     object MenuItem48: TMenuItem
       Action = acSetupColumns
       OnClick = acSetupColumnsExecute

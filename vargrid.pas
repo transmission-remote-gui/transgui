@@ -571,6 +571,8 @@ begin
           FAnchor:=-1;
         end;
   end;
+  if (Key = VK_RETURN) and Assigned(OnDblClick) then
+    OnDblClick(Self);
 end;
 
 procedure TVarGrid.DoOnCellAttributes(ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);

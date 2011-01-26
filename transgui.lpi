@@ -48,7 +48,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="16">
+    <Units Count="17">
       <Unit0>
         <Filename Value="transgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -149,6 +149,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="MoveTorrent"/>
       </Unit15>
+      <Unit16>
+        <Filename Value="addtracker.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AddTrackerForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="AddTracker"/>
+      </Unit16>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

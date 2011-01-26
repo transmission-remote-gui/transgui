@@ -1,0 +1,41 @@
+object AddTrackerForm: TAddTrackerForm
+  Left = 411
+  Height = 92
+  Top = 283
+  Width = 533
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Add tracker'
+  ClientHeight = 92
+  ClientWidth = 533
+  OnCreate = FormCreate
+  Position = poScreenCenter
+  LCLVersion = '0.9.28.2'
+  object txTrackerURL: TLabel
+    Left = 8
+    Height = 14
+    Top = 8
+    Width = 113
+    Caption = 'Tracker announce URL:'
+    ParentColor = False
+  end
+  object Buttons: TButtonPanel
+    Left = 8
+    Height = 26
+    Top = 58
+    Width = 517
+    BorderSpacing.Around = 8
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+  object edTracker: TEdit
+    Left = 8
+    Height = 21
+    Top = 28
+    Width = 517
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 0
+  end
+end
