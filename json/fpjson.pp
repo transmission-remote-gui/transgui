@@ -1076,6 +1076,7 @@ begin
       vtExtended   : Result:=TJSONFloatNumber.Create(VExtended^);
       vtString     : Result:=TJSONString.Create(vString^);
       vtAnsiString : Result:=TJSONString.Create(AnsiString(vAnsiString));
+      vtWideString : Result:=TJSONString.Create(WideString(VWideString));
       vtPChar      : Result:=TJSONString.Create(StrPas(VPChar));
       vtPointer    : If (VPointer<>Nil) then
                        Raise EJSON.CreateFmt(SErrPointerNotNil,[SourceType])
