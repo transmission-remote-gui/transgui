@@ -45,20 +45,18 @@
    since the port and path may be changed to allow mapping and/or multiple
    daemons to run on a single server.
 
-   In addition to POSTing, there's also a simple notation for sending
-   requests in the query portion of a URL.  This is not as robust, but can
-   be useful for debugging and simple tasks.  The notation works as follows:
+2.3.1.  CSRF Protection
 
-   (1) Any key not "tag" or "method" is treated as an argument.
-   (2) The "arguments" key isn't needed, since data isn't nested.
-   (3) If the value in a key/value pair can be parsed as a number, then it is.
-       Otherwise if it can be parsed as an array of numbers, then it is.
-       Otherwise, it's parsed as a string.
+   Most Transmission RPC servers require a X-Transmission-Session-Id
+   header to be sent with requests, to prevent CSRF attacks.
 
-   Examples:
-   ?method=torrent-start&ids=1,2
-   ?method=session-set&speed-limit-down=50&speed-limit-down-enabled=1
-   
+   When your request has the wrong id -- such as when you send your first
+   request, or when the server expires the CSRF token -- the
+   Transmission RPC server will return an HTTP 409 error with the
+   right X-Transmission-Session-Id in its own headers.
+
+   So, the correct way to handle a 409 response is to update your
+   X-Transmission-Session-Id and to resend the previous request.
 
 3.  Torrent Requests
 
@@ -185,6 +183,8 @@
    rateDownload (B/s)          | number                      | tr_stat
    rateUpload (B/s)            | number                      | tr_stat
    recheckProgress             | double                      | tr_stat
+   secondsDownloading          | number                      | tr_stat
+   secondsSeeding              | number                      | tr_stat
    seedIdleLimit               | number                      | tr_torrent
    seedIdleMode                | number                      | tr_inactvelimit
    seedRatioLimit              | double                      | tr_torrent
@@ -412,9 +412,10 @@
    "blocklist-url"                  | string     | location of the blocklist to use for "blocklist-update"
    "blocklist-enabled"              | boolean    | true means enabled
    "blocklist-size"                 | number     | number of rules in the blocklist
-   "cache-size"                     | number     | maximum size of the disk cache (MB)
+   "cache-size-mb"                  | number     | maximum size of the disk cache (MB)
    "config-dir"                     | string     | location of transmission's configuration directory
    "download-dir"                   | string     | default path to download torrents
+   "download-dir-free-space"        | number     | number of free bytes available in download-dir, or -1 if it can't be calculated
    "dht-enabled"                    | boolean    | true means allow dht in public torrents
    "encryption"                     | string     | "required", "preferred", "tolerated"
    "idle-seeding-limit"             | number     | the default seed inactivity limit for torrents to use
@@ -466,8 +467,8 @@
 
    Method name: "session-set"
    Request arguments: one or more of 4.1's arguments, except: "blocklist-size",
-                      "config-dir", "rpc-version", "rpc-version-minimum",
-                      and "version"
+                      "config-dir", "download-dir-free-space", "rpc-version",
+                      "rpc-version-minimum", and "version"
    Response arguments: none
 
 4.1.2.  Accessors
@@ -522,6 +523,14 @@
    Method name: "port-test"
    Request arguments: none
    Response arguments: a bool, "port-is-open"
+
+4.5.  Session shutdown
+
+   This method tells the transmission session to shut down.
+
+   Method-name: "session-close"
+   Request arguments: none
+   Response arguments: none
 
 5.0.  Protocol Versions
 
@@ -626,7 +635,7 @@
          |         | yes       | session-get    | new arg "trash-original-torrent-files"
          |         | yes       | torrent-get    | new arg "isFinished"
    ------+---------+-----------+----------------+-------------------------------
-   10    | 2.10    | yes       | session-get    | new arg "cache-size"
+   10    | 2.10    | yes       | session-get    | new arg "cache-size-mb"
          |         | yes       | torrent-set    | new arg "trackerAdd"
          |         | yes       | torrent-set    | new arg "trackerRemove"
          |         | yes       | torrent-set    | new arg "trackerReplace"
@@ -640,3 +649,6 @@
    ------+---------+-----------+----------------+-------------------------------
    11    | 2.12    | yes       | session-get    | new arg "blocklist-url"
          |         | yes       | session-set    | new arg "blocklist-url"
+   ------+---------+-----------+----------------+-------------------------------
+   12    | 2.20    | yes       | session-get    | new arg "download-dir-free-space"
+         |         | yes       | session-close  | new method
