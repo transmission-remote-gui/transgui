@@ -452,6 +452,7 @@ type
     function GetSelectedTorrents: variant;
     procedure FillDownloadDirs(CB: TComboBox);
     function PriorityToStr(p: integer; var ImageIndex: integer): string;
+    procedure SetRefreshInterval;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -1382,6 +1383,7 @@ begin
 {$else}
   acHideApp.Visible:=Visible and (WindowState <> wsMinimized);
 {$endif darwin}
+  SetRefreshInterval;
 end;
 
 procedure TMainForm.HideApp;
@@ -2721,11 +2723,7 @@ begin
     RpcObj.Http.ProxyPass:='';
   end;
   RpcObj.Url:=Format('%s://%s:%d/transmission/rpc', [RpcObj.Url, FCurHost, FIni.ReadInteger(Sec, 'Port', 9091)]);
-
-  RpcObj.RefreshInterval:=FIni.ReadInteger('Interface', 'RefreshInterval', 5);
-  if RpcObj.RefreshInterval < 1 then
-    RpcObj.RefreshInterval:=1;
-  RpcObj.RefreshInterval:=RpcObj.RefreshInterval/SecsPerDay;
+  SetRefreshInterval;
   RpcObj.InfoStatus:=sConnectingToDaemon;
   CheckStatus;
   TrayIcon.Hint:=RpcObj.InfoStatus;
@@ -2857,6 +2855,7 @@ begin
     LoadHostSettings(FCurHost);
 
     edRefreshInterval.Value:=FIni.ReadInteger('Interface', 'RefreshInterval', 5);
+    edRefreshIntervalMin.Value:=FIni.ReadInteger('Interface', 'RefreshIntervalMin', 20);
 {$ifndef darwin}
     cbTrayClose.Checked:=FIni.ReadBool('Interface', 'TrayClose', False);
     cbTrayMinimize.Checked:=FIni.ReadBool('Interface', 'TrayMinimize', True);
@@ -2886,6 +2885,7 @@ begin
         Ini.WriteString('Hosts', Format('Host%d', [i + 1]), cbHost.Items[i]);
 
       FIni.WriteInteger('Interface', 'RefreshInterval', edRefreshInterval.Value);
+      FIni.WriteInteger('Interface', 'RefreshIntervalMin', edRefreshIntervalMin.Value);
 {$ifndef darwin}
       FIni.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
       FIni.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
@@ -4343,6 +4343,19 @@ begin
     TR_PRI_HIGH:   begin Result:=sHigh; ImageIndex:=26; end;
     else           Result:='???';
   end;
+end;
+
+procedure TMainForm.SetRefreshInterval;
+var
+  i: TDateTime;
+begin
+  if Visible and (WindowState <> wsMinimized) then
+    i:=FIni.ReadInteger('Interface', 'RefreshInterval', 5)
+  else
+    i:=FIni.ReadInteger('Interface', 'RefreshIntervalMin', 20);
+  if i < 1 then
+    i:=1;
+  RpcObj.RefreshInterval:=i/SecsPerDay;
 end;
 
 initialization
