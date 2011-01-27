@@ -1759,7 +1759,7 @@ begin
 
           if RpcObj.RPCVersion >= 7 then begin
             cbIncompleteDir.Checked:=args.Integers['incomplete-dir-enabled'] <> 0;
-            edIncompleteDir.Text:=args.Strings['incomplete-dir'];
+            edIncompleteDir.Text:=UTF8Encode(args.Strings['incomplete-dir']);
           end
           else
             cbIncompleteDir.Enabled:=False;
@@ -1770,8 +1770,29 @@ begin
           else
             cbPartExt.Enabled:=False;
 
-          cbPortForwarding.Checked:=args.Integers['port-forwarding-enabled'] <> 0;
+          if RpcObj.RPCVersion >= 9 then
+            cbLPD.Checked:=args.Integers['lpd-enabled'] <> 0
+          else
+            cbLPD.Enabled:=False;
 
+          if RpcObj.RPCVersion >= 10 then begin
+            edCacheSize.Value:=args.Integers['cache-size-mb'];
+          end
+          else begin
+            edCacheSize.Visible:=False;
+            txCacheSize.Visible:=False;
+          end;
+
+          if args.IndexOfName('blocklist-url') >= 0 then
+            edBlocklistURL.Text:=UTF8Encode(args.Strings['blocklist-url'])
+          else begin
+            edBlocklistURL.Visible:=False;
+            cbBlocklist.Left:=edBlocklistURL.Left;
+            cbBlocklist.Caption:=StringReplace(cbBlocklist.Caption, ':', '', [rfReplaceAll]);
+          end;
+          cbBlocklistClick(nil);
+
+          cbPortForwarding.Checked:=args.Integers['port-forwarding-enabled'] <> 0;
           s:=args.Strings['encryption'];
           if s = 'preferred' then
             cbEncryption.ItemIndex:=1
@@ -1780,7 +1801,6 @@ begin
             cbEncryption.ItemIndex:=2
           else
             cbEncryption.ItemIndex:=0;
-
           cbMaxDown.Checked:=args.Integers['speed-limit-down-enabled'] <> 0;
           edMaxDown.Value:=args.Integers['speed-limit-down'];
           cbMaxUp.Checked:=args.Integers['speed-limit-up-enabled'] <> 0;
@@ -1845,6 +1865,13 @@ begin
         end;
         if RpcObj.RPCVersion >= 8 then
           args.Add('rename-partial-files', TJSONIntegerNumber.Create(integer(cbPartExt.Checked) and 1));
+        if RpcObj.RPCVersion >= 9 then
+          args.Add('lpd-enabled', TJSONIntegerNumber.Create(integer(cbLPD.Checked) and 1));
+        if RpcObj.RPCVersion >= 10 then
+          args.Add('cache-size-mb', edCacheSize.Value);
+        if edBlocklistURL.Visible then
+          if cbBlocklist.Checked then
+            args.Add('blocklist-url', TJSONString.Create(UTF8Decode(edBlocklistURL.Text)));
         req.Add('arguments', args);
         args:=RpcObj.SendRequest(req, False);
         if args = nil then begin
