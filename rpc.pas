@@ -116,7 +116,7 @@ type
     procedure Connect;
     procedure Disconnect;
 
-    function SendRequest(req: TJSONObject; ReturnArguments: boolean = True): TJSONObject;
+    function SendRequest(req: TJSONObject; ReturnArguments: boolean = True; ATimeOut: integer = -1): TJSONObject;
     function RequestInfo(TorrentId: integer; const Fields: array of const; const ExtraFields: array of string): TJSONObject;
     function RequestInfo(TorrentId: integer; const Fields: array of const): TJSONObject;
 
@@ -507,14 +507,14 @@ begin
   CreateHttp;
 end;
 
-function TRpc.SendRequest(req: TJSONObject; ReturnArguments: boolean): TJSONObject;
+function TRpc.SendRequest(req: TJSONObject; ReturnArguments: boolean; ATimeOut: integer): TJSONObject;
 var
   obj: TJSONData;
   res: TJSONObject;
   jp: TJSONParser;
   s: string;
-  i, j: integer;
-  locked: boolean;
+  i, j, OldTimeOut: integer;
+  locked, r: boolean;
 begin
   Status:='';
   Result:=nil;
@@ -522,6 +522,7 @@ begin
     HttpLock.Enter;
     locked:=True;
     try
+      OldTimeOut:=Http.Timeout;
       RequestStartTime:=Now;
       Http.Document.Clear;
       s:=req.AsJSON;
@@ -529,13 +530,20 @@ begin
       Http.Headers.Clear;
       if XTorrentSession <> '' then
         Http.Headers.Add(XTorrentSession);
-      if not Http.HTTPMethod('POST', Url) then begin
+      if ATimeOut >= 0 then
+        Http.Timeout:=ATimeOut;
+      try
+        r:=Http.HTTPMethod('POST', Url);
+      finally
+        Http.Timeout:=OldTimeOut;
+      end;
+      if not r then begin
         ReconnectAllowed:=True;
         Status:=Http.Sock.LastErrorDesc;
         break;
       end
       else begin
-        if (Http.ResultCode = 409) and (i = 1) then begin
+        if Http.ResultCode = 409 then begin
           XTorrentSession:='';
           for j:=0 to Http.Headers.Count - 1 do
             if Pos('x-transmission-session-id:', AnsiLowerCase(Http.Headers[j])) > 0 then begin

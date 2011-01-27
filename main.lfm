@@ -3806,6 +3806,7 @@ object MainForm: TMainForm
     end
     object MenuItem67: TMenuItem
       Action = acDelTracker
+      OnClick = acDelTrackerExecute
     end
     object MenuItem64: TMenuItem
       Caption = '-'
