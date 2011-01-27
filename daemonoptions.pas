@@ -34,6 +34,7 @@ resourcestring
  sEncryptionRequired = 'Encryption required';
  SNoDownloadDir = 'The downloads directory was not specified.';
  SNoIncompleteDir = 'The directory for incomplete files was not specified.';
+ SNoBlocklistURL = 'The blocklist URL was not specified.';
 
 type
 
@@ -54,15 +55,20 @@ type
     cbIncompleteDir: TCheckBox;
     cbPartExt: TCheckBox;
     cbSeedRatio: TCheckBox;
+    cbLPD: TCheckBox;
     edDownloadDir: TEdit;
     edIncompleteDir: TEdit;
+    edBlocklistURL: TEdit;
     edMaxDown: TSpinEdit;
     edMaxPeers: TSpinEdit;
     edMaxUp: TSpinEdit;
     edPort: TSpinEdit;
     edSeedRatio: TFloatSpinEdit;
     gbBandwidth: TGroupBox;
+    txMB: TLabel;
+    txCacheSize: TLabel;
     Page: TPageControl;
+    edCacheSize: TSpinEdit;
     tabNetwork: TTabSheet;
     tabBandwidth: TTabSheet;
     tabDownload: TTabSheet;
@@ -74,10 +80,10 @@ type
     txPort: TLabel;
     procedure btOKClick(Sender: TObject);
     procedure btTestPortClick(Sender: TObject);
+    procedure cbBlocklistClick(Sender: TObject);
     procedure cbIncompleteDirClick(Sender: TObject);
     procedure cbMaxDownClick(Sender: TObject);
     procedure cbMaxUpClick(Sender: TObject);
-    procedure cbRandomPortChange(Sender: TObject);
     procedure cbRandomPortClick(Sender: TObject);
     procedure cbSeedRatioClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -121,6 +127,17 @@ begin
   end;
 end;
 
+procedure TDaemonOptionsForm.cbBlocklistClick(Sender: TObject);
+begin
+  if not edBlocklistURL.Visible then
+    exit;
+  edBlocklistURL.Enabled:=cbBlocklist.Checked;
+  if edBlocklistURL.Enabled then
+    edBlocklistURL.Color:=clWindow
+  else
+    edBlocklistURL.ParentColor:=True;
+end;
+
 procedure TDaemonOptionsForm.btOKClick(Sender: TObject);
 begin
   edDownloadDir.Text:=Trim(edDownloadDir.Text);
@@ -135,6 +152,13 @@ begin
     Page.ActivePage:=tabDownload;
     edIncompleteDir.SetFocus;
     MessageDlg(SNoIncompleteDir, mtError, [mbOK], 0);
+    exit;
+  end;
+  edBlocklistURL.Text:=Trim(edBlocklistURL.Text);
+  if cbBlocklist.Checked and (edBlocklistURL.Text = '') then begin
+    Page.ActivePage:=tabNetwork;
+    edBlocklistURL.SetFocus;
+    MessageDlg(SNoBlocklistURL, mtError, [mbOK], 0);
     exit;
   end;
   ModalResult:=mrOK;
@@ -152,10 +176,6 @@ end;
 procedure TDaemonOptionsForm.cbMaxUpClick(Sender: TObject);
 begin
   edMaxUp.Enabled:=cbMaxUp.Checked;
-end;
-
-procedure TDaemonOptionsForm.cbRandomPortChange(Sender: TObject);
-begin
 end;
 
 procedure TDaemonOptionsForm.cbRandomPortClick(Sender: TObject);

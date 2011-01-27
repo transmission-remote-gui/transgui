@@ -37,6 +37,22 @@ object DaemonOptionsForm: TDaemonOptionsForm
         Caption = 'Download dir:'
         ParentColor = False
       end
+      object txCacheSize: TLabel
+        Left = 8
+        Height = 14
+        Top = 165
+        Width = 76
+        Caption = 'Disk cache size:'
+        ParentColor = False
+      end
+      object txMB: TLabel
+        Left = 272
+        Height = 14
+        Top = 165
+        Width = 15
+        Caption = 'MB'
+        ParentColor = False
+      end
       object edDownloadDir: TEdit
         Left = 8
         Height = 21
@@ -90,6 +106,14 @@ object DaemonOptionsForm: TDaemonOptionsForm
         TabOrder = 5
         Value = 0
       end
+      object edCacheSize: TSpinEdit
+        Left = 196
+        Height = 21
+        Top = 162
+        Width = 66
+        MaxValue = 9999
+        TabOrder = 6
+      end
     end
     object tabNetwork: TTabSheet
       Caption = 'Network'
@@ -114,7 +138,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object txPeerLimit: TLabel
         Left = 8
         Height = 14
-        Top = 167
+        Top = 99
         Width = 80
         Caption = 'Global peer limit:'
         ParentColor = False
@@ -150,28 +174,28 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object cbPEX: TCheckBox
         Left = 192
         Height = 17
-        Top = 95
+        Top = 126
         Width = 125
         Caption = 'Enable Peer Exchange'
-        TabOrder = 5
+        TabOrder = 6
       end
       object edMaxPeers: TSpinEdit
         Left = 192
         Height = 21
-        Top = 164
+        Top = 96
         Width = 66
         MaxValue = 99999
         MinValue = 1
-        TabOrder = 8
+        TabOrder = 5
         Value = 1
       end
       object cbDHT: TCheckBox
         Left = 192
         Height = 17
-        Top = 116
+        Top = 146
         Width = 73
         Caption = 'Enable DHT'
-        TabOrder = 6
+        TabOrder = 7
       end
       object cbRandomPort: TCheckBox
         Left = 292
@@ -179,7 +203,6 @@ object DaemonOptionsForm: TDaemonOptionsForm
         Top = 13
         Width = 193
         Caption = 'Peek random port on daemon launch'
-        OnChange = cbRandomPortChange
         OnClick = cbRandomPortClick
         TabOrder = 1
       end
@@ -193,12 +216,29 @@ object DaemonOptionsForm: TDaemonOptionsForm
         TabOrder = 2
       end
       object cbBlocklist: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 193
+        Width = 94
+        Caption = 'Enable blocklist:'
+        OnClick = cbBlocklistClick
+        TabOrder = 9
+      end
+      object edBlocklistURL: TEdit
+        Left = 192
+        Height = 21
+        Top = 191
+        Width = 364
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 10
+      end
+      object cbLPD: TCheckBox
         Left = 192
         Height = 17
-        Top = 138
-        Width = 90
-        Caption = 'Enable blocklist'
-        TabOrder = 7
+        Top = 166
+        Width = 152
+        Caption = 'Enable Local Peer Discovery'
+        TabOrder = 8
       end
     end
     object tabBandwidth: TTabSheet
