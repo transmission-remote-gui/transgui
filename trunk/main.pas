@@ -2169,10 +2169,12 @@ begin
   req:=TJSONObject.Create;
   try
     req.Add('method', 'blocklist-update');
-    res:=RpcObj.SendRequest(req, True);
+    res:=RpcObj.SendRequest(req, True, 3*60000);
     AppNormal;
-    if res = nil then
+    if res = nil then begin
       CheckStatus(False);
+      exit;
+    end;
     MessageDlg(Format(sBlocklistUpdateComplete, [res.Integers[('blocklist-size')]]), mtInformation, [mbOK], 0);
     res.Free;
   finally
