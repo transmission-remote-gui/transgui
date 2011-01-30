@@ -484,6 +484,7 @@ type
 
 function CheckAppParams: boolean;
 function GetHumanSize(sz: double; RoundTo: integer = 0): string;
+procedure AutoSizeForm(Form: TCustomForm);
 
 var
   MainForm: TMainForm;
@@ -822,6 +823,17 @@ begin
   SizeNames[5]:=sTByte;
 
   Result:=True;
+end;
+
+procedure AutoSizeForm(Form: TCustomForm);
+var
+  i, ht: integer;
+begin
+  ht:=0;
+  for i:=0 to Form.ControlCount - 1 do
+    with Form.Controls[i] do
+      Inc(ht, Height + BorderSpacing.Top + BorderSpacing.Bottom);
+  Form.ClientHeight:=ht + 2*Form.BorderWidth;
 end;
 
 { TMainForm }
@@ -1722,6 +1734,7 @@ procedure TMainForm.acDaemonOptionsExecute(Sender: TObject);
 var
   req, args: TJSONObject;
   s: string;
+  i, j: integer;
 begin
   with TDaemonOptionsForm.Create(Self) do
   try
@@ -1743,6 +1756,19 @@ begin
             cbSeedRatio.Checked:=args.Integers['seedRatioLimited'] <> 0;
             edSeedRatio.Value:=args.Floats['seedRatioLimit'];
             cbBlocklist.Checked:=args.Integers['blocklist-enabled'] <> 0;
+
+            cbAltEnabled.Checked:=args.Integers['alt-speed-enabled'] <> 0;
+            edAltDown.Value:=args.Integers['alt-speed-down'];
+            edAltUp.Value:=args.Integers['alt-speed-up'];
+            cbAutoAlt.Checked:=args.Integers['alt-speed-time-enabled'] <> 0;
+            edAltTimeBegin.Text:=FormatDateTime('hh:nn', args.Integers['alt-speed-time-begin']/MinsPerDay);
+            edAltTimeEnd.Text:=FormatDateTime('hh:nn', args.Integers['alt-speed-time-end']/MinsPerDay);
+            j:=args.Integers['alt-speed-time-day'];
+            for i:=1 to 7 do begin
+              TCheckBox(gbAltSpeed.FindChildControl(Format('cbDay%d', [i]))).Checked:=LongBool(j and 1);
+              j:=j shr 1;
+            end;
+            cbAutoAltClick(nil);
           end
           else begin
             // RPC versions prior to v5
@@ -1755,6 +1781,7 @@ begin
             edSeedRatio.Enabled:=False;
             btTestPort.Enabled:=False;
             cbBlocklist.Enabled:=False;
+            gbAltSpeed.Visible:=False;
           end;
 
           if RpcObj.RPCVersion >= 7 then begin
@@ -1859,6 +1886,21 @@ begin
           if cbSeedRatio.Checked then
             args.Add('seedRatioLimit', edSeedRatio.Value);
           args.Add('blocklist-enabled', integer(cbBlocklist.Checked) and 1);
+
+          args.Add('alt-speed-enabled', integer(cbAltEnabled.Checked) and 1);
+          args.Add('alt-speed-down', edAltDown.Value);
+          args.Add('alt-speed-up', edAltUp.Value);
+          args.Add('alt-speed-time-enabled', integer(cbAutoAlt.Checked) and 1);
+          if cbAutoAlt.Checked then begin
+            args.Add('alt-speed-time-begin', Round(Frac(StrToTime(edAltTimeBegin.Text))*MinsPerDay));
+            args.Add('alt-speed-time-end', Round(Frac(StrToTime(edAltTimeEnd.Text))*MinsPerDay));
+            j:=0;
+            for i:=7 downto 1 do begin
+              j:=j shl 1;
+              j:=j or (integer(TCheckBox(gbAltSpeed.FindChildControl(Format('cbDay%d', [i]))).Checked) and 1);
+            end;
+            args.Add('alt-speed-time-day', j);
+          end;
         end
         else begin
           args.Add('peer-limit', edMaxPeers.Value);

@@ -1,6 +1,6 @@
 object DaemonOptionsForm: TDaemonOptionsForm
   Left = 354
-  Height = 340
+  Height = 350
   Top = 216
   Width = 586
   HorzScrollBar.Page = 409
@@ -8,8 +8,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
   VertScrollBar.Range = 169
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
+  BorderWidth = 8
   Caption = 'Transmission options'
-  ClientHeight = 340
+  ClientHeight = 350
   ClientWidth = 586
   Constraints.MinHeight = 340
   Constraints.MinWidth = 400
@@ -18,17 +19,17 @@ object DaemonOptionsForm: TDaemonOptionsForm
   LCLVersion = '0.9.28.2'
   object Page: TPageControl
     Left = 8
-    Height = 295
+    Height = 298
     Top = 8
-    Width = 572
-    ActivePage = tabDownload
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    Width = 570
+    ActivePage = tabBandwidth
+    Align = alTop
+    TabIndex = 2
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
-      ClientHeight = 269
-      ClientWidth = 564
+      ClientHeight = 272
+      ClientWidth = 562
       object txDownloadDir: TLabel
         Left = 8
         Height = 14
@@ -65,7 +66,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
         Left = 8
         Height = 21
         Top = 28
-        Width = 548
+        Width = 546
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 0
       end
@@ -82,7 +83,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
         Left = 8
         Height = 21
         Top = 103
-        Width = 548
+        Width = 546
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 3
       end
@@ -144,8 +145,8 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object tabNetwork: TTabSheet
       Caption = 'Network'
-      ClientHeight = 269
-      ClientWidth = 564
+      ClientHeight = 272
+      ClientWidth = 562
       object txPort: TLabel
         Left = 8
         Height = 14
@@ -184,7 +185,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
         Left = 192
         Height = 21
         Top = 66
-        Width = 364
+        Width = 362
         Anchors = [akTop, akLeft, akRight]
         ItemHeight = 13
         Style = csDropDownList
@@ -255,7 +256,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
         Left = 192
         Height = 21
         Top = 191
-        Width = 364
+        Width = 362
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 10
       end
@@ -270,49 +271,49 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object tabBandwidth: TTabSheet
       Caption = 'Bandwidth'
-      ClientHeight = 269
-      ClientWidth = 564
+      ClientHeight = 272
+      ClientWidth = 562
       object gbBandwidth: TGroupBox
         Left = 8
-        Height = 86
+        Height = 76
         Top = 6
-        Width = 547
+        Width = 545
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Global bandwidth settings'
-        ClientHeight = 68
-        ClientWidth = 543
+        ClientHeight = 58
+        ClientWidth = 541
         TabOrder = 0
         object txKbs1: TLabel
-          Left = 513
+          Left = 505
           Height = 14
-          Top = 7
+          Top = 5
           Width = 22
           Anchors = [akTop, akRight]
           Caption = 'KB/s'
           ParentColor = False
         end
         object txKbs2: TLabel
-          Left = 513
+          Left = 505
           Height = 14
-          Top = 40
+          Top = 32
           Width = 22
           Anchors = [akTop, akRight]
           Caption = 'KB/s'
           ParentColor = False
         end
         object cbMaxDown: TCheckBox
-          Left = 6
+          Left = 8
           Height = 17
-          Top = 6
+          Top = 4
           Width = 147
           Caption = 'Maximum download speed:'
           OnClick = cbMaxDownClick
           TabOrder = 0
         end
         object edMaxDown: TSpinEdit
-          Left = 432
+          Left = 424
           Height = 21
-          Top = 4
+          Top = 2
           Width = 66
           Anchors = [akTop, akRight]
           Increment = 10
@@ -320,18 +321,18 @@ object DaemonOptionsForm: TDaemonOptionsForm
           TabOrder = 1
         end
         object cbMaxUp: TCheckBox
-          Left = 6
+          Left = 8
           Height = 17
-          Top = 38
+          Top = 30
           Width = 133
           Caption = 'Maximum upload speed:'
           OnClick = cbMaxUpClick
           TabOrder = 2
         end
         object edMaxUp: TSpinEdit
-          Left = 431
+          Left = 424
           Height = 21
-          Top = 36
+          Top = 28
           Width = 66
           Anchors = [akTop, akRight]
           Increment = 10
@@ -339,32 +340,147 @@ object DaemonOptionsForm: TDaemonOptionsForm
           TabOrder = 3
         end
       end
+      object gbAltSpeed: TGroupBox
+        Left = 8
+        Height = 175
+        Top = 86
+        Width = 545
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Alternate bandwidth settings'
+        ClientHeight = 157
+        ClientWidth = 541
+        TabOrder = 1
+        object txKbs3: TLabel
+          Left = 508
+          Height = 14
+          Top = 5
+          Width = 22
+          Anchors = [akTop, akRight]
+          Caption = 'KB/s'
+          ParentColor = False
+        end
+        object txKbs4: TLabel
+          Left = 508
+          Height = 14
+          Top = 32
+          Width = 22
+          Anchors = [akTop, akRight]
+          Caption = 'KB/s'
+          ParentColor = False
+        end
+        object txAltDown: TLabel
+          Left = 8
+          Height = 14
+          Top = 5
+          Width = 130
+          Caption = 'Maximum download speed:'
+          ParentColor = False
+        end
+        object txAltUp: TLabel
+          Left = 8
+          Height = 14
+          Top = 31
+          Width = 116
+          Caption = 'Maximum upload speed:'
+          ParentColor = False
+        end
+        object txFrom: TLabel
+          Left = 26
+          Height = 14
+          Top = 103
+          Width = 29
+          Caption = 'From:'
+          ParentColor = False
+        end
+        object txDays: TLabel
+          Left = 26
+          Height = 14
+          Top = 132
+          Width = 29
+          Caption = 'Days:'
+          ParentColor = False
+        end
+        object txTo: TLabel
+          Left = 150
+          Height = 14
+          Top = 104
+          Width = 49
+          Alignment = taCenter
+          AutoSize = False
+          Caption = 'to:'
+          ParentColor = False
+        end
+        object edAltDown: TSpinEdit
+          Left = 427
+          Height = 21
+          Top = 2
+          Width = 66
+          Anchors = [akTop, akRight]
+          Increment = 10
+          MaxValue = 999999
+          TabOrder = 0
+        end
+        object edAltUp: TSpinEdit
+          Left = 427
+          Height = 21
+          Top = 28
+          Width = 66
+          Anchors = [akTop, akRight]
+          Increment = 10
+          MaxValue = 999999
+          TabOrder = 1
+        end
+        object cbAltEnabled: TCheckBox
+          Left = 8
+          Height = 17
+          Top = 54
+          Width = 177
+          Caption = 'Use alternate bandwidth settings'
+          TabOrder = 2
+        end
+        object cbAutoAlt: TCheckBox
+          Left = 8
+          Height = 17
+          Top = 76
+          Width = 252
+          Caption = 'Apply alternate bandwidth settings automatically'
+          OnClick = cbAutoAltClick
+          TabOrder = 3
+        end
+        object edAltTimeBegin: TMaskEdit
+          Left = 82
+          Height = 21
+          Top = 100
+          Width = 64
+          TabOrder = 4
+          EditMask = '!99:99;1; '
+          Text = '  :  '
+          SpaceChar = ' '
+        end
+        object edAltTimeEnd: TMaskEdit
+          Left = 202
+          Height = 21
+          Top = 100
+          Width = 64
+          TabOrder = 5
+          EditMask = '!99:99;1; '
+          Text = '  :  '
+          SpaceChar = ' '
+        end
+      end
     end
   end
-  object btOK: TButton
-    Left = 423
-    Height = 23
-    Top = 310
-    Width = 75
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    Caption = 'OK'
-    Constraints.MinWidth = 75
-    Default = True
-    OnClick = btOKClick
+  object Buttons: TButtonPanel
+    Left = 8
+    Height = 26
+    Top = 314
+    Width = 570
+    Align = alTop
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
     TabOrder = 1
-  end
-  object btCancel: TButton
-    Left = 505
-    Height = 23
-    Top = 310
-    Width = 75
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    Cancel = True
-    Caption = 'Cancel'
-    Constraints.MinWidth = 75
-    ModalResult = 2
-    TabOrder = 2
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
   end
 end
