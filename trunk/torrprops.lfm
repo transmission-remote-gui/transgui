@@ -1,8 +1,8 @@
 object TorrPropsForm: TTorrPropsForm
   Left = 364
-  Height = 215
+  Height = 242
   Top = 185
-  Width = 451
+  Width = 454
   HorzScrollBar.Page = 349
   HorzScrollBar.Range = 40
   VertScrollBar.Page = 155
@@ -10,8 +10,8 @@ object TorrPropsForm: TTorrPropsForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Torrent properties'
-  ClientHeight = 215
-  ClientWidth = 451
+  ClientHeight = 242
+  ClientWidth = 454
   Constraints.MinHeight = 186
   Constraints.MinWidth = 350
   OnCreate = FormCreate
@@ -19,16 +19,16 @@ object TorrPropsForm: TTorrPropsForm
   LCLVersion = '0.9.28.2'
   object gbOptions: TGroupBox
     Left = 8
-    Height = 171
+    Height = 198
     Top = 4
-    Width = 434
+    Width = 437
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = ' '
-    ClientHeight = 153
-    ClientWidth = 430
+    ClientHeight = 180
+    ClientWidth = 433
     TabOrder = 0
     object txKbs1: TLabel
-      Left = 400
+      Left = 380
       Height = 14
       Top = 27
       Width = 22
@@ -37,7 +37,7 @@ object TorrPropsForm: TTorrPropsForm
       ParentColor = False
     end
     object txKbs2: TLabel
-      Left = 400
+      Left = 380
       Height = 14
       Top = 59
       Width = 22
@@ -62,6 +62,15 @@ object TorrPropsForm: TTorrPropsForm
       Caption = 'Peer limit:'
       ParentColor = False
     end
+    object txMinutes: TLabel
+      Left = 380
+      Height = 14
+      Top = 153
+      Width = 38
+      Anchors = [akTop, akRight]
+      Caption = 'minutes'
+      ParentColor = False
+    end
     object cbMaxDown: TCheckBox
       Left = 10
       Height = 17
@@ -72,7 +81,7 @@ object TorrPropsForm: TTorrPropsForm
       TabOrder = 0
     end
     object edMaxDown: TSpinEdit
-      Left = 318
+      Left = 300
       Height = 21
       Top = 24
       Width = 66
@@ -91,7 +100,7 @@ object TorrPropsForm: TTorrPropsForm
       TabOrder = 2
     end
     object edMaxUp: TSpinEdit
-      Left = 318
+      Left = 300
       Height = 21
       Top = 56
       Width = 66
@@ -101,7 +110,7 @@ object TorrPropsForm: TTorrPropsForm
       TabOrder = 3
     end
     object edPeerLimit: TSpinEdit
-      Left = 318
+      Left = 300
       Height = 21
       Top = 88
       Width = 66
@@ -122,7 +131,7 @@ object TorrPropsForm: TTorrPropsForm
       TabOrder = 5
     end
     object edSeedRatio: TFloatSpinEdit
-      Left = 318
+      Left = 300
       Height = 21
       Top = 119
       Width = 66
@@ -133,11 +142,32 @@ object TorrPropsForm: TTorrPropsForm
       TabOrder = 6
       Value = 0
     end
+    object cbIdleSeedLimit: TCheckBox
+      Left = 10
+      Height = 17
+      Top = 152
+      Width = 170
+      AllowGrayed = True
+      Caption = 'Stop seeding when inactive for:'
+      OnClick = cbIdleSeedLimitClick
+      TabOrder = 7
+    end
+    object edIdleSeedLimit: TSpinEdit
+      Left = 300
+      Height = 21
+      Top = 150
+      Width = 66
+      Anchors = [akTop, akRight]
+      MaxValue = 999999
+      MinValue = 1
+      TabOrder = 8
+      Value = 1
+    end
   end
   object btOK: TButton
-    Left = 285
+    Left = 288
     Height = 23
-    Top = 185
+    Top = 212
     Width = 75
     Anchors = [akRight, akBottom]
     AutoSize = True
@@ -148,9 +178,9 @@ object TorrPropsForm: TTorrPropsForm
     TabOrder = 1
   end
   object btCancel: TButton
-    Left = 367
+    Left = 370
     Height = 23
-    Top = 185
+    Top = 212
     Width = 75
     Anchors = [akRight, akBottom]
     AutoSize = True

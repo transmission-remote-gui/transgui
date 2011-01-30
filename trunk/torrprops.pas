@@ -33,9 +33,11 @@ type
   TTorrPropsForm = class(TForm)
     btCancel: TButton;
     btOK: TButton;
+    cbIdleSeedLimit: TCheckBox;
     cbMaxDown: TCheckBox;
     cbMaxUp: TCheckBox;
     cbSeedRatio: TCheckBox;
+    edIdleSeedLimit: TSpinEdit;
     edMaxUp: TSpinEdit;
     edPeerLimit: TSpinEdit;
     edSeedRatio: TFloatSpinEdit;
@@ -43,8 +45,10 @@ type
     edMaxDown: TSpinEdit;
     txKbs1: TLabel;
     txKbs2: TLabel;
+    txMinutes: TLabel;
     txName: TLabel;
     txPeerLimit: TLabel;
+    procedure cbIdleSeedLimitClick(Sender: TObject);
     procedure cbMaxDownClick(Sender: TObject);
     procedure cbMaxUpClick(Sender: TObject);
     procedure cbSeedRatioClick(Sender: TObject);
@@ -64,6 +68,11 @@ uses main;
 procedure TTorrPropsForm.cbMaxDownClick(Sender: TObject);
 begin
   edMaxDown.Enabled:=cbMaxDown.Checked;
+end;
+
+procedure TTorrPropsForm.cbIdleSeedLimitClick(Sender: TObject);
+begin
+  edIdleSeedLimit.Enabled:=cbIdleSeedLimit.State = cbChecked;
 end;
 
 procedure TTorrPropsForm.cbMaxUpClick(Sender: TObject);

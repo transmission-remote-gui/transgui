@@ -1777,10 +1777,17 @@ begin
 
           if RpcObj.RPCVersion >= 10 then begin
             edCacheSize.Value:=args.Integers['cache-size-mb'];
+            cbIdleSeedLimit.Checked:=args.Integers['idle-seeding-limit-enabled'] <> 0;
+            edIdleSeedLimit.Value:=args.Integers['idle-seeding-limit'];
+            cbIdleSeedLimitClick(nil);
           end
           else begin
             edCacheSize.Visible:=False;
             txCacheSize.Visible:=False;
+            txMB.Visible:=False;
+            cbIdleSeedLimit.Visible:=False;
+            edIdleSeedLimit.Visible:=False;
+            txMinutes.Visible:=False;
           end;
 
           if args.IndexOfName('blocklist-url') >= 0 then
@@ -1828,50 +1835,53 @@ begin
       try
         req.Add('method', 'session-set');
         args:=TJSONObject.Create;
-        args.Add('download-dir', TJSONString.Create(UTF8Decode(edDownloadDir.Text)));
-        args.Add('port-forwarding-enabled', TJSONIntegerNumber.Create(integer(cbPortForwarding.Checked) and 1));
+        args.Add('download-dir', UTF8Decode(edDownloadDir.Text));
+        args.Add('port-forwarding-enabled', integer(cbPortForwarding.Checked) and 1);
         case cbEncryption.ItemIndex of
           1: s:='preferred';
           2: s:='required';
           else s:='tolerated';
         end;
-        args.Add('encryption', TJSONString.Create(s));
-        args.Add('speed-limit-down-enabled', TJSONIntegerNumber.Create(integer(cbMaxDown.Checked) and 1));
+        args.Add('encryption', s);
+        args.Add('speed-limit-down-enabled', integer(cbMaxDown.Checked) and 1);
         if cbMaxDown.Checked then
-          args.Add('speed-limit-down', TJSONIntegerNumber.Create(edMaxDown.Value));
-        args.Add('speed-limit-up-enabled', TJSONIntegerNumber.Create(integer(cbMaxUp.Checked) and 1));
+          args.Add('speed-limit-down', edMaxDown.Value);
+        args.Add('speed-limit-up-enabled', integer(cbMaxUp.Checked) and 1);
         if cbMaxUp.Checked then
-          args.Add('speed-limit-up', TJSONIntegerNumber.Create(edMaxUp.Value));
+          args.Add('speed-limit-up', edMaxUp.Value);
         if RpcObj.RPCVersion >= 5 then begin
-          args.Add('peer-limit-global', TJSONIntegerNumber.Create(edMaxPeers.Value));
-          args.Add('peer-port', TJSONIntegerNumber.Create(edPort.Value));
-          args.Add('pex-enabled', TJSONIntegerNumber.Create(integer(cbPEX.Checked) and 1));
-          args.Add('peer-port-random-on-start', TJSONIntegerNumber.Create(integer(cbRandomPort.Checked) and 1));
-          args.Add('dht-enabled', TJSONIntegerNumber.Create(integer(cbDHT.Checked) and 1));
-          args.Add('seedRatioLimited', TJSONIntegerNumber.Create(integer(cbSeedRatio.Checked) and 1));
+          args.Add('peer-limit-global', edMaxPeers.Value);
+          args.Add('peer-port', edPort.Value);
+          args.Add('pex-enabled', integer(cbPEX.Checked) and 1);
+          args.Add('peer-port-random-on-start', integer(cbRandomPort.Checked) and 1);
+          args.Add('dht-enabled', integer(cbDHT.Checked) and 1);
+          args.Add('seedRatioLimited', integer(cbSeedRatio.Checked) and 1);
           if cbSeedRatio.Checked then
-            args.Add('seedRatioLimit', TJSONFloatNumber.Create(edSeedRatio.Value));
-          args.Add('blocklist-enabled', TJSONIntegerNumber.Create(integer(cbBlocklist.Checked) and 1));
+            args.Add('seedRatioLimit', edSeedRatio.Value);
+          args.Add('blocklist-enabled', integer(cbBlocklist.Checked) and 1);
         end
         else begin
-          args.Add('peer-limit', TJSONIntegerNumber.Create(edMaxPeers.Value));
-          args.Add('port', TJSONIntegerNumber.Create(edPort.Value));
-          args.Add('pex-allowed', TJSONIntegerNumber.Create(integer(cbPEX.Checked) and 1));
+          args.Add('peer-limit', edMaxPeers.Value);
+          args.Add('port', edPort.Value);
+          args.Add('pex-allowed', integer(cbPEX.Checked) and 1);
         end;
         if RpcObj.RPCVersion >= 7 then begin
-          args.Add('incomplete-dir-enabled', TJSONIntegerNumber.Create(integer(cbIncompleteDir.Checked) and 1));
+          args.Add('incomplete-dir-enabled', integer(cbIncompleteDir.Checked) and 1);
           if cbIncompleteDir.Checked then
-            args.Add('incomplete-dir', TJSONString.Create(UTF8Decode(edIncompleteDir.Text)));
+            args.Add('incomplete-dir', UTF8Decode(edIncompleteDir.Text));
         end;
         if RpcObj.RPCVersion >= 8 then
-          args.Add('rename-partial-files', TJSONIntegerNumber.Create(integer(cbPartExt.Checked) and 1));
+          args.Add('rename-partial-files', integer(cbPartExt.Checked) and 1);
         if RpcObj.RPCVersion >= 9 then
-          args.Add('lpd-enabled', TJSONIntegerNumber.Create(integer(cbLPD.Checked) and 1));
-        if RpcObj.RPCVersion >= 10 then
+          args.Add('lpd-enabled', integer(cbLPD.Checked) and 1);
+        if RpcObj.RPCVersion >= 10 then begin
           args.Add('cache-size-mb', edCacheSize.Value);
+          args.Add('idle-seeding-limit-enabled', integer(cbIdleSeedLimit.Checked) and 1);
+          args.Add('idle-seeding-limit', edIdleSeedLimit.Value);
+        end;
         if edBlocklistURL.Visible then
           if cbBlocklist.Checked then
-            args.Add('blocklist-url', TJSONString.Create(UTF8Decode(edBlocklistURL.Text)));
+            args.Add('blocklist-url', UTF8Decode(edBlocklistURL.Text));
         req.Add('arguments', args);
         args:=RpcObj.SendRequest(req, False);
         if args = nil then begin
@@ -2038,6 +2048,10 @@ const
   TR_RATIOLIMIT_SINGLE    = 1; // override the global settings, seeding until a certain ratio
   TR_RATIOLIMIT_UNLIMITED = 2; // override the global settings, seeding regardless of ratio
 
+  TR_IDLELIMIT_GLOBAL     = 0; // follow the global settings
+  TR_IDLELIMIT_SINGLE     = 1; // override the global settings, seeding until a certain idle time
+  TR_IDLELIMIT_UNLIMITED  = 2; // override the global settings, seeding regardless of activity
+
 var
   req, args, t: TJSONObject;
   i, j, id: integer;
@@ -2053,9 +2067,8 @@ begin
   try
     gTorrents.Tag:=1;
     TorrentIds:=GetSelectedTorrents;
-    args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited',
-                                  'uploadLimit', 'uploadLimitMode', 'uploadLimited',
-                                  'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit']);
+    args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited', 'uploadLimit', 'uploadLimitMode', 'uploadLimited',
+                                  'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit', 'seedIdleLimit', 'seedIdleMode']);
     if args = nil then begin
       CheckStatus(False);
       exit;
@@ -2071,8 +2084,7 @@ begin
         s:=UTF8Encode(t.Strings['name']);
 
       txName.Caption:=txName.Caption + ' ' + s;
-      if RpcObj.RPCVersion<5 then
-      begin
+      if RpcObj.RPCVersion < 5 then begin
         // RPC versions prior to v5
         j:=t.Integers['downloadLimitMode'];
         cbMaxDown.Checked:=j = TR_SPEEDLIMIT_SINGLE;
@@ -2116,6 +2128,24 @@ begin
         end;
         edSeedRatio.Value:=t.Floats['seedRatioLimit'];
       end;
+
+      if RpcObj.RPCVersion >= 10 then begin
+        case t.Integers['seedIdleMode'] of
+          TR_IDLELIMIT_SINGLE:
+            cbIdleSeedLimit.State:=cbChecked;
+          TR_IDLELIMIT_UNLIMITED:
+            cbIdleSeedLimit.State:=cbUnchecked;
+          else
+            cbIdleSeedLimit.State:=cbGrayed;
+        end;
+        edIdleSeedLimit.Value:=t.Integers['seedIdleLimit'];
+        cbIdleSeedLimitClick(nil);
+      end
+      else begin
+        cbIdleSeedLimit.Visible:=False;
+        edIdleSeedLimit.Visible:=False;
+        txMinutes.Visible:=False;
+      end;
       edPeerLimit.Value:=t.Integers['maxConnectedPeers'];
     finally
       args.Free;
@@ -2139,20 +2169,20 @@ begin
         if RpcObj.RPCVersion < 5 then
         begin
           // RPC versions prior to v5
-          args.Add('speed-limit-down-enabled', TJSONIntegerNumber.Create(integer(cbMaxDown.Checked) and 1));
-          args.Add('speed-limit-up-enabled', TJSONIntegerNumber.Create(integer(cbMaxUp.Checked) and 1));
+          args.Add('speed-limit-down-enabled', integer(cbMaxDown.Checked) and 1);
+          args.Add('speed-limit-up-enabled', integer(cbMaxUp.Checked) and 1);
           if cbMaxDown.Checked then
-            args.Add('speed-limit-down', TJSONIntegerNumber.Create(edMaxDown.Value));
+            args.Add('speed-limit-down', edMaxDown.Value);
           if cbMaxUp.Checked then
-            args.Add('speed-limit-up', TJSONIntegerNumber.Create(edMaxUp.Value));
+            args.Add('speed-limit-up', edMaxUp.Value);
         end else begin
           // RPC version 5
-          args.Add('downloadLimited', TJSONIntegerNumber.Create(integer(cbMaxDown.Checked) and 1));
-          args.Add('uploadLimited', TJSONIntegerNumber.Create(integer(cbMaxUp.Checked) and 1));
+          args.Add('downloadLimited', integer(cbMaxDown.Checked) and 1);
+          args.Add('uploadLimited', integer(cbMaxUp.Checked) and 1);
           if cbMaxDown.Checked then
-            args.Add('downloadLimit', TJSONIntegerNumber.Create(edMaxDown.Value));
+            args.Add('downloadLimit', edMaxDown.Value);
           if cbMaxUp.Checked then
-            args.Add('uploadLimit', TJSONIntegerNumber.Create(edMaxUp.Value));
+            args.Add('uploadLimit', edMaxUp.Value);
           case cbSeedRatio.State of
             cbChecked:
               i:=TR_RATIOLIMIT_SINGLE;
@@ -2161,11 +2191,26 @@ begin
             else
               i:=TR_RATIOLIMIT_GLOBAL;
           end;
-          args.Add('seedRatioMode', TJSONIntegerNumber.Create(i));
+          args.Add('seedRatioMode', i);
           if cbSeedRatio.State = cbChecked then
-            args.Add('seedRatioLimit', TJSONFloatNumber.Create(edSeedRatio.Value));
+            args.Add('seedRatioLimit', edSeedRatio.Value);
         end;
-        args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
+
+        if RpcObj.RPCVersion >= 10 then begin
+          case cbIdleSeedLimit.State of
+            cbChecked:
+              i:=TR_IDLELIMIT_SINGLE;
+            cbUnchecked:
+              i:=TR_IDLELIMIT_UNLIMITED;
+            else
+              i:=TR_IDLELIMIT_GLOBAL;
+          end;
+          args.Add('seedIdleMode', i);
+          if cbIdleSeedLimit.State = cbChecked then
+            args.Add('seedIdleLimit', edIdleSeedLimit.Value);
+        end;
+
+        args.Add('peer-limit', edPeerLimit.Value);
         req.Add('arguments', args);
         args:=nil;
         args:=RpcObj.SendRequest(req, False);

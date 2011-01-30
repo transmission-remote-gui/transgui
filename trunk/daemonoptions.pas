@@ -56,6 +56,7 @@ type
     cbPartExt: TCheckBox;
     cbSeedRatio: TCheckBox;
     cbLPD: TCheckBox;
+    cbIdleSeedLimit: TCheckBox;
     edDownloadDir: TEdit;
     edIncompleteDir: TEdit;
     edBlocklistURL: TEdit;
@@ -65,6 +66,8 @@ type
     edPort: TSpinEdit;
     edSeedRatio: TFloatSpinEdit;
     gbBandwidth: TGroupBox;
+    edIdleSeedLimit: TSpinEdit;
+    txMinutes: TLabel;
     txMB: TLabel;
     txCacheSize: TLabel;
     Page: TPageControl;
@@ -81,6 +84,7 @@ type
     procedure btOKClick(Sender: TObject);
     procedure btTestPortClick(Sender: TObject);
     procedure cbBlocklistClick(Sender: TObject);
+    procedure cbIdleSeedLimitClick(Sender: TObject);
     procedure cbIncompleteDirClick(Sender: TObject);
     procedure cbMaxDownClick(Sender: TObject);
     procedure cbMaxUpClick(Sender: TObject);
@@ -136,6 +140,11 @@ begin
     edBlocklistURL.Color:=clWindow
   else
     edBlocklistURL.ParentColor:=True;
+end;
+
+procedure TDaemonOptionsForm.cbIdleSeedLimitClick(Sender: TObject);
+begin
+  edIdleSeedLimit.Enabled:=cbIdleSeedLimit.Checked;
 end;
 
 procedure TDaemonOptionsForm.btOKClick(Sender: TObject);
