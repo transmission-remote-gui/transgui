@@ -50,6 +50,7 @@ begin
   Font.Size:=MainForm.Font.Size;
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@OKButtonClick;
+  AutoSizeForm(Self);
 end;
 
 initialization
