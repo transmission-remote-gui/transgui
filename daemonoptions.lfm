@@ -21,9 +21,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Height = 295
     Top = 8
     Width = 572
-    ActivePage = tabNetwork
+    ActivePage = tabDownload
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
@@ -40,17 +40,25 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object txCacheSize: TLabel
         Left = 8
         Height = 14
-        Top = 165
+        Top = 189
         Width = 76
         Caption = 'Disk cache size:'
         ParentColor = False
       end
       object txMB: TLabel
-        Left = 272
+        Left = 328
         Height = 14
-        Top = 165
+        Top = 189
         Width = 15
         Caption = 'MB'
+        ParentColor = False
+      end
+      object txMinutes: TLabel
+        Left = 328
+        Height = 14
+        Top = 162
+        Width = 38
+        Caption = 'minutes'
         ParentColor = False
       end
       object edDownloadDir: TEdit
@@ -96,7 +104,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
         TabOrder = 4
       end
       object edSeedRatio: TFloatSpinEdit
-        Left = 196
+        Left = 252
         Height = 21
         Top = 132
         Width = 66
@@ -107,12 +115,31 @@ object DaemonOptionsForm: TDaemonOptionsForm
         Value = 0
       end
       object edCacheSize: TSpinEdit
-        Left = 196
+        Left = 252
         Height = 21
-        Top = 162
+        Top = 186
         Width = 66
         MaxValue = 9999
+        TabOrder = 8
+      end
+      object cbIdleSeedLimit: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 161
+        Width = 170
+        Caption = 'Stop seeding when inactive for:'
+        OnClick = cbIdleSeedLimitClick
         TabOrder = 6
+      end
+      object edIdleSeedLimit: TSpinEdit
+        Left = 252
+        Height = 21
+        Top = 159
+        Width = 66
+        MaxValue = 999999
+        MinValue = 1
+        TabOrder = 7
+        Value = 1
       end
     end
     object tabNetwork: TTabSheet
