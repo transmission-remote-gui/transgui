@@ -1,13 +1,13 @@
 object AddTrackerForm: TAddTrackerForm
   Left = 411
-  Height = 104
+  Height = 97
   Top = 283
   Width = 533
-  AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
+  BorderWidth = 8
   Caption = 'Add tracker'
-  ClientHeight = 104
+  ClientHeight = 97
   ClientWidth = 533
   OnCreate = FormCreate
   Position = poScreenCenter
@@ -18,35 +18,37 @@ object AddTrackerForm: TAddTrackerForm
     Top = 58
     Width = 517
     Align = alTop
-    BorderSpacing.Around = 8
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
     TabOrder = 1
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]
     ShowBevel = False
   end
   object Panel1: TPanel
-    Left = 0
-    Height = 50
-    Top = 0
-    Width = 533
+    Left = 8
+    Height = 42
+    Top = 8
+    Width = 517
     Align = alTop
     BevelOuter = bvNone
-    ClientHeight = 50
-    ClientWidth = 533
+    ClientHeight = 42
+    ClientWidth = 517
     TabOrder = 0
     object txTrackerURL: TLabel
-      Left = 8
+      Left = 0
       Height = 14
-      Top = 8
+      Top = 0
       Width = 113
       Caption = 'Tracker announce URL:'
       ParentColor = False
     end
     object edTracker: TEdit
-      Left = 8
-      Height = 21
-      Top = 28
+      Left = 0
+      Height = 22
+      Top = 20
       Width = 517
+      Align = alBottom
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 0
     end
