@@ -24,7 +24,8 @@ unit DaemonOptions;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, Spin, ComCtrls;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, Spin, ComCtrls, CheckLst, EditBtn, MaskEdit,
+  ButtonPanel;
 
 resourcestring
  sPortTestSuccess = 'Incoming port tested successfully.';
@@ -35,15 +36,15 @@ resourcestring
  SNoDownloadDir = 'The downloads directory was not specified.';
  SNoIncompleteDir = 'The directory for incomplete files was not specified.';
  SNoBlocklistURL = 'The blocklist URL was not specified.';
+ SInvalidTime = 'The invalid time value was entered.';
 
 type
 
   { TDaemonOptionsForm }
 
   TDaemonOptionsForm = class(TForm)
-    btCancel: TButton;
-    btOK: TButton;
     btTestPort: TButton;
+    Buttons: TButtonPanel;
     cbBlocklist: TCheckBox;
     cbDHT: TCheckBox;
     cbEncryption: TComboBox;
@@ -57,16 +58,30 @@ type
     cbSeedRatio: TCheckBox;
     cbLPD: TCheckBox;
     cbIdleSeedLimit: TCheckBox;
+    cbAltEnabled: TCheckBox;
+    cbAutoAlt: TCheckBox;
+    edAltTimeEnd: TMaskEdit;
+    txDays: TLabel;
+    txFrom: TLabel;
     edDownloadDir: TEdit;
     edIncompleteDir: TEdit;
     edBlocklistURL: TEdit;
     edMaxDown: TSpinEdit;
+    edAltDown: TSpinEdit;
     edMaxPeers: TSpinEdit;
     edMaxUp: TSpinEdit;
+    edAltUp: TSpinEdit;
     edPort: TSpinEdit;
     edSeedRatio: TFloatSpinEdit;
     gbBandwidth: TGroupBox;
     edIdleSeedLimit: TSpinEdit;
+    gbAltSpeed: TGroupBox;
+    edAltTimeBegin: TMaskEdit;
+    txAltUp: TLabel;
+    txAltDown: TLabel;
+    txTo: TLabel;
+    txKbs3: TLabel;
+    txKbs4: TLabel;
     txMinutes: TLabel;
     txMB: TLabel;
     txCacheSize: TLabel;
@@ -83,6 +98,7 @@ type
     txPort: TLabel;
     procedure btOKClick(Sender: TObject);
     procedure btTestPortClick(Sender: TObject);
+    procedure cbAutoAltClick(Sender: TObject);
     procedure cbBlocklistClick(Sender: TObject);
     procedure cbIdleSeedLimitClick(Sender: TObject);
     procedure cbIncompleteDirClick(Sender: TObject);
@@ -131,6 +147,19 @@ begin
   end;
 end;
 
+procedure TDaemonOptionsForm.cbAutoAltClick(Sender: TObject);
+var
+  i: integer;
+begin
+  edAltTimeBegin.Enabled:=cbAutoAlt.Checked;
+  edAltTimeEnd.Enabled:=cbAutoAlt.Checked;
+  txFrom.Enabled:=cbAutoAlt.Checked;
+  txTo.Enabled:=cbAutoAlt.Checked;
+  txDays.Enabled:=cbAutoAlt.Checked;
+  for i:=1 to 7 do
+    gbAltSpeed.FindChildControl(Format('cbDay%d', [i])).Enabled:=cbAutoAlt.Checked;
+end;
+
 procedure TDaemonOptionsForm.cbBlocklistClick(Sender: TObject);
 begin
   if not edBlocklistURL.Visible then
@@ -170,6 +199,20 @@ begin
     MessageDlg(SNoBlocklistURL, mtError, [mbOK], 0);
     exit;
   end;
+  if cbAutoAlt.Checked then begin
+     if StrToTimeDef(edAltTimeBegin.Text, -1) < 0 then begin
+       Page.ActivePage:=tabBandwidth;
+       edAltTimeBegin.SetFocus;
+       MessageDlg(SInvalidTime, mtError, [mbOK], 0);
+       exit;
+     end;
+     if StrToTimeDef(edAltTimeEnd.Text, -1) < 0 then begin
+       Page.ActivePage:=tabBandwidth;
+       edAltTimeEnd.SetFocus;
+       MessageDlg(SInvalidTime, mtError, [mbOK], 0);
+       exit;
+     end;
+  end;
   ModalResult:=mrOK;
 end;
 
@@ -198,12 +241,33 @@ begin
 end;
 
 procedure TDaemonOptionsForm.FormCreate(Sender: TObject);
+var
+  i, x, wd: integer;
+  cb: TCheckBox;
 begin
   Font.Size:=MainForm.Font.Size;
+  AutoSizeForm(Self);
   Page.ActivePageIndex:=0;
   cbEncryption.Items.Add(sEncryptionDisabled);
   cbEncryption.Items.Add(sEncryptionEnabled);
   cbEncryption.Items.Add(sEncryptionRequired);
+  Buttons.OKButton.ModalResult:=mrNone;
+  Buttons.OKButton.OnClick:=@btOKClick;
+
+  x:=edAltTimeBegin.Left;
+  wd:=(gbAltSpeed.ClientWidth - x - BorderWidth) div 7;
+  for i:=1 to 7 do begin
+    cb:=TCheckBox.Create(gbAltSpeed);
+    cb.Parent:=gbAltSpeed;
+    cb.Left:=x;
+    cb.Top:=txDays.Top - (cb.Height - txDays.Height) div 2;
+    cb.Tag:=i + 1;
+    if cb.Tag > 7 then
+      cb.Tag:=cb.Tag - 7;
+    cb.Caption:=SysToUTF8(ShortDayNames[cb.Tag]);
+    cb.Name:=Format('cbDay%d', [i]);
+    Inc(x, wd);
+  end;
 end;
 
 initialization
