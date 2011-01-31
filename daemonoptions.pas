@@ -242,7 +242,7 @@ end;
 
 procedure TDaemonOptionsForm.FormCreate(Sender: TObject);
 var
-  i, x, wd: integer;
+  i, j, x, wd: integer;
   cb: TCheckBox;
 begin
   Font.Size:=MainForm.Font.Size;
@@ -261,11 +261,11 @@ begin
     cb.Parent:=gbAltSpeed;
     cb.Left:=x;
     cb.Top:=txDays.Top - (cb.Height - txDays.Height) div 2;
-    cb.Tag:=i + 1;
-    if cb.Tag > 7 then
-      cb.Tag:=cb.Tag - 7;
-    cb.Caption:=SysToUTF8(ShortDayNames[cb.Tag]);
-    cb.Name:=Format('cbDay%d', [i]);
+    j:=i + 1;
+    if j > 7 then
+      Dec(j, 7);
+    cb.Caption:=SysToUTF8(ShortDayNames[j]);
+    cb.Name:=Format('cbDay%d', [j]);
     Inc(x, wd);
   end;
 end;
