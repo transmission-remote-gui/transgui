@@ -22,9 +22,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Height = 298
     Top = 8
     Width = 570
-    ActivePage = tabBandwidth
+    ActivePage = tabDownload
     Align = alTop
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
@@ -351,7 +351,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
         ClientWidth = 541
         TabOrder = 1
         object txKbs3: TLabel
-          Left = 508
+          Left = 505
           Height = 14
           Top = 5
           Width = 22
@@ -360,7 +360,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
           ParentColor = False
         end
         object txKbs4: TLabel
-          Left = 508
+          Left = 505
           Height = 14
           Top = 32
           Width = 22
@@ -411,7 +411,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
           ParentColor = False
         end
         object edAltDown: TSpinEdit
-          Left = 427
+          Left = 424
           Height = 21
           Top = 2
           Width = 66
@@ -421,7 +421,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
           TabOrder = 0
         end
         object edAltUp: TSpinEdit
-          Left = 427
+          Left = 424
           Height = 21
           Top = 28
           Width = 66
