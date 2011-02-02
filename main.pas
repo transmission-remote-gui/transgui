@@ -1772,35 +1772,38 @@ begin
           end
           else begin
             // RPC versions prior to v5
+            cbPortForwarding.Top:=cbRandomPort.Top;
             edPort.Value:=args.Integers['port'];
             cbPEX.Checked:=args.Integers['pex-allowed'] <> 0;
             edMaxPeers.Value:=args.Integers['peer-limit'];
-            cbRandomPort.Enabled:=False;
-            cbDHT.Enabled:=False;
-            cbSeedRatio.Enabled:=False;
-            edSeedRatio.Enabled:=False;
-            btTestPort.Enabled:=False;
-            cbBlocklist.Enabled:=False;
+            cbRandomPort.Visible:=False;
+            cbDHT.Visible:=False;
+            cbSeedRatio.Visible:=False;
+            edSeedRatio.Visible:=False;
+            btTestPort.Visible:=False;
+            cbBlocklist.Visible:=False;
             gbAltSpeed.Visible:=False;
           end;
 
           if RpcObj.RPCVersion >= 7 then begin
             cbIncompleteDir.Checked:=args.Integers['incomplete-dir-enabled'] <> 0;
             edIncompleteDir.Text:=UTF8Encode(args.Strings['incomplete-dir']);
+            cbIncompleteDirClick(nil);
           end
-          else
-            cbIncompleteDir.Enabled:=False;
-          cbIncompleteDirClick(nil);
+          else begin
+            cbIncompleteDir.Visible:=False;
+            edIncompleteDir.Visible:=False;
+          end;
 
           if RpcObj.RPCVersion >= 8 then
             cbPartExt.Checked:=args.Integers['rename-partial-files'] <> 0
           else
-            cbPartExt.Enabled:=False;
+            cbPartExt.Visible:=False;
 
           if RpcObj.RPCVersion >= 9 then
             cbLPD.Checked:=args.Integers['lpd-enabled'] <> 0
           else
-            cbLPD.Enabled:=False;
+            cbLPD.Visible:=False;
 
           if RpcObj.RPCVersion >= 10 then begin
             edCacheSize.Value:=args.Integers['cache-size-mb'];
@@ -2143,7 +2146,8 @@ begin
           edMaxUp.ValueEmpty:=True
         else
           edMaxUp.Value:=i;
-        cbSeedRatio.Enabled:=False;
+        cbSeedRatio.Visible:=False;
+        edSeedRatio.Visible:=False;
       end else begin
         // RPC version 5
         cbMaxDown.Checked:=t.Booleans['downloadLimited'];
