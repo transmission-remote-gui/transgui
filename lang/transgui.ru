@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Русский
+TranslationLanguage=Русский
 
 %dd, %dh=%dд, %dч
 %dh, %dm=%dч, %dмин
@@ -199,7 +199,7 @@ Encryption disabled=Шифрование отключено
 Encryption enabled=Шифрование включено
 Encryption required=Всегда требуется шифрование
 Incoming port is closed. Check your firewall settings=Входящий порт закрыт. Проверьте настройки вашего файрвола.
-Incoming port tested successfully=Входящий порт протестирован успешно.
+Incoming port tested successfully=Входящий порт протестирован успешно
 of=из
 b=б
 GB=ГБ
