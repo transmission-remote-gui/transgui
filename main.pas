@@ -3139,7 +3139,6 @@ end;
 procedure TMainForm.ShowConnOptions(NewConnection: boolean);
 var
   frm: TConnOptionsForm;
-  res: TModalResult;
 begin
   AppBusy;
   frm:=TConnOptionsForm.Create(Self);
@@ -3155,7 +3154,7 @@ begin
       AutoSizeForm(frm);
     end;
     AppNormal;
-    res:=ShowModal;
+    ShowModal;
     UpdateConnections;
     if (FCurConn <> ActiveConnection) or ActiveSettingChanged then begin
       DoDisconnect;
@@ -4712,6 +4711,7 @@ begin
   if RpcObj.Connected and (FCurConn = mi.Caption) then
     exit;
   DoDisconnect;
+  FReconnectTimeOut:=-1;
   FCurConn:=mi.Caption;
   DoConnect;
 end;
