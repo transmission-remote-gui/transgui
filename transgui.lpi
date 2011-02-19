@@ -48,7 +48,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="18">
       <Unit0>
         <Filename Value="transgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -76,7 +76,7 @@
       <Unit4>
         <Filename Value="connoptions.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="OptionsForm"/>
+        <ComponentName Value="ConnOptionsForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ConnOptions"/>
       </Unit4>
@@ -156,6 +156,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="AddTracker"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="options.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="OptionsForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Options"/>
+      </Unit17>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

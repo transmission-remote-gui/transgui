@@ -1,62 +1,36 @@
-object OptionsForm: TOptionsForm
+object ConnOptionsForm: TConnOptionsForm
   Left = 401
-  Height = 334
+  Height = 282
   Top = 186
-  Width = 420
+  Width = 471
   HorzScrollBar.Page = 349
   VertScrollBar.Page = 238
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  Caption = 'Options'
-  ClientHeight = 334
-  ClientWidth = 420
-  Constraints.MinHeight = 334
-  Constraints.MinWidth = 300
+  BorderWidth = 8
+  Caption = 'Connection options'
+  ClientHeight = 282
+  ClientWidth = 471
+  Constraints.MinHeight = 280
+  Constraints.MinWidth = 471
   OnActivate = FormActivate
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '0.9.28.2'
-  object btOK: TButton
-    Left = 258
-    Height = 23
-    Top = 305
-    Width = 75
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    Caption = 'OK'
-    Constraints.MinWidth = 75
-    Default = True
-    OnClick = btOKClick
-    TabOrder = 1
-  end
-  object btCancel: TButton
-    Left = 338
-    Height = 23
-    Top = 305
-    Width = 75
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    Cancel = True
-    Caption = 'Cancel'
-    Constraints.MinWidth = 75
-    ModalResult = 2
-    TabOrder = 2
-  end
   object Page: TPageControl
     Left = 8
-    Height = 290
-    Top = 8
-    Width = 405
-    ActivePage = tabInterface
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
-    TabOrder = 0
+    Height = 180
+    Top = 64
+    Width = 455
+    ActivePage = tabPaths
+    Align = alTop
+    TabIndex = 2
+    TabOrder = 1
     object tabConnection: TTabSheet
       Caption = 'Connection'
-      ClientHeight = 264
-      ClientWidth = 397
+      ClientHeight = 154
+      ClientWidth = 447
       OnShow = tabConnectionShow
       object txPassword: TLabel
         Left = 8
@@ -90,55 +64,23 @@ object OptionsForm: TOptionsForm
         Caption = 'Remote host:'
         ParentColor = False
       end
-      object txProxy: TLabel
-        Left = 25
-        Height = 14
-        Top = 149
-        Width = 67
-        Caption = 'Proxy server:'
-        ParentColor = False
-      end
-      object txProxyPort: TLabel
-        Left = 25
-        Height = 14
-        Top = 177
-        Width = 56
-        Caption = 'Proxy port:'
-        ParentColor = False
-      end
-      object txProxyUserName: TLabel
-        Left = 25
-        Height = 14
-        Top = 205
-        Width = 86
-        Caption = 'Proxy user name:'
-        ParentColor = False
-      end
-      object txProxyPassword: TLabel
-        Left = 25
-        Height = 14
-        Top = 233
-        Width = 82
-        Caption = 'Proxy password:'
-        ParentColor = False
-      end
       object edPassword: TEdit
         Left = 180
         Height = 21
         Top = 94
-        Width = 208
+        Width = 258
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword
         PasswordChar = '*'
-        TabOrder = 5
+        TabOrder = 4
       end
       object edUserName: TEdit
         Left = 180
         Height = 21
         Top = 66
-        Width = 208
+        Width = 258
         Anchors = [akTop, akLeft, akRight]
-        TabOrder = 4
+        TabOrder = 3
       end
       object edPort: TSpinEdit
         Left = 180
@@ -147,112 +89,8 @@ object OptionsForm: TOptionsForm
         Width = 70
         MaxValue = 65535
         MinValue = 1
-        TabOrder = 2
-        Value = 65535
-      end
-      object cbUseProxy: TCheckBox
-        Left = 8
-        Height = 17
-        Top = 122
-        Width = 101
-        Caption = 'Use proxy server'
-        OnClick = cbUseProxyClick
-        TabOrder = 6
-      end
-      object edProxy: TEdit
-        Left = 180
-        Height = 21
-        Top = 146
-        Width = 208
-        Anchors = [akTop, akLeft, akRight]
-        TabOrder = 7
-      end
-      object edProxyPort: TSpinEdit
-        Left = 180
-        Height = 21
-        Top = 174
-        Width = 70
-        MaxValue = 65535
-        MinValue = 1
-        TabOrder = 8
-        Value = 65535
-      end
-      object edProxyUserName: TEdit
-        Left = 180
-        Height = 21
-        Top = 202
-        Width = 208
-        Anchors = [akTop, akLeft, akRight]
-        TabOrder = 9
-      end
-      object edProxyPassword: TEdit
-        Left = 180
-        Height = 21
-        Top = 230
-        Width = 208
-        Anchors = [akTop, akLeft, akRight]
-        EchoMode = emPassword
-        PasswordChar = '*'
-        TabOrder = 10
-      end
-      object cbHost: TComboBox
-        Left = 180
-        Height = 21
-        Top = 10
-        Width = 176
-        Anchors = [akTop, akLeft, akRight]
-        ItemHeight = 13
-        OnSelect = cbHostSelect
-        TabOrder = 0
-      end
-      object btDelHost: TBitBtn
-        Left = 360
-        Height = 23
-        Hint = 'Delete host settings'
-        Top = 9
-        Width = 28
-        Anchors = [akTop, akRight]
-        Glyph.Data = {
-          36040000424D3604000000000000360000002800000010000000100000000100
-          2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF003F3DED413B38EB08FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00211FE3081E1CE241FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF004A47F0414F4CF2FF403EEDFD3C39EB08FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF002725E5082422E4FC312FEAFF1F1DE241FFFFFF00FFFFFF00FFFFFF005451
-          F3415856F5FF6361FAFF5855F6FF413FEDFC3D3AEC08FFFFFF00FFFFFF00302D
-          E7082C2AE6FC413FF1FF4C4AF6FF312FEAFF1F1DE241FFFFFF00FFFFFF005956
-          F52B5B58F6FF6562FAFF7170FFFF5956F6FF4240EEFC3E3BEC083937EB083532
-          E9FC4745F2FF6362FFFF4A48F4FF2F2DE9FF2220E32BFFFFFF00FFFFFF00FFFF
-          FF005A57F52B5B59F6FF6663FAFF7471FFFF5A58F6FF4341EEFC3E3CECFD504D
-          F4FF6867FFFF504EF5FF3634EBFF2A27E52BFFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF005B58F62B5C5AF6FF6764FAFF7472FFFF7370FFFF706EFFFF6E6C
-          FFFF5755F7FF3F3DEEFF3230E82BFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF005C59F62B5D5BF7FF7976FFFF5956FFFF5754FFFF7270
-          FFFF4846F0FF3C39EB2BFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF00615EF8085D5AF6FD7D79FFFF5E5BFFFF5B58FFFF7674
-          FFFF4643EFFD413FED08FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF006967FB086663F9FC706DFBFF807EFFFF7E7BFFFF7C79FFFF7977
-          FFFF5E5CF7FF4744EFFC4240EE08FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00716EFD086E6BFCFC7774FDFF8682FFFF7673FCFF6462F8FF605DF7FF6D6A
-          FAFF7B79FFFF605DF7FF4845EFFC4341EE08FFFFFF00FFFFFF00FFFFFF007673
-          FF087471FEFD7D7AFEFF8A87FFFF7C79FDFF6C69FBFF6361F92B5F5CF72B615E
-          F8FF6E6CFAFF7D7AFFFF615FF7FF4946F0FC4441EE05FFFFFF00FFFFFF007774
-          FF1F7A77FFFF817EFFFF817EFEFF7471FDFF6C69FB2BFFFFFF00FFFFFF00605D
-          F72B625FF8FF6F6DFBFF7E7CFFFF625FF8FF4A47F06F4542EE02FFFFFF00FFFF
-          FF007774FF1F7A77FFFF7976FEFF726FFD2BFFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00615EF82B6461F8FF6A68F9FF5451F3A84F4DF229FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF007774FF1F7774FF2BFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00625FF82B5D5BF76F5956F53EFFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF006360F80AFFFFFF00FFFFFF00FFFFFF00
-        }
-        GlyphShowMode = gsmAlways
-        OnClick = btDelHostClick
-        ParentShowHint = False
-        ShowHint = True
         TabOrder = 1
+        Value = 65535
       end
       object cbSSL: TCheckBox
         Left = 260
@@ -260,147 +98,110 @@ object OptionsForm: TOptionsForm
         Top = 40
         Width = 56
         Caption = 'Use SSL'
-        TabOrder = 3
+        TabOrder = 2
       end
-    end
-    object tabInterface: TTabSheet
-      Caption = 'Interface'
-      ClientHeight = 264
-      ClientWidth = 397
-      object txSeconds: TLabel
-        Left = 300
-        Height = 14
-        Top = 14
-        Width = 40
-        Caption = 'seconds'
-        ParentColor = False
-      end
-      object txRefreshInterval: TLabel
-        Left = 8
-        Height = 14
-        Top = 13
-        Width = 82
-        Caption = 'Refresh interval:'
-        ParentColor = False
-      end
-      object txLanguage: TLabel
-        Left = 8
-        Height = 14
-        Top = 222
-        Width = 52
-        Caption = 'Language:'
-        ParentColor = False
-      end
-      object txRefreshIntervalMin: TLabel
-        Left = 8
-        Height = 14
-        Top = 41
-        Width = 159
-        Caption = 'Refresh interval when minimized:'
-        ParentColor = False
-      end
-      object txSeconds2: TLabel
-        Left = 300
-        Height = 14
-        Top = 42
-        Width = 40
-        Caption = 'seconds'
-        ParentColor = False
-      end
-      object edRefreshInterval: TSpinEdit
-        Left = 220
+      object edHost: TEdit
+        Left = 180
         Height = 21
         Top = 10
-        Width = 70
-        MaxValue = 999
-        MinValue = 1
-        TabOrder = 0
-        Value = 1
-      end
-      object gbTray: TGroupBox
-        Left = 8
-        Height = 85
-        Top = 66
-        Width = 380
+        Width = 258
         Anchors = [akTop, akLeft, akRight]
-        Caption = 'Tray icon'
-        ClientHeight = 67
-        ClientWidth = 376
-        TabOrder = 2
-        object cbTrayIconAlways: TCheckBox
-          Left = 10
-          Height = 17
-          Top = 42
-          Width = 130
-          Caption = 'Tray icon always visible'
-          TabOrder = 2
-        end
-        object cbTrayMinimize: TCheckBox
-          Left = 10
-          Height = 17
-          Top = 2
-          Width = 93
-          Caption = 'Minimize to tray'
-          TabOrder = 0
-        end
-        object cbTrayClose: TCheckBox
-          Left = 10
-          Height = 17
-          Top = 22
-          Width = 80
-          Caption = 'Close to tray'
-          TabOrder = 1
-        end
+        OnChange = edHostChange
+        TabOrder = 0
       end
-      object cbShowAddTorrentWindow: TCheckBox
+    end
+    object tabProxy: TTabSheet
+      Caption = 'Proxy'
+      ClientHeight = 154
+      ClientWidth = 447
+      object txProxy: TLabel
+        Left = 8
+        Height = 14
+        Top = 37
+        Width = 67
+        Caption = 'Proxy server:'
+        ParentColor = False
+      end
+      object txProxyPort: TLabel
+        Left = 8
+        Height = 14
+        Top = 65
+        Width = 56
+        Caption = 'Proxy port:'
+        ParentColor = False
+      end
+      object txProxyUserName: TLabel
+        Left = 8
+        Height = 14
+        Top = 93
+        Width = 86
+        Caption = 'Proxy user name:'
+        ParentColor = False
+      end
+      object txProxyPassword: TLabel
+        Left = 8
+        Height = 14
+        Top = 121
+        Width = 82
+        Caption = 'Proxy password:'
+        ParentColor = False
+      end
+      object cbUseProxy: TCheckBox
         Left = 8
         Height = 17
-        Top = 162
-        Width = 274
-        Caption = 'Show parameters window when adding a new torrent'
+        Top = 10
+        Width = 101
+        Caption = 'Use proxy server'
+        OnClick = cbUseProxyClick
+        TabOrder = 0
+      end
+      object edProxy: TEdit
+        Left = 180
+        Height = 21
+        Top = 34
+        Width = 258
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 1
+      end
+      object edProxyPort: TSpinEdit
+        Left = 180
+        Height = 21
+        Top = 62
+        Width = 70
+        MaxValue = 65535
+        MinValue = 1
+        TabOrder = 2
+        Value = 65535
+      end
+      object edProxyUserName: TEdit
+        Left = 180
+        Height = 21
+        Top = 90
+        Width = 258
+        Anchors = [akTop, akLeft, akRight]
         TabOrder = 3
       end
-      object cbDeleteTorrentFile: TCheckBox
-        Left = 8
-        Height = 17
-        Top = 182
-        Width = 272
-        Caption = 'Delete a .torrent file after after a successful addition'
-        TabOrder = 4
-      end
-      object cbLanguage: TComboBox
-        Left = 128
+      object edProxyPassword: TEdit
+        Left = 180
         Height = 21
-        Top = 220
-        Width = 260
+        Top = 118
+        Width = 258
         Anchors = [akTop, akLeft, akRight]
-        ItemHeight = 13
-        OnEnter = cbLanguageEnter
-        OnMouseDown = cbLanguageMouseDown
-        Style = csDropDownList
-        TabOrder = 5
-      end
-      object edRefreshIntervalMin: TSpinEdit
-        Left = 220
-        Height = 21
-        Top = 38
-        Width = 70
-        MaxValue = 999
-        MinValue = 1
-        TabOrder = 1
-        Value = 1
+        EchoMode = emPassword
+        PasswordChar = '*'
+        TabOrder = 4
       end
     end
     object tabPaths: TTabSheet
       Caption = 'Paths'
-      ClientHeight = 264
-      ClientWidth = 397
+      ClientHeight = 154
+      ClientWidth = 447
       OnShow = tabPathsShow
       object txPaths: TLabel
         Left = 8
         Height = 66
         Top = 8
-        Width = 380
+        Width = 430
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Remote to local path mappings.'#13#10#13#10'Examples:'#13#10'/share=\\pch\share'#13#10'/var/downloads/music=Z:\music'
         ParentColor = False
@@ -408,12 +209,83 @@ object OptionsForm: TOptionsForm
       end
       object edPaths: TMemo
         Left = 8
-        Height = 170
+        Height = 60
         Top = 82
-        Width = 380
+        Width = 430
         Anchors = [akTop, akLeft, akRight, akBottom]
+        ScrollBars = ssAutoVertical
         TabOrder = 0
       end
+    end
+  end
+  object Buttons: TButtonPanel
+    Left = 8
+    Height = 26
+    Top = 252
+    Width = 455
+    Align = alTop
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
+    TabOrder = 2
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+  object panTop: TPanel
+    Left = 8
+    Height = 56
+    Top = 8
+    Width = 455
+    Align = alTop
+    BevelOuter = bvNone
+    ClientHeight = 56
+    ClientWidth = 455
+    TabOrder = 0
+    object Label1: TLabel
+      Left = 0
+      Height = 14
+      Top = 4
+      Width = 59
+      Caption = 'Connection:'
+      ParentColor = False
+    end
+    object cbConnection: TComboBox
+      Left = 140
+      Height = 21
+      Top = 1
+      Width = 315
+      Anchors = [akTop, akLeft, akRight]
+      ItemHeight = 13
+      OnSelect = cbConnectionSelect
+      Style = csDropDownList
+      TabOrder = 0
+    end
+    object btNew: TButton
+      Left = 140
+      Height = 23
+      Top = 28
+      Width = 100
+      Caption = 'New'
+      OnClick = btNewClick
+      TabOrder = 1
+    end
+    object btDel: TButton
+      Left = 356
+      Height = 23
+      Top = 28
+      Width = 100
+      Caption = 'Delete'
+      OnClick = btDelClick
+      TabOrder = 3
+    end
+    object btRename: TButton
+      Left = 248
+      Height = 23
+      Top = 28
+      Width = 100
+      Caption = 'Rename'
+      OnClick = btRenameClick
+      TabOrder = 2
     end
   end
 end

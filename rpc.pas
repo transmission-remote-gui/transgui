@@ -563,6 +563,8 @@ begin
             s:=StringReplace(s, #13#10, '', [rfReplaceAll]);
             s:=StringReplace(s, #13, '', [rfReplaceAll]);
             s:=StringReplace(s, #10, '', [rfReplaceAll]);
+            s:=StringReplace(s, #9, ' ', [rfReplaceAll]);
+            s:=StringReplace(s, '&quot;', '"', [rfReplaceAll, rfIgnoreCase]);
             s:=StringReplace(s, '<br>', LineEnding, [rfReplaceAll, rfIgnoreCase]);
             s:=StringReplace(s, '</p>', LineEnding, [rfReplaceAll, rfIgnoreCase]);
             s:=StringReplace(s, '</h1>', LineEnding, [rfReplaceAll, rfIgnoreCase]);
@@ -577,6 +579,11 @@ begin
               else
                 Inc(j);
             end;
+            while Pos('  ', s) > 0 do
+              s:=StringReplace(s, '  ', ' ', [rfReplaceAll]);
+            while Pos(LineEnding + ' ', s) > 0 do
+              s:=StringReplace(s, LineEnding + ' ', LineEnding, [rfReplaceAll]);
+            s:=Trim(s);
           end
           else
             s:='';

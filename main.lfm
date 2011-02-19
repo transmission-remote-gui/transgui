@@ -1,6 +1,6 @@
 object MainForm: TMainForm
   Left = 223
-  Height = 484
+  Height = 506
   Top = 155
   Width = 780
   HorzScrollBar.Page = 740
@@ -9,7 +9,7 @@ object MainForm: TMainForm
   ActiveControl = panTop
   AllowDropFiles = True
   Caption = ' '
-  ClientHeight = 464
+  ClientHeight = 486
   ClientWidth = 780
   Constraints.MinHeight = 300
   Constraints.MinWidth = 300
@@ -24,18 +24,18 @@ object MainForm: TMainForm
   LCLVersion = '0.9.28.2'
   object panTop: TPanel
     Left = 0
-    Height = 122
+    Height = 128
     Top = 24
     Width = 780
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 122
+    ClientHeight = 128
     ClientWidth = 780
     Constraints.MinHeight = 80
     TabOrder = 0
     object HSplitter: TSplitter
       Left = 130
-      Height = 122
+      Height = 128
       Top = 0
       Width = 5
       AutoSnap = False
@@ -43,18 +43,18 @@ object MainForm: TMainForm
     end
     object panFilter: TPanel
       Left = 0
-      Height = 122
+      Height = 128
       Top = 0
       Width = 130
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 122
+      ClientHeight = 128
       ClientWidth = 130
       TabOrder = 2
       object panSearch: TPanel
         Left = 0
         Height = 21
-        Top = 99
+        Top = 105
         Width = 130
         Align = alBottom
         AutoSize = True
@@ -131,7 +131,7 @@ object MainForm: TMainForm
       end
       object lvFilter: TVarGrid
         Left = 0
-        Height = 97
+        Height = 103
         Top = 0
         Width = 130
         Align = alClient
@@ -155,7 +155,7 @@ object MainForm: TMainForm
     end
     object gTorrents: TVarGrid
       Left = 135
-      Height = 122
+      Height = 128
       Top = 0
       Width = 645
       Align = alClient
@@ -281,7 +281,7 @@ object MainForm: TMainForm
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 441
+    Top = 463
     Width = 780
     Panels = <    
       item
@@ -300,29 +300,29 @@ object MainForm: TMainForm
   end
   object PageInfo: TPageControl
     Left = 0
-    Height = 290
-    Top = 151
+    Height = 306
+    Top = 157
     Width = 780
-    ActivePage = tabTrackers
+    ActivePage = tabGeneral
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 263
+      ClientHeight = 279
       ClientWidth = 772
       ImageIndex = 4
       object sbGenInfo: TScrollBox
         Left = 0
-        Height = 237
+        Height = 253
         Top = 26
         Width = 772
         Align = alClient
-        ClientHeight = 233
+        ClientHeight = 249
         ClientWidth = 768
         TabOrder = 0
         OnResize = sbGenInfoResize
@@ -1013,7 +1013,7 @@ object MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 146
+    Top = 152
     Width = 780
     Align = alBottom
     AutoSnap = False
@@ -1032,53 +1032,53 @@ object MainForm: TMainForm
     ShowHint = True
     TabOrder = 2
     object ToolButton1: TToolButton
-      Left = 1
+      Left = 39
       Top = 2
       Action = acAddTorrent
     end
     object ToolButton2: TToolButton
-      Left = 47
+      Left = 85
       Top = 2
       Width = 3
       Caption = 'ToolButton2'
       Style = tbsDivider
     end
     object ToolButton3: TToolButton
-      Left = 50
+      Left = 88
       Top = 2
       Action = acStartTorrent
     end
     object ToolButton4: TToolButton
-      Left = 73
+      Left = 111
       Top = 2
       Action = acStopTorrent
     end
     object ToolButton5: TToolButton
-      Left = 99
+      Left = 134
       Top = 2
       Action = acRemoveTorrent
     end
     object ToolButton6: TToolButton
-      Left = 96
+      Left = 36
       Top = 2
       Width = 3
       Caption = 'ToolButton6'
       Style = tbsDivider
     end
     object ToolButton7: TToolButton
-      Left = 122
+      Left = 157
       Top = 2
       Width = 3
       Caption = 'ToolButton7'
       Style = tbsDivider
     end
     object ToolButton8: TToolButton
-      Left = 125
+      Left = 160
       Top = 2
       Action = acDaemonOptions
     end
     object ToolButton9: TToolButton
-      Left = 24
+      Left = 62
       Top = 2
       Action = acAddLink
     end
@@ -1090,6 +1090,13 @@ object MainForm: TMainForm
       Align = alRight
       Visible = False
       OnPaint = pbStatusPaint
+    end
+    object tbConnect: TToolButton
+      Left = 1
+      Top = 2
+      Action = acConnect
+      DropdownMenu = pmConnections
+      Style = tbsDropDown
     end
   end
   object panReconnect: TPanel
@@ -1164,7 +1171,7 @@ object MainForm: TMainForm
     object miTorrent: TMenuItem
       Caption = '&Torrent'
       object miConnect: TMenuItem
-        Action = acConnect
+        Caption = 'Connect to daemon'
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000000000000000
@@ -1201,7 +1208,61 @@ object MainForm: TMainForm
           86FF000000000000000000000000000000000000000000000000000000008686
           86FF000000000000000000000000000000000000000000000000
         }
-        OnClick = acConnectExecute
+        ImageIndex = 18
+        object sepCon1: TMenuItem
+          Tag = 1
+          Caption = '-'
+        end
+        object MenuItem71: TMenuItem
+          Tag = 1
+          Action = acNewConnection
+          OnClick = acNewConnectionExecute
+        end
+        object MenuItem75: TMenuItem
+          Tag = 1
+          Action = acConnOptions
+          OnClick = acConnOptionsExecute
+        end
+      end
+      object MenuItem73: TMenuItem
+        Action = acDisconnect
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF000268D0FF0268D0FFFF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000066
+          CEFF0268D0FF0268D0FF0268D0FF2A90EEFF3FA5FAFF0268D0FFFF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000268D0FF1177
+          DEFF2A90EEFF5DC3FFFF58BDFFFF278CECFF0268D0FFFF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000268D0FF3FA5
+          FAFF2288E0FF3BA0EEFF45ABFFFF379CFFFF0268D0FFFF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000268
+          D0FF58BDFFFF187EE0FF2186EEFF379CFFFF0268D0FFFF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF000268D0FF379CFFFF1177DEFF1C82E9FF0268D0FFFF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00898A8CFF535558FFFF00FF00FF00
+          FF00FF00FF000268D0FF379CFFFF0D73DBFF0268D0FFFF00FF00FF00FF00FF00
+          FF00FF00FF00118413FF006D00FF898A8CFF535558FFFF00FF00898A8CFF898A
+          8CFFFF00FF00FF00FF000268D0FF0268D0FFFF00FF00FF00FF00FF00FF00FF00
+          FF0006720AFF128921FF4BE47EFF006D00FFFF00FF00898A8CFF535558FFFF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF0009780EFF2EC65CFF249D38FF44DD65FF006D00FF535558FFFF00FF00898A
+          8CFF535558FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF0009780EFF2EC65CFF1A9E35FF0C8513FF059F07FF006D00FF898A8CFF5355
+          58FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF0009780EFF27B84CFF18A32EFF07800CFF037A05FF009700FF006D00FFFF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00128921FF0D8819FF088C0DFF038403FF037A05FF006D00FF006D00FFFF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF001D93
+          2EFF33C34EFF047607FF006500FF006500FF006D00FF006500FFFF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00108019FF36CF
+          54FF088C0DFF006500FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00046E08FF0476
+          07FF006500FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        }
+        OnClick = acDisconnectExecute
       end
       object MenuItem3: TMenuItem
         Caption = '-'
@@ -1570,10 +1631,6 @@ object MainForm: TMainForm
     end
     object miTools: TMenuItem
       Caption = 'T&ools'
-      object MenuItem17: TMenuItem
-        Action = acOptions
-        OnClick = acOptionsExecute
-      end
       object MenuItem18: TMenuItem
         Action = acDaemonOptions
         Bitmap.Data = {
@@ -1614,9 +1671,13 @@ object MainForm: TMainForm
         }
         OnClick = acDaemonOptionsExecute
       end
-      object MenuItem52: TMenuItem
-        Action = acUpdateBlocklist
-        OnClick = acUpdateBlocklistExecute
+      object MenuItem68: TMenuItem
+        Action = acConnOptions
+        OnClick = acConnOptionsExecute
+      end
+      object MenuItem17: TMenuItem
+        Action = acOptions
+        OnClick = acOptionsExecute
       end
       object MenuItem35: TMenuItem
         Caption = '-'
@@ -1631,6 +1692,10 @@ object MainForm: TMainForm
       end
       object MenuItem32: TMenuItem
         Caption = '-'
+      end
+      object MenuItem52: TMenuItem
+        Action = acUpdateBlocklist
+        OnClick = acUpdateBlocklistExecute
       end
       object MenuItem33: TMenuItem
         Action = acUpdateGeoIP
@@ -1650,6 +1715,7 @@ object MainForm: TMainForm
     top = 28
     object acConnect: TAction
       Caption = 'Connect to daemon'
+      Hint = 'Connect to daemon'
       ImageIndex = 18
       OnExecute = acConnectExecute
     end
@@ -1839,6 +1905,20 @@ object MainForm: TMainForm
       Category = 'Trackers'
       Caption = 'Remove tracker'
       OnExecute = acDelTrackerExecute
+    end
+    object acConnOptions: TAction
+      Category = 'Tools'
+      Caption = 'Connection options...'
+      OnExecute = acConnOptionsExecute
+    end
+    object acNewConnection: TAction
+      Caption = 'New connection...'
+      OnExecute = acNewConnectionExecute
+    end
+    object acDisconnect: TAction
+      Caption = 'Disconnect'
+      ImageIndex = 27
+      OnExecute = acDisconnectExecute
     end
   end
   object TorrentsListTimer: TTimer
@@ -3822,5 +3902,23 @@ object MainForm: TMainForm
     OnTimer = AnimateTimerTimer
     left = 732
     top = 60
+  end
+  object pmConnections: TPopupMenu
+    left = 12
+    top = 72
+    object sepCon2: TMenuItem
+      Tag = 1
+      Caption = '-'
+    end
+    object MenuItem69: TMenuItem
+      Tag = 1
+      Action = acNewConnection
+      OnClick = acNewConnectionExecute
+    end
+    object MenuItem74: TMenuItem
+      Tag = 1
+      Action = acConnOptions
+      OnClick = acConnOptionsExecute
+    end
   end
 end
