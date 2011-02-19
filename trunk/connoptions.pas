@@ -24,210 +24,268 @@ unit ConnOptions;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ComCtrls, Buttons;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ComCtrls, Buttons, ButtonPanel, ExtCtrls;
 
 resourcestring
   sNoHost = 'No host name specified.';
   sNoProxy = 'No proxy server specified.';
+  SDelConnection = 'Are you sure to delete connection "%s"?';
 
 type
 
-  { TOptionsForm }
+  { TConnOptionsForm }
 
-  TOptionsForm = class(TForm)
-    btDelHost: TBitBtn;
-    btCancel: TButton;
-    btOK: TButton;
-    cbTrayIconAlways: TCheckBox;
-    cbTrayMinimize: TCheckBox;
-    cbTrayClose: TCheckBox;
+  TConnOptionsForm = class(TForm)
+    btNew: TButton;
+    btDel: TButton;
+    btRename: TButton;
+    Buttons: TButtonPanel;
     cbUseProxy: TCheckBox;
-    cbShowAddTorrentWindow: TCheckBox;
-    cbDeleteTorrentFile: TCheckBox;
-    cbHost: TComboBox;
-    cbLanguage: TComboBox;
+    edHost: TEdit;
     cbSSL: TCheckBox;
+    cbConnection: TComboBox;
+    edProxy: TEdit;
     edProxyPassword: TEdit;
     edProxyPort: TSpinEdit;
-    edProxy: TEdit;
-    edRefreshInterval: TSpinEdit;
-    edRefreshIntervalMin: TSpinEdit;
+    edProxyUserName: TEdit;
     edUserName: TEdit;
     edPassword: TEdit;
-    edProxyUserName: TEdit;
-    gbTray: TGroupBox;
     edPaths: TMemo;
-    txLanguage: TLabel;
+    Label1: TLabel;
+    panTop: TPanel;
+    tabProxy: TTabSheet;
     txPaths: TLabel;
     tabPaths: TTabSheet;
-    txProxyPassword: TLabel;
-    txProxyPort: TLabel;
-    txProxy: TLabel;
     Page: TPageControl;
     tabConnection: TTabSheet;
-    tabInterface: TTabSheet;
-    txRefreshIntervalMin: TLabel;
-    txSeconds: TLabel;
-    txRefreshInterval: TLabel;
-    txSeconds2: TLabel;
+    txProxy: TLabel;
+    txProxyPassword: TLabel;
+    txProxyPort: TLabel;
+    txProxyUserName: TLabel;
     txUserName: TLabel;
     txPort: TLabel;
     edPort: TSpinEdit;
     txHost: TLabel;
     txPassword: TLabel;
-    txProxyUserName: TLabel;
-    procedure btDelHostClick(Sender: TObject);
+    procedure btDelClick(Sender: TObject);
+    procedure btNewClick(Sender: TObject);
     procedure btOKClick(Sender: TObject);
-    procedure cbHostSelect(Sender: TObject);
-    procedure cbLanguageEnter(Sender: TObject);
-    procedure cbLanguageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure cbLanguageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure btRenameClick(Sender: TObject);
+    procedure cbConnectionSelect(Sender: TObject);
     procedure cbUseProxyClick(Sender: TObject);
+    procedure edHostChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure tabConnectionShow(Sender: TObject);
     procedure tabPathsShow(Sender: TObject);
   private
+    FCurConn: string;
     FCurHost: string;
-    FLangList: TStringList;
-    procedure FillLanguageItems;
+    edConnection: TEdit;
+
+    function Validate: boolean;
+    procedure BeginEdit;
+    procedure EndEdit;
+    procedure SaveConnectionsList;
   public
-    procedure LoadHostSettings(const HostName: string);
-    procedure SaveHostSettings(const HostName: string);
-    function IsHostSettingsChanged(const HostName: string): boolean;
+    ActiveConnection: string;
+    ActiveSettingChanged: boolean;
+
+    procedure LoadConnSettings(const ConnName: string);
+    procedure SaveConnSettings(const ConnName: string);
+    function IsConnSettingsChanged(const ConnName: string): boolean;
   end;
 
 implementation
 
-uses Main, synacode, ResTranslator, utils;
+uses Main, synacode, utils;
 
-{ TOptionsForm }
+{ TConnOptionsForm }
 
-procedure TOptionsForm.btOKClick(Sender: TObject);
-var
-  i: integer;
-  s: string;
+procedure TConnOptionsForm.btOKClick(Sender: TObject);
 begin
-  cbHost.Text:=Trim(cbHost.Text);
-  if Trim(cbHost.Text) = '' then begin
-    Page.ActivePage:=tabConnection;
-    cbHost.SetFocus;
-    MessageDlg(sNoHost, mtError, [mbOK], 0);
+  if not Validate then
     exit;
-  end;
-  edProxy.Text:=Trim(edProxy.Text);
-  if cbUseProxy.Checked and (edProxy.Text = '') then begin
-    Page.ActivePage:=tabConnection;
-    edProxy.SetFocus;
-    MessageDlg(sNoProxy, mtError, [mbOK], 0);
-    exit;
-  end;
-  s:=cbHost.Text;
-  i:=cbHost.Items.IndexOf(s);
-  if i >= 0 then
-    cbHost.Items.Move(i, 0);
-  cbHost.Text:=s;
-
-  if cbLanguage.Text <> FTranslationLanguage then begin
-    if cbLanguage.Text = 'English' then
-      s:='-'
-    else
-      s:=FLangList.Values[cbLanguage.Text];
-    MainForm.Ini.WriteString('Interface', 'TranslationFile', s);
-    MessageDlg(sRestartRequired, mtInformation, [mbOk], 0);
-  end;
-
+  EndEdit;
+  SaveConnSettings(FCurConn);
+  SaveConnectionsList;
   ModalResult:=mrOk;
 end;
 
-procedure TOptionsForm.cbHostSelect(Sender: TObject);
+procedure TConnOptionsForm.btRenameClick(Sender: TObject);
+begin
+  if edConnection.Visible then begin
+    if Trim(edConnection.Text) = '' then exit;
+    EndEdit;
+    exit;
+  end;
+  if cbConnection.Text = '' then exit;
+  BeginEdit;
+  ActiveControl:=edConnection;
+  edConnection.SelectAll;
+end;
+
+procedure TConnOptionsForm.cbConnectionSelect(Sender: TObject);
 var
   i: integer;
   s: string;
 begin
-  cbHost.Text:=Trim(cbHost.Text);
-  i:=cbHost.ItemIndex;
+  i:=cbConnection.ItemIndex;
   if i >= 0 then
-    s:=cbHost.Items[i]
+    s:=cbConnection.Items[i]
   else
-    s:=cbHost.Text;
+    s:='';
 
-  if (FCurHost <> s) and (FCurHost <> '') then
-    SaveHostSettings(FCurHost);
-  LoadHostSettings(s);
-  FCurHost:=s;
+  if (FCurConn <> s) and (FCurConn <> '') then begin
+    if not Validate then begin
+      cbConnection.ItemIndex:=cbConnection.Items.IndexOf(FCurConn);
+      exit;
+    end;
+    SaveConnSettings(FCurConn);
+  end;
+  if s <> '' then
+    LoadConnSettings(s);
 end;
 
-procedure TOptionsForm.btDelHostClick(Sender: TObject);
+procedure TConnOptionsForm.btNewClick(Sender: TObject);
+begin
+  EndEdit;
+  if (FCurConn <> '') and not Validate then
+    exit;
+  SaveConnSettings(FCurConn);
+  LoadConnSettings('');
+  BeginEdit;
+  edConnection.Text:='';
+  Page.ActivePage:=tabConnection;
+  ActiveControl:=edHost;
+  ActiveConnection:='';
+  ActiveSettingChanged:=True;
+end;
+
+procedure TConnOptionsForm.btDelClick(Sender: TObject);
 var
   i: integer;
 begin
-  cbHost.Text:=Trim(cbHost.Text);
-  if cbHost.Text = '' then
+  if edConnection.Visible or (cbConnection.Text = '') then
     exit;
-  MainForm.Ini.EraseSection('Connection.' + cbHost.Text);
-  MainForm.Ini.EraseSection('Connection');
-  MainForm.Ini.EraseSection('AddTorrent.' + cbHost.Text);
-  i:=cbHost.Items.IndexOf(cbHost.Text);
-  if i >= 0 then begin
-    cbHost.Items.Delete(i);
-    if i >= cbHost.Items.Count then begin
-      i:=cbHost.Items.Count - 1;
-      if i < 0 then
-        i:=0;
-    end;
+  if MessageDlg('', Format(SDelConnection, [cbConnection.Text]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
+  if FCurConn <> '' then begin
+    MainForm.Ini.EraseSection('Connection.' + FCurConn);
+    MainForm.Ini.EraseSection('Connection');
+    MainForm.Ini.EraseSection('AddTorrent.' + FCurConn);
+
+    i:=cbConnection.ItemIndex;
+    if i >= 0 then begin
+      cbConnection.Items.Delete(i);
+      if i >= cbConnection.Items.Count then begin
+        i:=cbConnection.Items.Count - 1;
+        if i < 0 then
+          i:=0;
+      end;
+    end
+    else
+      i:=0;
+    if i < cbConnection.Items.Count then
+      cbConnection.ItemIndex:=i
+    else
+      cbConnection.ItemIndex:=-1;
   end
   else
-    i:=0;
-  if i < cbHost.Items.Count then begin
-    cbHost.ItemIndex:=i;
-    cbHost.Text:=cbHost.Items[i];
+    cbConnection.ItemIndex:=-1;
+  if cbConnection.ItemIndex >= 0 then begin
+    if FCurConn = ActiveConnection then
+      ActiveConnection:='';
+    LoadConnSettings(cbConnection.Items[cbConnection.ItemIndex]);
+    if ActiveConnection = '' then
+      ActiveConnection:=FCurConn;
   end
-  else
-    cbHost.Text:='';
-  LoadHostSettings(cbHost.Text);
+  else begin
+    FCurConn:='';
+    btNewClick(nil);
+  end;
+  SaveConnectionsList;
 end;
 
-procedure TOptionsForm.cbUseProxyClick(Sender: TObject);
+procedure TConnOptionsForm.cbUseProxyClick(Sender: TObject);
+var
+  c: TColor;
 begin
   edProxy.Enabled:=cbUseProxy.Checked;
   edProxyPort.Enabled:=cbUseProxy.Checked;
   edProxyUserName.Enabled:=cbUseProxy.Checked;
   edProxyPassword.Enabled:=cbUseProxy.Checked;
+  txProxy.Enabled:=cbUseProxy.Checked;
+  txProxyPort.Enabled:=cbUseProxy.Checked;
+  txProxyUserName.Enabled:=cbUseProxy.Checked;
+  txProxyPassword.Enabled:=cbUseProxy.Checked;
+  if cbUseProxy.Checked then
+    c:=clWindow
+  else
+    c:=edProxy.Parent.Color;
+  edProxy.Color:=c;
+  edProxyPort.Color:=c;
+  edProxyUserName.Color:=c;
+  edProxyPassword.Color:=c;
 end;
 
-procedure TOptionsForm.FormActivate(Sender: TObject);
+procedure TConnOptionsForm.edHostChange(Sender: TObject);
+begin
+  if edConnection.Visible and (edConnection.Text = FCurHost) then
+    edConnection.Text:=edHost.Text;
+  FCurHost:=edHost.Text;
+end;
+
+procedure TConnOptionsForm.FormActivate(Sender: TObject);
 begin
   tabConnectionShow(nil);
 end;
 
-procedure TOptionsForm.FormCreate(Sender: TObject);
+procedure TConnOptionsForm.FormCreate(Sender: TObject);
+var
+  i, cnt: integer;
+  s: string;
 begin
   Font.Size:=MainForm.Font.Size;
   Page.ActivePageIndex:=0;
-  ActiveControl:=cbHost;
-  cbLanguage.Items.Add(FTranslationLanguage);
-  cbLanguage.ItemIndex:=0;
-{$ifdef LCLgtk2}
-  cbLanguage.OnDropDown:=@cbLanguageEnter;
-  cbLanguage.OnMouseMove:=@cbLanguageMouseMove;
-{$endif LCLgtk2}
+  ActiveControl:=edHost;
+  AutoSizeForm(Self);
+  Buttons.OKButton.ModalResult:=mrNone;
+  Buttons.OKButton.OnClick:=@btOKClick;
+
+  edConnection:=TEdit.Create(cbConnection.Parent);
+  edConnection.Visible:=False;
+  edConnection.BoundsRect:=cbConnection.BoundsRect;
+  edConnection.Parent:=cbConnection.Parent;
+
+  cnt:=MainForm.Ini.ReadInteger('Hosts', 'Count', 0);
+  for i:=1 to cnt do begin
+    s:=MainForm.Ini.ReadString('Hosts', Format('Host%d', [i]), '');
+    if s <> '' then
+      cbConnection.Items.Add(s);
+  end;
 end;
 
-procedure TOptionsForm.FormShow(Sender: TObject);
+procedure TConnOptionsForm.FormShow(Sender: TObject);
 begin
-  cbUseProxyClick(nil);
-  FCurHost:=cbHost.Text;
+  if edConnection.Visible then
+    exit;
+  if cbConnection.Items.Count = 0 then begin
+    btNewClick(nil);
+    exit;
+  end;
+  cbConnection.ItemIndex:=cbConnection.Items.IndexOf(ActiveConnection);
+  if cbConnection.ItemIndex < 0 then
+    cbConnection.ItemIndex:=0;
+  LoadConnSettings(cbConnection.Text);
 end;
 
-procedure TOptionsForm.tabConnectionShow(Sender: TObject);
+procedure TConnOptionsForm.tabConnectionShow(Sender: TObject);
 begin
-  btDelHost.Height:=cbHost.Height + 2;
+  btDel.Height:=cbConnection.Height + 2;
 end;
 
-procedure TOptionsForm.tabPathsShow(Sender: TObject);
+procedure TConnOptionsForm.tabPathsShow(Sender: TObject);
 var
   R: TRect;
 begin
@@ -236,14 +294,123 @@ begin
   edPaths.BoundsRect:=R;
 end;
 
-procedure TOptionsForm.LoadHostSettings(const HostName: string);
+function TConnOptionsForm.Validate: boolean;
+begin
+  Result:=False;
+  edHost.Text:=Trim(edHost.Text);
+  if Trim(edHost.Text) = '' then begin
+    Page.ActivePage:=tabConnection;
+    edHost.SetFocus;
+    MessageDlg(sNoHost, mtError, [mbOK], 0);
+    exit;
+  end;
+  edProxy.Text:=Trim(edProxy.Text);
+  if cbUseProxy.Checked and (edProxy.Text = '') then begin
+    Page.ActivePage:=tabProxy;
+    edProxy.SetFocus;
+    MessageDlg(sNoProxy, mtError, [mbOK], 0);
+    exit;
+  end;
+  Result:=True;
+end;
+
+procedure TConnOptionsForm.EndEdit;
+
+  procedure RenameSection(const OldName, NewName: string);
+  var
+    i: integer;
+    sl: TStringList;
+  begin
+    sl:=TStringList.Create;
+    with MainForm.Ini do
+    try
+      ReadSectionValues(OldName, sl);
+      for i:=0 to sl.Count - 1 do
+        WriteString(NewName, sl.Names[i], sl.ValueFromIndex[i]);
+      EraseSection(OldName);
+    finally
+      sl.Free;
+    end;
+  end;
+
+var
+  NewName, s: string;
+  i, p: integer;
+begin
+  if not edConnection.Visible then exit;
+  NewName:=Trim(edConnection.Text);
+  if NewName = '' then
+    NewName:=Trim(edHost.Text);
+  if NewName <> FCurConn then begin
+    if FCurConn <> '' then begin
+      p:=cbConnection.Items.IndexOf(FCurConn);
+      if p >= 0 then
+        cbConnection.Items.Delete(p);
+    end
+    else
+      p:=-1;
+
+    i:=1;
+    s:=NewName;
+    while cbConnection.Items.IndexOf(NewName) >= 0 do begin
+      Inc(i);
+      NewName:=Format('%s (%d)', [s, i]);
+    end;
+
+    if FCurConn <> '' then begin
+      RenameSection('Connection.' + FCurConn, 'Connection.' + NewName);
+      RenameSection('AddTorrent.' + FCurConn, 'AddTorrent.' + NewName);
+    end;
+
+    if p >= 0 then
+      cbConnection.Items.Insert(p, NewName)
+    else
+      cbConnection.Items.Add(NewName);
+    if FCurConn = ActiveConnection then
+      ActiveConnection:=NewName;
+    FCurConn:=NewName;
+    SaveConnectionsList;
+  end;
+  cbConnection.ItemIndex:=cbConnection.Items.IndexOf(NewName);
+  cbConnection.Visible:=True;
+  edConnection.Visible:=False;
+end;
+
+procedure TConnOptionsForm.SaveConnectionsList;
+var
+  i: integer;
+begin
+  with MainForm.Ini do begin
+    WriteString('Hosts', 'CurHost', ActiveConnection);
+    WriteInteger('Hosts', 'Count', cbConnection.Items.Count);
+    for i:=0 to cbConnection.Items.Count - 1 do
+      WriteString('Hosts', Format('Host%d', [i + 1]), cbConnection.Items[i]);
+  end;
+end;
+
+procedure TConnOptionsForm.BeginEdit;
+var
+  i: integer;
+begin
+  i:=cbConnection.ItemIndex;
+  if i >= 0 then
+    edConnection.Text:=cbConnection.Items[i]
+  else
+    edConnection.Text:='';
+  edConnection.Visible:=True;
+  cbConnection.Visible:=False;
+end;
+
+procedure TConnOptionsForm.LoadConnSettings(const ConnName: string);
 var
   Sec: string;
 begin
   with MainForm.Ini do begin
-    Sec:='Connection.' + HostName;
-    if not SectionExists(Sec) then
+    Sec:='Connection.' + ConnName;
+    if (ConnName <> '') and not SectionExists(Sec) then
       Sec:='Connection';
+    edHost.Text:=ReadString(Sec, 'Host', '');
+    FCurHost:=edHost.Text;
     edPort.Value:=ReadInteger(Sec, 'Port', 9091);
     cbSSL.Checked:=ReadBool(Sec, 'UseSSL', False);
     edUserName.Text:=ReadString(Sec, 'UserName', '');
@@ -260,18 +427,27 @@ begin
     else
       edProxyPassword.Text:='';
     edPaths.Text:=StringReplace(ReadString(Sec, 'PathMap', ''), '|', LineEnding, [rfReplaceAll]);
+    cbUseProxyClick(nil);
   end;
+  FCurConn:=ConnName;
+  FCurHost:=edHost.Text;
 end;
 
-procedure TOptionsForm.SaveHostSettings(const HostName: string);
+procedure TConnOptionsForm.SaveConnSettings(const ConnName: string);
 var
   Sec: string;
   i: integer;
   s: string;
 begin
+  if ConnName = '' then
+    exit;
+  if ConnName = ActiveConnection then
+    if IsConnSettingsChanged(ConnName) then
+      ActiveSettingChanged:=True;
+
   with MainForm.Ini do begin
-    Sec:='Connection.' + HostName;
-    WriteString(Sec, 'Host', HostName);
+    Sec:='Connection.' + ConnName;
+    WriteString(Sec, 'Host', Trim(edHost.Text));
     WriteBool(Sec, 'UseSSL', cbSSL.Checked);
     WriteInteger(Sec, 'Port', edPort.Value);
     WriteString(Sec, 'UserName', edUserName.Text);
@@ -283,7 +459,7 @@ begin
       WriteString(Sec, 'Password', s);
     end;
     WriteBool(Sec, 'UseProxy', cbUseProxy.Checked);
-    WriteString(Sec, 'ProxyHost', edProxy.Text);
+    WriteString(Sec, 'ProxyHost', Trim(edProxy.Text));
     WriteInteger(Sec, 'ProxyPort', edProxyPort.Value);
     WriteString(Sec, 'ProxyUser', edProxyUserName.Text);
     if edProxyPassword.Text <> '******' then begin
@@ -294,21 +470,23 @@ begin
       WriteString(Sec, 'ProxyPass', s);
     end;
     WriteString(Sec, 'PathMap', StringReplace(edPaths.Text, LineEnding, '|', [rfReplaceAll]));
-    i:=cbHost.Items.IndexOf(HostName);
+
+    i:=cbConnection.Items.IndexOf(ConnName);
     if i < 0 then
-      cbHost.Items.Insert(0, HostName);
+      cbConnection.Items.Insert(0, ConnName);
   end;
 end;
 
-function TOptionsForm.IsHostSettingsChanged(const HostName: string): boolean;
+function TConnOptionsForm.IsConnSettingsChanged(const ConnName: string): boolean;
 var
   Sec: string;
 begin
   with MainForm.Ini do begin
-    Sec:='Connection.' + HostName;
+    Sec:='Connection.' + ConnName;
     if not SectionExists(Sec) then
       Sec:='Connection';
     Result:=(edPort.Value <> ReadInteger(Sec, 'Port', 9091)) or
+            (edHost.Text <> ReadString(Sec, 'Host', '')) or
             (cbSSL.Checked <> ReadBool(Sec, 'UseSSL', False)) or
             (edUserName.Text <> ReadString(Sec, 'UserName', '')) or
             ((ReadString(Sec, 'Password', '') = '') and (edPassword.Text <> '')) or
@@ -320,49 +498,6 @@ begin
             ((ReadString(Sec, 'ProxyPass', '') = '') and (edProxyPassword.Text <> '')) or
             ((ReadString(Sec, 'ProxyPass', '') <> '') and (edProxyPassword.Text <> '******'));
   end;
-end;
-
-procedure TOptionsForm.cbLanguageEnter(Sender: TObject);
-begin
-  if not Assigned(FLangList) then
-    FillLanguageItems;
-end;
-
-procedure TOptionsForm.cbLanguageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  cbLanguageEnter(cbLanguage);
-end;
-
-procedure TOptionsForm.cbLanguageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-begin
-  cbLanguageEnter(cbLanguage);
-end;
-
-procedure TOptionsForm.FillLanguageItems;
-var
-  i: integer;
-begin
-  AppBusy;
-  cbLanguage.Items.BeginUpdate;
-  try
-    cbLanguage.Items.Clear;
-    cbLanguage.Items.Add('English');
-    FLangList := GetAvailableTranslations;
-    FLangList.Sort;
-    with FLangList do
-      for i := 0 to Count - 1 do
-        cbLanguage.Items.Add(Names[i]);
-    with cbLanguage do
-      ItemIndex:= Items.IndexOf(FTranslationLanguage);
-  finally
-    cbLanguage.Items.EndUpdate;
-  end;
-  AppNormal;
-end;
-
-procedure TOptionsForm.FormDestroy(Sender: TObject);
-begin
-  FLangList.Free;
 end;
 
 initialization

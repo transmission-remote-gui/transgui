@@ -132,6 +132,9 @@ type
     acAddTracker: TAction;
     acEditTracker: TAction;
     acDelTracker: TAction;
+    acConnOptions: TAction;
+    acNewConnection: TAction;
+    acDisconnect: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
@@ -154,6 +157,14 @@ type
     MenuItem65: TMenuItem;
     MenuItem66: TMenuItem;
     MenuItem67: TMenuItem;
+    MenuItem68: TMenuItem;
+    MenuItem69: TMenuItem;
+    sepCon2: TMenuItem;
+    MenuItem71: TMenuItem;
+    sepCon1: TMenuItem;
+    MenuItem73: TMenuItem;
+    MenuItem74: TMenuItem;
+    MenuItem75: TMenuItem;
     pbStatus: TPaintBox;
     pmSepOpen2: TMenuItem;
     MenuItem42: TMenuItem;
@@ -181,8 +192,10 @@ type
     MenuItem57: TMenuItem;
     pbDownloaded: TPaintBox;
     pmTrackers: TPopupMenu;
+    pmConnections: TPopupMenu;
     tabTrackers: TTabSheet;
     AnimateTimer: TTimer;
+    tbConnect: TToolButton;
     ToolButton9: TToolButton;
     txConnErrorLabel: TLabel;
     panSearch: TPanel;
@@ -331,10 +344,12 @@ type
     procedure acAddTorrentExecute(Sender: TObject);
     procedure acAddTrackerExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
+    procedure acConnOptionsExecute(Sender: TObject);
     procedure acDelTrackerExecute(Sender: TObject);
     procedure acEditTrackerExecute(Sender: TObject);
     procedure acHideAppExecute(Sender: TObject);
     procedure acMoveTorrentExecute(Sender: TObject);
+    procedure acNewConnectionExecute(Sender: TObject);
     procedure acOpenContainingFolderExecute(Sender: TObject);
     procedure acOpenFileExecute(Sender: TObject);
     procedure acOptionsExecute(Sender: TObject);
@@ -421,7 +436,7 @@ type
     FLastPieceCount: integer;
     FLastDone: double;
     FIni: TIniFile;
-    FCurHost: string;
+    FCurConn: string;
     FPathMap: TStringList;
     FLastFilerIndex: integer;
     FFilterChanged: boolean;
@@ -431,7 +446,7 @@ type
     procedure DoConnect;
     procedure DoDisconnect;
     procedure UpdateUI;
-    function ShowConnOptions: boolean;
+    procedure ShowConnOptions(NewConnection: boolean);
     procedure SaveColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
     procedure LoadColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
     function GetTorrentError(t: TJSONObject): string;
@@ -467,6 +482,8 @@ type
     function PriorityToStr(p: integer; var ImageIndex: integer): string;
     procedure SetRefreshInterval;
     procedure AddTracker(EditMode: boolean);
+    procedure UpdateConnections;
+    procedure DoConnectToHost(Sender: TObject);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -591,7 +608,8 @@ implementation
 
 uses
   AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, utils, TorrProps, DaemonOptions, About,
-  ToolWin, download, ColSetup, types, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype;
+  ToolWin, download, ColSetup, types, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
+  Options;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -833,7 +851,13 @@ begin
   for i:=0 to Form.ControlCount - 1 do
     with Form.Controls[i] do
       Inc(ht, Height + BorderSpacing.Top + BorderSpacing.Bottom);
-  Form.ClientHeight:=ht + 2*Form.BorderWidth;
+  ht:=ht + 2*Form.BorderWidth;
+  Form.ClientHeight:=ht;
+  if Form.ClientHeight <> ht then begin
+    Form.Constraints.MinHeight:=0;
+    Form.ClientHeight:=ht;
+    Form.Constraints.MinHeight:=Form.Height;
+  end;
 end;
 
 { TMainForm }
@@ -841,6 +865,7 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   ws: TWindowState;
+  i: integer;
 {$ifdef darwin}
   s: string;
   pic: TPicture;
@@ -913,8 +938,15 @@ begin
   txTransferHeader.Height:=txTransferHeader.Canvas.TextHeight(txTransferHeader.Caption) + 2;
   txTorrentHeader.Height:=txTorrentHeader.Canvas.TextHeight(txTorrentHeader.Caption) + 2;
 
-  if FIni.ReadInteger('MainForm', 'State', -1) = -1 then
-    Position:=poScreenCenter
+  if FIni.ReadInteger('MainForm', 'State', -1) = -1 then begin
+    i:=Screen.Width*3 div 4;
+    if i > Width then
+      Width:=i;
+    i:=Screen.Height*3 div 4;
+    if i > Height then
+      Height:=i;
+    Position:=poScreenCenter;
+  end
   else begin
     ws:=TWindowState(FIni.ReadInteger('MainForm', 'State', integer(WindowState)));
     Left:=FIni.ReadInteger('MainForm', 'Left', Left);
@@ -935,14 +967,15 @@ begin
   acResolveCountry.Checked:=FIni.ReadBool('PeersList', 'ResolveCountry', True) and (GetGeoIpDatabase <> '');
   acShowCountryFlag.Checked:=FIni.ReadBool('PeersList', 'ShowCountryFlag', True) and (GetFlagsArchive <> '');
   acShowCountryFlag.Enabled:=acResolveCountry.Checked;
-  FCurHost:=FIni.ReadString('Hosts', 'CurHost', '');
-  if FCurHost = '' then
-    FCurHost:=FIni.ReadString('Connection', 'Host', '');
+  FCurConn:=FIni.ReadString('Hosts', 'CurHost', '');
+  if FCurConn = '' then
+    FCurConn:=FIni.ReadString('Connection', 'Host', '');
   FPathMap:=TStringList.Create;
   if Application.HasOption('hidden') then begin
     ApplicationProperties.ShowMainForm:=False;
     FormShow(nil);
   end;
+  UpdateConnections;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -1005,10 +1038,19 @@ end;
 
 procedure TMainForm.acConnectExecute(Sender: TObject);
 begin
-  if RpcObj.Connected or (FCurHost = '') then
-    ShowConnOptions
+  if RpcObj.Connected then begin
+    tbConnect.CheckMenuDropdown;
+    exit;
+  end;
+  if FCurConn = '' then
+    ShowConnOptions(True)
   else
     DoConnect;
+end;
+
+procedure TMainForm.acConnOptionsExecute(Sender: TObject);
+begin
+  ShowConnOptions(False);
 end;
 
 procedure TMainForm.acDelTrackerExecute(Sender: TObject);
@@ -1132,6 +1174,11 @@ begin
   end;
 end;
 
+procedure TMainForm.acNewConnectionExecute(Sender: TObject);
+begin
+  ShowConnOptions(True);
+end;
+
 procedure TMainForm.acOpenContainingFolderExecute(Sender: TObject);
 var
   res: TJSONObject;
@@ -1187,7 +1234,43 @@ end;
 
 procedure TMainForm.acOptionsExecute(Sender: TObject);
 begin
-  ShowConnOptions;
+  AppBusy;
+  with TOptionsForm.Create(Self) do
+  try
+    edRefreshInterval.Value:=FIni.ReadInteger('Interface', 'RefreshInterval', 5);
+    edRefreshIntervalMin.Value:=FIni.ReadInteger('Interface', 'RefreshIntervalMin', 20);
+{$ifndef darwin}
+    cbTrayClose.Checked:=FIni.ReadBool('Interface', 'TrayClose', False);
+    cbTrayMinimize.Checked:=FIni.ReadBool('Interface', 'TrayMinimize', True);
+{$else}
+    cbTrayClose.Enabled:=False;
+    cbTrayMinimize.Enabled:=False;
+{$endif}
+    cbTrayIconAlways.Checked:=FIni.ReadBool('Interface', 'TrayIconAlways', True);
+
+    cbShowAddTorrentWindow.Checked:=FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
+    cbDeleteTorrentFile.Checked:=FIni.ReadBool('Interface', 'DeleteTorrentFile', False);
+
+    AppNormal;
+    if ShowModal = mrOk then begin
+      AppBusy;
+      FIni.WriteInteger('Interface', 'RefreshInterval', edRefreshInterval.Value);
+      FIni.WriteInteger('Interface', 'RefreshIntervalMin', edRefreshIntervalMin.Value);
+{$ifndef darwin}
+      FIni.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
+      FIni.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
+{$endif}
+      FIni.WriteBool('Interface', 'TrayIconAlways', cbTrayIconAlways.Checked);
+
+      FIni.WriteBool('Interface', 'ShowAddTorrentWindow', cbShowAddTorrentWindow.Checked);
+      FIni.WriteBool('Interface', 'DeleteTorrentFile', cbDeleteTorrentFile.Checked);
+
+      UpdateTray;
+      AppNormal;
+    end;
+  finally
+    Free;
+  end;
 end;
 
 procedure TMainForm.acAddTorrentExecute(Sender: TObject);
@@ -1273,7 +1356,7 @@ begin
   try
     with TAddTorrentForm.Create(Self) do
     try
-      IniSec:='AddTorrent.' + RpcObj.Http.TargetHost;
+      IniSec:='AddTorrent.' + FCurConn;
       FillDownloadDirs(cbDestFolder);
       if cbDestFolder.Text = '' then begin
         req:=TJSONObject.Create;
@@ -2880,10 +2963,11 @@ end;
 procedure TMainForm.DoConnect;
 var
   Sec: string;
+  i, j: integer;
 begin
   panReconnect.Hide;
   DoDisconnect;
-  Sec:='Connection.' + FCurHost;
+  Sec:='Connection.' + FCurConn;
   if not FIni.SectionExists(Sec) then
     Sec:='Connection';
   if FIni.ReadBool(Sec, 'UseSSL', False) then begin
@@ -2910,13 +2994,31 @@ begin
     RpcObj.Http.ProxyUser:='';
     RpcObj.Http.ProxyPass:='';
   end;
-  RpcObj.Url:=Format('%s://%s:%d/transmission/rpc', [RpcObj.Url, FCurHost, FIni.ReadInteger(Sec, 'Port', 9091)]);
+  RpcObj.Url:=Format('%s://%s:%d/transmission/rpc', [RpcObj.Url, FIni.ReadString(Sec, 'Host', ''), FIni.ReadInteger(Sec, 'Port', 9091)]);
   SetRefreshInterval;
   RpcObj.InfoStatus:=sConnectingToDaemon;
   CheckStatus;
   TrayIcon.Hint:=RpcObj.InfoStatus;
   RpcObj.Connect;
   FPathMap.Text:=StringReplace(Ini.ReadString(Sec, 'PathMap', ''), '|', LineEnding, [rfReplaceAll]);
+
+  Ini.WriteString('Hosts', 'CurHost', FCurConn);
+  if FCurConn <> Ini.ReadString('Hosts', 'Host1', '') then begin
+    Ini.WriteString('Hosts', 'Host1', FCurConn);
+    j:=2;
+    for i:=0 to pmConnections.Items.Count - 1 do
+      with pmConnections.Items[i] do
+        if (Tag = 0) and (Caption <> FCurConn) then begin
+          Ini.WriteString('Hosts', Format('Host%d', [j]), Caption);
+          Inc(j);
+        end;
+    UpdateConnections;
+  end
+  else
+    if pmConnections.Items[0].Tag = 0 then begin
+      pmConnections.Items[0].Checked:=True;
+      miConnect.Items[0].Checked:=True;
+    end;
 end;
 
 procedure TMainForm.DoDisconnect;
@@ -2960,6 +3062,8 @@ begin
   lvFilter.Items.RowCnt:=StatusFiltersCount;
   TorrentsListTimer.Enabled:=False;
   FilterTimer.Enabled:=False;
+  pmConnections.Items[0].Checked:=False;
+  miConnect.Items[0].Checked:=False;
 end;
 
 procedure TMainForm.ClearDetailsInfo;
@@ -2995,7 +3099,12 @@ procedure TMainForm.UpdateUI;
 var
   e: boolean;
 begin
-  e:=RpcObj.Connected and ((Screen.ActiveForm = Self) or not Visible);
+  e:=((Screen.ActiveForm = Self) or not Visible);
+  acConnect.Enabled:=e;
+  acOptions.Enabled:=e;
+  acConnOptions.Enabled:=e;
+  e:=RpcObj.Connected and e;
+  acDisconnect.Enabled:=e;
   acSelectAll.Enabled:=e;
   acAddTorrent.Enabled:=e;
   acAddLink.Enabled:=e;
@@ -3027,70 +3136,33 @@ begin
   acDelTracker.Enabled:=acEditTracker.Enabled;
 end;
 
-function TMainForm.ShowConnOptions: boolean;
+procedure TMainForm.ShowConnOptions(NewConnection: boolean);
 var
-  i, cnt, OldRefreshInterval: integer;
-  s: string;
+  frm: TConnOptionsForm;
+  res: TModalResult;
 begin
-  Result:=False;
-  with TOptionsForm.Create(Self) do
+  AppBusy;
+  frm:=TConnOptionsForm.Create(Self);
+  with frm do
   try
-    cnt:=Ini.ReadInteger('Hosts', 'Count', 0);
-    for i:=1 to cnt do begin
-      s:=Ini.ReadString('Hosts', Format('Host%d', [i]), '');
-      if s <> '' then
-        cbHost.Items.Add(s);
+    ActiveConnection:=FCurConn;
+    if NewConnection then begin
+      btNewClick(nil);
+      btNew.Hide;
+      btRename.Hide;
+      btDel.Hide;
+      panTop.ClientHeight:=btNew.Top;
+      AutoSizeForm(frm);
     end;
-    cbHost.ItemIndex:=cbHost.Items.IndexOf(FCurHost);
-    cbHost.Text:=FCurHost;
-    LoadHostSettings(FCurHost);
-
-    edRefreshInterval.Value:=FIni.ReadInteger('Interface', 'RefreshInterval', 5);
-    edRefreshIntervalMin.Value:=FIni.ReadInteger('Interface', 'RefreshIntervalMin', 20);
-{$ifndef darwin}
-    cbTrayClose.Checked:=FIni.ReadBool('Interface', 'TrayClose', False);
-    cbTrayMinimize.Checked:=FIni.ReadBool('Interface', 'TrayMinimize', True);
-{$else}
-    cbTrayClose.Enabled:=False;
-    cbTrayMinimize.Enabled:=False;
-{$endif}
-    cbTrayIconAlways.Checked:=FIni.ReadBool('Interface', 'TrayIconAlways', True);
-
-    cbShowAddTorrentWindow.Checked:=FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
-    cbDeleteTorrentFile.Checked:=FIni.ReadBool('Interface', 'DeleteTorrentFile', False);
-
-    OldRefreshInterval:=edRefreshInterval.Value;
-
-    if ShowModal = mrOK then begin
-      if (FCurHost <> cbHost.Text) or IsHostSettingsChanged(FCurHost) or (OldRefreshInterval <> edRefreshInterval.Value) then begin
-        DoDisconnect;
-        FReconnectTimeOut:=-1;
-      end;
-      FCurHost:=cbHost.Text;
-      SaveHostSettings(FCurHost);
-      FPathMap.Text:=edPaths.Lines.Text;
-
-      Ini.WriteString('Hosts', 'CurHost', FCurHost);
-      Ini.WriteInteger('Hosts', 'Count', cbHost.Items.Count);
-      for i:=0 to cbHost.Items.Count - 1 do
-        Ini.WriteString('Hosts', Format('Host%d', [i + 1]), cbHost.Items[i]);
-
-      FIni.WriteInteger('Interface', 'RefreshInterval', edRefreshInterval.Value);
-      FIni.WriteInteger('Interface', 'RefreshIntervalMin', edRefreshIntervalMin.Value);
-{$ifndef darwin}
-      FIni.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
-      FIni.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
-{$endif}
-      FIni.WriteBool('Interface', 'TrayIconAlways', cbTrayIconAlways.Checked);
-
-      FIni.WriteBool('Interface', 'ShowAddTorrentWindow', cbShowAddTorrentWindow.Checked);
-      FIni.WriteBool('Interface', 'DeleteTorrentFile', cbDeleteTorrentFile.Checked);
-
-      if not RpcObj.Connected then
+    AppNormal;
+    res:=ShowModal;
+    UpdateConnections;
+    if (FCurConn <> ActiveConnection) or ActiveSettingChanged then begin
+      DoDisconnect;
+      FReconnectTimeOut:=-1;
+      FCurConn:=ActiveConnection;
+      if FCurConn <> '' then
         DoConnect;
-
-      UpdateTray;
-      Result:=True;
     end;
   finally
     Free;
@@ -4514,7 +4586,7 @@ var
   s, IniSec: string;
 begin
   CB.Items.Clear;
-  IniSec:='AddTorrent.' + RpcObj.Http.TargetHost;
+  IniSec:='AddTorrent.' + FCurConn;
   j:=FIni.ReadInteger(IniSec, 'FolderCount', 0);
   for i:=0 to j - 1 do begin
     s:=FIni.ReadString(IniSec, Format('Folder%d', [i]), '');
@@ -4594,6 +4666,54 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TMainForm.UpdateConnections;
+var
+  i, j, cnt: integer;
+  s, cur: string;
+  mi: TMenuItem;
+begin
+  while (pmConnections.Items.Count > 0) and (pmConnections.Items[0].Tag = 0) do
+    pmConnections.Items[0].Free;
+  while (miConnect.Count > 0) and (miConnect.Items[0].Tag = 0) do
+    miConnect.Items[0].Free;
+  cur:=Ini.ReadString('Hosts', 'CurHost', '');
+  cnt:=Ini.ReadInteger('Hosts', 'Count', 0);
+  j:=0;
+  for i:=1 to cnt do begin
+    s:=Ini.ReadString('Hosts', Format('Host%d', [i]), '');
+    if s <> '' then begin
+      mi:=TMenuItem.Create(pmConnections);
+      mi.Caption:=s;
+      if s = cur then
+        mi.Checked:=True;
+      mi.OnClick:=@DoConnectToHost;
+      pmConnections.Items.Insert(j, mi);
+
+      mi:=TMenuItem.Create(miConnect);
+      mi.Caption:=s;
+      if s = cur then
+        mi.Checked:=True;
+      mi.OnClick:=@DoConnectToHost;
+      miConnect.Insert(j, mi);
+      Inc(j);
+    end;
+  end;
+  sepCon1.Visible:=j > 0;
+  sepCon2.Visible:=j > 0;
+end;
+
+procedure TMainForm.DoConnectToHost(Sender: TObject);
+var
+  mi: TMenuItem;
+begin
+  mi:=TMenuItem(Sender);
+  if RpcObj.Connected and (FCurConn = mi.Caption) then
+    exit;
+  DoDisconnect;
+  FCurConn:=mi.Caption;
+  DoConnect;
 end;
 
 initialization
