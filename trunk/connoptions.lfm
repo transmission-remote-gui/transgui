@@ -267,7 +267,7 @@ object ConnOptionsForm: TConnOptionsForm
       TabOrder = 1
     end
     object btDel: TButton
-      Left = 356
+      Left = 355
       Height = 23
       Top = 28
       Width = 100
