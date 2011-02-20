@@ -609,7 +609,7 @@ implementation
 uses
   AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, utils, TorrProps, DaemonOptions, About,
   ToolWin, download, ColSetup, types, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
-  Options;
+  Options, ButtonPanel;
 
 const
   TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -843,20 +843,37 @@ begin
   Result:=True;
 end;
 
+type THackControl = class(TControl) end;
+
 procedure AutoSizeForm(Form: TCustomForm);
 var
-  i, ht: integer;
+  i, ht, w, h: integer;
+  C: TControl;
 begin
   ht:=0;
-  for i:=0 to Form.ControlCount - 1 do
-    with Form.Controls[i] do
-      Inc(ht, Height + BorderSpacing.Top + BorderSpacing.Bottom);
+  for i:=0 to Form.ControlCount - 1 do begin
+    C:=Form.Controls[i];
+    with C do begin
+      if C is TButtonPanel then begin
+        TButtonPanel(C).HandleNeeded;
+        THackControl(C).CalculatePreferredSize(w, h, True);
+      end
+      else
+        h:=Height;
+      Inc(ht, h + BorderSpacing.Top + BorderSpacing.Bottom);
+    end;
+
+  end;
   ht:=ht + 2*Form.BorderWidth;
   Form.ClientHeight:=ht;
   if Form.ClientHeight <> ht then begin
     Form.Constraints.MinHeight:=0;
     Form.ClientHeight:=ht;
     Form.Constraints.MinHeight:=Form.Height;
+  end;
+  if Form.BorderStyle = bsDialog then begin
+    Form.Constraints.MinHeight:=Form.Height;
+    Form.Constraints.MinWidth:=Form.Width;
   end;
 end;
 

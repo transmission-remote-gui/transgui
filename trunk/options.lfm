@@ -1,13 +1,13 @@
 object OptionsForm: TOptionsForm
   Left = 313
-  Height = 338
+  Height = 329
   Top = 230
   Width = 525
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   BorderWidth = 8
   Caption = 'Options'
-  ClientHeight = 338
+  ClientHeight = 329
   ClientWidth = 525
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,16 +15,16 @@ object OptionsForm: TOptionsForm
   LCLVersion = '0.9.28.2'
   object Page: TPageControl
     Left = 8
-    Height = 282
+    Height = 279
     Top = 8
     Width = 509
     ActivePage = tabInterface
-    Align = alTop
+    Align = alClient
     TabIndex = 0
     TabOrder = 0
     object tabInterface: TTabSheet
       Caption = 'Interface'
-      ClientHeight = 256
+      ClientHeight = 253
       ClientWidth = 501
       object txSeconds: TLabel
         Left = 300
@@ -154,9 +154,8 @@ object OptionsForm: TOptionsForm
   object Buttons: TButtonPanel
     Left = 8
     Height = 26
-    Top = 298
+    Top = 295
     Width = 509
-    Align = alTop
     BorderSpacing.Top = 8
     BorderSpacing.Around = 0
     TabOrder = 1

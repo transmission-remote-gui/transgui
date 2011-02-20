@@ -1,47 +1,34 @@
 object AboutForm: TAboutForm
   Left = 417
-  Height = 330
+  Height = 349
   Top = 185
   Width = 451
   HorzScrollBar.Page = 423
   VertScrollBar.Page = 316
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
+  BorderWidth = 8
   Caption = 'About'
-  ClientHeight = 330
+  ClientHeight = 349
   ClientWidth = 451
   Constraints.MinHeight = 330
   Constraints.MinWidth = 350
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '0.9.28.2'
-  object btOK: TButton
-    Left = 371
-    Height = 23
-    Top = 302
-    Width = 75
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    Cancel = True
-    Caption = 'OK'
-    Constraints.MinWidth = 75
-    Default = True
-    ModalResult = 1
-    TabOrder = 0
-  end
   object Page: TPageControl
-    Left = 6
-    Height = 289
+    Left = 8
+    Height = 299
     Top = 8
-    Width = 440
+    Width = 435
     ActivePage = tabAbout
-    Anchors = [akTop, akLeft, akRight, akBottom]
+    Align = alClient
     TabIndex = 0
-    TabOrder = 1
+    TabOrder = 0
     object tabAbout: TTabSheet
       Caption = 'About'
-      ClientHeight = 263
-      ClientWidth = 432
+      ClientHeight = 273
+      ClientWidth = 427
       object imgTransmission: TImage
         Left = 10
         Height = 48
@@ -148,7 +135,7 @@ object AboutForm: TAboutForm
         Cursor = crHandPoint
         Left = 154
         Height = 42
-        Top = 207
+        Top = 217
         Width = 102
         Anchors = [akLeft, akBottom]
         AutoSize = True
@@ -291,7 +278,7 @@ object AboutForm: TAboutForm
         Cursor = crHandPoint
         Left = 10
         Height = 57
-        Top = 192
+        Top = 202
         Width = 125
         Anchors = [akLeft, akBottom]
         AutoSize = True
@@ -499,8 +486,8 @@ object AboutForm: TAboutForm
       object Bevel1: TBevel
         Left = 6
         Height = 7
-        Top = 179
-        Width = 421
+        Top = 189
+        Width = 416
         Anchors = [akLeft, akRight, akBottom]
         Shape = bsTopLine
       end
@@ -597,13 +584,13 @@ object AboutForm: TAboutForm
     end
     object tabLicense: TTabSheet
       Caption = 'License'
-      ClientHeight = 263
-      ClientWidth = 432
+      ClientHeight = 273
+      ClientWidth = 427
       object edLicense: TMemo
         Left = 4
-        Height = 255
+        Height = 265
         Top = 4
-        Width = 424
+        Width = 419
         Align = alClient
         BorderSpacing.Around = 4
         Lines.Strings = (
@@ -953,5 +940,17 @@ object AboutForm: TAboutForm
         WordWrap = False
       end
     end
+  end
+  object Buttons: TButtonPanel
+    Left = 8
+    Height = 26
+    Top = 315
+    Width = 435
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK]
+    ShowBevel = False
   end
 end

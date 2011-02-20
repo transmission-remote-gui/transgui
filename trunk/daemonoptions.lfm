@@ -1,6 +1,6 @@
 object DaemonOptionsForm: TDaemonOptionsForm
   Left = 354
-  Height = 350
+  Height = 349
   Top = 216
   Width = 586
   HorzScrollBar.Page = 409
@@ -10,7 +10,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
   BorderStyle = bsDialog
   BorderWidth = 8
   Caption = 'Transmission options'
-  ClientHeight = 350
+  ClientHeight = 349
   ClientWidth = 586
   Constraints.MinHeight = 340
   Constraints.MinWidth = 400
@@ -19,16 +19,16 @@ object DaemonOptionsForm: TDaemonOptionsForm
   LCLVersion = '0.9.28.2'
   object Page: TPageControl
     Left = 8
-    Height = 298
+    Height = 299
     Top = 8
     Width = 570
-    ActivePage = tabDownload
-    Align = alTop
-    TabIndex = 0
+    ActivePage = tabBandwidth
+    Align = alClient
+    TabIndex = 2
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
-      ClientHeight = 272
+      ClientHeight = 273
       ClientWidth = 562
       object txDownloadDir: TLabel
         Left = 8
@@ -145,7 +145,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object tabNetwork: TTabSheet
       Caption = 'Network'
-      ClientHeight = 272
+      ClientHeight = 273
       ClientWidth = 562
       object txPort: TLabel
         Left = 8
@@ -271,7 +271,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object tabBandwidth: TTabSheet
       Caption = 'Bandwidth'
-      ClientHeight = 272
+      ClientHeight = 273
       ClientWidth = 562
       object gbBandwidth: TGroupBox
         Left = 8
@@ -473,9 +473,8 @@ object DaemonOptionsForm: TDaemonOptionsForm
   object Buttons: TButtonPanel
     Left = 8
     Height = 26
-    Top = 314
+    Top = 315
     Width = 570
-    Align = alTop
     BorderSpacing.Top = 8
     BorderSpacing.Around = 0
     TabOrder = 1

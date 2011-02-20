@@ -1,67 +1,64 @@
 object MoveTorrentForm: TMoveTorrentForm
   Left = 354
-  Height = 107
+  Height = 125
   Top = 193
   Width = 520
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
+  BorderWidth = 8
   Caption = 'Torrent data location'
-  ClientHeight = 107
+  ClientHeight = 125
   ClientWidth = 520
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '0.9.28.2'
-  object txTorrentDir: TLabel
+  object Buttons: TButtonPanel
     Left = 8
-    Height = 14
-    Top = 8
-    Width = 145
-    Caption = 'New location for torrent data:'
-    ParentColor = False
-  end
-  object btOK: TButton
-    Left = 355
-    Height = 23
-    Top = 76
-    Width = 75
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    Caption = 'OK'
-    Constraints.MinWidth = 75
-    Default = True
-    OnClick = btOKClick
-    TabOrder = 2
-  end
-  object btCancel: TButton
-    Left = 437
-    Height = 23
-    Top = 76
-    Width = 75
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    Cancel = True
-    Caption = 'Cancel'
-    Constraints.MinWidth = 75
-    ModalResult = 2
-    TabOrder = 3
-  end
-  object cbMoveData: TCheckBox
-    Left = 8
-    Height = 17
-    Top = 55
-    Width = 285
-    Caption = 'Move torrent data from current location to new location'
-    Checked = True
-    State = cbChecked
-    TabOrder = 1
-  end
-  object edTorrentDir: TComboBox
-    Left = 8
-    Height = 21
-    Top = 28
+    Height = 36
+    Top = 81
     Width = 504
-    Anchors = [akTop, akLeft, akRight]
-    ItemHeight = 13
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+  end
+  object Panel1: TPanel
+    Left = 8
+    Height = 65
+    Top = 8
+    Width = 504
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 65
+    ClientWidth = 504
     TabOrder = 0
+    object txTorrentDir: TLabel
+      Left = 0
+      Height = 14
+      Top = 0
+      Width = 145
+      Caption = 'New location for torrent data:'
+      ParentColor = False
+    end
+    object edTorrentDir: TComboBox
+      Left = 0
+      Height = 21
+      Top = 20
+      Width = 504
+      Anchors = [akTop, akLeft, akRight]
+      ItemHeight = 13
+      TabOrder = 0
+    end
+    object cbMoveData: TCheckBox
+      Left = 0
+      Height = 17
+      Top = 47
+      Width = 285
+      Caption = 'Move torrent data from current location to new location'
+      Checked = True
+      State = cbChecked
+      TabOrder = 1
+    end
   end
 end
