@@ -175,6 +175,7 @@ begin
     end;
   except
     Status:=Exception(ExceptObject).Message;
+    FRpc.RpcThread:=nil;
     NotifyCheckStatus;
   end;
   FRpc.RpcThread:=nil;
