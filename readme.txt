@@ -1,5 +1,5 @@
 Transmission Remote GUI.
-Copyright (c) 2008-2010 by Yury Sidorov.
+Copyright (c) 2008-2011 by Yury Sidorov.
 
 Transmission Remote GUI is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -60,3 +60,7 @@ You can specify path to a .torrent file or a magnet link as a command line param
 
 -hidden : Start the program hidden. Only the program's tray icon will be visible.
 --home=<home_dir> : Specifies a home directory for the program. All program's settings are stored in the home directory. You can run multiple instances of the program by specifying different home directories.
+
+PORTABLE MODE
+
+If the program finds the transgui.ini file in the same folder as the binary file, then it will store all configuration and data files in the program's folder, instead of the folder in a user profile.
