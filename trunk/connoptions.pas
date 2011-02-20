@@ -29,7 +29,7 @@ uses
 resourcestring
   sNoHost = 'No host name specified.';
   sNoProxy = 'No proxy server specified.';
-  SDelConnection = 'Are you sure to delete connection "%s"?';
+  SDelConnection = 'Are you sure to delete connection ''%s''?';
 
 type
 

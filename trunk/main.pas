@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '2.3';
+  AppVersion = '3.0';
 
 resourcestring
   sAll = 'All';
@@ -1329,13 +1329,66 @@ var
       CheckStatus(False);
   end;
 
+  function _GetLevel(const s: string): integer;
+  var
+    p: PChar;
+  begin
+    Result:=0;
+    p:=PChar(s);
+    while p^ <> #0 do begin
+      if p^ in ['/', '\'] then
+        Inc(Result);
+      Inc(p);
+    end
+  end;
+
+  function _AddFolders(list: TVarList; const path: string; var idx: integer; cnt: integer): double;
+  var
+    s, ss: string;
+    j: integer;
+    d: double;
+    p: PChar;
+  begin
+    Result:=0;
+    while idx < cnt do begin
+      s:=ExtractFilePath(UTF8Encode(widestring(list[idxAtFullPath, idx])));
+      if s = '' then begin
+        Inc(idx);
+        continue;
+      end;
+      if (path <> '') and (Pos(path, s) <> 1)  then
+        break;
+      if s = path then begin
+        Result:=Result + list[idxAtSize, idx];
+        Inc(idx);
+      end
+      else begin
+        ss:=Copy(s, Length(path) + 1, MaxInt);
+        p:=PChar(ss);
+        while (p^ <> #0) and not (p^ in ['/','\']) do
+          Inc(p);
+        if p^ <> #0 then begin
+          SetLength(ss, p - PChar(ss) + 1);
+          j:=list.Count;
+          list[idxAtLevel, j]:=_GetLevel(path);
+          list[idxAtFullPath, j]:=UTF8Decode(path + ss);
+          d:=_AddFolders(list, path + ss, idx, cnt);
+          list[idxAtSize, j]:=d;
+          ss:=ExcludeTrailingPathDelimiter(ss);
+          list[idxAtName, j]:=UTF8Decode(ExtractFileName(ss));
+          Result:=Result + d;
+        end;
+      end;
+    end;
+  end;
+
 var
   req, res, args: TJSONObject;
   id: integer;
   t, files: TJSONArray;
   i: integer;
   fs: TFileStream;
-  s, OldDownloadDir, IniSec, path: string;
+  s, ss, OldDownloadDir, IniSec, path: string;
   tt: TDateTime;
   ok: boolean;
 begin
@@ -1356,23 +1409,35 @@ begin
   try
     with TAddTorrentForm.Create(Self) do
     try
+      Width:=Ini.ReadInteger('AddTorrent', 'Width', Width);
+      Height:=Ini.ReadInteger('AddTorrent', 'Height', Height);
+
       IniSec:='AddTorrent.' + FCurConn;
       FillDownloadDirs(cbDestFolder);
-      if cbDestFolder.Text = '' then begin
-        req:=TJSONObject.Create;
-        try
-          req.Add('method', 'session-get');
-          args:=RpcObj.SendRequest(req);
-          if args = nil then begin
-            CheckStatus(False);
-            exit;
-          end;
-          cbDestFolder.Items.Add(UTF8Encode(args.Strings['download-dir']));
-          cbDestFolder.ItemIndex:=0;
-          args.Free;
-        finally
-          req.Free;
+
+      req:=TJSONObject.Create;
+      try
+        req.Add('method', 'session-get');
+        args:=RpcObj.SendRequest(req);
+        if args = nil then begin
+          CheckStatus(False);
+          exit;
         end;
+        s:=UTF8Encode(args.Strings['download-dir']);
+        if cbDestFolder.Items.IndexOf(s) < 0 then begin
+          cbDestFolder.Items.Insert(0, s);
+          cbDestFolder.ItemIndex:=0;
+        end;
+
+        if args.IndexOfName('download-dir-free-space') >= 0 then
+          txDiskSpace.Caption:=txDiskSpace.Caption + ' ' + GetHumanSize(args.Floats['download-dir-free-space'])
+        else begin
+          txDiskSpace.Hide;
+          txSize.Top:=(txSize.Top + txDiskSpace.Top) div 2;
+        end;
+        args.Free;
+      finally
+        req.Free;
       end;
 
       lvFilter.Row:=0;
@@ -1407,13 +1472,25 @@ begin
           s:=UTF8Encode(res.Strings['name']);
           if (path <> '') and (Copy(s, 1, Length(path)) = path) then
             s:=Copy(s, Length(path) + 1, MaxInt);
-          lvFiles.Items[1, i]:=UTF8Decode(s);
-          lvFiles.Items[2, i]:=res.Floats['length'];
-          lvFiles.Items[-1, i]:=i;
+          ss:=ExtractFileName(s);
+          if ss <> s then
+            HasFolders:=True;
+          lvFiles.Items[idxAtName, i]:=UTF8Decode(ss);
+          lvFiles.Items[idxAtSize, i]:=res.Floats['length'];
+          lvFiles.Items[idxAtFullPath, i]:=UTF8Decode(s);
+          lvFiles.Items[idxAtFileID, i]:=i;
+          lvFiles.Items[idxAtLevel, i]:=_GetLevel(s);
         end;
+        lvFiles.Items.Sort(idxAtFullPath);
+        i:=0;
+        _AddFolders(lvFiles.Items, '', i, lvFiles.Items.Count);
+        lvFiles.Items.Sort(idxAtFullPath);
       finally
         args.Free;
       end;
+
+      if not HasFolders then
+        lvFiles.SortColumn:=0;
 
       OldDownloadDir:=cbDestFolder.Text;
       AppNormal;
@@ -1421,8 +1498,11 @@ begin
       ok:=not FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
       if ok then
         btSelectAllClick(nil)
-      else
+      else begin
         ok:=ShowModal = mrOk;
+        Ini.WriteInteger('AddTorrent', 'Width', Width);
+        Ini.WriteInteger('AddTorrent', 'Height', Height);
+      end;
 
       if ok then begin
         AppBusy;
@@ -1451,8 +1531,8 @@ begin
 
           files:=TJSONArray.Create;
           for i:=0 to lvFiles.Items.Count - 1 do
-            if string(lvFiles.Items[0, i]) <> '0' then
-              files.Add(integer(lvFiles.Items[-1, i]));
+            if not VarIsEmpty(lvFiles.Items[idxAtFileID, i]) and (integer(lvFiles.Items[idxAtChecked, i]) = 1) then
+              files.Add(integer(lvFiles.Items[idxAtFileID, i]));
           if files.Count > 0 then
             args.Add('files-wanted', files)
           else
@@ -1460,8 +1540,8 @@ begin
 
           files:=TJSONArray.Create;
           for i:=0 to lvFiles.Items.Count - 1 do
-            if string(lvFiles.Items[0, i]) = '0' then
-              files.Add(integer(lvFiles.Items[-1, i]));
+            if not VarIsEmpty(lvFiles.Items[idxAtFileID, i]) and (integer(lvFiles.Items[idxAtChecked, i]) <> 1) then
+              files.Add(integer(lvFiles.Items[idxAtFileID, i]));
           if files.Count > 0 then
             args.Add('files-unwanted', files)
           else
@@ -3895,7 +3975,7 @@ begin
   if Result = '' then exit;
   d:='/';
   for i:=1 to Length(Result) do
-    if Result[i] in ['/','\',':'] then begin
+    if Result[i] in ['/','\'] then begin
       d:=Result[i];
       break;
     end;
