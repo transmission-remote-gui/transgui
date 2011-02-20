@@ -936,10 +936,6 @@ begin
   FItems.OnDataChanged:=@ItemsChanged;
   ItemsChanged(nil);
   TitleStyle:=tsNative;
-{$ifdef LCLcarbon}
-  if not (csDesigning in ComponentState) then
-    TitleStyle:=tsLazarus;
-{$endif LCLcarbon}
   FAnchor:=-1;
   FSortColumn:=-1;
   ShowHint:=True;
