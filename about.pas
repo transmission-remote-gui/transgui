@@ -24,7 +24,7 @@ unit About;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, ExtCtrls;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, ExtCtrls, ButtonPanel;
 
 type
 
@@ -32,7 +32,7 @@ type
 
   TAboutForm = class(TForm)
     Bevel1: TBevel;
-    btOK: TButton;
+    Buttons: TButtonPanel;
     edLicense: TMemo;
     imgDonate: TImage;
     imgTransmission: TImage;

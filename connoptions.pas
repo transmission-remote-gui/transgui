@@ -74,10 +74,8 @@ type
     procedure cbConnectionSelect(Sender: TObject);
     procedure cbUseProxyClick(Sender: TObject);
     procedure edHostChange(Sender: TObject);
-    procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure tabConnectionShow(Sender: TObject);
     procedure tabPathsShow(Sender: TObject);
   private
     FCurConn: string;
@@ -159,8 +157,6 @@ begin
   edConnection.Text:='';
   Page.ActivePage:=tabConnection;
   ActiveControl:=edHost;
-  ActiveConnection:='';
-  ActiveSettingChanged:=True;
 end;
 
 procedure TConnOptionsForm.btDelClick(Sender: TObject);
@@ -236,11 +232,6 @@ begin
   FCurHost:=edHost.Text;
 end;
 
-procedure TConnOptionsForm.FormActivate(Sender: TObject);
-begin
-  tabConnectionShow(nil);
-end;
-
 procedure TConnOptionsForm.FormCreate(Sender: TObject);
 var
   i, cnt: integer;
@@ -278,11 +269,6 @@ begin
   if cbConnection.ItemIndex < 0 then
     cbConnection.ItemIndex:=0;
   LoadConnSettings(cbConnection.Text);
-end;
-
-procedure TConnOptionsForm.tabConnectionShow(Sender: TObject);
-begin
-  btDel.Height:=cbConnection.Height + 2;
 end;
 
 procedure TConnOptionsForm.tabPathsShow(Sender: TObject);
@@ -366,7 +352,7 @@ begin
       cbConnection.Items.Insert(p, NewName)
     else
       cbConnection.Items.Add(NewName);
-    if FCurConn = ActiveConnection then
+    if (FCurConn = ActiveConnection) or (FCurConn = '') then
       ActiveConnection:=NewName;
     FCurConn:=NewName;
     SaveConnectionsList;

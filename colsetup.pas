@@ -24,18 +24,18 @@ unit ColSetup;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, CheckLst, StdCtrls, VarGrid;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, CheckLst, StdCtrls, ButtonPanel, ExtCtrls, VarGrid;
 
 type
 
   { TColSetupForm }
 
   TColSetupForm = class(TForm)
-    btUp: TButton;
     btDown: TButton;
-    btOk: TButton;
-    btCancel: TButton;
+    btUp: TButton;
+    Buttons: TButtonPanel;
     lstColumns: TCheckListBox;
+    Panel1: TPanel;
     procedure btDownClick(Sender: TObject);
     procedure btOkClick(Sender: TObject);
     procedure btUpClick(Sender: TObject);
@@ -136,6 +136,8 @@ end;
 procedure TColSetupForm.FormCreate(Sender: TObject);
 begin
   Font.Size:=MainForm.Font.Size;
+  Buttons.OKButton.ModalResult:=mrNone;
+  Buttons.OKButton.OnClick:=@btOKClick;
 end;
 
 procedure TColSetupForm.lstColumnsClick(Sender: TObject);

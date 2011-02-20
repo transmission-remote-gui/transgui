@@ -24,7 +24,7 @@ unit AddLink;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ButtonPanel, ExtCtrls;
 
 resourcestring
   SNoLink = 'No link was specified.';
@@ -34,9 +34,9 @@ type
   { TAddLinkForm }
 
   TAddLinkForm = class(TForm)
-    btCancel: TButton;
-    btOK: TButton;
+    Buttons: TButtonPanel;
     edLink: TEdit;
+    Panel1: TPanel;
     txLink: TLabel;
     procedure btOKClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -66,6 +66,9 @@ end;
 procedure TAddLinkForm.FormCreate(Sender: TObject);
 begin
   Font.Size:=MainForm.Font.Size;
+  Buttons.OKButton.ModalResult:=mrNone;
+  Buttons.OKButton.OnClick:=@btOKClick;
+  AutoSizeForm(Self);
 end;
 
 initialization

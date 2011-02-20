@@ -1,79 +1,76 @@
 object ColSetupForm: TColSetupForm
   Left = 404
-  Height = 269
+  Height = 326
   Top = 194
-  Width = 295
+  Width = 355
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
+  BorderWidth = 8
   Caption = 'Columns setup'
-  ClientHeight = 269
-  ClientWidth = 295
+  ClientHeight = 326
+  ClientWidth = 355
   Constraints.MinHeight = 200
   Constraints.MinWidth = 260
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '0.9.28.2'
-  object lstColumns: TCheckListBox
+  object Buttons: TButtonPanel
     Left = 8
-    Height = 251
-    Top = 8
-    Width = 198
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    ItemHeight = 0
-    OnClick = lstColumnsClick
-    OnClickCheck = lstColumnsClickCheck
-    TabOrder = 0
-  end
-  object btUp: TButton
-    Left = 214
-    Height = 23
-    Top = 8
-    Width = 75
-    Anchors = [akTop, akRight]
-    AutoSize = True
-    Caption = 'Up'
-    Constraints.MinWidth = 75
-    OnClick = btUpClick
+    Height = 36
+    Top = 282
+    Width = 339
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
     TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
   end
-  object btDown: TButton
-    Left = 214
-    Height = 23
-    Top = 36
-    Width = 75
-    Anchors = [akTop, akRight]
-    AutoSize = True
-    Caption = 'Down'
-    Constraints.MinWidth = 75
-    OnClick = btDownClick
-    TabOrder = 2
-  end
-  object btOk: TButton
-    Left = 214
-    Height = 23
-    Top = 208
-    Width = 75
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    Caption = 'OK'
-    Constraints.MinWidth = 75
-    Default = True
-    OnClick = btOkClick
-    TabOrder = 3
-  end
-  object btCancel: TButton
-    Left = 214
-    Height = 23
-    Top = 236
-    Width = 75
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    Cancel = True
-    Caption = 'Cancel'
-    Constraints.MinWidth = 75
-    ModalResult = 2
-    TabOrder = 4
+  object Panel1: TPanel
+    Left = 8
+    Height = 266
+    Top = 8
+    Width = 339
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 266
+    ClientWidth = 339
+    TabOrder = 0
+    object lstColumns: TCheckListBox
+      Left = 0
+      Height = 266
+      Top = 0
+      Width = 256
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      ItemHeight = 0
+      OnClick = lstColumnsClick
+      OnClickCheck = lstColumnsClickCheck
+      TabOrder = 0
+    end
+    object btUp: TButton
+      Left = 265
+      Height = 23
+      Top = 0
+      Width = 75
+      Anchors = [akTop, akRight]
+      AutoSize = True
+      Caption = 'Up'
+      Constraints.MinWidth = 75
+      OnClick = btUpClick
+      TabOrder = 1
+    end
+    object btDown: TButton
+      Left = 265
+      Height = 23
+      Top = 28
+      Width = 75
+      Anchors = [akTop, akRight]
+      AutoSize = True
+      Caption = 'Down'
+      Constraints.MinWidth = 75
+      OnClick = btDownClick
+      TabOrder = 2
+    end
   end
 end

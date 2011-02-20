@@ -24,7 +24,7 @@ unit MoveTorrent;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ButtonPanel, ExtCtrls;
 
 resourcestring
   SNoTorrentDir = 'No torrent location was specified.';
@@ -34,10 +34,10 @@ type
   { TMoveTorrentForm }
 
   TMoveTorrentForm = class(TForm)
-    btCancel: TButton;
-    btOK: TButton;
+    Buttons: TButtonPanel;
     cbMoveData: TCheckBox;
     edTorrentDir: TComboBox;
+    Panel1: TPanel;
     txTorrentDir: TLabel;
     procedure btOKClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -67,6 +67,9 @@ end;
 procedure TMoveTorrentForm.FormCreate(Sender: TObject);
 begin
   Font.Size:=MainForm.Font.Size;
+  Buttons.OKButton.ModalResult:=mrNone;
+  Buttons.OKButton.OnClick:=@btOKClick;
+  AutoSizeForm(Self);
 end;
 
 initialization

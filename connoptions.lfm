@@ -1,6 +1,6 @@
 object ConnOptionsForm: TConnOptionsForm
   Left = 401
-  Height = 282
+  Height = 294
   Top = 186
   Width = 471
   HorzScrollBar.Page = 349
@@ -9,29 +9,27 @@ object ConnOptionsForm: TConnOptionsForm
   BorderStyle = bsDialog
   BorderWidth = 8
   Caption = 'Connection options'
-  ClientHeight = 282
+  ClientHeight = 294
   ClientWidth = 471
   Constraints.MinHeight = 280
   Constraints.MinWidth = 471
-  OnActivate = FormActivate
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '0.9.28.2'
   object Page: TPageControl
     Left = 8
-    Height = 180
+    Height = 188
     Top = 64
     Width = 455
     ActivePage = tabPaths
-    Align = alTop
+    Align = alClient
     TabIndex = 2
     TabOrder = 1
     object tabConnection: TTabSheet
       Caption = 'Connection'
-      ClientHeight = 154
+      ClientHeight = 162
       ClientWidth = 447
-      OnShow = tabConnectionShow
       object txPassword: TLabel
         Left = 8
         Height = 14
@@ -112,7 +110,7 @@ object ConnOptionsForm: TConnOptionsForm
     end
     object tabProxy: TTabSheet
       Caption = 'Proxy'
-      ClientHeight = 154
+      ClientHeight = 162
       ClientWidth = 447
       object txProxy: TLabel
         Left = 8
@@ -194,7 +192,7 @@ object ConnOptionsForm: TConnOptionsForm
     end
     object tabPaths: TTabSheet
       Caption = 'Paths'
-      ClientHeight = 154
+      ClientHeight = 162
       ClientWidth = 447
       OnShow = tabPathsShow
       object txPaths: TLabel
@@ -209,7 +207,7 @@ object ConnOptionsForm: TConnOptionsForm
       end
       object edPaths: TMemo
         Left = 8
-        Height = 60
+        Height = 68
         Top = 82
         Width = 430
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -221,9 +219,8 @@ object ConnOptionsForm: TConnOptionsForm
   object Buttons: TButtonPanel
     Left = 8
     Height = 26
-    Top = 252
+    Top = 260
     Width = 455
-    Align = alTop
     BorderSpacing.Top = 8
     BorderSpacing.Around = 0
     TabOrder = 2

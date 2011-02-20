@@ -1,56 +1,54 @@
 object AddLinkForm: TAddLinkForm
   Left = 354
-  Height = 90
+  Height = 91
   Top = 193
-  Width = 520
+  Width = 574
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
+  BorderWidth = 8
   Caption = 'Add torrent link'
-  ClientHeight = 90
-  ClientWidth = 520
+  ClientHeight = 91
+  ClientWidth = 574
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '0.9.28.2'
-  object txLink: TLabel
+  object Buttons: TButtonPanel
     Left = 8
-    Height = 14
-    Top = 8
-    Width = 183
-    Caption = 'URL of a .torrent file or a magnet link:'
-    ParentColor = False
-  end
-  object btOK: TButton
-    Left = 355
-    Height = 23
-    Top = 59
-    Width = 75
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    Caption = 'OK'
-    Constraints.MinWidth = 75
-    Default = True
-    OnClick = btOKClick
+    Height = 26
+    Top = 57
+    Width = 558
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
     TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
   end
-  object btCancel: TButton
-    Left = 437
-    Height = 23
-    Top = 59
-    Width = 75
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    Cancel = True
-    Caption = 'Cancel'
-    Constraints.MinWidth = 75
-    ModalResult = 2
-    TabOrder = 2
-  end
-  object edLink: TEdit
+  object Panel1: TPanel
     Left = 8
-    Height = 21
-    Top = 28
-    Width = 504
-    Anchors = [akTop, akLeft, akRight]
+    Height = 41
+    Top = 8
+    Width = 558
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 41
+    ClientWidth = 558
     TabOrder = 0
+    object txLink: TLabel
+      Left = 0
+      Height = 14
+      Top = 0
+      Width = 183
+      Caption = 'URL of a .torrent file or a magnet link:'
+      ParentColor = False
+    end
+    object edLink: TEdit
+      Left = 0
+      Height = 21
+      Top = 20
+      Width = 558
+      Anchors = [akTop, akLeft, akRight]
+      TabOrder = 0
+    end
   end
 end
