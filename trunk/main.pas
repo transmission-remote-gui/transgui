@@ -4397,7 +4397,7 @@ begin
       args.Add('ids', ids);
     end;
     req.Add('arguments', args);
-    args:=RpcObj.SendRequest(req, False);
+    args:=RpcObj.SendRequest(req, False, 30000);
     Result:=args <> nil;
     args.Free;
   finally
