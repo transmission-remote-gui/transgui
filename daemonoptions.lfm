@@ -22,9 +22,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Height = 299
     Top = 8
     Width = 570
-    ActivePage = tabBandwidth
+    ActivePage = tabNetwork
     Align = alClient
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
@@ -253,10 +253,10 @@ object DaemonOptionsForm: TDaemonOptionsForm
         TabOrder = 9
       end
       object edBlocklistURL: TEdit
-        Left = 192
+        Left = 8
         Height = 21
-        Top = 191
-        Width = 362
+        Top = 216
+        Width = 546
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 10
       end
