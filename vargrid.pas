@@ -29,14 +29,22 @@ uses
 type
   TVarGrid = class;
 
+  TCellOption = (coDrawCheckBox, coDrawTreeButton);
+  TCellOptions = set of TCellOption;
+
   TCellAttributes = record
     Text: string;
     ImageIndex: integer;
+    Indent: integer;
+    Options: TCellOptions;
+    State: TCheckBoxState;
+    Expanded: boolean;
   end;
 
   TOnCellAttributes = procedure (Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes) of object;
   TOnDrawCellEvent = procedure (Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean) of object;
   TOnSortColumnEvent = procedure (Sender: TVarGrid; var ASortCol: integer) of object;
+  TCellNotifyEvent = procedure (Sender: TVarGrid; ACol, ARow, ADataCol: integer) of object;
 
   { TVarGrid }
 
@@ -49,7 +57,9 @@ type
     FColumnsMap: array of integer;
     FMultiSelect: boolean;
     FOnCellAttributes: TOnCellAttributes;
+    FOnCheckBoxClick: TCellNotifyEvent;
     FOnDrawCell: TOnDrawCellEvent;
+    FOnTreeButtonClick: TCellNotifyEvent;
     FSelCount: integer;
     FAnchor: integer;
     FSortColumn: integer;
@@ -59,11 +69,13 @@ type
 
     function GetRow: integer;
     function GetRowSelected(RowIndex: integer): boolean;
+    function GetRowVisible(RowIndex: integer): boolean;
     function GetSortOrder: TSortOrder;
     procedure ItemsChanged(Sender: TObject);
     procedure SetHideSelection(const AValue: boolean);
     procedure SetRow(const AValue: integer);
     procedure SetRowSelected(RowIndex: integer; const AValue: boolean);
+    procedure SetRowVisible(RowIndex: integer; const AValue: boolean);
     procedure SetSortColumn(const AValue: integer);
     procedure SetSortOrder(const AValue: TSortOrder);
     procedure UpdateColumnsMap;
@@ -91,6 +103,8 @@ type
     procedure GetCheckBoxState(const aCol, aRow:Integer; var aState:TCheckboxState); override;
     procedure SetCheckboxState(const aCol, aRow:Integer; const aState: TCheckboxState); override;
     procedure SetupCell(ACol, ARow: integer; AState: TGridDrawState; out CellAttribs: TCellAttributes);
+    procedure DoOnCheckBoxClick(ACol, ARow: integer);
+    procedure DoOnTreeButtonClick(ACol, ARow: integer);
 
   public
     constructor Create(AOwner: TComponent); override;
@@ -102,6 +116,7 @@ type
 
     property Items: TVarList read FItems;
     property RowSelected[RowIndex: integer]: boolean read GetRowSelected write SetRowSelected;
+    property RowVisible[RowIndex: integer]: boolean read GetRowVisible write SetRowVisible;
     property SelCount: integer read FSelCount;
     property Row: integer read GetRow write SetRow;
   published
@@ -169,13 +184,16 @@ type
     property OnCellAttributes: TOnCellAttributes read FOnCellAttributes write FOnCellAttributes;
     property OnDrawCell: TOnDrawCellEvent read FOnDrawCell write FOnDrawCell;
     property OnSortColumn: TOnSortColumnEvent read FOnSortColumn write FOnSortColumn;
+    property OnCheckBoxClick: TCellNotifyEvent read FOnCheckBoxClick write FOnCheckBoxClick;
+    property OnTreeButtonClick: TCellNotifyEvent read FOnTreeButtonClick write FOnTreeButtonClick;
   end;
 
 procedure Register;
 
 implementation
 
-uses Variants, LCLType, Math, GraphType, lclintf {$ifdef LCLcarbon} , carbonproc {$endif LCLcarbon};
+uses Variants, LCLType, Math, GraphType, lclintf, Themes, types
+     {$ifdef LCLcarbon} , carbonproc {$endif LCLcarbon};
 
 const
   roSelected = 1;
@@ -250,6 +268,11 @@ begin
   Result:=LongBool(FItems.RowOptions[RowIndex] and roSelected);
 end;
 
+function TVarGrid.GetRowVisible(RowIndex: integer): boolean;
+begin
+  Result:=RowHeights[RowIndex + FixedRows] > 0;
+end;
+
 function TVarGrid.GetSortOrder: TSortOrder;
 begin
   Result:=inherited SortOrder;
@@ -283,6 +306,14 @@ begin
   InvalidateRow(RowIndex + FixedRows);
   if FSelCount <= 1 then
     InvalidateRow(inherited Row);
+end;
+
+procedure TVarGrid.SetRowVisible(RowIndex: integer; const AValue: boolean);
+begin
+  if AValue then
+    RowHeights[RowIndex + FixedRows]:=DefaultRowHeight
+  else
+    RowHeights[RowIndex + FixedRows]:=0;
 end;
 
 procedure TVarGrid.SetSortColumn(const AValue: integer);
@@ -366,6 +397,11 @@ begin
         SetupCell(pt.x, pt.y, [], ca);
         if ca.Text <> '' then begin
           wd:=Canvas.TextWidth(ca.Text);
+          Inc(R.Left, ca.Indent);
+          if coDrawTreeButton in ca.Options then
+            Inc(R.Left, R.Bottom - R.Top);
+          if coDrawCheckBox in ca.Options then
+            Inc(R.Left, R.Bottom - R.Top);
           if (ca.ImageIndex <> -1) and Assigned(FImages) then
             Inc(R.Left, FImages.Width + 2);
           if (R.Right <= R.Left) or (R.Right - R.Left < wd + 5) then begin
@@ -421,7 +457,12 @@ var
   ts: TTextStyle;
   dd, IsHeader: boolean;
   R: TRect;
+  det: TThemedElementDetails;
+  sz: TSize;
+  i: integer;
 begin
+  if RowHeights[aRow] = 0 then
+    exit;
   IsHeader:=(gdFixed in aState) and (aRow=0) and (aCol>=FirstGridColumn);
   if not IsHeader and MultiSelect and (FSelCount > 0) then
     if (aRow >= FixedRows) and (aCol >= FixedCols) and RowSelected[aRow - FixedRows] then
@@ -450,6 +491,54 @@ begin
       if CellNeedsCheckboxBitmaps(aCol,aRow) then
         DrawCellCheckboxBitmaps(aCol,aRow,aRect)
       else begin
+        Inc(aRect.Left, ca.Indent);
+        if coDrawTreeButton in ca.Options then begin
+          R:=aRect;
+          R.Right:=R.Left + (R.Bottom - R.Top);
+          aRect.Left:=R.Right;
+          if ThemeServices.ThemesEnabled then begin
+            if ca.Expanded then
+              det:=ThemeServices.GetElementDetails(ttGlyphOpened)
+            else
+              det:=ThemeServices.GetElementDetails(ttGlyphClosed);
+            sz:=ThemeServices.GetDetailSize(det);
+            with R do begin
+              Left:=(Left + Right - sz.cx) div 2;
+              Top:=(Top + Bottom - sz.cy) div 2;
+              R:=Bounds(Left, Top, sz.cx, sz.cy);
+            end;
+            ThemeServices.DrawElement(Canvas.Handle, det, R, nil);
+          end
+          else
+            with Canvas do begin
+              i:=(R.Bottom - R.Top) div 4;
+              InflateRect(R, -i, -i);
+              if (R.Right - R.Left) and 1 = 0 then
+                Dec(R.Right);
+              if (R.Bottom - R.Top) and 1 = 0 then
+                Dec(R.Bottom);
+              Pen.Color:=clWindowText;
+              Rectangle(R);
+              InflateRect(R, -1, -1);
+              Brush.Color:=clWindow;
+              FillRect(R);
+              InflateRect(R, -1, -1);
+              i:=(R.Top + R.Bottom) div 2;
+              MoveTo(R.Left, i);
+              LineTo(R.Right, i);
+              if not ca.Expanded then begin
+                i:=(R.Left + R.Right) div 2;
+                MoveTo(i, R.Top);
+                LineTo(i, R.Bottom);
+              end;
+            end;
+        end;
+        if coDrawCheckBox in ca.Options then begin
+          R:=aRect;
+          R.Right:=R.Left + (R.Bottom - R.Top);
+          aRect.Left:=R.Right;
+          DrawGridCheckboxBitmaps(R, ca.State);
+        end;
         if (ca.ImageIndex <> -1) and Assigned(FImages) then begin
           FImages.Draw(Canvas, aRect.Left + 2, (aRect.Bottom + aRect.Top - FImages.Height) div 2, ca.ImageIndex, gdeNormal);
           Inc(aRect.Left, FImages.Width + 2);
@@ -497,14 +586,44 @@ end;
 procedure TVarGrid.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   pt: TPoint;
-  IsCtrl: boolean;
+  IsCtrl, CheckBoxClicked: boolean;
+  ca: TCellAttributes;
+  R, RR: TRect;
 begin
 {$ifdef LCLcarbon}
   IsCtrl:=ssMeta in GetCarbonShiftState;
 {$else}
   IsCtrl:=ssCtrl in Shift;
 {$endif LCLcarbon}
+  CheckBoxClicked:=False;
   pt:=MouseToCell(Point(X,Y));
+  if ssLeft in Shift then begin
+    SetupCell(pt.x, pt.y, [], ca);
+    RR:=CellRect(pt.x, pt.y);
+    Inc(RR.Left, ca.Indent);
+    if (RR.Left <= RR.Right) and (coDrawTreeButton in ca.Options) then begin
+      R:=RR;
+      R.Right:=R.Left + (R.Bottom - R.Top);
+      if R.Right > RR.Right then
+        R.Right:=RR.Right;
+      if PtInRect(R, Point(X,Y)) then begin
+        DoOnTreeButtonClick(pt.x, pt.y);
+        InvalidateCell(pt.x, pt.y);
+      end;
+      Inc(RR.Left, RR.Bottom - RR.Top);
+    end;
+    if (RR.Left <= RR.Right) and (coDrawCheckBox in ca.Options) then begin
+      R:=RR;
+      R.Right:=R.Left + (R.Bottom - R.Top);
+      if R.Right > RR.Right then
+        R.Right:=RR.Right;
+      if PtInRect(R, Point(X,Y)) then begin
+        DoOnCheckBoxClick(pt.x, pt.y);
+        InvalidateCell(pt.x, pt.y);
+        CheckBoxClicked:=True;
+      end;
+    end;
+  end;
   if (ssRight in Shift) {$ifdef darwin} or (Shift*[ssLeft, ssCtrl] = [ssLeft, ssCtrl]) {$endif} then begin
     SetFocus;
     if (pt.x >= FixedCols) and (pt.y >= FixedRows) then begin
@@ -525,7 +644,7 @@ begin
         if ssShift in Shift then
           SelectRange(Row, pt.y - FixedRows)
         else begin
-          if SelCount > 0 then
+          if (SelCount > 0) and not CheckBoxClicked then
             RemoveSelection;
           FAnchor:=-1;
         end;
@@ -548,12 +667,36 @@ end;
 procedure TVarGrid.KeyDown(var Key: Word; Shift: TShiftState);
 var
   r, k: integer;
+  ca: TCellAttributes;
 begin
   r:=Row;
   k:=Key;
   if goRowSelect in Options then
     Col:=FixedCols;
+
+  if (Shift = []) and ( (k = VK_SPACE) or (k = VK_LEFT) or (k = VK_RIGHT) or (k = VK_ADD) or (k = VK_SUBTRACT) ) then begin
+    SetupCell(FixedCols, inherited Row, [], ca);
+    case k of
+      VK_SPACE:
+        if coDrawCheckBox in ca.Options then begin
+          DoOnCheckBoxClick(FixedCols, inherited Row);
+          exit;
+        end;
+      VK_LEFT, VK_SUBTRACT:
+        if (coDrawTreeButton in ca.Options) and ca.Expanded then begin
+          DoOnTreeButtonClick(FixedCols, inherited Row);
+          exit;
+        end;
+      VK_RIGHT, VK_ADD:
+        if (coDrawTreeButton in ca.Options) and not ca.Expanded then begin
+          DoOnTreeButtonClick(FixedCols, inherited Row);
+          exit;
+        end;
+    end;
+  end;
+
   inherited KeyDown(Key, Shift);
+
   if MultiSelect then begin
     if ssCtrl in Shift then begin
       if k = VK_SPACE then
@@ -603,17 +746,25 @@ end;
 
 procedure TVarGrid.AutoAdjustColumn(aCol: Integer);
 var
-  i, j, wd: integer;
+  i, j, wd, h: integer;
   ca: TCellAttributes;
 begin
   wd:=4;
   for i:=0 to FItems.Count - 1 do begin
-    SetupCell(aCol, i, [], ca);
-    j:=Canvas.TextWidth(ca.Text) + 6;
-    if (ca.ImageIndex <> -1) and Assigned(FImages) then
-      Inc(j, FImages.Width + 2);
-    if j > wd then
-      wd:=j;
+    h:=RowHeights[i + FixedRows];
+    if h > 0 then begin
+      SetupCell(aCol, i, [], ca);
+      j:=Canvas.TextWidth(ca.Text) + 6;
+      Inc(j, ca.Indent);
+      if coDrawTreeButton in ca.Options then
+        Inc(j, h);
+      if coDrawCheckBox in ca.Options then
+        Inc(j, h);
+      if (ca.ImageIndex <> -1) and Assigned(FImages) then
+        Inc(j, FImages.Width + 2);
+      if j > wd then
+        wd:=j;
+    end;
   end;
   ColumnFromGridColumn(aCol).Width:=wd;
 end;
@@ -722,6 +873,10 @@ begin
   if (ACol < 0) or (ARow < 0) then
     exit;
   CellAttribs.ImageIndex:=-1;
+  CellAttribs.Indent:=0;
+  CellAttribs.Options:=[];
+  CellAttribs.State:=cbUnchecked;
+  CellAttribs.Expanded:=True;
   if ACol >= FixedCols then begin
     dc:=ColToDataCol(ACol);
     if ARow >= FixedRows then begin
@@ -737,6 +892,35 @@ begin
   else
     dc:=-1;
   DoOnCellAttributes(ACol - FixedCols, ARow - FixedRows, dc, AState, CellAttribs);
+end;
+
+procedure TVarGrid.DoOnCheckBoxClick(ACol, ARow: integer);
+var
+  i, dc, c: integer;
+  ca: TCellAttributes;
+  st: TCheckBoxState;
+begin
+  if Assigned(FOnCheckBoxClick) then begin
+    dc:=ColToDataCol(ACol);
+    c:=ACol - FixedCols;
+    FOnCheckBoxClick(Self, c, ARow - FixedRows, dc);
+    if (SelCount > 0) and RowSelected[ARow - FixedRows] then begin
+      SetupCell(ACol, ARow, [], ca);
+      st:=ca.State;
+      for i:=0 to Items.Count - 1 do
+        if RowSelected[i] then begin
+          SetupCell(ACol, i + FixedRows, [], ca);
+          if (coDrawCheckBox in ca.Options) and (ca.State <> st) then
+            FOnCheckBoxClick(Self, c, i, dc);
+        end;
+    end;
+  end;
+end;
+
+procedure TVarGrid.DoOnTreeButtonClick(ACol, ARow: integer);
+begin
+  if Assigned(FOnTreeButtonClick) then
+    FOnTreeButtonClick(Self, ACol - FixedCols, ARow - FixedRows, ColToDataCol(ACol));
 end;
 
 constructor TVarGrid.Create(AOwner: TComponent);
