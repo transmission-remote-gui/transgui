@@ -1924,7 +1924,7 @@ end;
 procedure TMainForm.DoRefresh(All: boolean);
 begin
   if All then
-    RpcObj.RefreshNow:=[rtTorrents, rtDetails]
+    RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtTorrents, rtDetails]
   else
     RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtDetails];
 end;
