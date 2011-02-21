@@ -26,6 +26,9 @@ interface
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ComCtrls, Buttons, ButtonPanel, ExtCtrls;
 
+const
+  DefSpeeds = '0,10,25,50,100,250,500,750,1000,2500,5000,7000';
+
 resourcestring
   sNoHost = 'No host name specified.';
   sNoProxy = 'No proxy server specified.';
@@ -41,9 +44,11 @@ type
     btRename: TButton;
     Buttons: TButtonPanel;
     cbUseProxy: TCheckBox;
+    edUpSpeeds: TEdit;
     edHost: TEdit;
     cbSSL: TCheckBox;
     cbConnection: TComboBox;
+    edDownSpeeds: TEdit;
     edProxy: TEdit;
     edProxyPassword: TEdit;
     edProxyPort: TSpinEdit;
@@ -51,9 +56,13 @@ type
     edUserName: TEdit;
     edPassword: TEdit;
     edPaths: TMemo;
+    gbSpeed: TGroupBox;
     Label1: TLabel;
+    txDownSpeeds: TLabel;
     panTop: TPanel;
     tabProxy: TTabSheet;
+    tabMisc: TTabSheet;
+    txUpSpeeds: TLabel;
     txPaths: TLabel;
     tabPaths: TTabSheet;
     Page: TPageControl;
@@ -413,6 +422,8 @@ begin
     else
       edProxyPassword.Text:='';
     edPaths.Text:=StringReplace(ReadString(Sec, 'PathMap', ''), '|', LineEnding, [rfReplaceAll]);
+    edDownSpeeds.Text:=ReadString(Sec, 'DownSpeeds', DefSpeeds);
+    edUpSpeeds.Text:=ReadString(Sec, 'UpSpeeds', DefSpeeds);
     cbUseProxyClick(nil);
   end;
   FCurConn:=ConnName;
@@ -456,6 +467,8 @@ begin
       WriteString(Sec, 'ProxyPass', s);
     end;
     WriteString(Sec, 'PathMap', StringReplace(edPaths.Text, LineEnding, '|', [rfReplaceAll]));
+    WriteString(Sec, 'DownSpeeds', Trim(edDownSpeeds.Text));
+    WriteString(Sec, 'UpSpeeds', Trim(edUpSpeeds.Text));
 
     i:=cbConnection.Items.IndexOf(ConnName);
     if i < 0 then
@@ -482,7 +495,11 @@ begin
             (edProxyPort.Value <> ReadInteger(Sec, 'ProxyPort', 8080)) or
             (edProxyUserName.Text <> ReadString(Sec, 'ProxyUser', '')) or
             ((ReadString(Sec, 'ProxyPass', '') = '') and (edProxyPassword.Text <> '')) or
-            ((ReadString(Sec, 'ProxyPass', '') <> '') and (edProxyPassword.Text <> '******'));
+            ((ReadString(Sec, 'ProxyPass', '') <> '') and (edProxyPassword.Text <> '******')) or
+            (edPaths.Text <> StringReplace(ReadString(Sec, 'PathMap', ''), '|', LineEnding, [rfReplaceAll])) or
+            (edDownSpeeds.Text <> ReadString(Sec, 'DownSpeeds', '')) or
+            (edUpSpeeds.Text <> ReadString(Sec, 'UpSpeeds', ''))
+            ;
   end;
 end;
 
