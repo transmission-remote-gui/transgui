@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Українська
+TranslationLanguage=Українська
 
 %dd, %dh=%dд, %dг
 %dh, %dm=%dг, %dхв
@@ -264,7 +264,6 @@ Enable Local Peer Discovery=Enable Local Peer Discovery
 Free disk space=Free disk space
 Free: %s=Free: %s
 From=From
-Invalid info_hash=Invalid info_hash
 minutes=minutes
 Misc=Misc
 New connection=New connection
@@ -280,7 +279,6 @@ The blocklist URL was not specified=The blocklist URL was not specified
 The invalid time value was entered=The invalid time value was entered
 to=to
 Tracker announce URL=Tracker announce URL
-Tracker gave HTTP response code 404 (Not Found)=Tracker gave HTTP response code 404 (Not Found)
 Tracker properties=Tracker properties
 Unlimited=Unlimited
 Upload speeds (KB/s)=Upload speeds (KB/s)

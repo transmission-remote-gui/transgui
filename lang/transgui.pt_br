@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Portugues do Brasil
+TranslationLanguage=Portugues do Brasil
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapeamentos de caminho  remoto para local. Examplo:~/share=\\pch\share~/var/downloads/musicas=Z:\musicas"
 %d x %s (have %d)=%d x %s (have %d)
@@ -265,7 +265,6 @@ Enable Local Peer Discovery=Enable Local Peer Discovery
 Free disk space=Free disk space
 Free: %s=Free: %s
 From=From
-Invalid info_hash=Invalid info_hash
 minutes=minutes
 Misc=Misc
 New connection=New connection
@@ -281,7 +280,6 @@ The blocklist URL was not specified=The blocklist URL was not specified
 The invalid time value was entered=The invalid time value was entered
 to=to
 Tracker announce URL=Tracker announce URL
-Tracker gave HTTP response code 404 (Not Found)=Tracker gave HTTP response code 404 (Not Found)
 Tracker properties=Tracker properties
 Unlimited=Unlimited
 Upload speeds (KB/s)=Upload speeds (KB/s)
