@@ -97,6 +97,7 @@ resourcestring
   sUnableToExecute = 'Unable to execute "%s".';
   sSSLLoadError = 'Unable to load OpenSSL library files: %s and %s';
   SRemoveTracker = 'Are you sure to remove tracker ''%s''?';
+  SUnlimited = 'Unlimited';
 
 type
 
@@ -162,6 +163,12 @@ type
     MenuItem68: TMenuItem;
     MenuItem69: TMenuItem;
     MenuItem70: TMenuItem;
+    MenuItem72: TMenuItem;
+    MenuItem76: TMenuItem;
+    pmiUpSpeedLimit: TMenuItem;
+    pmiDownSpeedLimit: TMenuItem;
+    pmDownSpeeds: TPopupMenu;
+    pmUpSpeeds: TPopupMenu;
     sepCon2: TMenuItem;
     MenuItem71: TMenuItem;
     sepCon1: TMenuItem;
@@ -412,6 +419,7 @@ type
     procedure panReconnectResize(Sender: TObject);
     procedure pbDownloadedPaint(Sender: TObject);
     procedure pbDownloadedResize(Sender: TObject);
+    procedure StatusBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure TickTimerTimer(Sender: TObject);
     procedure FilterTimerTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -448,6 +456,8 @@ type
     FFilterChanged: boolean;
     FStatusBmp: TBitmap;
     FStatusImgIndex: integer;
+    FCurDownSpeedLimit: integer;
+    FCurUpSpeedLimit: integer;
 
     procedure DoConnect;
     procedure DoDisconnect;
@@ -490,6 +500,10 @@ type
     procedure AddTracker(EditMode: boolean);
     procedure UpdateConnections;
     procedure DoConnectToHost(Sender: TObject);
+    procedure FillSpeedsMenu;
+    procedure DoSetDownloadSpeed(Sender: TObject);
+    procedure DoSetUploadSpeed(Sender: TObject);
+    procedure SetSpeedLimit(const Dir: string; Speed: integer);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -2886,6 +2900,19 @@ begin
   ProcessPieces(FLastPieces, FLastPieceCount, FLastDone);
 end;
 
+procedure TMainForm.StatusBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  pt: TPoint;
+begin
+  if (Button = mbRight) and RpcObj.Connected then begin
+    pt:=StatusBar.ClientToScreen(Point(X, Y));
+    case StatusBar.GetPanelIndexAt(X, Y) of
+      1: pmDownSpeeds.PopUp(pt.X, pt.Y);
+      2: pmUpSpeeds.PopUp(pt.X, pt.Y);
+    end;
+  end;
+end;
+
 {$ifdef LCLcarbon}
 type
   THackApplication = class(TApplication)
@@ -3192,6 +3219,9 @@ begin
   FilterTimer.Enabled:=False;
   pmConnections.Items[0].Checked:=False;
   miConnect.Items[0].Checked:=False;
+  FCurDownSpeedLimit:=-2;
+  FCurUpSpeedLimit:=-2;
+  FillSpeedsMenu;
 end;
 
 procedure TMainForm.ClearDetailsInfo;
@@ -3263,6 +3293,8 @@ begin
   acEditTracker.Enabled:=acAddTracker.Enabled and (lvTrackers.Items.Count > 0);
   acDelTracker.Enabled:=acEditTracker.Enabled;
   acAltSpeed.Enabled:=e and (RpcObj.RPCVersion >= 5);
+  pmiDownSpeedLimit.Enabled:=RpcObj.Connected;
+  pmiUpSpeedLimit.Enabled:=RpcObj.Connected;
 end;
 
 procedure TMainForm.ShowConnOptions(NewConnection: boolean);
@@ -4375,6 +4407,8 @@ begin
 end;
 
 procedure TMainForm.FillSessionInfo(s: TJSONObject);
+var
+  d, u: integer;
 begin
   acRemoveTorrentAndData.Visible:=RpcObj.RPCVersion >= 4;
   acReannounceTorrent.Visible:=RpcObj.RPCVersion >= 5;
@@ -4396,6 +4430,26 @@ begin
   end;
   if s.IndexOfName('download-dir-free-space') >= 0 then
     StatusBar.Panels[3].Text:=Format(SFreeSpace, [GetHumanSize(s.Floats['download-dir-free-space'])]);
+
+  if (RpcObj.RPCVersion >= 5) and acAltSpeed.Checked then begin
+    d:=s.Integers['alt-speed-down'];
+    u:=s.Integers['alt-speed-up']
+  end
+  else begin
+    if s.Integers['speed-limit-down-enabled'] <> 0 then
+      d:=s.Integers['speed-limit-down']
+    else
+      d:=-1;
+    if s.Integers['speed-limit-up-enabled'] <> 0 then
+      u:=s.Integers['speed-limit-up']
+    else
+      u:=-1;
+  end;
+  if (FCurDownSpeedLimit <> d) or (FCurUpSpeedLimit <> u) then begin
+    FCurDownSpeedLimit:=d;
+    FCurUpSpeedLimit:=u;
+    FillSpeedsMenu;
+  end;
 end;
 
 procedure TMainForm.CheckStatus(Fatal: boolean);
@@ -4859,6 +4913,113 @@ begin
   FReconnectTimeOut:=-1;
   FCurConn:=mi.Caption;
   DoConnect;
+end;
+
+procedure TMainForm.DoSetDownloadSpeed(Sender: TObject);
+begin
+  SetSpeedLimit('down', TMenuItem(Sender).Tag);
+end;
+
+procedure TMainForm.DoSetUploadSpeed(Sender: TObject);
+begin
+  SetSpeedLimit('up', TMenuItem(Sender).Tag);
+end;
+
+procedure TMainForm.SetSpeedLimit(const Dir: string; Speed: integer);
+var
+  req, args: TJSONObject;
+begin
+  AppBusy;
+  req:=TJSONObject.Create;
+  try
+    req.Add('method', 'session-set');
+    args:=TJSONObject.Create;
+    args.Add(Format('speed-limit-%s-enabled', [Dir]), integer(Speed >= 0) and 1);
+    if Speed >= 0 then
+      args.Add(Format('speed-limit-%s', [Dir]), Speed);
+    args.Add('alt-speed-enabled', 0);
+    req.Add('arguments', args);
+    args:=RpcObj.SendRequest(req, False);
+    if args = nil then begin
+      CheckStatus(False);
+      exit;
+    end;
+    args.Free;
+  finally
+    req.Free;
+  end;
+  RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
+  AppNormal;
+end;
+
+procedure TMainForm.FillSpeedsMenu;
+
+  procedure _FillMenu(Items: TMenuItem; const Speeds: string; OnClickHandler: TNotifyEvent; CurSpeed: integer);
+  var
+    sl: TStringList;
+    i, j: integer;
+    mi: TMenuItem;
+  begin
+    Items.Clear;
+    if not RpcObj.Connected then
+      exit;
+    sl:=TStringList.Create;
+    try
+      sl.Delimiter:=',';
+      sl.DelimitedText:=Speeds;
+      i:=0;
+      while i < sl.Count do begin
+        j:=StrToIntDef(Trim(sl[i]), -1);
+        if j >= 0 then begin
+          sl[i]:=Format('%.08d', [j]);
+          Inc(i);
+        end
+        else
+          sl.Delete(i);
+      end;
+      sl.Duplicates:=dupIgnore;
+      sl.Sorted:=True;
+      sl.Add(Format('%.08d', [CurSpeed]));
+
+      for i:=0 to sl.Count - 1 do begin
+        j:=StrToIntDef(Trim(sl[i]), -1);
+        if j >= 0 then begin
+          mi:=TMenuItem.Create(Items);
+          mi.Caption:=Format('%d %s%s', [j, sKByte, sPerSecond]);
+          mi.Tag:=j;
+          mi.OnClick:=OnClickHandler;
+          if j = CurSpeed then
+            mi.Checked:=True;
+          Items.Insert(0, mi);
+        end;
+      end;
+    finally
+      sl.Free;
+    end;
+    if Items.Count > 0 then begin
+      mi:=TMenuItem.Create(Items);
+      mi.Caption:='-';
+      Items.Insert(0, mi);
+    end;
+    mi:=TMenuItem.Create(Items);
+    mi.Caption:=SUnlimited;
+    mi.Tag:=-1;
+    mi.OnClick:=OnClickHandler;
+    if CurSpeed = -1 then
+      mi.Checked:=True;
+    Items.Insert(0, mi);
+  end;
+
+var
+  s: string;
+begin
+  s:=Ini.ReadString('Connection.' + FCurConn, 'DownSpeeds', DefSpeeds);
+  _FillMenu(pmDownSpeeds.Items, s, @DoSetDownloadSpeed, FCurDownSpeedLimit);
+  _FillMenu(pmiDownSpeedLimit, s, @DoSetDownloadSpeed, FCurDownSpeedLimit);
+
+  s:=Ini.ReadString('Connection.' + FCurConn, 'UpSpeeds', DefSpeeds);
+  _FillMenu(pmUpSpeeds.Items, s, @DoSetUploadSpeed, FCurUpSpeedLimit);
+  _FillMenu(pmiUpSpeedLimit, s, @DoSetUploadSpeed, FCurUpSpeedLimit);
 end;
 
 initialization

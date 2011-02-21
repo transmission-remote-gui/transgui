@@ -1,6 +1,6 @@
 object ConnOptionsForm: TConnOptionsForm
   Left = 401
-  Height = 294
+  Height = 313
   Top = 186
   Width = 471
   HorzScrollBar.Page = 349
@@ -9,7 +9,7 @@ object ConnOptionsForm: TConnOptionsForm
   BorderStyle = bsDialog
   BorderWidth = 8
   Caption = 'Connection options'
-  ClientHeight = 294
+  ClientHeight = 313
   ClientWidth = 471
   Constraints.MinHeight = 280
   Constraints.MinWidth = 471
@@ -19,16 +19,16 @@ object ConnOptionsForm: TConnOptionsForm
   LCLVersion = '0.9.28.2'
   object Page: TPageControl
     Left = 8
-    Height = 188
+    Height = 207
     Top = 64
     Width = 455
-    ActivePage = tabPaths
+    ActivePage = tabMisc
     Align = alClient
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 1
     object tabConnection: TTabSheet
       Caption = 'Connection'
-      ClientHeight = 162
+      ClientHeight = 181
       ClientWidth = 447
       object txPassword: TLabel
         Left = 8
@@ -110,7 +110,7 @@ object ConnOptionsForm: TConnOptionsForm
     end
     object tabProxy: TTabSheet
       Caption = 'Proxy'
-      ClientHeight = 162
+      ClientHeight = 181
       ClientWidth = 447
       object txProxy: TLabel
         Left = 8
@@ -192,7 +192,7 @@ object ConnOptionsForm: TConnOptionsForm
     end
     object tabPaths: TTabSheet
       Caption = 'Paths'
-      ClientHeight = 162
+      ClientHeight = 181
       ClientWidth = 447
       OnShow = tabPathsShow
       object txPaths: TLabel
@@ -207,7 +207,7 @@ object ConnOptionsForm: TConnOptionsForm
       end
       object edPaths: TMemo
         Left = 8
-        Height = 68
+        Height = 87
         Top = 82
         Width = 430
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -215,11 +215,59 @@ object ConnOptionsForm: TConnOptionsForm
         TabOrder = 0
       end
     end
+    object tabMisc: TTabSheet
+      Caption = 'Misc'
+      ClientHeight = 181
+      ClientWidth = 447
+      object gbSpeed: TGroupBox
+        Left = 8
+        Height = 125
+        Top = 6
+        Width = 430
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Speed limit menu items'
+        ClientHeight = 107
+        ClientWidth = 426
+        TabOrder = 0
+        object txDownSpeeds: TLabel
+          Left = 8
+          Height = 14
+          Top = 4
+          Width = 121
+          Caption = 'Download speeds (KB/s):'
+          ParentColor = False
+        end
+        object txUpSpeeds: TLabel
+          Left = 8
+          Height = 14
+          Top = 52
+          Width = 107
+          Caption = 'Upload speeds (KB/s):'
+          ParentColor = False
+        end
+        object edDownSpeeds: TEdit
+          Left = 8
+          Height = 21
+          Top = 24
+          Width = 410
+          Anchors = [akTop, akLeft, akRight]
+          TabOrder = 0
+        end
+        object edUpSpeeds: TEdit
+          Left = 8
+          Height = 21
+          Top = 72
+          Width = 410
+          Anchors = [akTop, akLeft, akRight]
+          TabOrder = 1
+        end
+      end
+    end
   end
   object Buttons: TButtonPanel
     Left = 8
     Height = 26
-    Top = 260
+    Top = 279
     Width = 455
     BorderSpacing.Top = 8
     BorderSpacing.Around = 0

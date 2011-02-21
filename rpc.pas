@@ -143,8 +143,6 @@ var
 begin
   try
     GetSessionInfo;
-    if Status = '' then
-      FRpc.FConnected:=True;
     NotifyCheckStatus;
     if not FRpc.FConnected then
       Terminate;
@@ -291,6 +289,7 @@ begin
     args:=FRpc.SendRequest(req);
     if args <> nil then
     try
+      FRpc.FConnected:=True;
       if args.IndexOfName('rpc-version') >= 0 then
         FRpc.FRPCVersion := args.Integers['rpc-version']
       else
