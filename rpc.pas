@@ -31,7 +31,8 @@ resourcestring
 
 type
   TAdvInfoType = (aiNone, aiGeneral, aiFiles, aiPeers, aiTrackers);
-  TRefreshType = (rtNone, rtAll, rtDetails);
+  TRefreshTypes = (rtTorrents, rtDetails, rtSession);
+  TRefreshType = set of TRefreshTypes;
 
   TRpc = class;
 
@@ -53,13 +54,14 @@ type
     procedure GetFiles(TorrentId: integer);
     procedure GetTrackers(TorrentId: integer);
     procedure GetInfo(TorrentId: integer);
-    procedure GetStatusInfo;
+    procedure GetSessionInfo;
 
     procedure DoFillTorrentsList;
     procedure DoFillPeersList;
     procedure DoFillFilesList;
     procedure DoFillInfo;
     procedure DoFillTrackersList;
+    procedure DoFillSessionInfo;
     procedure NotifyCheckStatus;
     procedure CheckStatusHandler(Data: PtrInt);
   protected
@@ -136,11 +138,10 @@ uses Main, ssl_openssl_lib, synafpc, blcksock;
 
 procedure TRpcThread.Execute;
 var
-  t: TDateTime;
-  r: TRefreshType;
+  t, tt: TDateTime;
 begin
   try
-    GetStatusInfo;
+    GetSessionInfo;
     if Status = '' then
       FRpc.FConnected:=True;
     NotifyCheckStatus;
@@ -148,11 +149,11 @@ begin
       Terminate;
 
     t:=Now - 1;
+    tt:=Now;
     while not Terminated do begin
-      if (Now - t >= RefreshInterval) or (FRpc.RefreshNow <> rtNone) then begin
-        r:=FRpc.RefreshNow;
-        FRpc.RefreshNow:=rtNone;
-        if (r = rtDetails) or GetTorrents then
+      if (Now - t >= RefreshInterval) or (FRpc.RefreshNow * [rtTorrents, rtDetails] <> []) then begin
+        if (rtDetails in FRpc.RefreshNow) or GetTorrents then begin
+          Exclude(FRpc.RefreshNow, rtTorrents);
           if not Terminated and (CurTorrentId <> 0) then begin
             case AdvInfo of
               aiGeneral:
@@ -164,13 +165,20 @@ begin
               aiTrackers:
                 GetTrackers(CurTorrentId);
             end;
-            if FRpc.RefreshNow = rtDetails then
-              FRpc.RefreshNow:=rtNone;
+            Exclude(FRpc.RefreshNow, rtDetails);
           end;
+        end;
 
         NotifyCheckStatus;
         t:=Now;
       end;
+
+      if (Now - tt >= RefreshInterval*5) or (rtSession in FRpc.RefreshNow) then begin
+        GetSessionInfo;
+        tt:=Now;
+        Exclude(FRpc.RefreshNow, rtSession);
+      end;
+
       Sleep(50);
     end;
   except
@@ -240,6 +248,11 @@ begin
   MainForm.FillTrackersList(ResultData as TJSONObject);
 end;
 
+procedure TRpcThread.DoFillSessionInfo;
+begin
+  MainForm.FillSessionInfo(ResultData as TJSONObject);
+end;
+
 procedure TRpcThread.NotifyCheckStatus;
 begin
   if not Terminated then
@@ -252,7 +265,7 @@ begin
   MainForm.CheckStatus;
 end;
 
-procedure TRpcThread.GetStatusInfo;
+procedure TRpcThread.GetSessionInfo;
 var
   req, args: TJSONObject;
   s: string;
@@ -272,6 +285,10 @@ begin
       else
         s:='';
       FRpc.InfoStatus:=Format(sTransmissionAt, [s, FRpc.Http.TargetHost, FRpc.Http.TargetPort]);
+
+      ResultData:=args;
+      if not Terminated then
+        Synchronize(@DoFillSessionInfo);
     finally
       args.Free;
     end;
@@ -470,7 +487,7 @@ begin
   inherited;
   FLock:=TCriticalSection.Create;
   HttpLock:=TCriticalSection.Create;
-  RefreshNow:=rtNone;
+  RefreshNow:=[];
   CreateHttp;
 end;
 
@@ -788,6 +805,7 @@ begin
   XTorrentSession:='';
   RequestFullInfo:=True;
   ReconnectAllowed:=False;
+  RefreshNow:=[];
   RpcThread:=TRpcThread.Create;
   with RpcThread do begin
     FreeOnTerminate:=True;
