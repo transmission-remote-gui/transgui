@@ -85,6 +85,7 @@ type
     FTorrentFields: string;
     FRPCVersion: integer;
     XTorrentSession: string;
+    FMainThreadId: TThreadID;
 
     function GetConnected: boolean;
     function GetConnecting: boolean;
@@ -151,35 +152,49 @@ begin
     t:=Now - 1;
     tt:=Now;
     while not Terminated do begin
-      if (Now - t >= RefreshInterval) or (FRpc.RefreshNow * [rtTorrents, rtDetails] <> []) then begin
-        if (rtDetails in FRpc.RefreshNow) or GetTorrents then begin
-          Exclude(FRpc.RefreshNow, rtTorrents);
-          if not Terminated and (CurTorrentId <> 0) then begin
-            case AdvInfo of
-              aiGeneral:
-                GetInfo(CurTorrentId);
-              aiPeers:
-                GetPeers(CurTorrentId);
-              aiFiles:
-                GetFiles(CurTorrentId);
-              aiTrackers:
-                GetTrackers(CurTorrentId);
-            end;
-            Exclude(FRpc.RefreshNow, rtDetails);
-          end;
-        end;
-
-        NotifyCheckStatus;
+      if Now - t >= RefreshInterval then begin
+        FRpc.RefreshNow:=FRpc.RefreshNow + [rtTorrents, rtDetails];
         t:=Now;
       end;
-
-      if (Now - tt >= RefreshInterval*5) or (rtSession in FRpc.RefreshNow) then begin
-        GetSessionInfo;
+      if Now - tt >= RefreshInterval*5 then begin
+        Include(FRpc.RefreshNow, rtSession);
         tt:=Now;
-        Exclude(FRpc.RefreshNow, rtSession);
       end;
 
-      Sleep(50);
+      if Status = '' then
+        if rtTorrents in FRpc.RefreshNow then begin
+          GetTorrents;
+          Exclude(FRpc.RefreshNow, rtTorrents);
+        end
+        else
+          if rtDetails in FRpc.RefreshNow then begin
+            if CurTorrentId <> 0 then begin
+              case AdvInfo of
+                aiGeneral:
+                  GetInfo(CurTorrentId);
+                aiPeers:
+                  GetPeers(CurTorrentId);
+                aiFiles:
+                  GetFiles(CurTorrentId);
+                aiTrackers:
+                  GetTrackers(CurTorrentId);
+              end;
+            end;
+            Exclude(FRpc.RefreshNow, rtDetails);
+          end
+          else
+            if rtSession in FRpc.RefreshNow then begin
+              GetSessionInfo;
+              Exclude(FRpc.RefreshNow, rtSession);
+            end;
+
+      if Status <> '' then begin
+        NotifyCheckStatus;
+        Sleep(100);
+      end;
+
+      if FRpc.RefreshNow = [] then
+        Sleep(50);
     end;
   except
     Status:=Exception(ExceptObject).Message;
@@ -485,6 +500,7 @@ end;
 constructor TRpc.Create;
 begin
   inherited;
+  FMainThreadId:=GetCurrentThreadId;
   FLock:=TCriticalSection.Create;
   HttpLock:=TCriticalSection.Create;
   RefreshNow:=[];
@@ -556,7 +572,8 @@ begin
         Http.Timeout:=OldTimeOut;
       end;
       if not r then begin
-        ReconnectAllowed:=True;
+        if FMainThreadId = GetCurrentThreadId then
+          ReconnectAllowed:=True;
         Status:=Http.Sock.LastErrorDesc;
         break;
       end
