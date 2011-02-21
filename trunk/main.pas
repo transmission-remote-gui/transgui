@@ -61,6 +61,7 @@ resourcestring
   sDownloadingSeeding = '%s%s%d downloading, %d seeding%s%s, %s';
   sDownSpeed = 'D: %s/s';
   sUpSpeed = 'U: %s/s';
+  SFreeSpace = 'Free: %s';
   sNoPathMapping = 'Unable to find path mapping.'+LineEnding+'Use program''s options to setup path mappings.';
   sGeoIPConfirm = 'Geo IP database is needed to resolve country by IP address.' + LineEnding + 'Download this database now?';
   sFlagArchiveConfirm = 'Flag images archive is needed to display country flags.' + LineEnding + 'Download this archive now?';
@@ -135,6 +136,7 @@ type
     acConnOptions: TAction;
     acNewConnection: TAction;
     acDisconnect: TAction;
+    acAltSpeed: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
@@ -159,6 +161,7 @@ type
     MenuItem67: TMenuItem;
     MenuItem68: TMenuItem;
     MenuItem69: TMenuItem;
+    MenuItem70: TMenuItem;
     sepCon2: TMenuItem;
     MenuItem71: TMenuItem;
     sepCon1: TMenuItem;
@@ -196,6 +199,8 @@ type
     tabTrackers: TTabSheet;
     AnimateTimer: TTimer;
     tbConnect: TToolButton;
+    ToolButton10: TToolButton;
+    sepAltSpeed: TToolButton;
     ToolButton9: TToolButton;
     txConnErrorLabel: TLabel;
     panSearch: TPanel;
@@ -343,6 +348,7 @@ type
     procedure acAddLinkExecute(Sender: TObject);
     procedure acAddTorrentExecute(Sender: TObject);
     procedure acAddTrackerExecute(Sender: TObject);
+    procedure acAltSpeedExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
     procedure acConnOptionsExecute(Sender: TObject);
     procedure acDelTrackerExecute(Sender: TObject);
@@ -490,6 +496,7 @@ type
     procedure FillFilesList(list, priorities, wanted: TJSONArray; const DownloadDir: WideString);
     procedure FillGeneralInfo(t: TJSONObject);
     procedure FillTrackersList(TrackersData: TJSONObject);
+    procedure FillSessionInfo(s: TJSONObject);
     procedure CheckStatus(Fatal: boolean = True);
     function TorrentAction(const TorrentIds: variant; const AAction: string; args: TJSONObject = nil): boolean;
     function SetFilePriority(TorrentId: integer; const Files: array of integer; const APriority: string): boolean;
@@ -1301,6 +1308,30 @@ begin
   AddTracker(False);
 end;
 
+procedure TMainForm.acAltSpeedExecute(Sender: TObject);
+var
+  req, args: TJSONObject;
+begin
+  AppBusy;
+  req:=TJSONObject.Create;
+  try
+    req.Add('method', 'session-set');
+    args:=TJSONObject.Create;
+    args.Add('alt-speed-enabled', integer(not acAltSpeed.Checked) and 1);
+    req.Add('arguments', args);
+    args:=RpcObj.SendRequest(req, False);
+    if args = nil then begin
+      CheckStatus(False);
+      exit;
+    end;
+    args.Free;
+  finally
+    req.Free;
+  end;
+  RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
+  AppNormal;
+end;
+
 procedure TMainForm.acAddLinkExecute(Sender: TObject);
 begin
   AppBusy;
@@ -1893,10 +1924,9 @@ end;
 procedure TMainForm.DoRefresh(All: boolean);
 begin
   if All then
-    RpcObj.RefreshNow:=rtAll
+    RpcObj.RefreshNow:=[rtTorrents, rtDetails]
   else
-    if RpcObj.RefreshNow <> rtAll then
-      RpcObj.RefreshNow:=rtDetails;
+    RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtDetails];
 end;
 
 procedure TMainForm.acDisconnectExecute(Sender: TObject);
@@ -2117,6 +2147,7 @@ begin
       finally
         req.Free;
       end;
+      RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
       AppNormal;
     end;
   finally
@@ -3227,10 +3258,11 @@ begin
   acOpenFile.Enabled:=acSetHighPriority.Enabled and (lvFiles.SelCount < 2) and (RpcObj.RPCVersion >= 4);
   acSetNotDownload.Enabled:=acSetHighPriority.Enabled;
   acSetupColumns.Enabled:=e;
-  acUpdateBlocklist.Enabled:=e and (RpcObj.RPCVersion >= 5);
+  acUpdateBlocklist.Enabled:=(acUpdateBlocklist.Tag <> 0) and e and (RpcObj.RPCVersion >= 5);
   acAddTracker.Enabled:=acTorrentProps.Enabled and (RpcObj.RPCVersion >= 10);
   acEditTracker.Enabled:=acAddTracker.Enabled and (lvTrackers.Items.Count > 0);
   acDelTracker.Enabled:=acEditTracker.Enabled;
+  acAltSpeed.Enabled:=e and (RpcObj.RPCVersion >= 5);
 end;
 
 procedure TMainForm.ShowConnOptions(NewConnection: boolean);
@@ -3421,16 +3453,6 @@ var
   Paths: TStringList;
 begin
   if gTorrents.Tag <> 0 then exit;
-  acRemoveTorrentAndData.Visible:=RpcObj.RPCVersion >= 4;
-  acReannounceTorrent.Visible:=RpcObj.RPCVersion >= 5;
-  acUpdateBlocklist.Visible:=RpcObj.Connected and (RpcObj.RPCVersion >= 5);
-  acMoveTorrent.Visible:=RpcObj.Connected and (RpcObj.RPCVersion >= 6);
-  pmiPriority.Visible:=RpcObj.Connected and (RpcObj.RPCVersion >= 5);
-  miPriority.Visible:=pmiPriority.Visible;
-  acOpenContainingFolder.Visible:=RpcObj.Connected and (RpcObj.RPCVersion >= 4);
-  acOpenFile.Visible:=acOpenContainingFolder.Visible;
-  pmSepOpen1.Visible:=acOpenContainingFolder.Visible;
-  pmSepOpen2.Visible:=acOpenContainingFolder.Visible;
   if list = nil then begin
     ClearDetailsInfo;
     exit;
@@ -3981,6 +4003,8 @@ begin
   if RemoveLocalData then
     args.Add('delete-local-data', TJSONIntegerNumber.Create(1));
   TorrentAction(ids, 'remove', args);
+  if RemoveLocalData then
+    RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
 end;
 
 function TMainForm.IncludeProperTrailingPathDelimiter(const s: string): string;
@@ -4348,6 +4372,30 @@ begin
   finally
     lvTrackers.Items.EndUpdate;
   end;
+end;
+
+procedure TMainForm.FillSessionInfo(s: TJSONObject);
+begin
+  acRemoveTorrentAndData.Visible:=RpcObj.RPCVersion >= 4;
+  acReannounceTorrent.Visible:=RpcObj.RPCVersion >= 5;
+  acUpdateBlocklist.Visible:=RpcObj.RPCVersion >= 5;
+  acMoveTorrent.Visible:=RpcObj.RPCVersion >= 6;
+  pmiPriority.Visible:=RpcObj.RPCVersion >= 5;
+  miPriority.Visible:=pmiPriority.Visible;
+  acOpenContainingFolder.Visible:=RpcObj.RPCVersion >= 4;
+  acOpenFile.Visible:=acOpenContainingFolder.Visible;
+  pmSepOpen1.Visible:=acOpenContainingFolder.Visible;
+  pmSepOpen2.Visible:=acOpenContainingFolder.Visible;
+  acAltSpeed.Visible:=RpcObj.RPCVersion >= 5;
+  sepAltSpeed.Visible:=acAltSpeed.Visible;
+
+  if RpcObj.RPCVersion >= 5 then begin
+    acAltSpeed.Checked:=s.Integers['alt-speed-enabled'] <> 0;
+    acUpdateBlocklist.Tag:=s.Integers['blocklist-enabled'];
+    acUpdateBlocklist.Enabled:=acUpdateBlocklist.Tag <> 0;
+  end;
+  if s.IndexOfName('download-dir-free-space') >= 0 then
+    StatusBar.Panels[3].Text:=Format(SFreeSpace, [GetHumanSize(s.Floats['download-dir-free-space'])]);
 end;
 
 procedure TMainForm.CheckStatus(Fatal: boolean);
