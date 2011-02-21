@@ -27,7 +27,7 @@ object OptionsForm: TOptionsForm
       ClientHeight = 253
       ClientWidth = 501
       object txSeconds: TLabel
-        Left = 300
+        Left = 396
         Height = 14
         Top = 14
         Width = 40
@@ -59,7 +59,7 @@ object OptionsForm: TOptionsForm
         ParentColor = False
       end
       object txSeconds2: TLabel
-        Left = 300
+        Left = 396
         Height = 14
         Top = 42
         Width = 40
@@ -67,7 +67,7 @@ object OptionsForm: TOptionsForm
         ParentColor = False
       end
       object edRefreshInterval: TSpinEdit
-        Left = 220
+        Left = 316
         Height = 21
         Top = 10
         Width = 70
@@ -140,7 +140,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 5
       end
       object edRefreshIntervalMin: TSpinEdit
-        Left = 220
+        Left = 316
         Height = 21
         Top = 38
         Width = 70

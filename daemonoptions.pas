@@ -107,6 +107,7 @@ type
     procedure cbRandomPortClick(Sender: TObject);
     procedure cbSeedRatioClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { private declarations }
   public
@@ -259,15 +260,20 @@ begin
   for i:=1 to 7 do begin
     cb:=TCheckBox.Create(gbAltSpeed);
     cb.Parent:=gbAltSpeed;
-    cb.Left:=x;
-    cb.Top:=txDays.Top - (cb.Height - txDays.Height) div 2;
     j:=i + 1;
     if j > 7 then
       Dec(j, 7);
     cb.Caption:=SysToUTF8(ShortDayNames[j]);
     cb.Name:=Format('cbDay%d', [j]);
+    cb.Left:=x;
+    cb.Top:=txDays.Top - (cb.Height - txDays.Height) div 2;
     Inc(x, wd);
   end;
+end;
+
+procedure TDaemonOptionsForm.FormShow(Sender: TObject);
+begin
+
 end;
 
 initialization

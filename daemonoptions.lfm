@@ -15,6 +15,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
   Constraints.MinHeight = 340
   Constraints.MinWidth = 400
   OnCreate = FormCreate
+  OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '0.9.28.2'
   object Page: TPageControl
@@ -41,23 +42,23 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object txCacheSize: TLabel
         Left = 8
         Height = 14
-        Top = 189
+        Top = 191
         Width = 76
         Caption = 'Disk cache size:'
         ParentColor = False
       end
       object txMB: TLabel
-        Left = 328
+        Left = 476
         Height = 14
-        Top = 189
+        Top = 191
         Width = 15
         Caption = 'MB'
         ParentColor = False
       end
       object txMinutes: TLabel
-        Left = 328
+        Left = 476
         Height = 14
-        Top = 162
+        Top = 164
         Width = 38
         Caption = 'minutes'
         ParentColor = False
@@ -105,9 +106,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
         TabOrder = 4
       end
       object edSeedRatio: TFloatSpinEdit
-        Left = 252
+        Left = 400
         Height = 21
-        Top = 132
+        Top = 134
         Width = 66
         Increment = 0.1
         MaxValue = 9999
@@ -116,9 +117,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
         Value = 0
       end
       object edCacheSize: TSpinEdit
-        Left = 252
+        Left = 400
         Height = 21
-        Top = 186
+        Top = 188
         Width = 66
         MaxValue = 9999
         TabOrder = 8
@@ -126,16 +127,16 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object cbIdleSeedLimit: TCheckBox
         Left = 8
         Height = 17
-        Top = 161
+        Top = 163
         Width = 170
         Caption = 'Stop seeding when inactive for:'
         OnClick = cbIdleSeedLimitClick
         TabOrder = 6
       end
       object edIdleSeedLimit: TSpinEdit
-        Left = 252
+        Left = 400
         Height = 21
-        Top = 159
+        Top = 161
         Width = 66
         MaxValue = 999999
         MinValue = 1

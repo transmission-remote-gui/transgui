@@ -22,9 +22,9 @@ object ConnOptionsForm: TConnOptionsForm
     Height = 207
     Top = 64
     Width = 455
-    ActivePage = tabMisc
+    ActivePage = tabProxy
     Align = alClient
-    TabIndex = 3
+    TabIndex = 1
     TabOrder = 1
     object tabConnection: TTabSheet
       Caption = 'Connection'
@@ -295,10 +295,10 @@ object ConnOptionsForm: TConnOptionsForm
       ParentColor = False
     end
     object cbConnection: TComboBox
-      Left = 140
+      Left = 112
       Height = 21
       Top = 1
-      Width = 315
+      Width = 343
       Anchors = [akTop, akLeft, akRight]
       ItemHeight = 13
       OnSelect = cbConnectionSelect
@@ -306,28 +306,28 @@ object ConnOptionsForm: TConnOptionsForm
       TabOrder = 0
     end
     object btNew: TButton
-      Left = 140
+      Left = 112
       Height = 23
       Top = 28
-      Width = 100
+      Width = 111
       Caption = 'New'
       OnClick = btNewClick
       TabOrder = 1
     end
     object btDel: TButton
-      Left = 355
+      Left = 344
       Height = 23
       Top = 28
-      Width = 100
+      Width = 111
       Caption = 'Delete'
       OnClick = btDelClick
       TabOrder = 3
     end
     object btRename: TButton
-      Left = 248
+      Left = 228
       Height = 23
       Top = 28
-      Width = 100
+      Width = 111
       Caption = 'Rename'
       OnClick = btRenameClick
       TabOrder = 2
