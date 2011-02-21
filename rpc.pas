@@ -572,7 +572,7 @@ begin
         Http.Timeout:=OldTimeOut;
       end;
       if not r then begin
-        if FMainThreadId = GetCurrentThreadId then
+        if FMainThreadId <> GetCurrentThreadId then
           ReconnectAllowed:=True;
         Status:=Http.Sock.LastErrorDesc;
         break;
