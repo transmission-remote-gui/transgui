@@ -163,6 +163,7 @@ begin
         if rtTorrents in FRpc.RefreshNow then begin
           GetTorrents;
           Exclude(FRpc.RefreshNow, rtTorrents);
+          t:=Now;
         end
         else
           if rtDetails in FRpc.RefreshNow then begin
