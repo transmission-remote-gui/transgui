@@ -1,0 +1,6 @@
+#summary Frequently Asked Questions.
+#labels Featured
+
+*Q:* Is it possible to run transgui directly from a USB stick?
+
+*A:* Yes. Just create a folder on your copy USB stick and copy there the *transgui* executable file (and, optionally, the *lang* folder). Then create empty *transgui.ini* file in that folder. Now you can tun the transgui executable directly from the USB stick. All settings will be stored at the stick as well.
