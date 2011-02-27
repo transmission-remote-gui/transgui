@@ -8,4 +8,4 @@
 
 *Q:* Is it possible to run several instances of the program?
 
-*A:* Yes. By default, transgui stores all it's settings in the user's profile. To run an extra instance of the program, you need to explicitly specify some other folder to store the program's settings. To do that, pass the *--home=<home_dir>* parameter. Where <home_dir> is some folder where the program's settings of the new instance will be stored.
+*A:* Yes. By default, transgui stores all it's settings in the user's profile. To run an extra instance of the program, you need to explicitly specify some other folder to store the program's settings. To do that, pass the *`--home=<home_dir>`* parameter. Where `<home_dir>` is some folder where the program's settings of the new instance will be stored.
