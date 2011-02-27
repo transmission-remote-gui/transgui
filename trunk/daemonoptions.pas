@@ -107,7 +107,6 @@ type
     procedure cbRandomPortClick(Sender: TObject);
     procedure cbSeedRatioClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     { private declarations }
   public
@@ -194,7 +193,7 @@ begin
     exit;
   end;
   edBlocklistURL.Text:=Trim(edBlocklistURL.Text);
-  if cbBlocklist.Checked and (edBlocklistURL.Text = '') then begin
+  if cbBlocklist.Checked and edBlocklistURL.Visible and (edBlocklistURL.Text = '') then begin
     Page.ActivePage:=tabNetwork;
     edBlocklistURL.SetFocus;
     MessageDlg(SNoBlocklistURL, mtError, [mbOK], 0);
@@ -269,11 +268,6 @@ begin
     cb.Top:=txDays.Top - (cb.Height - txDays.Height) div 2;
     Inc(x, wd);
   end;
-end;
-
-procedure TDaemonOptionsForm.FormShow(Sender: TObject);
-begin
-
 end;
 
 initialization

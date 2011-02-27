@@ -2052,7 +2052,7 @@ begin
             edBlocklistURL.Text:=UTF8Encode(args.Strings['blocklist-url'])
           else begin
             edBlocklistURL.Visible:=False;
-            cbBlocklist.Left:=edBlocklistURL.Left;
+            cbBlocklist.Left:=cbPEX.Left;
             cbBlocklist.Caption:=StringReplace(cbBlocklist.Caption, ':', '', [rfReplaceAll]);
           end;
           cbBlocklistClick(nil);

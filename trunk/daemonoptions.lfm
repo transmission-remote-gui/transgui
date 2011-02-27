@@ -15,7 +15,6 @@ object DaemonOptionsForm: TDaemonOptionsForm
   Constraints.MinHeight = 340
   Constraints.MinWidth = 400
   OnCreate = FormCreate
-  OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '0.9.28.2'
   object Page: TPageControl
@@ -23,9 +22,9 @@ object DaemonOptionsForm: TDaemonOptionsForm
     Height = 299
     Top = 8
     Width = 570
-    ActivePage = tabBandwidth
+    ActivePage = tabNetwork
     Align = alClient
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
