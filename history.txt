@@ -1,3 +1,34 @@
+3.0 (Feb 27, 2011)
+------------------
+[+] Added the "Refresh interval when minimized" option. Issue #313.
+[+] Trackers can be added, edited and removed. Issue #275.
+[+] Added the following transmission options: Disk cache size, Blocklist URL, Enable Local Peer Discovery.
+[+] Added the "Stop seeding when inactive" option to the daemon and torrent options.
+[+] Implemented setting of alternate speed limits. Issue #166.
+[+] Added speed limit popup menu to the status bar. Issue #82.
+[+] Added speed limit menu items to the tray icon menu. Issue #339.
+[+] Added a toolbar button to enable/disable alternate bandwidth settings. Issue #325.
+[+] Show disk free space in the status bar.
+[+] Show torrent contents as a tree in the Add torrent window. Issue #81.
+[+] Show free disk space in the Add torrent window. Issue #354.
+[+] Show total size of selected files in the Add torrent window.
+[+] Remember size of the Add torrent window.
+[+] Added the "Connect" toolbar button with a drop-down list of available connections.
+[+] Added the "Disconnect" menu item. Issue #283.
+[+] Added Belarusian translation by rohierd.
+[+] Added Korean translation by kpsman.
+[+] Added Chinese translation by xtfllbl.
+[+] Added Ukrainian translation by PavelDudn.
+[+] Added Italian translation by ilnero71. 
+[+] Added Greek translation by lamprakisa.
+[*] Separated connection settings from the program's options.
+[*] Improved handling of connection settings.
+[*] Use system button order for the OK/Cancel buttons.
+[*] Open the main window on single mouse click on the tray icon. Issue #372.
+[-] Increased time out for the "Update blocklist" command. Issue #353.
+[-] Fixed loading of OpenSSL files on some linux systems. Issue #369.
+[-] Prevent resources leak on Mac OS X. Issue #382.
+
 2.2 (Nov 11, 2010)
 ------------------
 [+] Added a wait animation to the right side of the toolbar. The animation is shown when a daemon response takes more than 1 second.
