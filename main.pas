@@ -3878,8 +3878,10 @@ begin
   StatusBar.Panels[1].Text:=Format(sDownSpeed, [GetHumanSize(DownSpeed, 1)]);
   StatusBar.Panels[2].Text:=Format(sUpSpeed, [GetHumanSize(UpSpeed, 1)]);
 
+{$ifdef LCLcarbon}
   TrayIcon.Hint:=Format(sDownloadingSeeding,
         [RpcObj.InfoStatus, LineEnding, DownCnt, SeedCnt, LineEnding, StatusBar.Panels[1].Text, StatusBar.Panels[2].Text]);
+{$endif LCLcarbon}
   finally
     Paths.Free;
   end;
