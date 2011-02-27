@@ -881,6 +881,10 @@ begin
       end
       else
         h:=Height;
+{$ifdef LCLcarbon}
+      if C is TPageControl then
+        Inc(h, 10);
+{$endif LCLcarbon}
       Inc(ht, h + BorderSpacing.Top + BorderSpacing.Bottom);
     end;
 
