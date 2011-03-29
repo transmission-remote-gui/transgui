@@ -10,9 +10,15 @@
 
 *A:* Yes. By default, transgui stores all it's settings in the user's profile. To run an extra instance of the program, you need to explicitly specify some other folder to store the program's settings. To do that, pass the *`--home=<home_dir>`* parameter. Where `<home_dir>` is some folder where the program's settings of the new instance will be stored.
 
+*Q:* What mean numbers like 4/28 in the Seeds column?
+
+*A:* Seeds: 4/28:
+ * 4 - number of peers, from which we are downloading now.
+ * 28 - total number of available peers, which have this torrent.
+
 *Q:* What mean numbers like 2/7(134) in the Peers column?
 
-*A:* Peers: 2/7(134)
+*A:* Peers: 2/7(134):
  * 2 - number of peers, which are downloading from us (connected leechers).
  * 7 - total number of downloading peers on the tracker (total number of leechers).
- * 134 - total number of peers, which have this torrent.
+ * 134 - total number of peers, which is known to have this torrent. Some of the peers may be unavailable now.
