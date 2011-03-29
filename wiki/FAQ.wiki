@@ -13,8 +13,8 @@
 *Q:* What mean numbers like 4/28 in the Seeds column?
 
 *A:* Seeds: 4/28:
- * 4 - number of peers, from which we are downloading now.
- * 28 - total number of available peers, which have this torrent.
+ * 4 - number of peers, from which we are downloading now (connected seeders).
+ * 28 - total number of available peers, which have this torrent (available seeders).
 
 *Q:* What mean numbers like 2/7(134) in the Peers column?
 
