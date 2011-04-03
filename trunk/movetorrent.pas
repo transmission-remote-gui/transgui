@@ -28,17 +28,20 @@ uses
 
 resourcestring
   SNoTorrentDir = 'No torrent location was specified.';
+  SSelectFolder = 'Select torrent location';
 
 type
 
   { TMoveTorrentForm }
 
   TMoveTorrentForm = class(TForm)
+    btBrowse: TButton;
     Buttons: TButtonPanel;
     cbMoveData: TCheckBox;
     edTorrentDir: TComboBox;
     Panel1: TPanel;
     txTorrentDir: TLabel;
+    procedure btBrowseClick(Sender: TObject);
     procedure btOKClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -62,6 +65,15 @@ begin
     exit;
   end;
   ModalResult:=mrOK;
+end;
+
+procedure TMoveTorrentForm.btBrowseClick(Sender: TObject);
+var
+  s: string;
+begin
+  s:=MainForm.SelectRemoteFolder(edTorrentDir.Text, SSelectFolder);
+  if s <> '' then
+    edTorrentDir.Text:=s;
 end;
 
 procedure TMoveTorrentForm.FormCreate(Sender: TObject);

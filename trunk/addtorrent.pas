@@ -28,6 +28,7 @@ uses
 
 resourcestring
   SSize = 'Size';
+  SSelectDownloadFolder = 'Select a folder for download';
 
 type
 
@@ -36,6 +37,7 @@ type
   TAddTorrentForm = class(TForm)
     btSelectAll: TButton;
     btSelectNone: TButton;
+    btBrowse: TButton;
     Buttons: TButtonPanel;
     cbStartTorrent: TCheckBox;
     cbDestFolder: TComboBox;
@@ -47,6 +49,7 @@ type
     txPeerLimit: TLabel;
     lvFiles: TVarGrid;
     txDestFolder: TLabel;
+    procedure btBrowseClick(Sender: TObject);
     procedure btSelectAllClick(Sender: TObject);
     procedure btSelectNoneClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -263,6 +266,15 @@ begin
     lvFiles.Items[idxAtChecked, i]:=1;
   lvFiles.Items.EndUpdate;
   UpdateSize;
+end;
+
+procedure TAddTorrentForm.btBrowseClick(Sender: TObject);
+var
+  s: string;
+begin
+  s:=MainForm.SelectRemoteFolder(cbDestFolder.Text, SSelectDownloadFolder);
+  if s <> '' then
+    cbDestFolder.Text:=s;
 end;
 
 procedure TAddTorrentForm.btSelectNoneClick(Sender: TObject);
