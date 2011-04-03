@@ -1,4 +1,4 @@
-TranslationLanguage=Română
+﻿TranslationLanguage=Română
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Maparea căilor de la distanţă către local.~~Exemple:~/share=\\pch\share~/var/downloads/muzica=Z:\muzica"
 %d x %s (have %d)=%d x %s (have %d)
@@ -283,3 +283,8 @@ Tracker properties=Tracker properties
 Unlimited=Unlimited
 Upload speeds (KB/s)=Upload speeds (KB/s)
 Use alternate bandwidth settings=Use alternate bandwidth settings
+average=average
+Browse=Browse
+Enable µTP=Enable µTP
+Select a folder for download=Select a folder for download
+Select torrent location=Select torrent location

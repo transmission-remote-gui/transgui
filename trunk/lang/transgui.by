@@ -1,4 +1,4 @@
-TranslationLanguage=Беларуская
+﻿TranslationLanguage=Беларуская
 
 %dd, %dh=%dд, %dг
 %dh, %dm=%dг, %dхв
@@ -283,3 +283,8 @@ Tracker properties=Уласьцівасьці трэкеру
 Unlimited=Неабмежавана
 Upload speeds (KB/s)=Хуткасьць аддачы (Kб/с)
 Use alternate bandwidth settings=Выкарыстоўваць альтэрнатыўныя хуткасьці
+average=average
+Browse=Browse
+Enable µTP=Enable µTP
+Select a folder for download=Select a folder for download
+Select torrent location=Select torrent location

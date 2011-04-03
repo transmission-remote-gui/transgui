@@ -1,4 +1,4 @@
-TranslationLanguage=Українська
+﻿TranslationLanguage=Українська
 
 %dd, %dh=%dд, %dг
 %dh, %dm=%dг, %dхв
@@ -283,3 +283,8 @@ Tracker properties=Властивості трекера
 Unlimited=Необмежено
 Upload speeds (KB/s)=Швидкість роздачі (КБ/с)
 Use alternate bandwidth settings=Використовувати альтернативні налаштування швидкості
+average=average
+Browse=Browse
+Enable µTP=Enable µTP
+Select a folder for download=Select a folder for download
+Select torrent location=Select torrent location

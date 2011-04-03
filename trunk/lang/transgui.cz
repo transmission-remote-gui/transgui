@@ -1,4 +1,4 @@
-TranslationLanguage=Česky
+﻿TranslationLanguage=Česky
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapování vzdálené cesty na lokalní.~~Příklady:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (hotových %d)
@@ -283,3 +283,9 @@ Tracker properties=Vlastnosti trackeru
 Unlimited=Neomezeně
 Upload speeds (KB/s)=Rychlost uploadu (KB/s)
 Use alternate bandwidth settings=Použít alternativní nastavené rychlostí
+&Close=&Close
+average=average
+Browse=Browse
+Enable µTP=Enable µTP
+Select a folder for download=Select a folder for download
+Select torrent location=Select torrent location

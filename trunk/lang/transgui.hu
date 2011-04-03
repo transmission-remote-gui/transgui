@@ -1,4 +1,4 @@
-TranslationLanguage=Magyar
+﻿TranslationLanguage=Magyar
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Távoli és helyi elérési utak kapcsolata.~~Példák:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (megvan %d)
@@ -283,3 +283,8 @@ Tracker properties=Tracker tulajdonságok
 Unlimited=Korlátlan
 Upload speeds (KB/s)=Feltöltési sebesség (KB/s)
 Use alternate bandwidth settings=Az alternatív sávszélesség-beállítások használata
+average=average
+Browse=Browse
+Enable µTP=Enable µTP
+Select a folder for download=Select a folder for download
+Select torrent location=Select torrent location
