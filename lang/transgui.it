@@ -1,4 +1,4 @@
-TranslationLanguage=Italiano
+﻿TranslationLanguage=Italiano
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Associazione risorse locali con cartella remota.~~Esempio:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (gia' scaric. %d)
@@ -283,3 +283,8 @@ Tracker properties=Proprieta' Tracker
 Unlimited=Non limitato
 Upload speeds (KB/s)=Velocita' Upload (KB/s)
 Use alternate bandwidth settings=Usa settaggi di banda lumaca
+average=average
+Browse=Browse
+Enable µTP=Enable µTP
+Select a folder for download=Select a folder for download
+Select torrent location=Select torrent location

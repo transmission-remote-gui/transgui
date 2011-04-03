@@ -1,4 +1,4 @@
-TranslationLanguage=中文
+﻿TranslationLanguage=中文
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="远程路径映射.~~比如:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (下载了 %d)
@@ -283,3 +283,8 @@ Tracker properties=站点选项
 Unlimited=无限制
 Upload speeds (KB/s)=上传速度 (KB/s)
 Use alternate bandwidth settings=使用备用带宽设置
+average=average
+Browse=Browse
+Enable µTP=Enable µTP
+Select a folder for download=Select a folder for download
+Select torrent location=Select torrent location

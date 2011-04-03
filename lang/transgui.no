@@ -1,4 +1,4 @@
-TranslationLanguage=Norsk
+﻿TranslationLanguage=Norsk
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Fjern til lokal banerelasjon.~~For eksempel:~/share=\\pch\share~/var/downloads/musikk=Z:\musikk"
 %d x %s (have %d)=%d x %s (har %d)
@@ -283,3 +283,8 @@ Tracker properties=Trackerinnstillinger
 Unlimited=Ubegrenset
 Upload speeds (KB/s)=Opplastingshastighet (KB/s)
 Use alternate bandwidth settings=Bruk alternative båndbreddeinnstillinger
+average=average
+Browse=Browse
+Enable µTP=Enable µTP
+Select a folder for download=Select a folder for download
+Select torrent location=Select torrent location

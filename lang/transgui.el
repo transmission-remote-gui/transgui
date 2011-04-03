@@ -1,4 +1,4 @@
-TranslationLanguage=Ελληνικά
+﻿TranslationLanguage=Ελληνικά
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Χαρτογράφηση μονοπατιού απομακρυσμένο σε τοπικό.~~Παραδείγματα:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (έχω %d)
@@ -283,3 +283,8 @@ Tracker properties=Ιδιότητες Ιχνηλάτη
 Unlimited=Χωρίς όριο
 Upload speeds (KB/s)=Ταχύτητες αποστολής (KB/s)
 Use alternate bandwidth settings=Χρήση εναλλακτικών ρυθμίσεων εύρους ζώνης
+average=average
+Browse=Browse
+Enable µTP=Enable µTP
+Select a folder for download=Select a folder for download
+Select torrent location=Select torrent location
