@@ -2780,7 +2780,7 @@ end;
 procedure TMainForm.lvFilterClick(Sender: TObject);
 begin
   if VarIsNull(lvFilter.Items[0, lvFilter.Row]) then
-    if FLastFilerIndex > lvFilter.Row then
+    if (FLastFilerIndex > lvFilter.Row) or (lvFilter.Row = lvFilter.Items.Count - 1) then
       lvFilter.Row:=lvFilter.Row - 1
     else
       lvFilter.Row:=lvFilter.Row + 1;
