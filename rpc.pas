@@ -442,7 +442,7 @@ begin
                                      'hashString', 'comment', 'downloadedEver', 'uploadedEver', 'corruptEver', 'errorString',
                                      'announceResponse', 'downloadLimit', 'downloadLimitMode', 'uploadLimit', 'uploadLimitMode',
                                      'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
-                                     'seeders','peersGettingFromUs','leechers','peersKnown', 'uploadRatio', 'addedDate', 'doneDate',
+                                     'seeders','peersGettingFromUs','leechers', 'uploadRatio', 'addedDate', 'doneDate',
                                      'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id', 'pieces',
                                      'trackerStats']);
   try

@@ -173,7 +173,6 @@
    peersConnected              | number                      | tr_stat
    peersFrom                   | object (see below)          | n/a
    peersGettingFromUs          | number                      | tr_stat
-   peersKnown                  | number                      | tr_stat
    peersSendingToUs            | number                      | tr_stat
    percentDone                 | double                      | tr_stat
    pieces                      | string (see below)          | tr_torrent
@@ -231,6 +230,7 @@
                       | isEncrypted             | boolean    | tr_peer_stat
                       | isIncoming              | boolean    | tr_peer_stat
                       | isUploadingTo           | boolean    | tr_peer_stat
+                      | isUTP                   | boolean    | tr_peer_stat
                       | peerIsChoked            | boolean    | tr_peer_stat
                       | peerIsInterested        | boolean    | tr_peer_stat
                       | port                    | number     | tr_peer_stat
@@ -347,6 +347,7 @@
 
    key                  | value type & description
    ---------------------+-------------------------------------------------
+   "cookies"            | string      pointer to a string of one or more cookies.
    "download-dir"       | string      path to download the torrent to
    "filename"           | string      filename or URL of the .torrent file
    "metainfo"           | string      base64-encoded .torrent content
@@ -361,6 +362,11 @@
 
    Either "filename" OR "metainfo" MUST be included.
    All other arguments are optional.
+
+   The format of the "cookies" should be NAME=CONTENTS, where NAME is the
+   cookie name and CONTENTS is what the cookie should contain.
+   Set multiple cookies like this: "name1=content1; name2=content2;" etc. 
+   <http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCOOKIE>
 
    Response arguments: on success, a "torrent-added" object in the
                        form of one of 3.3's tr_info objects with the
@@ -443,6 +449,7 @@
    "start-added-torrents"           | boolean    | true means added torrents will be started right away
    "trash-original-torrent-files"   | boolean    | true means the .torrent file of added torrents will be deleted
    "units"                          | object     | see below
+   "utp-enabled"                    | boolean    | true means allow utp
    "version"                        | string     | long version string "$version ($revision)"
    ---------------------------------+------------+-----------------------------+
    units                            | object containing:                       |
@@ -652,3 +659,7 @@
    ------+---------+-----------+----------------+-------------------------------
    12    | 2.20    | yes       | session-get    | new arg "download-dir-free-space"
          |         | yes       | session-close  | new method
+   ------+---------+-----------+----------------+-------------------------------
+   13    | 2.30    | yes       | session-get    | new arg "isUTP" to the "peers" list
+         |         | yes       | torrent-add    | new arg "cookies"
+         |         |        NO | torrent-get    | removed arg "peersKnown"
