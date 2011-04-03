@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Русский
+TranslationLanguage=Русский
 
 %dd, %dh=%dд, %dч
 %dh, %dm=%dч, %dмин
@@ -283,8 +283,8 @@ Tracker properties=Свойства трекера
 Unlimited=Не ограничено
 Upload speeds (KB/s)=Скорости отдачи (КБ/с)
 Use alternate bandwidth settings=Использовать альтернативные скорости
-average=average
-Browse=Browse
-Enable µTP=Enable µTP
-Select a folder for download=Select a folder for download
-Select torrent location=Select torrent location
+average=средняя
+Browse=Обзор
+Enable µTP=Разрешить µTP
+Select a folder for download=Выберите папку для загрузки
+Select torrent location=Выберите расположение данных торрента
