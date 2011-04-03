@@ -1878,10 +1878,7 @@ end;
 
 function TMainForm.EtaToString(ETA: integer): string;
 begin
-  if ETA = -1 then
-    Result:=''
-  else
-  if ETA = -2 then
+  if (ETA < 0) or (ETA = MaxInt) then
     Result:=''
   else
     Result:=SecondsToString(ETA);
@@ -3492,6 +3489,7 @@ var
   DownCnt, SeedCnt, CompletedCnt, ActiveCnt, StoppedCnt: integer;
   IsActive: boolean;
   Paths: TStringList;
+  v: variant;
 begin
   if gTorrents.Tag <> 0 then exit;
   if list = nil then begin
@@ -3635,6 +3633,9 @@ begin
     GetTorrentValue(idxSeeds, 'peersSendingToUs', vtInteger);
     GetTorrentValue(idxPeers, 'peersGettingFromUs', vtInteger);
     GetTorrentValue(idxETA, 'eta', vtInteger);
+    v:=FTorrents[idxETA, row];
+    if not VarIsNull(v) and (v < 0) then
+      FTorrents[idxETA, row]:=MaxInt;
     GetTorrentValue(idxDownloaded, 'downloadedEver', vtExtended);
     GetTorrentValue(idxUploaded, 'uploadedEver', vtExtended);
     GetTorrentValue(idxAddedOn, 'addedDate', vtExtended);
