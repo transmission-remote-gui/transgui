@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '3.0.1';
+  AppVersion = '3.1';
 
 resourcestring
   sAll = 'All';
@@ -557,8 +557,8 @@ const
 
   idxTag = -1;
   idxSeedsTotal = -2;
-  idxLeechers = -3;
-  idxPeersTotal = -4;
+  idxLeechersTotal = -3;
+//  idxPeersTotal = -4;
   idxStateImg = -5;
   TorrentsExtraColumns = 5;
 
@@ -621,7 +621,7 @@ const
 
   TorrentFieldsMap: array[idxName..idxTorrentId] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
-     'peersGettingFromUs,leechers,peersKnown', 'rateDownload', 'rateUpload', 'eta', 'uploadRatio',
+     'peersGettingFromUs,leechers', 'rateDownload', 'rateUpload', 'eta', 'uploadRatio',
      'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority',
      '', '');
 
@@ -2640,7 +2640,7 @@ begin
         if not VarIsNull(Sender.Items[idxSeedsTotal, ARow]) then
           Text:=GetSeedsText(Sender.Items[idxSeeds, ARow], Sender.Items[idxSeedsTotal, ARow]);
       idxPeers:
-        Text:=GetPeersText(Sender.Items[idxPeers, ARow], Sender.Items[idxPeersTotal, ARow], Sender.Items[idxLeechers, ARow]);
+        Text:=GetPeersText(Sender.Items[idxPeers, ARow], -1, Sender.Items[idxLeechersTotal, ARow]);
       idxDownSpeed, idxUpSpeed:
         begin
           j:=Sender.Items[ADataCol, ARow];
@@ -2712,7 +2712,7 @@ begin
   if ASortCol = idxSeeds then
     ASortCol:=idxSeedsTotal;
   if ASortCol = idxPeers then
-    ASortCol:=idxPeersTotal;
+    ASortCol:=idxLeechersTotal;
 end;
 
 procedure TMainForm.lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
@@ -3629,7 +3629,6 @@ begin
     GetTorrentValue(idxSizeToDowload, 'sizeWhenDone', vtExtended);
     GetTorrentValue(idxSeeds, 'peersSendingToUs', vtInteger);
     GetTorrentValue(idxPeers, 'peersGettingFromUs', vtInteger);
-    GetTorrentValue(idxPeersTotal, 'peersKnown', vtInteger);
     GetTorrentValue(idxETA, 'eta', vtInteger);
     GetTorrentValue(idxDownloaded, 'downloadedEver', vtExtended);
     GetTorrentValue(idxUploaded, 'uploadedEver', vtExtended);
@@ -3641,16 +3640,16 @@ begin
       if t.Arrays['trackerStats'].Count > 0 then
         with t.Arrays['trackerStats'].Objects[0] do begin
           FTorrents[idxSeedsTotal, row]:=Integers['seederCount'];
-          FTorrents[idxLeechers, row]:=Integers['leecherCount'];
+          FTorrents[idxLeechersTotal, row]:=Integers['leecherCount'];
         end
       else begin
         FTorrents[idxSeedsTotal, row]:=-1;
-        FTorrents[idxLeechers, row]:=-1;
+        FTorrents[idxLeechersTotal, row]:=-1;
       end;
     end
     else begin
       GetTorrentValue(idxSeedsTotal, 'seeders', vtInteger);
-      GetTorrentValue(idxLeechers, 'leechers', vtInteger);
+      GetTorrentValue(idxLeechersTotal, 'leechers', vtInteger);
     end;
     if t.IndexOfName('uploadRatio') >= 0 then begin
       f:=t.Floats['uploadRatio'];
@@ -4262,7 +4261,7 @@ begin
       i:=-1
   else
     i:=t.Integers['leechers'];
-  s:=GetPeersText(t.Integers['peersGettingFromUs'], t.Integers['peersKnown'], i);
+  s:=GetPeersText(t.Integers['peersGettingFromUs'], -1, i);
   s:=StringReplace(s, ' ', ' '+ sConnected +' ', []);
   s:=StringReplace(s, '/', ' ' + sOf + ' ', []);
   txPeers.Caption:=StringReplace(s, ')', ' '+ sInSwarm+ ')', []);
