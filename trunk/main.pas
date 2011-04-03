@@ -2059,6 +2059,11 @@ begin
           end;
           cbBlocklistClick(nil);
 
+          if RpcObj.RPCVersion >= 13 then
+            cbUTP.Checked:=args.Integers['utp-enabled'] <> 0
+          else
+            cbUTP.Visible:=False;
+
           cbPortForwarding.Checked:=args.Integers['port-forwarding-enabled'] <> 0;
           s:=args.Strings['encryption'];
           if s = 'preferred' then
@@ -2157,6 +2162,9 @@ begin
         if edBlocklistURL.Visible then
           if cbBlocklist.Checked then
             args.Add('blocklist-url', UTF8Decode(edBlocklistURL.Text));
+        if RpcObj.RPCVersion >= 13 then
+          args.Add('utp-enabled', integer(cbUTP.Checked) and 1);
+
         req.Add('arguments', args);
         args:=RpcObj.SendRequest(req, False);
         if args = nil then begin
