@@ -656,6 +656,10 @@ function GetHumanSize(sz: double; RoundTo: integer = 0): string;
 var
   i: integer;
 begin
+  if sz < 0 then begin
+    Result:='-';
+    exit;
+  end;
   i:=Low(SizeNames);
   if RoundTo > 0 then begin
     Inc(i);
