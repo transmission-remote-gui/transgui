@@ -505,6 +505,8 @@ type
     procedure DoSetDownloadSpeed(Sender: TObject);
     procedure DoSetUploadSpeed(Sender: TObject);
     procedure SetSpeedLimit(const Dir: string; Speed: integer);
+    function FixSeparators(const p: string): string;
+    function MapRemoteToLocal(const RemotePath: string): string;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -518,6 +520,7 @@ type
     function SetCurrentFilePriority(const APriority: string): boolean;
     procedure SetTorrentPriority(APriority: integer);
     procedure ClearDetailsInfo;
+    function SelectRemoteFolder(const CurFolder, DialogTitle: string): string;
     property Ini: TIniFile read FIni;
   end;
 
@@ -3170,6 +3173,12 @@ begin
   TrayIcon.Hint:=RpcObj.InfoStatus;
   RpcObj.Connect;
   FPathMap.Text:=StringReplace(Ini.ReadString(Sec, 'PathMap', ''), '|', LineEnding, [rfReplaceAll]);
+  i:=0;
+  while i < FPathMap.Count do
+    if Trim(FPathMap.ValueFromIndex[i]) = '' then
+      FPathMap.Delete(i)
+    else
+      Inc(i);
 
   Ini.WriteString('Hosts', 'CurHost', FCurConn);
   if FCurConn <> Ini.ReadString('Hosts', 'Host1', '') then begin
@@ -3265,6 +3274,68 @@ begin
   ProcessPieces('', 0, 0);
   txDownProgress.AutoSize:=False;
   txDownProgress.Caption:='';
+end;
+
+function TMainForm.SelectRemoteFolder(const CurFolder, DialogTitle: string): string;
+var
+  i, j: integer;
+  s, ss, fn: string;
+  dlg: TSelectDirectoryDialog;
+  d: char;
+begin
+  Result:='';
+  if Trim(FPathMap.Text) = '' then begin
+    MessageDlg(sNoPathMapping, mtInformation, [mbOK], 0);
+    exit;
+  end;
+  s:=MapRemoteToLocal(CurFolder);
+  if (s = '') or not DirectoryExistsUTF8(s) then
+    s:=FPathMap.ValueFromIndex[0];
+
+  if not DirectoryExistsUTF8(s) then begin
+    MessageDlg(sNoPathMapping, mtInformation, [mbOK], 0);
+    exit;
+  end;
+
+  dlg:=TSelectDirectoryDialog.Create(nil);
+  try
+    dlg.Title:=DialogTitle;
+    dlg.InitialDir:=s;
+    if not dlg.Execute then
+      exit;
+
+    fn:=dlg.FileName;
+    for i:=0 to FPathMap.Count - 1 do begin
+      s:=FPathMap[i];
+      j:=Pos('=', s);
+      if j > 0 then begin
+        ss:=FixSeparators(Copy(s, j + 1, MaxInt));
+        if (ss = fn) or (Pos(IncludeProperTrailingPathDelimiter(ss), fn) = 1) then begin
+          Result:=Copy(s, 1, j - 1);
+          d:='/';
+          for j:=1 to Length(Result) do
+            if Result[j] in ['/','\'] then begin
+              d:=Result[j];
+              break;
+            end;
+          if ss <> fn then begin
+            if (Result <> '') and (Copy(Result, Length(Result), 1) <> d) then
+              Result:=Result + d;
+            ss:=IncludeProperTrailingPathDelimiter(ss);
+            Result:=Result + Copy(fn, Length(ss) + 1, MaxInt);
+          end;
+
+          Result:=StringReplace(Result, DirectorySeparator, d, [rfReplaceAll]);
+          if Copy(Result, Length(Result), 1) = d then
+            SetLength(Result, Length(Result) - 1);
+        end;
+      end;
+    end;
+  finally
+    dlg.Free;
+  end;
+  if Result = '' then
+    MessageDlg(sNoPathMapping, mtError, [mbOK], 0);
 end;
 
 procedure TMainForm.UpdateUI;
@@ -4752,37 +4823,16 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
     end;
   end;
 
-  function _FixSeparators(const p: string): string;
-  begin
-    Result:=StringReplace(p, '/', DirectorySeparator, [rfReplaceAll]);
-    Result:=StringReplace(Result, '\', DirectorySeparator, [rfReplaceAll]);
-  end;
-
 var
-  i, j: integer;
-  s, ss, fn: string;
+  s: string;
 begin
-  fn:=_FixSeparators(FileName);
-  for i:=0 to FPathMap.Count - 1 do begin
-    s:=FPathMap[i];
-    j:=Pos('=', s);
-    if j > 0 then begin
-      ss:=_FixSeparators(Copy(s, 1, j - 1));
-      if (ss = fn) or (Pos(IncludeProperTrailingPathDelimiter(ss), fn) = 1) then begin
-        if ss = fn then
-          ss:=Copy(s, j + 1, MaxInt)
-        else begin
-          ss:=IncludeProperTrailingPathDelimiter(ss);
-          ss:=IncludeTrailingPathDelimiter(Copy(s, j + 1, MaxInt)) + Copy(fn, Length(ss) + 1, MaxInt);
-        end;
-        _Exec(_FixSeparators(ss));
-        exit;
-      end;
-    end;
+  s:=MapRemoteToLocal(FileName);
+  if s <> '' then begin
+    _Exec(s);
+    exit;
   end;
-
-  if FileExistsUTF8(fn) or DirectoryExistsUTF8(fn) then begin
-    _Exec(fn);
+  if FileExistsUTF8(FileName) or DirectoryExistsUTF8(FileName) then begin
+    _Exec(FileName);
     exit;
   end;
 
@@ -4981,6 +5031,38 @@ begin
   end;
   RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
   AppNormal;
+end;
+
+function TMainForm.FixSeparators(const p: string): string;
+begin
+  Result:=StringReplace(p, '/', DirectorySeparator, [rfReplaceAll]);
+  Result:=StringReplace(Result, '\', DirectorySeparator, [rfReplaceAll]);
+end;
+
+function TMainForm.MapRemoteToLocal(const RemotePath: string): string;
+var
+  i, j: integer;
+  s, ss, fn: string;
+begin
+  Result:='';
+  fn:=FixSeparators(Trim(RemotePath));
+  for i:=0 to FPathMap.Count - 1 do begin
+    s:=FPathMap[i];
+    j:=Pos('=', s);
+    if j > 0 then begin
+      ss:=FixSeparators(Copy(s, 1, j - 1));
+      if (ss = fn) or (Pos(IncludeProperTrailingPathDelimiter(ss), fn) = 1) then begin
+        if ss = fn then
+          ss:=Copy(s, j + 1, MaxInt)
+        else begin
+          ss:=IncludeProperTrailingPathDelimiter(ss);
+          ss:=IncludeTrailingPathDelimiter(Copy(s, j + 1, MaxInt)) + Copy(fn, Length(ss) + 1, MaxInt);
+        end;
+        Result:=FixSeparators(ss);
+        exit;
+      end;
+    end;
+  end;
 end;
 
 procedure TMainForm.FillSpeedsMenu;
