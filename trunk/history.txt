@@ -1,3 +1,16 @@
+3.1 (Apr 03, 2011)
+------------------
+[+] Support for Transmission 2.30+.
+[+] Implemented a folder browsing window for choosing torrent destination folder.
+[+] Option to Windows setup to handle magnet links by Transmission Remote GUI.
+[+] Polish translation by piotr.tytus.dobrowolski.
+[+] The "Enable µTP" daemon option.
+[+] Average download speed to torrent details.
+[*] Hide popup menu items for tracker editing, if a transmission daemon does not support it. Issue #396.
+[*] Display "-" when disk free space can not be obtained.
+[-] Properly handle infinite ETA when sorting by the ETA column. Issue #397.
+[-] The "Unknown Run-Time error: 202" error when clicking on the filter separator, when there are no torrents in the list. Issue #401.
+
 3.0 (Feb 27, 2011)
 ------------------
 [+] Added the "Refresh interval when minimized" option. Issue #313.
