@@ -246,19 +246,19 @@ object DaemonOptionsForm: TDaemonOptionsForm
       object cbBlocklist: TCheckBox
         Left = 8
         Height = 17
-        Top = 193
+        Top = 210
         Width = 94
         Caption = 'Enable blocklist:'
         OnClick = cbBlocklistClick
-        TabOrder = 9
+        TabOrder = 10
       end
       object edBlocklistURL: TEdit
         Left = 8
         Height = 21
-        Top = 216
+        Top = 233
         Width = 546
         Anchors = [akTop, akLeft, akRight]
-        TabOrder = 10
+        TabOrder = 11
       end
       object cbLPD: TCheckBox
         Left = 192
@@ -267,6 +267,14 @@ object DaemonOptionsForm: TDaemonOptionsForm
         Width = 152
         Caption = 'Enable Local Peer Discovery'
         TabOrder = 8
+      end
+      object cbUTP: TCheckBox
+        Left = 192
+        Height = 17
+        Top = 186
+        Width = 71
+        Caption = 'Enable µTP'
+        TabOrder = 9
       end
     end
     object tabBandwidth: TTabSheet

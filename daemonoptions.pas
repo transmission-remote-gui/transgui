@@ -60,6 +60,7 @@ type
     cbIdleSeedLimit: TCheckBox;
     cbAltEnabled: TCheckBox;
     cbAutoAlt: TCheckBox;
+    cbUTP: TCheckBox;
     edAltTimeEnd: TMaskEdit;
     txDays: TLabel;
     txFrom: TLabel;
