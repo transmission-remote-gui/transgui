@@ -98,6 +98,7 @@ resourcestring
   sSSLLoadError = 'Unable to load OpenSSL library files: %s and %s';
   SRemoveTracker = 'Are you sure to remove tracker ''%s''?';
   SUnlimited = 'Unlimited';
+  SAverage = 'average';
 
 type
 
@@ -4175,7 +4176,13 @@ begin
   else
     i:=0;
   txWasted.Caption:=Format(sHashfails, [GetHumanSize(t.Floats['corruptEver']), i]);
-  txDownSpeed.Caption:=GetHumanSize(gTorrents.Items[idxDownSpeed, idx], 1)+sPerSecond;
+  s:=GetHumanSize(gTorrents.Items[idxDownSpeed, idx], 1)+sPerSecond;
+  if t.IndexOfName('secondsDownloading') >= 0 then begin
+    f:=t.Integers['secondsDownloading'];
+    if f > 0 then
+      s:=Format('%s (%s: %s)', [s, SAverage, GetHumanSize(t.Floats['downloadedEver']/f, 1) + sPerSecond]);
+  end;
+  txDownSpeed.Caption:=s;
   txUpSpeed.Caption:=GetHumanSize(gTorrents.Items[idxUpSpeed, idx], 1)+sPerSecond;
   txRatio.Caption:=RatioToString(t.Floats['uploadRatio']);
 
