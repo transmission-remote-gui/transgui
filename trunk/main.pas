@@ -156,7 +156,7 @@ type
     MenuItem41: TMenuItem;
     MenuItem43: TMenuItem;
     MenuItem63: TMenuItem;
-    MenuItem64: TMenuItem;
+    sepTrackers: TMenuItem;
     MenuItem65: TMenuItem;
     MenuItem66: TMenuItem;
     MenuItem67: TMenuItem;
@@ -4431,8 +4431,12 @@ begin
   acOpenFile.Visible:=acOpenContainingFolder.Visible;
   pmSepOpen1.Visible:=acOpenContainingFolder.Visible;
   pmSepOpen2.Visible:=acOpenContainingFolder.Visible;
+  sepAltSpeed.Visible:=RpcObj.RPCVersion >= 5;
   acAltSpeed.Visible:=RpcObj.RPCVersion >= 5;
-  sepAltSpeed.Visible:=acAltSpeed.Visible;
+  acAddTracker.Visible:=RpcObj.RPCVersion >= 10;
+  acEditTracker.Visible:=acAddTracker.Visible;
+  acDelTracker.Visible:=acAddTracker.Visible;
+  sepTrackers.Visible:=acAddTracker.Visible;
 
   if RpcObj.RPCVersion >= 5 then begin
     acAltSpeed.Checked:=s.Integers['alt-speed-enabled'] <> 0;
