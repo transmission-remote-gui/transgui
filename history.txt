@@ -1,11 +1,12 @@
-3.1 (Apr 03, 2011)
+3.1 (Apr 09, 2011)
 ------------------
 [+] Support for Transmission 2.30+.
 [+] Implemented a folder browsing window for choosing torrent destination folder.
 [+] Option to Windows setup to handle magnet links by Transmission Remote GUI.
-[+] Polish translation by piotr.tytus.dobrowolski.
 [+] The "Enable µTP" daemon option.
 [+] Average download speed to torrent details.
+[+] Polish translation by piotr.tytus.dobrowolski.
+[+] Traditional Chinese (Taiwan) translation by thelordkao.
 [*] Hide popup menu items for tracker editing, if a transmission daemon does not support it. Issue #396.
 [*] Display "-" when disk free space can not be obtained.
 [-] Properly handle infinite ETA when sorting by the ETA column. Issue #397.
