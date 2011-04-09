@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Česky
+TranslationLanguage=Česky
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapování vzdálené cesty na lokalní.~~Příklady:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (hotových %d)
@@ -6,7 +6,7 @@
 %dh, %dm=%dh, %dm
 %dm, %ds=%dm, %ds
 %ds=%ds
-%s (%d hashfails)=%s (%d hashfails)
+%s (%d hashfails)=%s (%d hash chyb)
 %s (%s done)=%s (%s Hotovo)
 '%s' has finished downloading='%s' dokončil stahování
 %s%s%d downloading, %d seeding%s%s, %s=%s%s%d stahování, %d seedování%s%s, %s
@@ -283,7 +283,6 @@ Tracker properties=Vlastnosti trackeru
 Unlimited=Neomezeně
 Upload speeds (KB/s)=Rychlost uploadu (KB/s)
 Use alternate bandwidth settings=Použít alternativní nastavené rychlostí
-&Close=&Close
 average=average
 Browse=Browse
 Enable µTP=Enable µTP
