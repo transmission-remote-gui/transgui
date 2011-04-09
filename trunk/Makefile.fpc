@@ -85,6 +85,7 @@ zipdist: all
 	$(CPPROG) ./readme.txt ./Release/dist
 	$(CPPROG) ./history.txt ./Release/dist
 	$(CPPROG) ./LICENSE.txt ./Release/dist
+	$(CPPROG) ./transgui.png ./Release/dist
 	$(CPPROG) ./lang/transgui.* ./Release/dist/lang
 	-$(DEL) ./Release/transgui-$(PROG_VER)-$(FULL_TARGET).zip
 	$(MAKE) -C ./Release/dist -f ../../Makefile int_zip ZIP_FILE=transgui-$(PROG_VER)-$(FULL_TARGET).zip
