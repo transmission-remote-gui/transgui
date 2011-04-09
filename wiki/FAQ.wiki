@@ -16,9 +16,8 @@
  * 4 - number of peers, from which we are downloading now (connected seeders).
  * 28 - total number of available peers, which have this torrent (available seeders).
 
-*Q:* What mean numbers like 2/7(134) in the Peers column?
+*Q:* What mean numbers like 2/7 in the Peers column?
 
 *A:* Peers: 2/7(134):
  * 2 - number of peers, which are downloading from us (connected leechers).
  * 7 - total number of downloading peers on the tracker (total number of leechers).
- * 134 - total number of peers, which is known to have this torrent. Some of the peers may be unavailable now.
