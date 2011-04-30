@@ -7,7 +7,6 @@ object ConnOptionsForm: TConnOptionsForm
   VertScrollBar.Page = 238
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  BorderWidth = 8
   Caption = 'Connection options'
   ClientHeight = 313
   ClientWidth = 471
@@ -16,19 +15,21 @@ object ConnOptionsForm: TConnOptionsForm
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.30.1'
   object Page: TPageControl
     Left = 8
-    Height = 207
-    Top = 64
+    Height = 202
+    Top = 69
     Width = 455
-    ActivePage = tabProxy
+    ActivePage = tabMisc
     Align = alClient
-    TabIndex = 1
+    BorderSpacing.Left = 8
+    BorderSpacing.Right = 8
+    TabIndex = 3
     TabOrder = 1
     object tabConnection: TTabSheet
       Caption = 'Connection'
-      ClientHeight = 181
+      ClientHeight = 176
       ClientWidth = 447
       object txPassword: TLabel
         Left = 8
@@ -110,7 +111,7 @@ object ConnOptionsForm: TConnOptionsForm
     end
     object tabProxy: TTabSheet
       Caption = 'Proxy'
-      ClientHeight = 181
+      ClientHeight = 176
       ClientWidth = 447
       object txProxy: TLabel
         Left = 8
@@ -192,7 +193,7 @@ object ConnOptionsForm: TConnOptionsForm
     end
     object tabPaths: TTabSheet
       Caption = 'Paths'
-      ClientHeight = 181
+      ClientHeight = 176
       ClientWidth = 447
       OnShow = tabPathsShow
       object txPaths: TLabel
@@ -207,7 +208,7 @@ object ConnOptionsForm: TConnOptionsForm
       end
       object edPaths: TMemo
         Left = 8
-        Height = 87
+        Height = 82
         Top = 82
         Width = 430
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -217,7 +218,7 @@ object ConnOptionsForm: TConnOptionsForm
     end
     object tabMisc: TTabSheet
       Caption = 'Misc'
-      ClientHeight = 181
+      ClientHeight = 176
       ClientWidth = 447
       object gbSpeed: TGroupBox
         Left = 8
@@ -265,12 +266,21 @@ object ConnOptionsForm: TConnOptionsForm
     end
   end
   object Buttons: TButtonPanel
-    Left = 8
+    Left = 0
     Height = 26
     Top = 279
-    Width = 455
+    Width = 471
     BorderSpacing.Top = 8
+    BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&OK'
+    HelpButton.Name = 'HelpButton'
+    HelpButton.Caption = '&Help'
+    CloseButton.Name = 'CloseButton'
+    CloseButton.Caption = '&Close'
+    CancelButton.Name = 'CancelButton'
+    CancelButton.Caption = 'Cancel'
     TabOrder = 2
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]
@@ -278,12 +288,13 @@ object ConnOptionsForm: TConnOptionsForm
   end
   object panTop: TPanel
     Left = 8
-    Height = 56
+    Height = 53
     Top = 8
     Width = 455
     Align = alTop
+    BorderSpacing.Around = 8
     BevelOuter = bvNone
-    ClientHeight = 56
+    ClientHeight = 53
     ClientWidth = 455
     TabOrder = 0
     object Label1: TLabel

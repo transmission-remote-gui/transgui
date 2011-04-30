@@ -27,16 +27,13 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms
-  { you can add units after this }, Main, LResources, rpc, AddTorrent, ConnOptions, varlist,
+  { you can add units after this }, Main, rpc, AddTorrent, ConnOptions, varlist,
   TorrProps, DaemonOptions, About, IpResolver, download, ColSetup, utils, ResTranslator, AddLink, MoveTorrent, AddTracker, Options;
 
-{$IFDEF WINDOWS}{$R transgui.rc}{$ENDIF}
+{$R *.res}
 
 begin
   if not CheckAppParams then exit;
-{$ifndef darwin}
-  {$I transgui.lrs}
-{$endif darwin}
 
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);

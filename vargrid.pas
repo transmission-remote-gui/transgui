@@ -50,6 +50,7 @@ type
 
   TVarGrid = class(TCustomDrawGrid)
   private
+    FFirstVisibleColumn: integer;
     FHideSelection: boolean;
     FImages: TImageList;
     FItems: TVarList;
@@ -119,6 +120,7 @@ type
     property RowVisible[RowIndex: integer]: boolean read GetRowVisible write SetRowVisible;
     property SelCount: integer read FSelCount;
     property Row: integer read GetRow write SetRow;
+    property FirstVisibleColumn: integer read FFirstVisibleColumn;
   published
     property Align;
     property AlternateColor;
@@ -338,14 +340,16 @@ procedure TVarGrid.UpdateColumnsMap;
 var
   i, j: integer;
 begin
+  FFirstVisibleColumn:=-1;
   SetLength(FColumnsMap, Columns.Count);
   j:=0;
   for i:=0 to Columns.Count - 1 do
-    with Columns[i] do
-      if Visible then begin
-        FColumnsMap[j]:=ID - 1;
-        Inc(j);
-      end;
+    with Columns[i] do begin
+      if (FFirstVisibleColumn < 0) and Visible then
+        FFirstVisibleColumn:=i;
+      FColumnsMap[j]:=ID - 1;
+      Inc(j);
+    end;
   SetLength(FColumnsMap, j);
 end;
 
@@ -438,7 +442,7 @@ var
 begin
   AState := cbUnchecked;
   GetCheckBoxState(aCol, aRow, aState);
-  DrawGridCheckboxBitmaps(aRect, aState);
+  DrawGridCheckboxBitmaps(aCol, aRow, aRect, aState);
 end;
 
 procedure TVarGrid.SizeChanged(OldColCount, OldRowCount: Integer);
@@ -537,7 +541,7 @@ begin
           R:=aRect;
           R.Right:=R.Left + (R.Bottom - R.Top);
           aRect.Left:=R.Right;
-          DrawGridCheckboxBitmaps(R, ca.State);
+          DrawGridCheckboxBitmaps(aCol, aRow, R, ca.State);
         end;
         if (ca.ImageIndex <> -1) and Assigned(FImages) then begin
           FImages.Draw(Canvas, aRect.Left + 2, (aRect.Bottom + aRect.Top - FImages.Height) div 2, ca.ImageIndex, gdeNormal);
@@ -553,11 +557,10 @@ begin
       end;
     end;
   end;
-  if TitleStyle<>tsNative then
-    DrawColumnText(aCol,aRow,aRect,aState);
-  DrawCellGrid(aCol,aRow,aRect,aState);
-  if TitleStyle=tsNative then
-    DrawColumnText(aCol,aRow,aRect,aState);
+  if gdFixed in aState then
+    DefaultDrawCell(aCol, aRow, aRect, aState)
+  else
+    DrawCellGrid(aCol,aRow,aRect,aState);
 end;
 
 procedure TVarGrid.ColRowMoved(IsColumn: Boolean; FromIndex, ToIndex: Integer);
@@ -991,7 +994,7 @@ end;
 
 function TVarGrid.ColToDataCol(ACol: integer): integer;
 begin
-  if (ACol >= FixedCols) and (ACol < ColCount) then
+  if (ACol >= FixedCols) and (ACol <= High(FColumnsMap)) then
     Result:=FColumnsMap[ACol]
   else
     Result:=-1;

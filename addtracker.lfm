@@ -1,24 +1,31 @@
 object AddTrackerForm: TAddTrackerForm
   Left = 411
-  Height = 91
+  Height = 96
   Top = 283
   Width = 533
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  BorderWidth = 8
   Caption = 'Add tracker'
-  ClientHeight = 91
+  ClientHeight = 96
   ClientWidth = 533
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.30.1'
   object Buttons: TButtonPanel
-    Left = 8
+    Left = 0
     Height = 26
-    Top = 57
-    Width = 517
-    BorderSpacing.Top = 8
+    Top = 62
+    Width = 533
+    BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&OK'
+    HelpButton.Name = 'HelpButton'
+    HelpButton.Caption = '&Help'
+    CloseButton.Name = 'CloseButton'
+    CloseButton.Caption = '&Close'
+    CancelButton.Name = 'CancelButton'
+    CancelButton.Caption = 'Cancel'
     TabOrder = 1
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]
@@ -26,12 +33,13 @@ object AddTrackerForm: TAddTrackerForm
   end
   object Panel1: TPanel
     Left = 8
-    Height = 41
+    Height = 46
     Top = 8
     Width = 517
     Align = alClient
+    BorderSpacing.Around = 8
     BevelOuter = bvNone
-    ClientHeight = 41
+    ClientHeight = 46
     ClientWidth = 517
     TabOrder = 0
     object txTrackerURL: TLabel
@@ -46,7 +54,7 @@ object AddTrackerForm: TAddTrackerForm
       Left = 0
       Height = 21
       Top = 20
-      Width = 517
+      Width = 516
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 0
     end

@@ -15,7 +15,7 @@ object AboutForm: TAboutForm
   Constraints.MinWidth = 350
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.30.1'
   object Page: TPageControl
     Left = 8
     Height = 299
@@ -948,8 +948,16 @@ object AboutForm: TAboutForm
     Width = 435
     BorderSpacing.Top = 8
     BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&OK'
+    HelpButton.Name = 'HelpButton'
+    HelpButton.Caption = '&Help'
+    CloseButton.Name = 'CloseButton'
+    CloseButton.Caption = '&Close'
+    CancelButton.Name = 'CancelButton'
+    CancelButton.Caption = 'Cancel'
     TabOrder = 1
-    Spacing = 8
+    Spacing = 0
     ShowButtons = [pbOK]
     ShowBevel = False
   end
