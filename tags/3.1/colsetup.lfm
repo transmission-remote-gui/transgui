@@ -1,0 +1,76 @@
+object ColSetupForm: TColSetupForm
+  Left = 404
+  Height = 326
+  Top = 194
+  Width = 355
+  HorzScrollBar.Page = 399
+  VertScrollBar.Page = 299
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  BorderWidth = 8
+  Caption = 'Columns setup'
+  ClientHeight = 326
+  ClientWidth = 355
+  Constraints.MinHeight = 200
+  Constraints.MinWidth = 260
+  OnCreate = FormCreate
+  Position = poMainFormCenter
+  LCLVersion = '0.9.28.2'
+  object Buttons: TButtonPanel
+    Left = 8
+    Height = 36
+    Top = 282
+    Width = 339
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+  end
+  object Panel1: TPanel
+    Left = 8
+    Height = 266
+    Top = 8
+    Width = 339
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 266
+    ClientWidth = 339
+    TabOrder = 0
+    object lstColumns: TCheckListBox
+      Left = 0
+      Height = 266
+      Top = 0
+      Width = 256
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      ItemHeight = 0
+      OnClick = lstColumnsClick
+      OnClickCheck = lstColumnsClickCheck
+      TabOrder = 0
+    end
+    object btUp: TButton
+      Left = 265
+      Height = 23
+      Top = 0
+      Width = 75
+      Anchors = [akTop, akRight]
+      AutoSize = True
+      Caption = 'Up'
+      Constraints.MinWidth = 75
+      OnClick = btUpClick
+      TabOrder = 1
+    end
+    object btDown: TButton
+      Left = 265
+      Height = 23
+      Top = 28
+      Width = 75
+      Anchors = [akTop, akRight]
+      AutoSize = True
+      Caption = 'Down'
+      Constraints.MinWidth = 75
+      OnClick = btDownClick
+      TabOrder = 2
+    end
+  end
+end

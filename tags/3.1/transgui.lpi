@@ -1,0 +1,209 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="7"/>
+    <General>
+      <Flags>
+        <AlwaysBuild Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <AutoCreateForms Value="False"/>
+      <TargetFileExt Value=".exe"/>
+      <Icon Value="0"/>
+      <UseXPManifest Value="True"/>
+    </General>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <CurrentVersionNr Value="3"/>
+      <CurrentMajorRevNr Value="1"/>
+      <ProjectVersion Value="3.1.0.0"/>
+      <CompanyName Value="Yury Sidorov"/>
+      <FileDescription Value="Transmission Remote GUI"/>
+      <InternalName Value="transgui"/>
+      <LegalCopyright Value="Copyright (c) 2008-2011 by Yury Sidorov"/>
+      <OriginalFilename Value="transgui.exe"/>
+      <ProductName Value="Transmission Remote GUI"/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="2">
+      <Item1>
+        <PackageName Value="trcomp"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
+    </RequiredPackages>
+    <Units Count="18">
+      <Unit0>
+        <Filename Value="transgui.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="transgui"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="main.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Main"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="rpc.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="rpc"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="addtorrent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AddTorrentForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="AddTorrent"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="connoptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ConnOptionsForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ConnOptions"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="varlist.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="varlist"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="torrprops.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TorrPropsForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TorrProps"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="daemonoptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DaemonOptionsForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="DaemonOptions"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="about.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="About"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="ipresolver.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="IpResolver"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="download.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DownloadForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="download"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="colsetup.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ColSetupForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ColSetup"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="utils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="utils"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="restranslator.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ResTranslator"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="addlink.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AddLinkForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="AddLink"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="movetorrent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MoveTorrentForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="MoveTorrent"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="addtracker.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AddTrackerForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="AddTracker"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="options.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="OptionsForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Options"/>
+      </Unit17>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="8"/>
+    <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="synapse\source\lib\"/>
+      <OtherUnitFiles Value="synapse\source\lib\;json\"/>
+      <UnitOutputDirectory Value="units"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <CStyleOperator Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="True"/>
+      </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <Verbosity>
+        <ShowHints Value="False"/>
+      </Verbosity>
+      <CustomOptions Value="-Sa"/>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+</CONFIG>

@@ -1,0 +1,77 @@
+object DownloadForm: TDownloadForm
+  Left = 390
+  Height = 106
+  Top = 278
+  Width = 404
+  HorzScrollBar.Page = 403
+  HorzScrollBar.Range = 392
+  VertScrollBar.Page = 105
+  VertScrollBar.Range = 95
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Downloading'
+  ClientHeight = 106
+  ClientWidth = 404
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnResize = FormResize
+  OnShow = FormShow
+  Position = poMainFormCenter
+  LCLVersion = '0.9.28.2'
+  object txFileName: TLabel
+    Left = 12
+    Height = 14
+    Top = 8
+    Width = 54
+    Caption = 'txFileName'
+    ParentColor = False
+  end
+  object txBytes: TLabel
+    Left = 12
+    Height = 14
+    Top = 28
+    Width = 38
+    Caption = 'txBytes'
+    ParentColor = False
+  end
+  object txPercent: TLabel
+    Left = 344
+    Height = 14
+    Top = 28
+    Width = 48
+    Alignment = taRightJustify
+    Anchors = [akTop, akRight]
+    Caption = 'txPercent'
+    ParentColor = False
+  end
+  object btCancel: TButton
+    Left = 160
+    Height = 23
+    Top = 72
+    Width = 75
+    AutoSize = True
+    Cancel = True
+    Caption = 'Cancel'
+    Constraints.MinWidth = 75
+    Default = True
+    OnClick = btCancelClick
+    TabOrder = 0
+  end
+  object pbDownload: TProgressBar
+    Left = 12
+    Height = 16
+    Top = 44
+    Width = 380
+    Anchors = [akTop, akLeft, akRight]
+    Smooth = True
+    Step = 1
+    TabOrder = 1
+  end
+  object UpdateTimer: TTimer
+    Interval = 300
+    OnTimer = UpdateTimerTimer
+    left = 36
+    top = 68
+  end
+end

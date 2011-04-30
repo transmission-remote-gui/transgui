@@ -1,0 +1,180 @@
+object AddTorrentForm: TAddTorrentForm
+  Left = 376
+  Height = 440
+  Top = 186
+  Width = 497
+  HorzScrollBar.Page = 505
+  VertScrollBar.Page = 404
+  VertScrollBar.Range = 92
+  BorderIcons = [biSystemMenu]
+  BorderWidth = 8
+  Caption = 'Add new torrent'
+  ClientHeight = 440
+  ClientWidth = 497
+  Constraints.MinHeight = 300
+  Constraints.MinWidth = 470
+  OnCreate = FormCreate
+  OnShow = FormShow
+  Position = poMainFormCenter
+  LCLVersion = '0.9.28.2'
+  object gbSaveAs: TGroupBox
+    Left = 8
+    Height = 92
+    Top = 8
+    Width = 481
+    Align = alTop
+    Caption = ' '
+    ClientHeight = 74
+    ClientWidth = 477
+    TabOrder = 0
+    object txDestFolder: TLabel
+      Left = 10
+      Height = 14
+      Top = 0
+      Width = 90
+      Caption = 'Destination folder:'
+      ParentColor = False
+    end
+    object txPeerLimit: TLabel
+      Left = 340
+      Height = 14
+      Top = 49
+      Width = 48
+      Alignment = taRightJustify
+      Anchors = [akTop, akRight]
+      Caption = 'Peer limit:'
+      ParentColor = False
+    end
+    object cbDestFolder: TComboBox
+      Left = 10
+      Height = 21
+      Top = 16
+      Width = 360
+      Anchors = [akTop, akLeft, akRight]
+      ItemHeight = 13
+      TabOrder = 0
+    end
+    object cbStartTorrent: TCheckBox
+      Left = 10
+      Height = 17
+      Top = 47
+      Width = 79
+      Caption = 'Start torrent'
+      Checked = True
+      State = cbChecked
+      TabOrder = 2
+    end
+    object edPeerLimit: TSpinEdit
+      Left = 404
+      Height = 21
+      Top = 46
+      Width = 62
+      Anchors = [akTop, akRight]
+      MaxValue = 999
+      MinValue = 1
+      TabOrder = 3
+      Value = 1
+    end
+    object btBrowse: TButton
+      Left = 375
+      Height = 23
+      Top = 15
+      Width = 91
+      Anchors = [akTop, akRight]
+      Caption = 'Browse...'
+      OnClick = btBrowseClick
+      TabOrder = 1
+    end
+  end
+  object gbContents: TGroupBox
+    Left = 8
+    Height = 294
+    Top = 104
+    Width = 481
+    Align = alClient
+    BorderSpacing.Top = 4
+    Caption = 'Torrent contents'
+    ClientHeight = 276
+    ClientWidth = 477
+    TabOrder = 1
+    object txDiskSpace: TLabel
+      Left = 10
+      Height = 14
+      Top = 20
+      Width = 79
+      Caption = 'Free disk space:'
+      ParentColor = False
+    end
+    object txSize: TLabel
+      Left = 10
+      Height = 14
+      Top = 2
+      Width = 1
+      ParentColor = False
+    end
+    object lvFiles: TVarGrid
+      Left = 10
+      Height = 223
+      Top = 40
+      Width = 456
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      Columns = <      
+        item
+          ReadOnly = True
+          Title.Caption = 'File name'
+          Width = 350
+        end      
+        item
+          ReadOnly = True
+          Title.Caption = 'Size'
+          Width = 80
+        end      
+        item
+          Title.Caption = ' '
+          Visible = False
+        end>
+      FixedCols = 0
+      Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goEditing, goRowSelect, goThumbTracking, goDblClickAutoSize]
+      RowCount = 1
+      TabOrder = 0
+      Images = MainForm.ImageList16
+      MultiSelect = True
+      HideSelection = True
+      OnCellAttributes = lvFilesCellAttributes
+    end
+    object btSelectAll: TButton
+      Left = 206
+      Height = 23
+      Top = 4
+      Width = 126
+      Anchors = [akTop, akRight]
+      Caption = 'Select all'
+      Constraints.MinWidth = 75
+      OnClick = btSelectAllClick
+      TabOrder = 1
+    end
+    object btSelectNone: TButton
+      Left = 340
+      Height = 23
+      Top = 4
+      Width = 126
+      Anchors = [akTop, akRight]
+      Caption = 'Select none'
+      Constraints.MinWidth = 75
+      OnClick = btSelectNoneClick
+      TabOrder = 2
+    end
+  end
+  object Buttons: TButtonPanel
+    Left = 8
+    Height = 26
+    Top = 406
+    Width = 481
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
+    TabOrder = 2
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+end

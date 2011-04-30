@@ -1,0 +1,74 @@
+object MoveTorrentForm: TMoveTorrentForm
+  Left = 354
+  Height = 125
+  Top = 193
+  Width = 561
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  BorderWidth = 8
+  Caption = 'Torrent data location'
+  ClientHeight = 125
+  ClientWidth = 561
+  OnCreate = FormCreate
+  Position = poMainFormCenter
+  LCLVersion = '0.9.28.2'
+  object Buttons: TButtonPanel
+    Left = 8
+    Height = 36
+    Top = 81
+    Width = 545
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+  end
+  object Panel1: TPanel
+    Left = 8
+    Height = 65
+    Top = 8
+    Width = 545
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 65
+    ClientWidth = 545
+    TabOrder = 0
+    object txTorrentDir: TLabel
+      Left = 0
+      Height = 14
+      Top = 0
+      Width = 145
+      Caption = 'New location for torrent data:'
+      ParentColor = False
+    end
+    object edTorrentDir: TComboBox
+      Left = 0
+      Height = 21
+      Top = 20
+      Width = 449
+      Anchors = [akTop, akLeft, akRight]
+      ItemHeight = 13
+      TabOrder = 0
+    end
+    object cbMoveData: TCheckBox
+      Left = 0
+      Height = 17
+      Top = 47
+      Width = 285
+      Caption = 'Move torrent data from current location to new location'
+      Checked = True
+      State = cbChecked
+      TabOrder = 2
+    end
+    object btBrowse: TButton
+      Left = 454
+      Height = 23
+      Top = 19
+      Width = 91
+      Anchors = [akTop, akRight]
+      Caption = 'Browse...'
+      OnClick = btBrowseClick
+      TabOrder = 1
+    end
+  end
+end

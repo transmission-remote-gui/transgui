@@ -1,0 +1,166 @@
+object OptionsForm: TOptionsForm
+  Left = 313
+  Height = 329
+  Top = 230
+  Width = 525
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  BorderWidth = 8
+  Caption = 'Options'
+  ClientHeight = 329
+  ClientWidth = 525
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poMainFormCenter
+  LCLVersion = '0.9.28.2'
+  object Page: TPageControl
+    Left = 8
+    Height = 279
+    Top = 8
+    Width = 509
+    ActivePage = tabInterface
+    Align = alClient
+    TabIndex = 0
+    TabOrder = 0
+    object tabInterface: TTabSheet
+      Caption = 'Interface'
+      ClientHeight = 253
+      ClientWidth = 501
+      object txSeconds: TLabel
+        Left = 396
+        Height = 14
+        Top = 14
+        Width = 40
+        Caption = 'seconds'
+        ParentColor = False
+      end
+      object txRefreshInterval: TLabel
+        Left = 8
+        Height = 14
+        Top = 13
+        Width = 82
+        Caption = 'Refresh interval:'
+        ParentColor = False
+      end
+      object txLanguage: TLabel
+        Left = 8
+        Height = 14
+        Top = 222
+        Width = 52
+        Caption = 'Language:'
+        ParentColor = False
+      end
+      object txRefreshIntervalMin: TLabel
+        Left = 8
+        Height = 14
+        Top = 41
+        Width = 159
+        Caption = 'Refresh interval when minimized:'
+        ParentColor = False
+      end
+      object txSeconds2: TLabel
+        Left = 396
+        Height = 14
+        Top = 42
+        Width = 40
+        Caption = 'seconds'
+        ParentColor = False
+      end
+      object edRefreshInterval: TSpinEdit
+        Left = 316
+        Height = 21
+        Top = 10
+        Width = 70
+        MaxValue = 999
+        MinValue = 1
+        TabOrder = 0
+        Value = 1
+      end
+      object gbTray: TGroupBox
+        Left = 8
+        Height = 85
+        Top = 66
+        Width = 484
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Tray icon'
+        ClientHeight = 67
+        ClientWidth = 480
+        TabOrder = 2
+        object cbTrayIconAlways: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 42
+          Width = 130
+          Caption = 'Tray icon always visible'
+          TabOrder = 2
+        end
+        object cbTrayMinimize: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 2
+          Width = 93
+          Caption = 'Minimize to tray'
+          TabOrder = 0
+        end
+        object cbTrayClose: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 22
+          Width = 80
+          Caption = 'Close to tray'
+          TabOrder = 1
+        end
+      end
+      object cbShowAddTorrentWindow: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 162
+        Width = 274
+        Caption = 'Show parameters window when adding a new torrent'
+        TabOrder = 3
+      end
+      object cbDeleteTorrentFile: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 182
+        Width = 272
+        Caption = 'Delete a .torrent file after after a successful addition'
+        TabOrder = 4
+      end
+      object cbLanguage: TComboBox
+        Left = 128
+        Height = 21
+        Top = 220
+        Width = 364
+        Anchors = [akTop, akLeft, akRight]
+        ItemHeight = 13
+        OnEnter = cbLanguageEnter
+        OnMouseDown = cbLanguageMouseDown
+        Style = csDropDownList
+        TabOrder = 5
+      end
+      object edRefreshIntervalMin: TSpinEdit
+        Left = 316
+        Height = 21
+        Top = 38
+        Width = 70
+        MaxValue = 999
+        MinValue = 1
+        TabOrder = 1
+        Value = 1
+      end
+    end
+  end
+  object Buttons: TButtonPanel
+    Left = 8
+    Height = 26
+    Top = 295
+    Width = 509
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+end
