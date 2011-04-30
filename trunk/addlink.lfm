@@ -1,24 +1,31 @@
 object AddLinkForm: TAddLinkForm
   Left = 354
-  Height = 91
+  Height = 96
   Top = 193
   Width = 574
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  BorderWidth = 8
   Caption = 'Add torrent link'
-  ClientHeight = 91
+  ClientHeight = 96
   ClientWidth = 574
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.30.1'
   object Buttons: TButtonPanel
-    Left = 8
+    Left = 0
     Height = 26
-    Top = 57
-    Width = 558
-    BorderSpacing.Top = 8
+    Top = 62
+    Width = 574
+    BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&OK'
+    HelpButton.Name = 'HelpButton'
+    HelpButton.Caption = '&Help'
+    CloseButton.Name = 'CloseButton'
+    CloseButton.Caption = '&Close'
+    CancelButton.Name = 'CancelButton'
+    CancelButton.Caption = 'Cancel'
     TabOrder = 1
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]
@@ -26,12 +33,13 @@ object AddLinkForm: TAddLinkForm
   end
   object Panel1: TPanel
     Left = 8
-    Height = 41
+    Height = 46
     Top = 8
     Width = 558
     Align = alClient
+    BorderSpacing.Around = 8
     BevelOuter = bvNone
-    ClientHeight = 41
+    ClientHeight = 46
     ClientWidth = 558
     TabOrder = 0
     object txLink: TLabel

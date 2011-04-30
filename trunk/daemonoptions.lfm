@@ -8,7 +8,6 @@ object DaemonOptionsForm: TDaemonOptionsForm
   VertScrollBar.Range = 169
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  BorderWidth = 8
   Caption = 'Transmission options'
   ClientHeight = 349
   ClientWidth = 586
@@ -16,15 +15,16 @@ object DaemonOptionsForm: TDaemonOptionsForm
   Constraints.MinWidth = 400
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.30.1'
   object Page: TPageControl
     Left = 8
     Height = 299
     Top = 8
     Width = 570
-    ActivePage = tabNetwork
+    ActivePage = tabDownload
     Align = alClient
-    TabIndex = 1
+    BorderSpacing.Around = 8
+    TabIndex = 0
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
@@ -460,6 +460,8 @@ object DaemonOptionsForm: TDaemonOptionsForm
           Height = 21
           Top = 100
           Width = 64
+          CharCase = ecNormal
+          MaxLength = 5
           TabOrder = 4
           EditMask = '!99:99;1; '
           Text = '  :  '
@@ -470,6 +472,8 @@ object DaemonOptionsForm: TDaemonOptionsForm
           Height = 21
           Top = 100
           Width = 64
+          CharCase = ecNormal
+          MaxLength = 5
           TabOrder = 5
           EditMask = '!99:99;1; '
           Text = '  :  '
@@ -479,12 +483,20 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
   end
   object Buttons: TButtonPanel
-    Left = 8
+    Left = 0
     Height = 26
     Top = 315
-    Width = 570
-    BorderSpacing.Top = 8
+    Width = 586
+    BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&OK'
+    HelpButton.Name = 'HelpButton'
+    HelpButton.Caption = '&Help'
+    CloseButton.Name = 'CloseButton'
+    CloseButton.Caption = '&Close'
+    CancelButton.Name = 'CancelButton'
+    CancelButton.Caption = 'Cancel'
     TabOrder = 1
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]

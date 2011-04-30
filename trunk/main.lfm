@@ -21,7 +21,7 @@ object MainForm: TMainForm
   OnResize = FormResize
   OnShow = FormShow
   OnWindowStateChange = FormWindowStateChange
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.30.1'
   object panTop: TPanel
     Left = 0
     Height = 128
@@ -137,6 +137,7 @@ object MainForm: TMainForm
         Align = alClient
         Columns = <        
           item
+            Title.Caption = 'Title'
             Width = 10
           end>
         Constraints.MinWidth = 50
@@ -207,59 +208,60 @@ object MainForm: TMainForm
         item
           Alignment = taRightJustify
           Title.Caption = 'Downloaded'
-          Width = 60
+          Width = 0
           Visible = False
         end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Uploaded'
-          Width = 60
+          Width = 0
           Visible = False
         end      
         item
           Title.Caption = 'Tracker'
-          Width = 120
+          Width = 0
           Visible = False
         end      
         item
           Title.Caption = 'Tracker status'
-          Width = 100
+          Width = 0
           Visible = False
         end      
         item
           Title.Caption = 'Added on'
-          Width = 120
+          Width = 0
           Visible = False
         end      
         item
           Title.Caption = 'Completed on'
-          Width = 120
+          Width = 0
           Visible = False
         end      
         item
           Title.Caption = 'Last active'
-          Width = 120
+          Width = 0
           Visible = False
         end      
         item
           Title.Caption = 'Path'
-          Width = 150
+          Width = 0
           Visible = False
         end      
         item
           Title.Caption = 'Priority'
-          Width = 90
+          Width = 0
           Visible = False
         end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Size to download'
-          Width = 60
+          Width = 0
           Visible = False
         end      
         item
           Alignment = taRightJustify
           Title.Caption = 'ID'
+          Width = 0
           Visible = False
         end>
       FixedCols = 0
@@ -329,11 +331,10 @@ object MainForm: TMainForm
         ClientHeight = 249
         ClientWidth = 768
         TabOrder = 0
-        OnResize = sbGenInfoResize
         object panGeneralInfo: TPanel
           Left = 0
           Height = 78
-          Top = 153
+          Top = 136
           Width = 768
           Align = alTop
           BevelOuter = bvNone
@@ -482,7 +483,7 @@ object MainForm: TMainForm
         object panTransfer: TPanel
           Left = 0
           Height = 111
-          Top = 21
+          Top = 4
           Width = 768
           Align = alTop
           BevelOuter = bvNone
@@ -673,14 +674,14 @@ object MainForm: TMainForm
           end
           object txDummy1: TLabel
             Left = 541
-            Height = 14
+            Height = 1
             Top = 58
             Width = 1
             ParentColor = False
           end
           object txDummy2: TLabel
             Left = 651
-            Height = 14
+            Height = 1
             Top = 58
             Width = 1
             ParentColor = False
@@ -784,7 +785,7 @@ object MainForm: TMainForm
         end
         object txTransferHeader: TPanel
           Left = 2
-          Height = 17
+          Height = 0
           Top = 2
           Width = 764
           Align = alTop
@@ -802,7 +803,7 @@ object MainForm: TMainForm
         object txTorrentHeader: TPanel
           Left = 2
           Height = 17
-          Top = 134
+          Top = 117
           Width = 764
           Align = alTop
           Alignment = taLeftJustify
@@ -859,7 +860,6 @@ object MainForm: TMainForm
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Around = 6
           OnPaint = pbDownloadedPaint
-          OnResize = pbDownloadedResize
         end
       end
     end
@@ -921,7 +921,7 @@ object MainForm: TMainForm
           item
             Alignment = taRightJustify
             Title.Caption = 'Port'
-            Width = 50
+            Width = 0
             Visible = False
           end        
           item
@@ -1036,53 +1036,53 @@ object MainForm: TMainForm
     ShowHint = True
     TabOrder = 2
     object ToolButton1: TToolButton
-      Left = 39
+      Left = 40
       Top = 2
       Action = acAddTorrent
     end
     object ToolButton2: TToolButton
-      Left = 85
+      Left = 86
       Top = 2
-      Width = 3
+      Width = 4
       Caption = 'ToolButton2'
       Style = tbsDivider
     end
     object ToolButton3: TToolButton
-      Left = 88
+      Left = 90
       Top = 2
       Action = acStartTorrent
     end
     object ToolButton4: TToolButton
-      Left = 111
+      Left = 113
       Top = 2
       Action = acStopTorrent
     end
     object ToolButton5: TToolButton
-      Left = 134
+      Left = 136
       Top = 2
       Action = acRemoveTorrent
     end
     object ToolButton6: TToolButton
       Left = 36
       Top = 2
-      Width = 3
+      Width = 4
       Caption = 'ToolButton6'
       Style = tbsDivider
     end
     object ToolButton7: TToolButton
-      Left = 183
+      Left = 186
       Top = 2
-      Width = 3
+      Width = 4
       Caption = 'ToolButton7'
       Style = tbsDivider
     end
     object ToolButton8: TToolButton
-      Left = 186
+      Left = 190
       Top = 2
       Action = acDaemonOptions
     end
     object ToolButton9: TToolButton
-      Left = 62
+      Left = 63
       Top = 2
       Action = acAddLink
     end
@@ -1103,14 +1103,14 @@ object MainForm: TMainForm
       Style = tbsDropDown
     end
     object ToolButton10: TToolButton
-      Left = 160
+      Left = 163
       Top = 2
       Action = acAltSpeed
     end
     object sepAltSpeed: TToolButton
-      Left = 157
+      Left = 159
       Top = 2
-      Width = 3
+      Width = 4
       Caption = 'sepAltSpeed'
       Style = tbsDivider
     end
@@ -1146,7 +1146,7 @@ object MainForm: TMainForm
     end
     object txConnError: TLabel
       Left = 16
-      Height = 14
+      Height = 1
       Top = 26
       Width = 129
       Align = alTop
@@ -1160,8 +1160,8 @@ object MainForm: TMainForm
     end
     object txReconnectSecs: TLabel
       Left = 16
-      Height = 14
-      Top = 48
+      Height = 1
+      Top = 35
       Width = 129
       Align = alTop
       Alignment = taCenter

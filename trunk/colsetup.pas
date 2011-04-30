@@ -91,7 +91,7 @@ begin
                 if not Visible and (Visible <> lstColumns.Checked[i]) then begin
                   Visible:=True;
                   if Width < 32 then
-                    Width:=32;
+                    Width:=70;
                 end
                 else
                   Visible:=lstColumns.Checked[i];

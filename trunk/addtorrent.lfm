@@ -7,7 +7,6 @@ object AddTorrentForm: TAddTorrentForm
   VertScrollBar.Page = 404
   VertScrollBar.Range = 92
   BorderIcons = [biSystemMenu]
-  BorderWidth = 8
   Caption = 'Add new torrent'
   ClientHeight = 440
   ClientWidth = 497
@@ -16,13 +15,16 @@ object AddTorrentForm: TAddTorrentForm
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.30.1'
   object gbSaveAs: TGroupBox
     Left = 8
     Height = 92
     Top = 8
     Width = 481
     Align = alTop
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 8
+    BorderSpacing.Right = 8
     Caption = ' '
     ClientHeight = 74
     ClientWidth = 477
@@ -92,7 +94,10 @@ object AddTorrentForm: TAddTorrentForm
     Top = 104
     Width = 481
     Align = alClient
+    BorderSpacing.Left = 8
     BorderSpacing.Top = 4
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
     Caption = 'Torrent contents'
     ClientHeight = 276
     ClientWidth = 477
@@ -107,7 +112,7 @@ object AddTorrentForm: TAddTorrentForm
     end
     object txSize: TLabel
       Left = 10
-      Height = 14
+      Height = 1
       Top = 2
       Width = 1
       ParentColor = False
@@ -166,12 +171,20 @@ object AddTorrentForm: TAddTorrentForm
     end
   end
   object Buttons: TButtonPanel
-    Left = 8
+    Left = 0
     Height = 26
     Top = 406
-    Width = 481
-    BorderSpacing.Top = 8
+    Width = 497
+    BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&OK'
+    HelpButton.Name = 'HelpButton'
+    HelpButton.Caption = '&Help'
+    CloseButton.Name = 'CloseButton'
+    CloseButton.Caption = '&Close'
+    CancelButton.Name = 'CancelButton'
+    CancelButton.Caption = 'Cancel'
     TabOrder = 2
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]

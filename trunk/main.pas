@@ -419,7 +419,6 @@ type
     procedure pbStatusPaint(Sender: TObject);
     procedure panReconnectResize(Sender: TObject);
     procedure pbDownloadedPaint(Sender: TObject);
-    procedure pbDownloadedResize(Sender: TObject);
     procedure StatusBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure TickTimerTimer(Sender: TObject);
     procedure FilterTimerTimer(Sender: TObject);
@@ -435,7 +434,6 @@ type
     procedure TorrentsListTimerTimer(Sender: TObject);
     procedure pmFilesPopup(Sender: TObject);
     procedure pmTorrentsPopup(Sender: TObject);
-    procedure sbGenInfoResize(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
   private
     FStarted: boolean;
@@ -885,6 +883,8 @@ begin
     with C do begin
       if C is TButtonPanel then begin
         TButtonPanel(C).HandleNeeded;
+        w:=0;
+        h:=0;
         THackControl(C).CalculatePreferredSize(w, h, True);
       end
       else
@@ -893,7 +893,7 @@ begin
       if C is TPageControl then
         Inc(h, 10);
 {$endif LCLcarbon}
-      Inc(ht, h + BorderSpacing.Top + BorderSpacing.Bottom);
+      Inc(ht, h + BorderSpacing.Top + BorderSpacing.Bottom + BorderSpacing.Around*2);
     end;
 
   end;
@@ -2639,7 +2639,7 @@ var
 begin
   if ARow < 0 then exit;
   with CellAttribs do begin
-    if ACol = 0 then
+    if ACol = gTorrents.FirstVisibleColumn then
       ImageIndex:=integer(Sender.Items[idxStateImg, ARow]);
     if Text = '' then exit;
     case ADataCol of
@@ -2912,11 +2912,6 @@ begin
     pbDownloaded.Canvas.StretchDraw(pbDownloaded.ClientRect, FTorrentProgress);
 end;
 
-procedure TMainForm.pbDownloadedResize(Sender: TObject);
-begin
-  ProcessPieces(FLastPieces, FLastPieceCount, FLastDone);
-end;
-
 procedure TMainForm.StatusBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   pt: TPoint;
@@ -3055,11 +3050,6 @@ end;
 procedure TMainForm.pmTorrentsPopup(Sender: TObject);
 begin
   UpdateUI;
-end;
-
-procedure TMainForm.sbGenInfoResize(Sender: TObject);
-begin
-  sbGenInfo.HorzScrollBar.Visible:=False;
 end;
 
 procedure TMainForm.TrayIconDblClick(Sender: TObject);
@@ -3206,16 +3196,16 @@ begin
   ClearDetailsInfo;
   gTorrents.Items.Clear;
   gTorrents.Enabled:=False;
-  gTorrents.Color:=Self.Color;
+  gTorrents.Color:=clBtnFace;
   lvPeers.Enabled:=False;
-  lvPeers.Color:=Self.Color;
+  lvPeers.Color:=gTorrents.Color;
   lvFiles.Enabled:=False;
-  lvFiles.Color:=Self.Color;
+  lvFiles.Color:=gTorrents.Color;
   lvTrackers.Enabled:=False;
-  lvTrackers.Color:=Self.Color;
+  lvTrackers.Color:=gTorrents.Color;
 
   lvFilter.Enabled:=False;
-  lvFilter.Color:=Self.Color;
+  lvFilter.Color:=gTorrents.Color;
   with lvFilter do begin
     Items[0, 0]:=UTF8Decode(SAll);
     Items[0, 1]:=UTF8Decode(SDownloading);
@@ -3225,7 +3215,7 @@ begin
     Items[0, 5]:=UTF8Decode(sStopped);
   end;
   edSearch.Enabled:=False;
-  edSearch.Color:=Self.Color;
+  edSearch.Color:=gTorrents.Color;
   edSearch.Text:='';
 
   RpcObj.Disconnect;
@@ -4784,6 +4774,7 @@ begin
       FillRect(x, R.Top, R.Right, R.Bottom);
     end;
     if pbDownloaded.Height <> FTorrentProgress.Height then begin
+      pbDownloaded.Constraints.MaxHeight:=FTorrentProgress.Height;
       pbDownloaded.Height:=FTorrentProgress.Height;
       panProgress.AutoSize:=True;
       panProgress.AutoSize:=False;

@@ -1,37 +1,48 @@
 object MoveTorrentForm: TMoveTorrentForm
   Left = 354
-  Height = 125
+  Height = 126
   Top = 193
   Width = 561
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  BorderWidth = 8
   Caption = 'Torrent data location'
-  ClientHeight = 125
+  ClientHeight = 126
   ClientWidth = 561
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.30.1'
   object Buttons: TButtonPanel
-    Left = 8
+    Left = 0
     Height = 36
-    Top = 81
-    Width = 545
-    BorderSpacing.Top = 8
+    Top = 82
+    Width = 561
+    BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&OK'
+    HelpButton.Name = 'HelpButton'
+    HelpButton.Caption = '&Help'
+    CloseButton.Name = 'CloseButton'
+    CloseButton.Caption = '&Close'
+    CancelButton.Name = 'CancelButton'
+    CancelButton.Caption = 'Cancel'
     TabOrder = 1
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]
   end
   object Panel1: TPanel
     Left = 8
-    Height = 65
+    Height = 74
     Top = 8
     Width = 545
     Align = alClient
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 8
+    BorderSpacing.Right = 8
     BevelOuter = bvNone
-    ClientHeight = 65
+    ClientHeight = 74
     ClientWidth = 545
+    Constraints.MinWidth = 545
     TabOrder = 0
     object txTorrentDir: TLabel
       Left = 0
