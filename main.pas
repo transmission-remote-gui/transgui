@@ -3269,7 +3269,7 @@ end;
 function TMainForm.SelectRemoteFolder(const CurFolder, DialogTitle: string): string;
 var
   i, j: integer;
-  s, ss, fn: string;
+  s, ss, sss, fn: string;
   dlg: TSelectDirectoryDialog;
   d: char;
 begin
@@ -3300,7 +3300,9 @@ begin
       j:=Pos('=', s);
       if j > 0 then begin
         ss:=FixSeparators(Copy(s, j + 1, MaxInt));
-        if (ss = fn) or (Pos(IncludeProperTrailingPathDelimiter(ss), fn) = 1) then begin
+        if FileNameCaseSensitive then
+        sss:=IncludeProperTrailingPathDelimiter(ss);
+        if (CompareFilePath(ss, fn) = 0) or (CompareFilePath(sss, Copy(fn, 1, Length(sss))) = 0) then begin
           Result:=Copy(s, 1, j - 1);
           d:='/';
           for j:=1 to Length(Result) do
@@ -3308,7 +3310,7 @@ begin
               d:=Result[j];
               break;
             end;
-          if ss <> fn then begin
+          if CompareFilePath(ss, fn) <> 0 then begin
             if (Result <> '') and (Copy(Result, Length(Result), 1) <> d) then
               Result:=Result + d;
             ss:=IncludeProperTrailingPathDelimiter(ss);
