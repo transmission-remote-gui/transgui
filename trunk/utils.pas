@@ -40,6 +40,8 @@ procedure HideTaskbarButton;
 
 function OpenURL(const URL: string; const Params: string = ''): boolean;
 
+function CompareFilePath(const p1, p2: string): integer;
+
 procedure AppBusy;
 procedure AppNormal;
 procedure ForceAppNormal;
@@ -207,6 +209,15 @@ begin
     _AllowSetForegroundWindow(dwProcessId);
 end;
 {$endif mswindows}
+
+function CompareFilePath(const p1, p2: string): integer;
+begin
+{$ifdef windows}
+  Result:=AnsiCompareText(UTF8Decode(p1), UTF8Decode(p2));
+{$else}
+Result:=AnsiCompareStr(UTF8Decode(p1), UTF8Decode(p2));
+{$endif windows}
+end;
 
 end.
 
