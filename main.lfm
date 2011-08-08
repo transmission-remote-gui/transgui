@@ -334,7 +334,7 @@ object MainForm: TMainForm
         object panGeneralInfo: TPanel
           Left = 0
           Height = 78
-          Top = 136
+          Top = 153
           Width = 768
           Align = alTop
           BevelOuter = bvNone
@@ -483,7 +483,7 @@ object MainForm: TMainForm
         object panTransfer: TPanel
           Left = 0
           Height = 111
-          Top = 4
+          Top = 21
           Width = 768
           Align = alTop
           BevelOuter = bvNone
@@ -785,12 +785,11 @@ object MainForm: TMainForm
         end
         object txTransferHeader: TPanel
           Left = 2
-          Height = 0
+          Height = 17
           Top = 2
           Width = 764
           Align = alTop
           Alignment = taLeftJustify
-          AutoSize = True
           BorderSpacing.Around = 2
           BevelOuter = bvNone
           Caption = 'Transfer'
@@ -803,7 +802,7 @@ object MainForm: TMainForm
         object txTorrentHeader: TPanel
           Left = 2
           Height = 17
-          Top = 117
+          Top = 134
           Width = 764
           Align = alTop
           Alignment = taLeftJustify
