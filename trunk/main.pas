@@ -943,7 +943,7 @@ begin
 {$else}
   Font.Size:=Screen.SystemFont.Size;
   if Font.Size = 0 then
-    Font.Size:=8;
+    Font.Height:=-11;
 {$endif darwin}
   Application.Title:=AppName;
   Caption:=Application.Title;
