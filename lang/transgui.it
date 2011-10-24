@@ -9,7 +9,7 @@
 %s (%d hashfails)=%s (%d corrotto)
 %s (%s done)=%s (%s fatto)
 '%s' has finished downloading='%s' e' terminato
-%s%s%d downloading, %d seeding%s%s, %s=%s%s%d Ricevendo, %d trasmettendo%s%s, %s
+%s%s%d downloading, %d seeding%s%s, %s=%s%s%d ricevendo, %d trasmettendo%s%s, %s
 &All=&Tutto
 &Close=&Chiudi
 &Help=&Aiuto
@@ -23,7 +23,7 @@
 &Yes=&Si
 /s=/s
 Abort=Abbandona
-About=A prospsito
+About=A proposito
 Active=Attivo
 Add new torrent=Aggiungi nuovo torrent
 &Add torrent=Aggiungi torrent
@@ -197,7 +197,7 @@ Update GeoIP database=aggiornamento database GeoIP
 Update in=Aggiornamento tra
 Updating=In aggiornamento
 Upload speed=Veloc trasm.
-Uploaded=Aggiornato
+Uploaded=Spedito
 Use proxy server=Usa server proxy
 User name=Nome utente
 Verify torrent=Verifica torrent
