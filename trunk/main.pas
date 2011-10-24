@@ -635,12 +635,21 @@ uses
   Options, ButtonPanel;
 
 const
-  TR_STATUS_CHECK_WAIT   = ( 1 shl 0 ); // Waiting in queue to check files
-  TR_STATUS_CHECK        = ( 1 shl 1 ); // Checking files
-  TR_STATUS_DOWNLOAD     = ( 1 shl 2 ); // Downloading
-  TR_STATUS_SEED         = ( 1 shl 3 ); // Seeding
-  TR_STATUS_STOPPED      = ( 1 shl 4 ); // Torrent is stopped
-  TR_STATUS_FINISHED     = ( 1 shl 8 ); // Torrent is finished (pseudo status)
+  TR_STATUS_CHECK_WAIT_1   = ( 1 shl 0 ); // Waiting in queue to check files
+  TR_STATUS_CHECK_1        = ( 1 shl 1 ); // Checking files
+  TR_STATUS_DOWNLOAD_1     = ( 1 shl 2 ); // Downloading
+  TR_STATUS_SEED_1         = ( 1 shl 3 ); // Seeding
+  TR_STATUS_STOPPED_1      = ( 1 shl 4 ); // Torrent is stopped
+
+  TR_STATUS_STOPPED_2       = 0;     // Torrent is stopped
+  TR_STATUS_CHECK_WAIT_2    = 1;     // Queued to check files
+  TR_STATUS_CHECK_2         = 2;     // Checking files
+  TR_STATUS_DOWNLOAD_WAIT_2 = 3;     // Queued to download
+  TR_STATUS_DOWNLOAD_2      = 4;     // Downloading
+  TR_STATUS_SEED_WAIT_2     = 5;     // Queued to seed
+  TR_STATUS_SEED_2          = 6;     // Seeding
+
+  TR_STATUS_FINISHED        = $100; // Torrent is finished (pseudo status)
 
   TR_SPEEDLIMIT_GLOBAL    = 0;    // only follow the overall speed limit
   TR_SPEEDLIMIT_SINGLE    = 1;    // only follow the per-torrent limit
@@ -653,6 +662,9 @@ const
 
 const
   SizeNames: array[1..5] of string = (sByte, sKByte, sMByte, sGByte, sTByte);
+
+var
+  TR_STATUS_STOPPED, TR_STATUS_CHECK_WAIT, TR_STATUS_CHECK, TR_STATUS_DOWNLOAD_WAIT, TR_STATUS_DOWNLOAD, TR_STATUS_SEED_WAIT, TR_STATUS_SEED: integer;
 
 function GetHumanSize(sz: double; RoundTo: integer = 0): string;
 var
@@ -1888,23 +1900,35 @@ begin
 end;
 
 function TMainForm.GetTorrentStatus(TorrentIdx: integer): string;
+var
+  i: integer;
 begin
-  case integer(gTorrents.Items[idxStatus, TorrentIdx]) of
-    TR_STATUS_CHECK_WAIT:
-      Result:=sWaiting;
-    TR_STATUS_CHECK:
-      Result:=sVerifying;
-    TR_STATUS_DOWNLOAD:
-      Result:=sDownloading;
-    TR_STATUS_SEED:
-      Result:=sSeeding;
-    TR_STATUS_STOPPED:
-      Result:=sStopped;
-    TR_STATUS_FINISHED:
-      Result:=sFinished;
-    else
-      Result:=sUnknown;
-  end;
+  i:=gTorrents.Items[idxStatus, TorrentIdx];
+  if i = TR_STATUS_CHECK_WAIT then
+    Result:=sWaiting
+  else
+  if i = TR_STATUS_CHECK then
+    Result:=sVerifying
+  else
+  if i = TR_STATUS_DOWNLOAD_WAIT then
+    Result:=sWaiting
+  else
+  if i = TR_STATUS_DOWNLOAD then
+    Result:=sDownloading
+  else
+  if i = TR_STATUS_SEED_WAIT then
+    Result:=sWaiting
+  else
+  if i = TR_STATUS_SEED then
+    Result:=sSeeding
+  else
+  if i = TR_STATUS_STOPPED then
+    Result:=sStopped
+  else
+  if i = TR_STATUS_FINISHED then
+    Result:=sFinished
+  else
+    Result:=sUnknown;
 end;
 
 function TMainForm.GetSeedsText(Seeds, SeedsTotal: integer): string;
@@ -3643,13 +3667,13 @@ begin
     if ExistingRow and (j = TR_STATUS_SEED) and (FTorrents[idxStatus, row] = TR_STATUS_DOWNLOAD) then
       DownloadFinished(UTF8Encode(widestring(FTorrents[idxName, row])));
     FTorrents[idxStatus, row]:=j;
-    case j of
-      TR_STATUS_CHECK_WAIT: StateImg:=imgDownQueue;
-      TR_STATUS_CHECK:      StateImg:=imgDownQueue;
-      TR_STATUS_DOWNLOAD:   StateImg:=imgDown;
-      TR_STATUS_SEED:       StateImg:=imgSeed;
-      TR_STATUS_STOPPED:    StateImg:=imgDone;
-    end;
+    if j = TR_STATUS_CHECK_WAIT  then StateImg:=imgDownQueue else
+    if j = TR_STATUS_CHECK  then StateImg:=imgDownQueue else
+    if j = TR_STATUS_DOWNLOAD_WAIT  then StateImg:=imgDownQueue else
+    if j = TR_STATUS_DOWNLOAD  then StateImg:=imgDown else
+    if j = TR_STATUS_SEED_WAIT  then StateImg:=imgSeedQueue else
+    if j = TR_STATUS_SEED  then StateImg:=imgSeed else
+    if j = TR_STATUS_STOPPED  then StateImg:=imgDone;
 
     if RpcObj.RPCVersion >= 7 then begin
       if t.Arrays['trackerStats'].Count > 0 then
@@ -3817,17 +3841,17 @@ begin
       if IsActive then
         Inc(ActiveCnt);
 
-      case integer(FTorrents[idxStatus, i]) of
-        TR_STATUS_DOWNLOAD:
-          Inc(DownCnt);
-        TR_STATUS_SEED:
-          begin
-            Inc(SeedCnt);
-            Inc(CompletedCnt);
-          end;
-        TR_STATUS_FINISHED:
-          Inc(CompletedCnt);
-      end;
+      j:=FTorrents[idxStatus, i];
+      if j = TR_STATUS_DOWNLOAD then
+        Inc(DownCnt)
+      else
+      if j = TR_STATUS_SEED then begin
+        Inc(SeedCnt);
+        Inc(CompletedCnt);
+      end
+      else
+      if j = TR_STATUS_FINISHED then
+        Inc(CompletedCnt);
 
       if integer(FTorrents[idxStateImg, i]) in [imgStopped, imgDone] then
         Inc(StoppedCnt);
@@ -4500,6 +4524,24 @@ procedure TMainForm.FillSessionInfo(s: TJSONObject);
 var
   d, u: integer;
 begin
+  if RpcObj.RPCVersion < 14 then begin
+    TR_STATUS_STOPPED:=TR_STATUS_STOPPED_1;
+    TR_STATUS_CHECK_WAIT:=TR_STATUS_CHECK_WAIT_1;
+    TR_STATUS_CHECK:=TR_STATUS_CHECK_1;
+    TR_STATUS_DOWNLOAD_WAIT:=-1;
+    TR_STATUS_DOWNLOAD:=TR_STATUS_DOWNLOAD_1;
+    TR_STATUS_SEED_WAIT:=-1;
+    TR_STATUS_SEED:=TR_STATUS_SEED_1;
+  end
+  else begin
+    TR_STATUS_STOPPED:=TR_STATUS_STOPPED_2;
+    TR_STATUS_CHECK_WAIT:=TR_STATUS_CHECK_WAIT_2;
+    TR_STATUS_CHECK:=TR_STATUS_CHECK_2;
+    TR_STATUS_DOWNLOAD_WAIT:=TR_STATUS_DOWNLOAD_WAIT_2;
+    TR_STATUS_DOWNLOAD:=TR_STATUS_DOWNLOAD_2;
+    TR_STATUS_SEED_WAIT:=TR_STATUS_SEED_WAIT_2;
+    TR_STATUS_SEED:=TR_STATUS_SEED_2;
+  end;
   acRemoveTorrentAndData.Visible:=RpcObj.RPCVersion >= 4;
   acReannounceTorrent.Visible:=RpcObj.RPCVersion >= 5;
   acUpdateBlocklist.Visible:=RpcObj.RPCVersion >= 5;
