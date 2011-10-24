@@ -805,8 +805,8 @@ end;
 
 function IsProtocolSupported(const url: string): boolean;
 const
-  Protocols: array [1..2] of string =
-    ('http:', 'magnet:');
+  Protocols: array [1..3] of string =
+    ('http:', 'https:', 'magnet:');
 var
   i: integer;
   s: string;
