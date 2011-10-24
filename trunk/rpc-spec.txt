@@ -65,6 +65,7 @@
    Method name          | libtransmission function
    ---------------------+-------------------------------------------------
    "torrent-start"      | tr_torrentStart
+   "torrent-start-now"  | tr_torrentStartNow
    "torrent-stop"       | tr_torrentStop
    "torrent-verify"     | tr_torrentVerify
    "torrent-reannounce" | tr_torrentManualUpdate ("ask tracker for more peers")
@@ -98,6 +99,7 @@
    "priority-high"       | array      indices of high-priority file(s)
    "priority-low"        | array      indices of low-priority file(s)
    "priority-normal"     | array      indices of normal-priority file(s)
+   "queuePosition"       | number     position of this torrent in its queue [0...n)
    "seedIdleLimit"       | number     torrent-level number of minutes of seeding inactivity
    "seedIdleMode"        | number     which seeding inactivity to use.  See tr_inactvelimit
    "seedRatioLimit"      | double     torrent-level seeding ratio
@@ -162,6 +164,7 @@
    id                          | number                      | tr_torrent
    isFinished                  | boolean                     | tr_stat
    isPrivate                   | boolean                     | tr_torrent
+   isStalled                   | boolean                     | tr_stat
    leftUntilDone               | number                      | tr_stat
    magnetLink                  | number                      | n/a
    manualAnnounceTime          | number                      | tr_stat
@@ -179,6 +182,7 @@
    pieceCount                  | number                      | tr_info
    pieceSize                   | number                      | tr_info
    priorities                  | array (see below)           | n/a
+   queuePosition               | number                      | tr_stat
    rateDownload (B/s)          | number                      | tr_stat
    rateUpload (B/s)            | number                      | tr_stat
    recheckProgress             | double                      | tr_stat
@@ -243,6 +247,7 @@
                       | fromCache               | number     | tr_stat
                       | fromDht                 | number     | tr_stat
                       | fromIncoming            | number     | tr_stat
+                      | fromLpd                 | number     | tr_stat
                       | fromLtep                | number     | tr_stat
                       | fromPex                 | number     | tr_stat
                       | fromTracker             | number     | tr_stat
@@ -398,6 +403,7 @@
    "location"                 | string     the new torrent location
    "move"                     | boolean    if true, move from previous location.
                               |            otherwise, search "location" for files
+                              |            (default: false)
 
    Response arguments: none
 
@@ -422,9 +428,11 @@
    "config-dir"                     | string     | location of transmission's configuration directory
    "download-dir"                   | string     | default path to download torrents
    "download-dir-free-space"        | number     | number of free bytes available in download-dir, or -1 if it can't be calculated
+   "download-queue-size"            | number     | max number of torrents to download at once (see download-queue-enabled)
+   "download-queue-enabled"         | boolean    | if true, limit how many torrents can be downloaded at once
    "dht-enabled"                    | boolean    | true means allow dht in public torrents
    "encryption"                     | string     | "required", "preferred", "tolerated"
-   "idle-seeding-limit"             | number     | the default seed inactivity limit for torrents to use
+   "idle-seeding-limit"             | number     | torrents we're seeding will be stopped if they're idle for this long
    "idle-seeding-limit-enabled"     | boolean    | true if the seeding inactivity limit is honored by default
    "incomplete-dir"                 | string     | path for incomplete torrents, when enabled
    "incomplete-dir-enabled"         | boolean    | true means keep torrents in incomplete-dir until done
@@ -435,6 +443,8 @@
    "peer-port"                      | number     | port number
    "peer-port-random-on-start"      | boolean    | true means pick a random peer port on launch
    "port-forwarding-enabled"        | boolean    | true means enabled
+   "queue-stalled-enabled"          | boolean    | whether or not to consider idle torrents as stalled
+   "queue-stalled-minutes"          | number     | torrents that are idle for N minuets aren't counted toward seed-queue-size or download-queue-size
    "rename-partial-files"           | boolean    | true means append ".part" to incomplete files
    "rpc-version"                    | number     | the current RPC API version
    "rpc-version-minimum"            | number     | the minimum RPC API version supported
@@ -442,6 +452,8 @@
    "script-torrent-done-enabled"    | boolean    | whether or not to call the "done" script
    "seedRatioLimit"                 | double     | the default seed ratio for torrents to use
    "seedRatioLimited"               | boolean    | true if seedRatioLimit is honored by default
+   "seed-queue-size"                | number     | max number of torrents to uploaded at once (see seed-queue-enabled)
+   "seed-queue-enabled"             | boolean    | if true, limit how many torrents can be uploaded at once
    "speed-limit-down"               | number     | max global download speed (KBps)
    "speed-limit-down-enabled"       | boolean    | true means enabled
    "speed-limit-up"                 | number     | max global upload speed (KBps)
@@ -535,8 +547,25 @@
 
    This method tells the transmission session to shut down.
 
-   Method-name: "session-close"
+   Method name: "session-close"
    Request arguments: none
+   Response arguments: none
+
+4.6.  Queue Movement Requests
+
+   Method name          | libtransmission function
+   ---------------------+-------------------------------------------------
+   "queue-move-top"     | tr_torrentQueueMoveTop()
+   "queue-move-up"      | tr_torrentQueueMoveUp()
+   "queue-move-down"    | tr_torrentQueueMoveDown()
+   "queue-move-bottom"  | tr_torrentQueueMoveBottom()
+
+   Request arguments:
+
+   string      | value type & description
+   ------------+----------------------------------------------------------
+   "ids"       | array   torrent list, as described in 3.1.
+
    Response arguments: none
 
 5.0.  Protocol Versions
@@ -648,8 +677,6 @@
          |         | yes       | torrent-set    | new arg "trackerReplace"
          |         | yes       | session-set    | new arg "idle-seeding-limit"
          |         | yes       | session-set    | new arg "idle-seeding-limit-enabled"
-         |         | yes       | session-get    | new arg "idle-seeding-limit"
-         |         | yes       | session-get    | new arg "idle-seeding-limit-enabled"
          |         | yes       | session-get    | new arg "units"
          |         | yes       | torrent-set    | new arg "seedIdleLimit"
          |         | yes       | torrent-set    | new arg "seedIdleMode"
@@ -663,3 +690,20 @@
    13    | 2.30    | yes       | session-get    | new arg "isUTP" to the "peers" list
          |         | yes       | torrent-add    | new arg "cookies"
          |         |        NO | torrent-get    | removed arg "peersKnown"
+   ------+---------+-----------+----------------+-------------------------------
+   14    | 2.40    |        NO | torrent-get    | values of "status" field changed
+         |         | yes       | torrent-get    | new arg "queuePosition"
+         |         | yes       | torrent-get    | new arg "isStalled"
+         |         | yes       | torrent-get    | new arg "fromLpd" in peersFrom
+         |         | yes       | torrent-set    | new arg "queuePosition"
+         |         | yes       | session-set    | new arg "download-queue-size"
+         |         | yes       | session-set    | new arg "download-queue-enabled"
+         |         | yes       | session-set    | new arg "seed-queue-size"
+         |         | yes       | session-set    | new arg "seed-queue-enabled"
+         |         | yes       | session-set    | new arg "queue-stalled-enabled"
+         |         | yes       | session-set    | new arg "queue-stalled-minutes"
+         |         | yes       |                | new method "queue-move-top"
+         |         | yes       |                | new method "queue-move-up"
+         |         | yes       |                | new method "queue-move-down"
+         |         | yes       |                | new method "queue-move-bottom"
+         |         | yes       |                | new method "torrent-start-now"
