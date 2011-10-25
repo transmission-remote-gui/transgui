@@ -1038,6 +1038,7 @@ begin
     FormShow(nil);
   end;
   UpdateConnections;
+  Application.OnException:=@ApplicationPropertiesException;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
