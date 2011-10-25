@@ -2324,7 +2324,6 @@ object MainForm: TMainForm
   end
   object ApplicationProperties: TApplicationProperties
     ShowButtonGlyphs = sbgSystem
-    OnException = ApplicationPropertiesException
     OnIdle = ApplicationPropertiesIdle
     OnMinimize = ApplicationPropertiesMinimize
     OnRestore = ApplicationPropertiesRestore
