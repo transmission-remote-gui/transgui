@@ -34,6 +34,7 @@ type
   private
     FNeedAutoSize: boolean;
     procedure DoScale(C: TControl);
+    procedure InitScale;
   protected
     procedure DoCreate; override;
   public
@@ -48,18 +49,6 @@ uses LCLType, ButtonPanel, VarGrid;
 
 var
   ScaleM, ScaleD: integer;
-
-procedure InitScale;
-var
-  i: integer;
-begin
-  if ScaleD <> 0 then exit;
-  i:=Screen.SystemFont.Height;
-  if i = 0 then
-    i:=-11;
-  ScaleM:=Abs(i);
-  ScaleD:=11;
-end;
 
 function ScaleInt(i: integer): integer;
 begin
@@ -163,17 +152,35 @@ end;
 
 procedure TBaseForm.DoCreate;
 begin
+  InitScale;
   if FNeedAutoSize then
     AutoSizeForm(Self);
-  Font.Height:=ScaleInt(-11);
+  Font.Height:=ScaleInt(13);
   HandleNeeded;
   DoScale(Self);
   inherited DoCreate;
 end;
 
+procedure TBaseForm.InitScale;
+var
+  i: integer;
+begin
+  if ScaleD <> 0 then exit;
+  i:=Screen.SystemFont.Size;
+  if i = 0 then begin
+    ScaleM:=Canvas.TextHeight('Wy');
+    ScaleD:=13;
+    if ScaleM = 0 then
+      ScaleM:=ScaleD;
+  end
+  else begin
+    ScaleM:=Abs(i);
+    ScaleD:=8;
+  end;
+end;
+
 initialization
   {$I baseform.lrs}
-  InitScale;
 
 end.
 
