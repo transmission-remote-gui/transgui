@@ -1,10 +1,11 @@
-object ConnOptionsForm: TConnOptionsForm
+inherited ConnOptionsForm: TConnOptionsForm
   Left = 401
   Height = 313
   Top = 186
   Width = 471
   HorzScrollBar.Page = 349
   VertScrollBar.Page = 238
+  AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Connection options'
@@ -15,8 +16,7 @@ object ConnOptionsForm: TConnOptionsForm
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '0.9.30.1'
-  object Page: TPageControl
+  object Page: TPageControl[0]
     Left = 8
     Height = 202
     Top = 69
@@ -265,7 +265,7 @@ object ConnOptionsForm: TConnOptionsForm
       end
     end
   end
-  object Buttons: TButtonPanel
+  object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
     Top = 279
@@ -286,7 +286,7 @@ object ConnOptionsForm: TConnOptionsForm
     ShowButtons = [pbOK, pbCancel]
     ShowBevel = False
   end
-  object panTop: TPanel
+  object panTop: TPanel[2]
     Left = 8
     Height = 53
     Top = 8

@@ -26,7 +26,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
   httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
-  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids;
+  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -104,7 +104,7 @@ type
 
   { TMainForm }
 
-  TMainForm = class(TForm)
+  TMainForm = class(TBaseForm)
     acConnect: TAction;
     acAddTorrent: TAction;
     acStopTorrent: TAction;
@@ -524,7 +524,6 @@ type
 
 function CheckAppParams: boolean;
 function GetHumanSize(sz: double; RoundTo: integer = 0): string;
-procedure AutoSizeForm(Form: TCustomForm);
 
 var
   MainForm: TMainForm;
@@ -882,46 +881,6 @@ begin
   Result:=True;
 end;
 
-type THackControl = class(TControl) end;
-
-procedure AutoSizeForm(Form: TCustomForm);
-var
-  i, ht, w, h: integer;
-  C: TControl;
-begin
-  ht:=0;
-  for i:=0 to Form.ControlCount - 1 do begin
-    C:=Form.Controls[i];
-    with C do begin
-      if C is TButtonPanel then begin
-        TButtonPanel(C).HandleNeeded;
-        w:=0;
-        h:=0;
-        THackControl(C).CalculatePreferredSize(w, h, True);
-      end
-      else
-        h:=Height;
-{$ifdef LCLcarbon}
-      if C is TPageControl then
-        Inc(h, 10);
-{$endif LCLcarbon}
-      Inc(ht, h + BorderSpacing.Top + BorderSpacing.Bottom + BorderSpacing.Around*2);
-    end;
-
-  end;
-  ht:=ht + 2*Form.BorderWidth;
-  Form.ClientHeight:=ht;
-  if Form.ClientHeight <> ht then begin
-    Form.Constraints.MinHeight:=0;
-    Form.ClientHeight:=ht;
-    Form.Constraints.MinHeight:=Form.Height;
-  end;
-  if Form.BorderStyle = bsDialog then begin
-    Form.Constraints.MinHeight:=Form.Height;
-    Form.Constraints.MinWidth:=Form.Width;
-  end;
-end;
-
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -949,13 +908,6 @@ begin
       pic.Free;
     end;
   end;
-{$endif darwin}
-{$ifdef darwin}
-  Font.Size:=11;
-{$else}
-  Font.Size:=Screen.SystemFont.Size;
-  if Font.Size = 0 then
-    Font.Height:=-11;
 {$endif darwin}
   Application.Title:=AppName;
   Caption:=Application.Title;

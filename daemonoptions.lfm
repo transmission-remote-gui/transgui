@@ -1,34 +1,34 @@
-object DaemonOptionsForm: TDaemonOptionsForm
+inherited DaemonOptionsForm: TDaemonOptionsForm
   Left = 354
-  Height = 349
+  Height = 351
   Top = 216
   Width = 586
   HorzScrollBar.Page = 409
   VertScrollBar.Page = 302
   VertScrollBar.Range = 169
+  AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Transmission options'
-  ClientHeight = 349
+  ClientHeight = 351
   ClientWidth = 586
   Constraints.MinHeight = 340
   Constraints.MinWidth = 400
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.30.1'
-  object Page: TPageControl
+  object Page: TPageControl[0]
     Left = 8
-    Height = 299
+    Height = 301
     Top = 8
     Width = 570
-    ActivePage = tabDownload
+    ActivePage = tabBandwidth
     Align = alClient
     BorderSpacing.Around = 8
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
-      ClientHeight = 273
+      ClientHeight = 275
       ClientWidth = 562
       object txDownloadDir: TLabel
         Left = 8
@@ -145,7 +145,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object tabNetwork: TTabSheet
       Caption = 'Network'
-      ClientHeight = 273
+      ClientHeight = 275
       ClientWidth = 562
       object txPort: TLabel
         Left = 8
@@ -279,7 +279,7 @@ object DaemonOptionsForm: TDaemonOptionsForm
     end
     object tabBandwidth: TTabSheet
       Caption = 'Bandwidth'
-      ClientHeight = 273
+      ClientHeight = 275
       ClientWidth = 562
       object gbBandwidth: TGroupBox
         Left = 8
@@ -482,10 +482,10 @@ object DaemonOptionsForm: TDaemonOptionsForm
       end
     end
   end
-  object Buttons: TButtonPanel
+  object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
-    Top = 315
+    Top = 317
     Width = 586
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0

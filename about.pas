@@ -24,13 +24,13 @@ unit About;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, ExtCtrls, ButtonPanel;
+  BaseForm, Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, ExtCtrls, ButtonPanel;
 
 type
 
   { TAboutForm }
 
-  TAboutForm = class(TForm)
+  TAboutForm = class(TBaseForm)
     Bevel1: TBevel;
     Buttons: TButtonPanel;
     edLicense: TMemo;
@@ -83,7 +83,6 @@ var
   s: string;
 {$endif lclcarbon}
 begin
-  Font.Size:=MainForm.Font.Size;
   txAppName.Font.Size:=Font.Size + 2;
   txHomePage.Font.Size:=Font.Size;
   BorderStyle:=bsSizeable;

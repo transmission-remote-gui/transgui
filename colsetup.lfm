@@ -1,4 +1,4 @@
-object ColSetupForm: TColSetupForm
+inherited ColSetupForm: TColSetupForm
   Left = 404
   Height = 326
   Top = 194
@@ -14,8 +14,7 @@ object ColSetupForm: TColSetupForm
   Constraints.MinWidth = 260
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.30.1'
-  object Buttons: TButtonPanel
+  object Buttons: TButtonPanel[0]
     Left = 0
     Height = 36
     Top = 282
@@ -34,7 +33,7 @@ object ColSetupForm: TColSetupForm
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]
   end
-  object Panel1: TPanel
+  object Panel1: TPanel[1]
     Left = 8
     Height = 266
     Top = 8

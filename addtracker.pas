@@ -5,7 +5,7 @@ unit AddTracker;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ButtonPanel, StdCtrls, ExtCtrls;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ButtonPanel, StdCtrls, ExtCtrls, BaseForm;
 
 resourcestring
   STrackerProps = 'Tracker properties';
@@ -15,7 +15,7 @@ type
 
   { TAddTrackerForm }
 
-  TAddTrackerForm = class(TForm)
+  TAddTrackerForm = class(TBaseForm)
     Buttons: TButtonPanel;
     edTracker: TEdit;
     Panel1: TPanel;
@@ -47,10 +47,8 @@ end;
 
 procedure TAddTrackerForm.FormCreate(Sender: TObject);
 begin
-  Font.Size:=MainForm.Font.Size;
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@OKButtonClick;
-  AutoSizeForm(Self);
 end;
 
 initialization

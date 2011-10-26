@@ -25,7 +25,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  httpsend, synsock, ExtCtrls;
+  httpsend, synsock, ExtCtrls, BaseForm;
 
 resourcestring
   SDownloadProgress = '%s of %s downloaded';
@@ -36,7 +36,7 @@ type
 
   { TDownloadForm }
 
-  TDownloadForm = class(TForm)
+  TDownloadForm = class(TBaseForm)
     btCancel: TButton;
     UpdateTimer: TTimer;
     txPercent: TLabel;
@@ -168,7 +168,6 @@ end;
 
 procedure TDownloadForm.FormCreate(Sender: TObject);
 begin
-  Font.Size:=MainForm.Font.Size;
   FThread:=TDownloadThread.Create(True);
   FThread.FreeOnTerminate:=True;
   FThread.FForm:=Self;

@@ -1,8 +1,9 @@
-object MoveTorrentForm: TMoveTorrentForm
+inherited MoveTorrentForm: TMoveTorrentForm
   Left = 354
   Height = 126
   Top = 193
   Width = 561
+  AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Torrent data location'
@@ -10,8 +11,7 @@ object MoveTorrentForm: TMoveTorrentForm
   ClientWidth = 561
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.30.1'
-  object Buttons: TButtonPanel
+  object Buttons: TButtonPanel[0]
     Left = 0
     Height = 36
     Top = 82
@@ -30,7 +30,7 @@ object MoveTorrentForm: TMoveTorrentForm
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]
   end
-  object Panel1: TPanel
+  object Panel1: TPanel[1]
     Left = 8
     Height = 74
     Top = 8

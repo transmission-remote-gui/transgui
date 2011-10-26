@@ -24,13 +24,13 @@ unit Options;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, Spin, Buttons, ButtonPanel;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, Spin, Buttons, ButtonPanel, BaseForm;
 
 type
 
   { TOptionsForm }
 
-  TOptionsForm = class(TForm)
+  TOptionsForm = class(TBaseForm)
     Buttons: TButtonPanel;
     cbDeleteTorrentFile: TCheckBox;
     cbLanguage: TComboBox;
@@ -70,9 +70,7 @@ uses main, utils, ResTranslator;
 
 procedure TOptionsForm.FormCreate(Sender: TObject);
 begin
-  Font.Size:=MainForm.Font.Size;
   Page.ActivePageIndex:=0;
-  AutoSizeForm(Self);
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@OKButtonClick;
 

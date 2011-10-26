@@ -25,7 +25,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, Spin, ComCtrls, CheckLst, EditBtn, MaskEdit,
-  ButtonPanel;
+  ButtonPanel, BaseForm;
 
 resourcestring
  sPortTestSuccess = 'Incoming port tested successfully.';
@@ -42,7 +42,7 @@ type
 
   { TDaemonOptionsForm }
 
-  TDaemonOptionsForm = class(TForm)
+  TDaemonOptionsForm = class(TBaseForm)
     btTestPort: TButton;
     Buttons: TButtonPanel;
     cbBlocklist: TCheckBox;
@@ -246,8 +246,6 @@ var
   i, j, x, wd: integer;
   cb: TCheckBox;
 begin
-  Font.Size:=MainForm.Font.Size;
-  AutoSizeForm(Self);
   Page.ActivePageIndex:=0;
   cbEncryption.Items.Add(sEncryptionDisabled);
   cbEncryption.Items.Add(sEncryptionEnabled);

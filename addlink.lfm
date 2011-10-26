@@ -1,8 +1,9 @@
-object AddLinkForm: TAddLinkForm
+inherited AddLinkForm: TAddLinkForm
   Left = 354
   Height = 96
   Top = 193
   Width = 574
+  AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Add torrent link'
@@ -10,8 +11,7 @@ object AddLinkForm: TAddLinkForm
   ClientWidth = 574
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.30.1'
-  object Buttons: TButtonPanel
+  object Buttons: TButtonPanel[0]
     Left = 0
     Height = 26
     Top = 62
@@ -31,7 +31,7 @@ object AddLinkForm: TAddLinkForm
     ShowButtons = [pbOK, pbCancel]
     ShowBevel = False
   end
-  object Panel1: TPanel
+  object Panel1: TPanel[1]
     Left = 8
     Height = 46
     Top = 8

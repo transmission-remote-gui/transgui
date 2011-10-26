@@ -1,7 +1,7 @@
-object AboutForm: TAboutForm
-  Left = 417
+inherited AboutForm: TAboutForm
+  Left = 421
   Height = 349
-  Top = 185
+  Top = 188
   Width = 451
   HorzScrollBar.Page = 423
   VertScrollBar.Page = 316
@@ -15,8 +15,7 @@ object AboutForm: TAboutForm
   Constraints.MinWidth = 350
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.30.1'
-  object Page: TPageControl
+  object Page: TPageControl[0]
     Left = 8
     Height = 299
     Top = 8
@@ -941,7 +940,7 @@ object AboutForm: TAboutForm
       end
     end
   end
-  object Buttons: TButtonPanel
+  object Buttons: TButtonPanel[1]
     Left = 8
     Height = 26
     Top = 315

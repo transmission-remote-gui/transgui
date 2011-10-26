@@ -24,13 +24,13 @@ unit TorrProps;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ButtonPanel;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ButtonPanel, BaseForm;
 
 type
 
   { TTorrPropsForm }
 
-  TTorrPropsForm = class(TForm)
+  TTorrPropsForm = class(TBaseForm)
     Buttons: TButtonPanel;
     cbIdleSeedLimit: TCheckBox;
     cbMaxDown: TCheckBox;
@@ -86,8 +86,6 @@ end;
 
 procedure TTorrPropsForm.FormCreate(Sender: TObject);
 begin
-  Font.Size:=MainForm.Font.Size;
-  AutoSizeForm(Self);
 {$ifdef windows}
   gbOptions.Caption:='';
 {$endif windows}
