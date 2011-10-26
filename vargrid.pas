@@ -214,7 +214,7 @@ var
 begin
   FItemsChanging:=True;
   try
-    inherited MouseMove([], MaxInt, -1);  // to clear HotCell
+    Perform(CM_MouseLeave, 0, 0);  // Hack to call ResetHotCell to workaround a bug
     OldRows:=RowCount;
     OldCols:=Columns.Count;
     RowCount:=FItems.RowCnt + FixedRows;
