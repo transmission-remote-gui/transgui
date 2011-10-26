@@ -164,18 +164,22 @@ end;
 procedure TBaseForm.InitScale;
 var
   i: integer;
+  tm: TLCLTextMetric;
 begin
   if ScaleD <> 0 then exit;
-  i:=Screen.SystemFont.Size;
+  i:=Screen.SystemFont.Height;
   if i = 0 then begin
-    ScaleM:=Canvas.TextHeight('Wy');
-    ScaleD:=13;
+    if Canvas.GetTextMetrics(tm) then
+      ScaleM:=tm.Height
+    else
+      ScaleM:=Canvas.TextHeight('Wy');
+    ScaleD:=14;
     if ScaleM = 0 then
       ScaleM:=ScaleD;
   end
   else begin
     ScaleM:=Abs(i);
-    ScaleD:=8;
+    ScaleD:=11;
   end;
 end;
 
