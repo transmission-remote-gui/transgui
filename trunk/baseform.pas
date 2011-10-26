@@ -155,7 +155,7 @@ begin
   InitScale;
   if FNeedAutoSize then
     AutoSizeForm(Self);
-  Font.Height:=ScaleInt(13);
+  Font.Height:=ScaleInt(-11);
   HandleNeeded;
   DoScale(Self);
   inherited DoCreate;
@@ -167,20 +167,23 @@ var
   tm: TLCLTextMetric;
 begin
   if ScaleD <> 0 then exit;
+  ScaleD:=11;
   i:=Screen.SystemFont.Height;
   if i = 0 then begin
-    if Canvas.GetTextMetrics(tm) then
-      ScaleM:=tm.Height
-    else
+    if Canvas.GetTextMetrics(tm) then begin
+      ScaleM:=tm.Ascender;
+      if ScaleM < 11 then
+        ScaleM:=11;
+    end
+    else begin
       ScaleM:=Canvas.TextHeight('Wy');
-    ScaleD:=14;
+      ScaleD:=13;
+    end;
     if ScaleM = 0 then
       ScaleM:=ScaleD;
   end
-  else begin
+  else
     ScaleM:=Abs(i);
-    ScaleD:=11;
-  end;
 end;
 
 initialization
