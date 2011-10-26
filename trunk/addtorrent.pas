@@ -24,7 +24,7 @@ unit AddTorrent;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, VarGrid, Grids, ButtonPanel;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, VarGrid, Grids, ButtonPanel, BaseForm;
 
 resourcestring
   SSize = 'Size';
@@ -34,7 +34,7 @@ type
 
   { TAddTorrentForm }
 
-  TAddTorrentForm = class(TForm)
+  TAddTorrentForm = class(TBaseForm)
     btSelectAll: TButton;
     btSelectNone: TButton;
     btBrowse: TButton;
@@ -290,7 +290,6 @@ end;
 
 procedure TAddTorrentForm.FormCreate(Sender: TObject);
 begin
-  Font.Size:=MainForm.Font.Size;
   lvFiles.Items.ExtraColumns:=5;
   lvFiles.OnCheckBoxClick:=@lvFilesCheckBoxClick;
   lvFiles.OnTreeButtonClick:=@lvFilesTreeButtonClick;

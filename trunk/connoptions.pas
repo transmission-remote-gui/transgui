@@ -24,7 +24,7 @@ unit ConnOptions;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ComCtrls, Buttons, ButtonPanel, ExtCtrls;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ComCtrls, Buttons, ButtonPanel, ExtCtrls, BaseForm;
 
 const
   DefSpeeds = '0,10,25,50,100,250,500,750,1000,2500,5000,7000';
@@ -38,7 +38,7 @@ type
 
   { TConnOptionsForm }
 
-  TConnOptionsForm = class(TForm)
+  TConnOptionsForm = class(TBaseForm)
     btNew: TButton;
     btDel: TButton;
     btRename: TButton;
@@ -246,10 +246,8 @@ var
   i, cnt: integer;
   s: string;
 begin
-  Font.Size:=MainForm.Font.Size;
   Page.ActivePageIndex:=0;
   ActiveControl:=edHost;
-  AutoSizeForm(Self);
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@btOKClick;
 

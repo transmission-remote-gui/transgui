@@ -1,8 +1,9 @@
-object OptionsForm: TOptionsForm
+inherited OptionsForm: TOptionsForm
   Left = 313
   Height = 329
   Top = 230
   Width = 525
+  AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Options'
@@ -11,8 +12,7 @@ object OptionsForm: TOptionsForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poMainFormCenter
-  LCLVersion = '0.9.30.1'
-  object Page: TPageControl
+  object Page: TPageControl[0]
     Left = 8
     Height = 279
     Top = 8
@@ -151,7 +151,7 @@ object OptionsForm: TOptionsForm
       end
     end
   end
-  object Buttons: TButtonPanel
+  object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
     Top = 295

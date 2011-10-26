@@ -45,7 +45,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="18">
+    <Units Count="19">
       <Unit0>
         <Filename Value="transgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -160,6 +160,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Options"/>
       </Unit17>
+      <Unit18>
+        <Filename Value="baseform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="BaseForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="BaseForm"/>
+      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

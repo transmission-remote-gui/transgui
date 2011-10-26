@@ -18,7 +18,7 @@ object DownloadForm: TDownloadForm
   OnResize = FormResize
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.30.1'
   object txFileName: TLabel
     Left = 12
     Height = 14

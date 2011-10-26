@@ -1,4 +1,4 @@
-object TorrPropsForm: TTorrPropsForm
+inherited TorrPropsForm: TTorrPropsForm
   Left = 364
   Height = 251
   Top = 185
@@ -7,6 +7,7 @@ object TorrPropsForm: TTorrPropsForm
   HorzScrollBar.Range = 40
   VertScrollBar.Page = 155
   VertScrollBar.Range = 22
+  AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Torrent properties'
@@ -16,8 +17,7 @@ object TorrPropsForm: TTorrPropsForm
   Constraints.MinWidth = 350
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '0.9.30.1'
-  object gbOptions: TGroupBox
+  object gbOptions: TGroupBox[0]
     Left = 8
     Height = 201
     Top = 8
@@ -165,7 +165,7 @@ object TorrPropsForm: TTorrPropsForm
       Value = 1
     end
   end
-  object Buttons: TButtonPanel
+  object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
     Top = 217
