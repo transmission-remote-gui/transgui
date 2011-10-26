@@ -214,7 +214,7 @@ var
 begin
   FItemsChanging:=True;
   try
-    inherited MouseMove([], -1, -1);  // to clear HotCell
+    inherited MouseMove([], MaxInt, -1);  // to clear HotCell
     OldRows:=RowCount;
     OldCols:=Columns.Count;
     RowCount:=FItems.RowCnt + FixedRows;
