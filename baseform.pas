@@ -45,7 +45,7 @@ procedure AutoSizeForm(Form: TCustomForm);
 
 implementation
 
-uses LCLType, ButtonPanel, VarGrid;
+uses LCLType, ButtonPanel, VarGrid, ComCtrls;
 
 var
   ScaleM, ScaleD: integer;
