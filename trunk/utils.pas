@@ -52,6 +52,8 @@ procedure AllowSetForegroundWindow(dwProcessId: DWORD);
 
 implementation
 
+uses FileUtil;
+
 function GetTimeZoneDelta: TDateTime;
 {$ifdef windows}
 var
@@ -96,52 +98,33 @@ begin
 end;
 
 {$ifdef unix}
-type
-  TipoDeskMang = (dmUnknown, dmGnome, dmKde);
-
-function  DeterminaDesktopManager:TipoDeskMang;
-begin
-  Result:=dmUnknown; //Desktop Manager sconosciuto
-
-  if (GetEnvironmentVariable('GNOME_DESKTOP_SESSION_ID') <> '') or
-     (GetEnvironmentVariable('DESKTOP_SESSION') = 'gnome') then begin
-    Result:=dmGnome;
-  end else begin
-    if (GetEnvironmentVariable('KDE_FULL_SESSION') <> '') or
-       (GetEnvironmentVariable('DESKTOP_SESSION') = 'kde') then begin
-      Result:=dmKde;
-    end;
-  end;
-end;
-
-function UnixOpenURL(const NomeFile: String):Integer;
+function UnixOpenURL(const FileName: String):Integer;
 var
   WrkProcess: TProcess;
-  Comando, fn: String;
+  cmd, fn: String;
 begin
   Result:=-1;
-  Comando:='';
-  case DeterminaDesktopManager of
-    dmGnome:
-      Comando:='gnome-open';
-    dmKde:
-      if FileExists('/usr/bin/kioclient') then
-        Comando:='/usr/bin/kioclient exec'
-      else
-        Comando:='kfmclient exec';
+  cmd:=FindDefaultExecutablePath('gnome-open');
+  if cmd = '' then begin
+    cmd:=FindDefaultExecutablePath('kioclient');
+    if cmd <> '' then
+      cmd:=cmd + ' exec'
+    else begin
+      cmd:=FindDefaultExecutablePath('kfmclient');
+      if cmd = '' then
+        exit;
+      cmd:=cmd + ' exec';
+    end;
   end;
 
-  if Comando = '' then
-    exit;
-
-  fn:=NomeFile;
+  fn:=FileName;
   if Pos('://', fn) > 0 then
     fn:=StringReplace(fn, '#', '%23', [rfReplaceAll]);
 
   WrkProcess:=TProcess.Create(nil);
   try
     WrkProcess.Options:=[poNoConsole];
-    WrkProcess.CommandLine:=Comando + ' "' + fn + '"';
+    WrkProcess.CommandLine:=cmd + ' "' + fn + '"';
     WrkProcess.Execute;
     Result:=WrkProcess.ExitStatus;
   finally
