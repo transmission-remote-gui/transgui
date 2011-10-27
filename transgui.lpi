@@ -12,6 +12,9 @@
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
       <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+      </XPManifest>
       <Icon Value="0"/>
     </General>
     <VersionInfo>
