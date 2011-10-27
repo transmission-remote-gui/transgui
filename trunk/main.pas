@@ -3321,7 +3321,7 @@ begin
   acAddTorrent.Enabled:=e;
   acAddLink.Enabled:=e;
   acDaemonOptions.Enabled:=e;
-  acStartAllTorrents.Enabled:=e and (gTorrents.Items.Count > 0);
+  acStartAllTorrents.Enabled:=e and RpcObj.Connected;
   acStopAllTorrents.Enabled:=acStartAllTorrents.Enabled;
   acStartTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
   acStopTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
@@ -4477,6 +4477,9 @@ procedure TMainForm.FillSessionInfo(s: TJSONObject);
 var
   d, u: integer;
 begin
+{$ifdef LCLcarbon}
+  TrayIcon.Tag:=0;
+{$endif LCLcarbon}
   if RpcObj.RPCVersion < 14 then begin
     TR_STATUS_STOPPED:=TR_STATUS_STOPPED_1;
     TR_STATUS_CHECK_WAIT:=TR_STATUS_CHECK_WAIT_1;
@@ -4513,6 +4516,10 @@ begin
   sepTrackers.Visible:=acAddTracker.Visible;
 
   if RpcObj.RPCVersion >= 5 then begin
+{$ifdef LCLcarbon}
+    if acAltSpeed.Checked <> (s.Integers['alt-speed-enabled'] <> 0) then
+      TrayIcon.Tag:=1;
+{$endif LCLcarbon}
     acAltSpeed.Checked:=s.Integers['alt-speed-enabled'] <> 0;
     acUpdateBlocklist.Tag:=s.Integers['blocklist-enabled'];
     acUpdateBlocklist.Enabled:=acUpdateBlocklist.Tag <> 0;
@@ -4534,11 +4541,18 @@ begin
     else
       u:=-1;
   end;
+{$ifdef LCLcarbon}
+  UpdateUI;
+{$endif LCLcarbon}
   if (FCurDownSpeedLimit <> d) or (FCurUpSpeedLimit <> u) then begin
     FCurDownSpeedLimit:=d;
     FCurUpSpeedLimit:=u;
     FillSpeedsMenu;
   end;
+{$ifdef LCLcarbon}
+  if TrayIcon.Tag <> 0 then
+    TrayIcon.InternalUpdate;
+{$endif LCLcarbon}
 end;
 
 procedure TMainForm.CheckStatus(Fatal: boolean);
@@ -5121,6 +5135,9 @@ begin
   s:=Ini.ReadString('Connection.' + FCurConn, 'UpSpeeds', DefSpeeds);
   _FillMenu(pmUpSpeeds.Items, s, @DoSetUploadSpeed, FCurUpSpeedLimit);
   _FillMenu(pmiUpSpeedLimit, s, @DoSetUploadSpeed, FCurUpSpeedLimit);
+{$ifdef LCLcarbon}
+  TrayIcon.InternalUpdate;
+{$endif LCLcarbon}
 end;
 
 initialization
