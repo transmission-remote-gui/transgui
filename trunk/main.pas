@@ -207,7 +207,7 @@ type
     tabTrackers: TTabSheet;
     AnimateTimer: TTimer;
     tbConnect: TToolButton;
-    ToolButton10: TToolButton;
+    tbtAltSpeed: TToolButton;
     sepAltSpeed: TToolButton;
     ToolButton9: TToolButton;
     txConnErrorLabel: TLabel;
@@ -945,6 +945,9 @@ begin
     EdgeOuter:=esRaised;
     Flat:=True;
   end;
+  i:=acAltSpeed.ImageIndex;
+  acAltSpeed.ImageIndex:=-1;
+  tbtAltSpeed.ImageIndex:=i;
 {$endif}
   txTransferHeader.Color:=GetLikeColor(clBtnFace, -15);
   txTorrentHeader.Color:=txTransferHeader.Color;

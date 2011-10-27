@@ -1100,7 +1100,7 @@ inherited MainForm: TMainForm
       DropdownMenu = pmConnections
       Style = tbsDropDown
     end
-    object ToolButton10: TToolButton
+    object tbtAltSpeed: TToolButton
       Left = 163
       Top = 2
       Action = acAltSpeed
