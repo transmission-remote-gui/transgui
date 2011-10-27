@@ -138,6 +138,8 @@ var
   i: integer;
   s: string;
 begin
+  if not cbConnection.Visible then
+    exit;
   i:=cbConnection.ItemIndex;
   if i >= 0 then
     s:=cbConnection.Items[i]
