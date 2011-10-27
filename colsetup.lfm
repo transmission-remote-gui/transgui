@@ -56,7 +56,7 @@ inherited ColSetupForm: TColSetupForm
       TabOrder = 0
     end
     object btUp: TButton
-      Left = 265
+      Left = 264
       Height = 23
       Top = 0
       Width = 75
@@ -68,7 +68,7 @@ inherited ColSetupForm: TColSetupForm
       TabOrder = 1
     end
     object btDown: TButton
-      Left = 265
+      Left = 264
       Height = 23
       Top = 28
       Width = 75
