@@ -45,7 +45,7 @@ procedure AutoSizeForm(Form: TCustomForm);
 
 implementation
 
-uses LCLType, ButtonPanel, VarGrid, ComCtrls;
+uses LCLType, ButtonPanel, VarGrid, ComCtrls, StdCtrls;
 
 var
   ScaleM, ScaleD: integer;
@@ -102,9 +102,16 @@ procedure TBaseForm.DoScale(C: TControl);
 var
   i: integer;
   R: TRect;
+{$ifdef darwin}
+  w, h: integer;
+{$endif darwin}
 begin
   if ScaleM = ScaleD then exit;
   with C do begin
+{$ifdef darwin}
+    if C is TButtonPanel then
+      exit;
+{$endif darwin}
     if C is TWinControl then
       TWinControl(C).DisableAlign;
     try
@@ -123,7 +130,14 @@ begin
         Around:=ScaleInt(Around);
         InnerBorder:=ScaleInt(InnerBorder);
       end;
-
+{$ifdef darwin}
+      if C.Visible and (C is TCustomButton) then begin
+        w:=0;
+        h:=0;
+        THackControl(C).CalculatePreferredSize(w, h, True);
+        C.Height:=h;
+      end;
+{$endif darwin}
       if C is TButtonPanel then
         TButtonPanel(C).Spacing:=ScaleInt(TButtonPanel(C).Spacing);
 
