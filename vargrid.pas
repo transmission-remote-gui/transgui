@@ -106,6 +106,9 @@ type
     procedure SetupCell(ACol, ARow: integer; AState: TGridDrawState; out CellAttribs: TCellAttributes);
     procedure DoOnCheckBoxClick(ACol, ARow: integer);
     procedure DoOnTreeButtonClick(ACol, ARow: integer);
+    function  DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean; override;
+    function  DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean; override;
+    function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
 
   public
     constructor Create(AOwner: TComponent); override;
@@ -925,6 +928,32 @@ procedure TVarGrid.DoOnTreeButtonClick(ACol, ARow: integer);
 begin
   if Assigned(FOnTreeButtonClick) then
     FOnTreeButtonClick(Self, ACol - FixedCols, ARow - FixedRows, ColToDataCol(ACol));
+end;
+
+function TVarGrid.DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean;
+begin
+  Result := False;
+  if Assigned(OnMouseWheelDown) then
+    OnMouseWheelDown(Self, Shift, MousePos, Result);
+end;
+
+function TVarGrid.DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean;
+begin
+  Result := False;
+  if Assigned(OnMouseWheelUp) then
+    OnMouseWheelUp(Self, Shift, MousePos, Result);
+end;
+
+function TVarGrid.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean;
+begin
+  Result:=inherited DoMouseWheel(Shift, WheelDelta, MousePos);
+  if not Result then begin
+    if Mouse.WheelScrollLines = -1 then
+      GridMouseWheel(Shift, -WheelDelta*VisibleRowCount div 120)
+    else
+      GridMouseWheel(Shift, -WheelDelta*Mouse.WheelScrollLines div 120);
+    Result := True;
+  end;
 end;
 
 constructor TVarGrid.Create(AOwner: TComponent);
