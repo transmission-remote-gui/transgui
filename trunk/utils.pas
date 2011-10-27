@@ -215,7 +215,7 @@ begin
 {$ifdef windows}
   Result:=AnsiCompareText(UTF8Decode(p1), UTF8Decode(p2));
 {$else}
-Result:=AnsiCompareStr(UTF8Decode(p1), UTF8Decode(p2));
+  Result:=AnsiCompareStr(UTF8Decode(p1), UTF8Decode(p2));
 {$endif windows}
 end;
 

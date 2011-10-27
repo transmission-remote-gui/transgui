@@ -494,6 +494,7 @@ type
     function ExecRemoteFile(const FileName: string; SelectFile: boolean): boolean;
     function GetSelectedTorrents: variant;
     procedure FillDownloadDirs(CB: TComboBox);
+    procedure SaveDownloadDirs(CB: TComboBox);
     function PriorityToStr(p: integer; var ImageIndex: integer): string;
     procedure SetRefreshInterval;
     procedure AddTracker(EditMode: boolean);
@@ -1164,6 +1165,7 @@ begin
       if args = nil then
         CheckStatus(False)
       else begin
+        SaveDownloadDirs(edTorrentDir);
         ok:=False;
         t:=Now;
         with gTorrents do
@@ -1620,17 +1622,7 @@ begin
           DeleteFile(UTF8ToSys(FileName));
 
         FIni.WriteInteger(IniSec, 'PeerLimit', edPeerLimit.Value);
-        i:=cbDestFolder.Items.IndexOf(cbDestFolder.Text);
-        if i >= 0 then
-          cbDestFolder.Items.Move(i, 0)
-        else
-          cbDestFolder.Items.Insert(0, cbDestFolder.Text);
-        i:=FIni.ReadInteger('Interface', 'MaxFoldersHistory', 10);
-        while cbDestFolder.Items.Count > i do
-          cbDestFolder.Items.Delete(cbDestFolder.Items.Count - 1);
-        FIni.WriteInteger(IniSec, 'FolderCount', cbDestFolder.Items.Count);
-        for i:=0 to cbDestFolder.Items.Count - 1 do
-          FIni.WriteString(IniSec, Format('Folder%d', [i]), cbDestFolder.Items[i]);
+        SaveDownloadDirs(cbDestFolder);
         AppNormal;
       end;
     finally
@@ -3277,8 +3269,7 @@ begin
       j:=Pos('=', s);
       if j > 0 then begin
         ss:=FixSeparators(Copy(s, j + 1, MaxInt));
-        if FileNameCaseSensitive then
-        sss:=IncludeProperTrailingPathDelimiter(ss);
+        sss:=IncludeTrailingPathDelimiter(ss);
         if (CompareFilePath(ss, fn) = 0) or (CompareFilePath(sss, Copy(fn, 1, Length(sss))) = 0) then begin
           Result:=Copy(s, 1, j - 1);
           d:='/';
@@ -4876,6 +4867,25 @@ begin
   end;
   if CB.Items.Count > 0 then
     CB.ItemIndex:=0;
+end;
+
+procedure TMainForm.SaveDownloadDirs(CB: TComboBox);
+var
+  i: integer;
+  IniSec: string;
+begin
+  IniSec:='AddTorrent.' + FCurConn;
+  i:=CB.Items.IndexOf(CB.Text);
+  if i >= 0 then
+    CB.Items.Move(i, 0)
+  else
+    CB.Items.Insert(0, CB.Text);
+  i:=FIni.ReadInteger('Interface', 'MaxFoldersHistory', 10);
+  while CB.Items.Count > i do
+    CB.Items.Delete(CB.Items.Count - 1);
+  FIni.WriteInteger(IniSec, 'FolderCount', CB.Items.Count);
+  for i:=0 to CB.Items.Count - 1 do
+    FIni.WriteString(IniSec, Format('Folder%d', [i]), CB.Items[i]);
 end;
 
 function TMainForm.PriorityToStr(p: integer; var ImageIndex: integer): string;
