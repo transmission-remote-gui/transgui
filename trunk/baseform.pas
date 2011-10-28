@@ -55,7 +55,7 @@ begin
   Result:=i*ScaleM div ScaleD;
 end;
 
-type THackControl = class(WinTControl) end;
+type THackControl = class(TWinControl) end;
 
 procedure AutoSizeForm(Form: TCustomForm);
 var
