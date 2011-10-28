@@ -55,7 +55,7 @@ begin
   Result:=i*ScaleM div ScaleD;
 end;
 
-type THackControl = class(TControl) end;
+type THackControl = class(WinTControl) end;
 
 procedure AutoSizeForm(Form: TCustomForm);
 var
@@ -165,6 +165,10 @@ begin
 end;
 
 procedure TBaseForm.DoCreate;
+{$ifdef LCLcarbon}
+var
+  i: integer;
+  {$endif LCLcarbon}
 begin
   InitScale;
   if FNeedAutoSize then
@@ -172,6 +176,13 @@ begin
   Font.Height:=ScaleInt(-11);
   HandleNeeded;
   DoScale(Self);
+{$ifdef LCLcarbon}
+  // Destroy handles of chuld controls to fix the LCL Carbon bug.
+  // Without this hack, it will not be possible to hide form's controls.
+  for i:=0 to ControlCount - 1 do
+    if Controls[i] is TWinControl then
+      THackControl(Controls[i]).DestroyHandle;
+{$endif LCLcarbon}
   inherited DoCreate;
 end;
 

@@ -246,9 +246,6 @@ var
   i, j, x, wd: integer;
   cb: TCheckBox;
 begin
-{$ifdef darwin}
-  cbUTP.Width:=cbUTP.Width + 10; // hackfix autosize
-{$endif darwin}
   Page.ActivePageIndex:=0;
   cbEncryption.Items.Add(sEncryptionDisabled);
   cbEncryption.Items.Add(sEncryptionEnabled);
