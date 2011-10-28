@@ -532,6 +532,7 @@ var
   FTranslationFileName: string;
   FTranslationLanguage: string;
   FAlterColor: TColor;
+  IsUnity: boolean;
 
 const
   // Torrents list
@@ -630,6 +631,9 @@ const
 implementation
 
 uses
+{$ifdef linux}
+  process,
+{$endif linux}
   AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, utils, TorrProps, DaemonOptions, About,
   ToolWin, download, ColSetup, types, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
   Options, ButtonPanel;
@@ -826,8 +830,37 @@ var
   s: string;
   h: THandle;
   pid: SizeUInt;
+{$ifdef linux}
+  proc: TProcess;
+  sr: TSearchRec;
+{$endif linux}
 begin
   Application.Title:=AppName;
+{$ifdef linux}
+  IsUnity:=CompareText(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'), 'unity') = 0;
+  if GetEnvironmentVariable('LIBOVERLAY_SCROLLBAR') <> '0' then begin
+    i:=FindFirst('/usr/lib/liboverlay-scrollbar*', faAnyFile, sr);
+    FindClose(sr);
+    if i = 0 then begin
+      // Turn off overlay scrollbars, since they are not supported yet
+      proc:=TProcess.Create(nil);
+      try
+        s:='';
+        for i:=0 to ParamCount do
+          s:=s + '"' + ParamStr(i) + '" ';
+        proc.CommandLine:=s;
+        for i:=0 to GetEnvironmentVariableCount - 1 do
+          proc.Environment.Add(GetEnvironmentString(i));
+        proc.Environment.Values['LIBOVERLAY_SCROLLBAR']:='0';
+        proc.Execute;
+      finally
+        proc.Free;
+      end;
+      Result:=False;
+      exit;
+    end;
+  end;
+{$endif linux}
   FHomeDir:=Application.GetOptionValue('home');
   if FHomeDir = '' then begin
     if FileExists(ChangeFileExt(ParamStr(0), '.ini')) then
@@ -1270,7 +1303,16 @@ begin
 
     cbShowAddTorrentWindow.Checked:=FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
     cbDeleteTorrentFile.Checked:=FIni.ReadBool('Interface', 'DeleteTorrentFile', False);
-
+{$ifdef linux}
+    if IsUnity then begin
+      cbTrayIconAlways.Enabled:=False;
+      cbTrayIconAlways.Checked:=False;
+      cbTrayClose.Enabled:=False;
+      cbTrayClose.Checked:=False;
+      cbTrayMinimize.Enabled:=False;
+      cbTrayMinimize.Checked:=False;
+    end;
+{$endif linux}
     AppNormal;
     if ShowModal = mrOk then begin
       AppBusy;
@@ -1639,7 +1681,9 @@ end;
 
 procedure TMainForm.UpdateTray;
 begin
-  TrayIcon.Visible:=not Self.Visible or (WindowState = wsMinimized) or FIni.ReadBool('Interface', 'TrayIconAlways', True);
+  TrayIcon.Visible:=not IsUnity and
+    (not Self.Visible or (WindowState = wsMinimized)
+     or FIni.ReadBool('Interface', 'TrayIconAlways', True));
 {$ifdef darwin}
   acShowApp.Visible:=False;
   acHideApp.Visible:=False;
@@ -2572,7 +2616,7 @@ end;
 procedure TMainForm.ApplicationPropertiesMinimize(Sender: TObject);
 begin
 {$ifndef darwin}
-  if FIni.ReadBool('Interface', 'TrayMinimize', True) then
+  if not IsUnity and FIni.ReadBool('Interface', 'TrayMinimize', True) then
     HideApp;
 {$endif darwin}
   UpdateTray;
@@ -2977,7 +3021,7 @@ end;
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
 {$ifndef darwin}
-  if FIni.ReadBool('Interface', 'TrayClose', False) then begin
+  if not IsUnity and FIni.ReadBool('Interface', 'TrayClose', False) then begin
     CloseAction:=caHide;
     HideApp;
     UpdateTray;
