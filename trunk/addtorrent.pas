@@ -296,6 +296,9 @@ begin
 {$ifdef windows}
   gbSaveAs.Caption:='';
 {$endif windows}
+{$ifdef darwin}
+  Buttons.BorderSpacing.Right:=ScaleInt(12);
+{$endif darwin}
 end;
 
 initialization

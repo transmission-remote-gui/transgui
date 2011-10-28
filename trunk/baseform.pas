@@ -42,6 +42,7 @@ type
   end;
 
 procedure AutoSizeForm(Form: TCustomForm);
+function ScaleInt(i: integer): integer;
 
 implementation
 

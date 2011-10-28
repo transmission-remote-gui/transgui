@@ -94,6 +94,7 @@ begin
   edLicense.Text:='';
   edLicense.HandleNeeded;
   edLicense.Text:=s;
+  Buttons.BorderSpacing.Right:=ScaleInt(12);
 {$endif lclcarbon}
 end;
 
