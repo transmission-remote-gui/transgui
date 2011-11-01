@@ -138,7 +138,7 @@ var
   i: integer;
   s: string;
 begin
-  if not cbConnection.Visible then
+  if edConnection.Visible then
     exit;
   i:=cbConnection.ItemIndex;
   if i >= 0 then
