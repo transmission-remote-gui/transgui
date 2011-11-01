@@ -12,6 +12,8 @@
 [-] Tray icon menu items are not updated on Mac OS X. Issue #415.
 [-] The "Alternate speeds" flag is not displayed in menus on linux.
 [-] Overlapping of sizing grip on Mac OS X.
+[-] Tray icon menu transparency problem on linux.
+[-] Minimize to tray problems on linux.
 
 3.1 (Apr 09, 2011)
 ------------------
