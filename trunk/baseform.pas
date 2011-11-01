@@ -77,7 +77,7 @@ begin
         h:=Height;
 {$ifdef LCLcarbon}
       if C is TPageControl then
-        Inc(h, 10);
+        Inc(h, ScaleInt(10));
 {$endif LCLcarbon}
       Inc(ht, h + BorderSpacing.Top + BorderSpacing.Bottom + BorderSpacing.Around*2);
     end;
@@ -172,11 +172,11 @@ var
   {$endif LCLcarbon}
 begin
   InitScale;
-  if FNeedAutoSize then
-    AutoSizeForm(Self);
   Font.Height:=ScaleInt(-11);
   HandleNeeded;
   DoScale(Self);
+  if FNeedAutoSize then
+    AutoSizeForm(Self);
 {$ifdef LCLcarbon}
   // Destroy handles of chuld controls to fix the LCL Carbon bug.
   // Without this hack, it will not be possible to hide form's controls.

@@ -1,6 +1,6 @@
 inherited DaemonOptionsForm: TDaemonOptionsForm
   Left = 354
-  Height = 351
+  Height = 345
   Top = 216
   Width = 586
   HorzScrollBar.Page = 409
@@ -10,7 +10,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Transmission options'
-  ClientHeight = 351
+  ClientHeight = 345
   ClientWidth = 586
   Constraints.MinHeight = 340
   Constraints.MinWidth = 400
@@ -18,7 +18,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
   Position = poMainFormCenter
   object Page: TPageControl[0]
     Left = 8
-    Height = 301
+    Height = 295
     Top = 8
     Width = 570
     ActivePage = tabBandwidth
@@ -279,7 +279,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
     end
     object tabBandwidth: TTabSheet
       Caption = 'Bandwidth'
-      ClientHeight = 275
+      ClientHeight = 269
       ClientWidth = 562
       object gbBandwidth: TGroupBox
         Left = 8
@@ -485,7 +485,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
   object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
-    Top = 317
+    Top = 311
     Width = 586
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0

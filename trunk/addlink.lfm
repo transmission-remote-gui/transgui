@@ -1,20 +1,20 @@
 inherited AddLinkForm: TAddLinkForm
   Left = 354
-  Height = 96
+  Height = 93
   Top = 193
   Width = 574
   AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Add torrent link'
-  ClientHeight = 96
+  ClientHeight = 93
   ClientWidth = 574
   OnCreate = FormCreate
   Position = poMainFormCenter
   object Buttons: TButtonPanel[0]
     Left = 0
     Height = 26
-    Top = 62
+    Top = 59
     Width = 574
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
@@ -33,13 +33,13 @@ inherited AddLinkForm: TAddLinkForm
   end
   object Panel1: TPanel[1]
     Left = 8
-    Height = 46
+    Height = 43
     Top = 8
     Width = 558
     Align = alClient
     BorderSpacing.Around = 8
     BevelOuter = bvNone
-    ClientHeight = 46
+    ClientHeight = 43
     ClientWidth = 558
     TabOrder = 0
     object txLink: TLabel
