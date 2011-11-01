@@ -1,6 +1,7 @@
 3.2 (Nov 01, 2011)
 ------------------
 [+] Support for Transmission 2.40+.
+[+] Support for Ubuntu 11.x. Issue #466, #470.
 [+] Support for high DPI display settings.
 [+] Save path history in the Set location window. Issue #422.
 [*] Use system defined font size.
