@@ -46,7 +46,7 @@ function ScaleInt(i: integer): integer;
 
 implementation
 
-uses LCLType, ButtonPanel, VarGrid, ComCtrls, StdCtrls;
+uses LCLType, ButtonPanel, VarGrid, ComCtrls, StdCtrls, ExtCtrls;
 
 var
   ScaleM, ScaleD: integer;
@@ -107,7 +107,9 @@ var
   w, h: integer;
 {$endif darwin}
 begin
+{$ifdef windows}
   if ScaleM = ScaleD then exit;
+{$endif}
   with C do begin
 {$ifdef darwin}
     if C is TButtonPanel then
@@ -146,7 +148,11 @@ begin
         with TVarGrid(C).Columns do
           for i:=0 to Count - 1 do
              Items[i].Width:=ScaleInt(Items[i].Width);
-
+{$ifdef LCLgtk2}
+      // Fix panel color bug on GTK2
+      if (C is TCustomPanel) and ParentColor and (Color = clDefault) then
+        Color:=clForm;
+{$endif LCLgtk2}
       if C is TWinControl then
         with TWinControl(C) do
           for i:=0 to ControlCount - 1 do
