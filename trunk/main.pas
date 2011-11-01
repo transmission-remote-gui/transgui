@@ -992,6 +992,8 @@ begin
 
   if FIni.ReadInteger('MainForm', 'State', -1) = -1 then begin
     R:=Screen.MonitorFromRect(BoundsRect).WorkareaRect;
+    if R.Right - R.Left < 300 then
+      R:=Rect(0, 0, Screen.Width, Screen.Height);
     j:=R.Right - R.Left;
     i:=j*3 div 4;
     j:=j*95 div 100;
