@@ -104,16 +104,19 @@ var
   cmd, fn: String;
 begin
   Result:=-1;
-  cmd:=FindDefaultExecutablePath('gnome-open');
+  cmd:=FindDefaultExecutablePath('xdg-open');
   if cmd = '' then begin
-    cmd:=FindDefaultExecutablePath('kioclient');
-    if cmd <> '' then
-      cmd:=cmd + ' exec'
-    else begin
-      cmd:=FindDefaultExecutablePath('kfmclient');
-      if cmd = '' then
-        exit;
-      cmd:=cmd + ' exec';
+    cmd:=FindDefaultExecutablePath('gnome-open');
+    if cmd = '' then begin
+      cmd:=FindDefaultExecutablePath('kioclient');
+      if cmd <> '' then
+        cmd:=cmd + ' exec'
+      else begin
+        cmd:=FindDefaultExecutablePath('kfmclient');
+        if cmd = '' then
+          exit;
+        cmd:=cmd + ' exec';
+      end;
     end;
   end;
 

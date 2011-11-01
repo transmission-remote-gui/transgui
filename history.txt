@@ -8,7 +8,7 @@
 [*] Use system defined wheel scroll speed. Issue #306.
 [*] Use case insensitive reverse path mapping on Windows.
 [*] Accept HTTPS protocol when adding torrent via a web link. Issue #474.
-[*] When opening a folder on linux, use the following apps to do that: gnome-open, kioclient, kfmclient. Issue #355.
+[*] When opening a folder/url on linux, use the following apps to do that: xdg-open, gnome-open, kioclient, kfmclient. Issue #355.
 [-] The "Connection refused" error, when creating a new connection on Mac OS X. Issue #426.
 [-] Tray icon menu items are not updated on Mac OS X. Issue #415.
 [-] The "Alternate speeds" flag is not displayed in menus on linux.
