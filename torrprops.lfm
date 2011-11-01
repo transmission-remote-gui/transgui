@@ -1,6 +1,6 @@
 inherited TorrPropsForm: TTorrPropsForm
   Left = 364
-  Height = 251
+  Height = 245
   Top = 185
   Width = 469
   HorzScrollBar.Page = 349
@@ -11,7 +11,7 @@ inherited TorrPropsForm: TTorrPropsForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Torrent properties'
-  ClientHeight = 251
+  ClientHeight = 245
   ClientWidth = 469
   Constraints.MinHeight = 186
   Constraints.MinWidth = 350
@@ -19,13 +19,13 @@ inherited TorrPropsForm: TTorrPropsForm
   Position = poMainFormCenter
   object gbOptions: TGroupBox[0]
     Left = 8
-    Height = 201
+    Height = 195
     Top = 8
     Width = 453
     Align = alClient
     BorderSpacing.Around = 8
     Caption = ' '
-    ClientHeight = 183
+    ClientHeight = 177
     ClientWidth = 449
     TabOrder = 0
     object txKbs1: TLabel
@@ -168,7 +168,7 @@ inherited TorrPropsForm: TTorrPropsForm
   object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
-    Top = 217
+    Top = 211
     Width = 469
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
