@@ -920,7 +920,8 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   ws: TWindowState;
-  i: integer;
+  i, j: integer;
+  R: TRect;
 {$ifdef darwin}
   s: string;
   pic: TPicture;
@@ -990,13 +991,23 @@ begin
   txTorrentHeader.Height:=txTorrentHeader.Canvas.TextHeight(txTorrentHeader.Caption) + 2;
 
   if FIni.ReadInteger('MainForm', 'State', -1) = -1 then begin
-    i:=Screen.Width*3 div 4;
+    R:=Screen.MonitorFromRect(BoundsRect).WorkareaRect;
+    j:=R.Right - R.Left;
+    i:=j*3 div 4;
+    j:=j*95 div 100;
     if i > Width then
       Width:=i;
-    i:=Screen.Height*3 div 4;
+    if Width > j then
+      Width:=j;
+    Left:=(R.Right - R.Left - Width) div 2;
+    j:=R.Bottom - R.Top;
+    i:=j*3 div 4;
+    j:=j*8 div 10;
     if i > Height then
       Height:=i;
-    Position:=poScreenCenter;
+    if Height > j then
+      Height:=j;
+    Top:=(R.Bottom - R.Top - Height) div 2;
   end
   else begin
     ws:=TWindowState(FIni.ReadInteger('MainForm', 'State', integer(WindowState)));
