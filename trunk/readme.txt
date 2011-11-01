@@ -45,7 +45,7 @@ Harder way.
 
 Build the program by yourself.
 - Make sure you have working Lazarus and Free Pascal compiler installed.
-  * Free Pascal Compiler 2.4 and Lazarus 0.9.28.2 is used to develop Transmission Remote GUI. You may use different versions of FPC and Lazarus at your own risk.
+  * Free Pascal Compiler 2.4.4 and Lazarus 0.9.30 is used to develop Transmission Remote GUI. You may use different versions of FPC and Lazarus at your own risk.
 - Download the sources archive and extract it to some folder or perform svn checkout. 
 - Open terminal/command line prompt and cd to the sources folder;
 - Execute "make" command to build the application;
