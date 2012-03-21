@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="Transmission Remote GUI donation" />
+  <ModulePrefs title="Transmission Remote GUI donation">
+    <Require feature="dynamic-height"/>
+  </ModulePrefs>
   <Content type="html">
   <![CDATA[
   
@@ -46,7 +48,7 @@ function DonateClick()
   }
 }
 </script>
-<form action="" name=donate_form">
+<form action="" name=donate_form" style="font-size:8pt;">
 <div>
 Donate using:
 </div>
