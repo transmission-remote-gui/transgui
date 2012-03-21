@@ -21,14 +21,14 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
     Height = 295
     Top = 8
     Width = 570
-    ActivePage = tabBandwidth
+    ActivePage = tabQueue
     Align = alClient
     BorderSpacing.Around = 8
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
-      ClientHeight = 275
+      ClientHeight = 269
       ClientWidth = 562
       object txDownloadDir: TLabel
         Left = 8
@@ -51,6 +51,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Height = 14
         Top = 191
         Width = 15
+        Anchors = [akTop, akRight]
         Caption = 'MB'
         ParentColor = False
       end
@@ -59,6 +60,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Height = 14
         Top = 164
         Width = 38
+        Anchors = [akTop, akRight]
         Caption = 'minutes'
         ParentColor = False
       end
@@ -109,6 +111,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Height = 21
         Top = 134
         Width = 66
+        Anchors = [akTop, akRight]
         Increment = 0.1
         MaxValue = 9999
         MinValue = 0
@@ -120,6 +123,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Height = 21
         Top = 188
         Width = 66
+        Anchors = [akTop, akRight]
         MaxValue = 9999
         TabOrder = 8
       end
@@ -137,6 +141,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Height = 21
         Top = 161
         Width = 66
+        Anchors = [akTop, akRight]
         MaxValue = 999999
         MinValue = 1
         TabOrder = 7
@@ -145,7 +150,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
     end
     object tabNetwork: TTabSheet
       Caption = 'Network'
-      ClientHeight = 275
+      ClientHeight = 269
       ClientWidth = 562
       object txPort: TLabel
         Left = 8
@@ -479,6 +484,80 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
           Text = '  :  '
           SpaceChar = ' '
         end
+      end
+    end
+    object tabQueue: TTabSheet
+      Caption = 'Queue'
+      ClientHeight = 269
+      ClientWidth = 562
+      object cbDownQueue: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 12
+        Width = 123
+        Caption = 'Download queue size:'
+        TabOrder = 0
+      end
+      object edDownQueue: TSpinEdit
+        Left = 400
+        Height = 21
+        Top = 10
+        Width = 66
+        Anchors = [akTop, akRight]
+        MaxValue = 999999
+        MinValue = 1
+        TabOrder = 1
+        Value = 1
+      end
+      object cbUpQueue: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 40
+        Width = 109
+        Caption = 'Upload queue size:'
+        TabOrder = 2
+      end
+      object edUpQueue: TSpinEdit
+        Left = 400
+        Height = 21
+        Top = 38
+        Width = 66
+        Anchors = [akTop, akRight]
+        MaxValue = 999999
+        MinValue = 1
+        TabOrder = 3
+        Value = 1
+      end
+      object cbStalled: TCheckBox
+        Left = 8
+        Height = 17
+        Hint = 'Torrents that are idle for N minuets aren''t counted toward the Download queue or Upload queue'
+        Top = 68
+        Width = 251
+        Caption = 'Consider active torrents as stalled when idle for:'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 4
+      end
+      object edStalledTime: TSpinEdit
+        Left = 400
+        Height = 21
+        Top = 66
+        Width = 66
+        Anchors = [akTop, akRight]
+        MaxValue = 999999
+        MinValue = 1
+        TabOrder = 5
+        Value = 1
+      end
+      object txMinutes1: TLabel
+        Left = 476
+        Height = 14
+        Top = 69
+        Width = 38
+        Anchors = [akTop, akRight]
+        Caption = 'minutes'
+        ParentColor = False
       end
     end
   end

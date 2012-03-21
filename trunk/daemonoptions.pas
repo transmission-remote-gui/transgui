@@ -47,6 +47,7 @@ type
     Buttons: TButtonPanel;
     cbBlocklist: TCheckBox;
     cbDHT: TCheckBox;
+    cbUpQueue: TCheckBox;
     cbEncryption: TComboBox;
     cbMaxDown: TCheckBox;
     cbMaxUp: TCheckBox;
@@ -60,8 +61,14 @@ type
     cbIdleSeedLimit: TCheckBox;
     cbAltEnabled: TCheckBox;
     cbAutoAlt: TCheckBox;
+    cbStalled: TCheckBox;
     cbUTP: TCheckBox;
+    cbDownQueue: TCheckBox;
     edAltTimeEnd: TMaskEdit;
+    edDownQueue: TSpinEdit;
+    edUpQueue: TSpinEdit;
+    edStalledTime: TSpinEdit;
+    tabQueue: TTabSheet;
     txDays: TLabel;
     txFrom: TLabel;
     edDownloadDir: TEdit;
@@ -80,6 +87,7 @@ type
     edAltTimeBegin: TMaskEdit;
     txAltUp: TLabel;
     txAltDown: TLabel;
+    txMinutes1: TLabel;
     txTo: TLabel;
     txKbs3: TLabel;
     txKbs4: TLabel;

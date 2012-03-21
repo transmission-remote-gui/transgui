@@ -2096,6 +2096,18 @@ begin
           else
             cbUTP.Visible:=False;
 
+          if RpcObj.RPCVersion >= 14 then begin
+            tabQueue.TabVisible:=True;
+            cbDownQueue.Checked:=args.Integers['download-queue-enabled'] <> 0;
+            edDownQueue.Value:=args.Integers['download-queue-size'];
+            cbUpQueue.Checked:=args.Integers['seed-queue-enabled'] <> 0;
+            edUpQueue.Value:=args.Integers['seed-queue-size'];
+            cbStalled.Checked:=args.Integers['queue-stalled-enabled'] <> 0;
+            edStalledTime.Value:=args.Integers['queue-stalled-minutes'];
+          end
+          else
+            tabQueue.TabVisible:=False;
+
           cbPortForwarding.Checked:=args.Integers['port-forwarding-enabled'] <> 0;
           s:=args.Strings['encryption'];
           if s = 'preferred' then
@@ -2196,6 +2208,14 @@ begin
             args.Add('blocklist-url', UTF8Decode(edBlocklistURL.Text));
         if RpcObj.RPCVersion >= 13 then
           args.Add('utp-enabled', integer(cbUTP.Checked) and 1);
+        if RpcObj.RPCVersion >= 14 then begin
+          args.Add('download-queue-enabled', integer(cbDownQueue.Checked) and 1);
+          args.Add('download-queue-size', edDownQueue.Value);
+          args.Add('seed-queue-enabled', integer(cbUpQueue.Checked) and 1);
+          args.Add('seed-queue-size', edUpQueue.Value);
+          args.Add('queue-stalled-enabled', integer(cbStalled.Checked) and 1);
+          args.Add('queue-stalled-minutes', edStalledTime.Value);
+        end;
 
         req.Add('arguments', args);
         args:=RpcObj.SendRequest(req, False);
