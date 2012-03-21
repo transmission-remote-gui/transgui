@@ -214,6 +214,7 @@ end;
 procedure TVarGrid.ItemsChanged(Sender: TObject);
 var
   i, OldRows, OldCols: integer;
+  pt: TPoint;
 begin
   FItemsChanging:=True;
   try
@@ -244,6 +245,9 @@ begin
     end
     else
       Invalidate;
+    pt:=ScreenToClient(Mouse.CursorPos);
+    if PtInRect(ClientRect, pt) then
+      MouseMove([], pt.x, pt.y);
   finally
     FItemsChanging:=False;
   end;
