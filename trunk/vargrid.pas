@@ -117,6 +117,7 @@ type
     procedure SelectAll;
     procedure Sort; reintroduce;
     function ColToDataCol(ACol: integer): integer;
+    procedure EnsureSelectionVisible;
 
     property Items: TVarList read FItems;
     property RowSelected[RowIndex: integer]: boolean read GetRowSelected write SetRowSelected;
@@ -221,7 +222,10 @@ begin
     Perform(CM_MouseLeave, 0, 0);  // Hack to call ResetHotCell to workaround a bug
     OldRows:=RowCount;
     OldCols:=Columns.Count;
-    RowCount:=FItems.RowCnt + FixedRows;
+    i:=FItems.RowCnt + FixedRows;
+    if (FRow = -1) and (inherited Row >= i) and (i > FixedRows) then
+      inherited Row:=i - 1;
+    RowCount:=i;
     if FRow <> -1 then begin
       Row:=FRow;
       FRow:=-1;
@@ -1032,6 +1036,24 @@ begin
     Result:=FColumnsMap[ACol]
   else
     Result:=-1;
+end;
+
+procedure TVarGrid.EnsureSelectionVisible;
+var
+  i: integer;
+begin
+  if FSelCount > 0 then
+    for i:=0 to FItems.Count - 1 do
+      if RowSelected[i] then begin
+        Row:=i;
+        break;
+      end;
+
+  if inherited Row < TopRow then
+    TopRow:=inherited Row
+  else
+    if inherited Row > GCache.FullVisibleGrid.Bottom then
+      TopRow:=inherited Row - (GCache.FullVisibleGrid.Bottom - GCache.FullVisibleGrid.Top);
 end;
 
 end.
