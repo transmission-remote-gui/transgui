@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Transmission Remote GUI donation" />
+  <Content type="html">
+  <![CDATA[
+  
+<script type="text/javascript">
+function DonateClick()
+{
+  try {
+    var v, u;
+    var uShareIt = "https://secure.shareit.com/shareit/checkout.html?PRODUCT[300500153]={Q}&pts={P}";
+    var uPlimus = "https://www.plimus.com/jsp/buynow.jsp?contractId=2343710&quantity={Q}";
+
+    if (document.getElementById("donate_paypal").checked)
+      u=uShareIt.replace("{P}", "PAL");
+    else
+    if (document.getElementById("donate_webmoney").checked)
+      u=uShareIt.replace("{P}", "WMO");
+    else
+    if (document.getElementById("donate_plimus").checked)
+      u=uPlimus;
+    else {
+      alert("Please choose a payment option.");
+      return;
+    }
+    if (document.getElementById("donate_5").checked)
+      v="1";
+    else
+    if (document.getElementById("donate_10").checked)
+      v="2";
+    else
+    if (document.getElementById("donate_15").checked)
+      v="3";
+    else
+    if (document.getElementById("donate_20").checked)
+      v="4";
+    else {
+      alert("Please specify a donation amount.");
+      return;
+    }
+
+    location.href=u.replace("{Q}", v);
+  } catch(e) {
+    alert(e.message);
+  }
+}
+</script>
+<form action="" name=donate_form">
+<div>
+Donate using:
+</div>
+<input type="radio" name="donate_type" value="paypal" id="donate_paypal"><label for="donate_paypal"><b>PayPal</b> via ShareIt</label><br>
+<input type="radio" name="donate_type" value="webmoney" id="donate_webmoney"><label for="donate_webmoney"><b>WebMoney</b> via ShareIt</label><br>
+<input type="radio" name="donate_type" value="plimus" id="donate_plimus"><label for="donate_plimus"><b>Credit card/Wire transfer</b> via Plimus</label><br>
+<div>
+Donation amount:
+</div>
+<input type="radio" name="donate_val" value="5" id="donate_5"><label for="donate_5">5 USD</label>
+<input type="radio" name="donate_val" value="10" id="donate_10"><label for="donate_10">10 USD</label>
+<input type="radio" name="donate_val" value="15" id="donate_15"><label for="donate_15">15 USD</label>
+<input type="radio" name="donate_val" value="20" id="donate_20"><label for="donate_20">20 USD</label>
+<br>
+<input type="button" value="Donate" onclick="DonateClick();">
+</form>
+
+  ]]>
+  </Content>
+</Module>
