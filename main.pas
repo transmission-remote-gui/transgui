@@ -1176,6 +1176,7 @@ begin
   with TMoveTorrentForm.Create(Self) do
   try
     gTorrents.Tag:=1;
+    gTorrents.EnsureSelectionVisible;
     FillDownloadDirs(edTorrentDir);
     if gTorrents.SelCount = 0 then
       gTorrents.RowSelected[gTorrents.Row]:=True;
@@ -2402,6 +2403,7 @@ begin
   with TTorrPropsForm.Create(Self) do
   try
     gTorrents.Tag:=1;
+    gTorrents.EnsureSelectionVisible;
     TorrentIds:=GetSelectedTorrents;
     args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited', 'uploadLimit', 'uploadLimitMode', 'uploadLimited',
                                   'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit', 'seedIdleLimit', 'seedIdleMode']);
@@ -2605,6 +2607,7 @@ begin
   if gTorrents.Items.Count = 0 then exit;
   gTorrents.Tag:=1;
   try
+    gTorrents.EnsureSelectionVisible;
     ids:=GetSelectedTorrents;
     if gTorrents.SelCount < 2 then
       s:=Format(sTorrentVerification, [UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Items.IndexOf(idxTorrentId, ids[0])]))])
@@ -4154,6 +4157,7 @@ begin
   if gTorrents.Items.Count = 0 then exit;
   gTorrents.Tag:=1;
   try
+    gTorrents.EnsureSelectionVisible;
     ids:=GetSelectedTorrents;
     if gTorrents.SelCount < 2 then
       s:=Format(Msg, [UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Items.IndexOf(idxTorrentId, ids[0])]))])
