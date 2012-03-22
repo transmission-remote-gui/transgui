@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="Transmission Remote GUI donation">
+  <ModulePrefs title="Transmission Remote GUI donation" scrolling="false">
     <Require feature="dynamic-height"/>
   </ModulePrefs>
   <Content type="html">
   <![CDATA[
-  
+
 <script type="text/javascript">
 function DonateClick()
 {
@@ -48,23 +48,29 @@ function DonateClick()
   }
 }
 </script>
-<form action="" name=donate_form" style="font-size:8pt;">
+<div style="font-size:10pt;">
 <div>
 Donate using:
 </div>
-<input type="radio" name="donate_type" value="paypal" id="donate_paypal"><label for="donate_paypal"><b>PayPal</b> via ShareIt</label><br>
-<input type="radio" name="donate_type" value="webmoney" id="donate_webmoney"><label for="donate_webmoney"><b>WebMoney</b> via ShareIt</label><br>
-<input type="radio" name="donate_type" value="plimus" id="donate_plimus"><label for="donate_plimus"><b>Credit card/Wire transfer</b> via Plimus</label><br>
+<form action="" name="donate_form">
+<input type="radio" name="donate_type" value="paypal" id="donate_paypal">
+  <label for="donate_paypal"><img src="http://transmisson-remote-gui.googlecode.com/svn/wiki/pp-ico.png" width=16 height=16 align=texttop> <b>PayPal</b> via ShareIt</label><br>
+<input type="radio" name="donate_type" value="webmoney" id="donate_webmoney">
+  <label for="donate_webmoney"><img src="http://transmisson-remote-gui.googlecode.com/svn/wiki/wm-ico.png" width=16 height=16 align=texttop> <b>WebMoney</b> via ShareIt</label><br>
+<input type="radio" name="donate_type" value="plimus" id="donate_plimus">
+  <label for="donate_plimus"><img src="http://transmisson-remote-gui.googlecode.com/svn/wiki/cc-ico.png" width=16 height=16 align=texttop> <b>Credit card/Wire transfer</b> via Plimus</label><br>
 <div>
+<br>
 Donation amount:
 </div>
 <input type="radio" name="donate_val" value="5" id="donate_5"><label for="donate_5">5 USD</label>
 <input type="radio" name="donate_val" value="10" id="donate_10"><label for="donate_10">10 USD</label>
 <input type="radio" name="donate_val" value="15" id="donate_15"><label for="donate_15">15 USD</label>
 <input type="radio" name="donate_val" value="20" id="donate_20"><label for="donate_20">20 USD</label>
-<br>
+<br><br>
 <input type="button" value="Donate" onclick="DonateClick();">
 </form>
+</div>
 
   ]]>
   </Content>
