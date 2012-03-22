@@ -42,7 +42,10 @@ function DonateClick()
       return;
     }
 
-    location.href=u.replace("{Q}", v);
+    var wnd=window;
+    if (parent)
+      wnd=parent.window;
+    wnd.location.href=u.replace("{Q}", v);
   } catch(e) {
     alert(e.message);
   }
