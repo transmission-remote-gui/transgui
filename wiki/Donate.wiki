@@ -2,4 +2,4 @@
 #labels Featured
 Donate to support further development of Transmission Remote GUI.
 
-<wiki:gadget url="http://transmisson-remote-gui.googlecode.com/svn/wiki/DonateGadget.xml?6" border="0" height="200"/>
+<wiki:gadget url="http://transmisson-remote-gui.googlecode.com/svn/wiki/DonateGadget.xml" border="0" height="200"/>
