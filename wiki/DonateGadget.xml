@@ -7,7 +7,7 @@
   <![CDATA[
 
 <head>
-<base target="_blank" />
+<base target="_parent" />
 </head>
 
 <script type="text/javascript">
@@ -46,13 +46,14 @@ function DonateClick()
       return;
     }
 
-    location.href=u.replace("{Q}", v);
+    window.open(u.replace("{Q}", v));
   } catch(e) {
     alert(e.message);
   }
 }
 </script>
 <div style="font-size:10pt;">
+<a href="http://www.google.com">link</a>
 <div>
 Donate using:
 </div>
