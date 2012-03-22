@@ -46,7 +46,7 @@ function DonateClick()
       return;
     }
 
-    window.open(u.replace("{Q}", v));
+    window.open(u.replace("{Q}", v), "_parent");
   } catch(e) {
     alert(e.message);
   }
