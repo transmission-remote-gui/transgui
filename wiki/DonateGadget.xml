@@ -7,7 +7,7 @@
   <![CDATA[
 
 <head>
-<base target="_parent" />
+<base target="_blank" />
 </head>
 
 <script type="text/javascript">
