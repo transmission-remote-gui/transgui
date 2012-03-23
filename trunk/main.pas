@@ -25,8 +25,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
-  httpsend, IniFiles, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
-  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm;
+  httpsend, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
+  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -448,7 +448,7 @@ type
     FLastPieces: string;
     FLastPieceCount: integer;
     FLastDone: double;
-    FIni: TIniFile;
+    FIni: TIniFileUtf8;
     FCurConn: string;
     FPathMap: TStringList;
     FLastFilerIndex: integer;
@@ -457,9 +457,12 @@ type
     FStatusImgIndex: integer;
     FCurDownSpeedLimit: integer;
     FCurUpSpeedLimit: integer;
+    FFlagsPath: string;
 
     procedure DoConnect;
+    procedure DoCreateOutZipStream(Sender: TObject; var AStream: TStream; AItem: TFullZipFileEntry);
     procedure DoDisconnect;
+    procedure DoOpenFlagsZip(Sender: TObject; var AStream: TStream);
     procedure UpdateUI;
     procedure ShowConnOptions(NewConnection: boolean);
     procedure SaveColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
@@ -520,7 +523,7 @@ type
     procedure SetTorrentPriority(APriority: integer);
     procedure ClearDetailsInfo;
     function SelectRemoteFolder(const CurFolder, DialogTitle: string): string;
-    property Ini: TIniFile read FIni;
+    property Ini: TIniFileUtf8 read FIni;
   end;
 
 function CheckAppParams: boolean;
@@ -634,7 +637,7 @@ uses
 {$ifdef linux}
   process,
 {$endif linux}
-  AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, utils, TorrProps, DaemonOptions, About,
+  AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, TorrProps, DaemonOptions, About,
   ToolWin, download, ColSetup, types, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
   Options, ButtonPanel;
 
@@ -741,7 +744,7 @@ var
 begin
   for i:=Low(Paths) to High(Paths) do begin
     Result:=IncludeTrailingPathDelimiter(Paths[i]) + FileName;
-    if FileExists(Result) then
+    if FileExistsUTF8(Result) then
       exit;
   end;
   Result:='';
@@ -781,7 +784,7 @@ procedure AddTorrentFile(const FileName: string);
 var
   h: THandle;
 begin
-  h:=FileCreate(FIPCFileName, fmCreate);
+  h:=FileCreateUTF8(FIPCFileName, fmCreate);
   if h <> THandle(-1) then begin
     FileWrite(h, FileName[1], Length(FileName));
     FileClose(h);
@@ -790,9 +793,9 @@ end;
 
 procedure LoadTranslation;
 var
-  aIni: TIniFile;
+  aIni: TIniFileUtf8;
 begin
-  aIni:=TIniFile.Create(FHomeDir + ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
+  aIni:=TIniFileUtf8.Create(FHomeDir + ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.ini'));
   try
     FTranslationFileName := aIni.ReadString('Interface', 'TranslationFile', '');
     if FTranslationFileName = '' then
@@ -839,7 +842,7 @@ begin
 {$ifdef linux}
   IsUnity:=CompareText(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'), 'unity') = 0;
   if GetEnvironmentVariable('LIBOVERLAY_SCROLLBAR') <> '0' then begin
-    i:=FindFirst('/usr/lib/liboverlay-scrollbar*', faAnyFile, sr);
+    i:=FindFirstUTF8('/usr/lib/liboverlay-scrollbar*', faAnyFile, sr);
     FindClose(sr);
     if i = 0 then begin
       // Turn off overlay scrollbars, since they are not supported yet
@@ -847,7 +850,7 @@ begin
       try
         s:='';
         for i:=0 to ParamCount do
-          s:=s + '"' + ParamStr(i) + '" ';
+          s:=s + '"' + ParamStrUTF8(i) + '" ';
         proc.CommandLine:=s;
         for i:=0 to GetEnvironmentVariableCount - 1 do
           proc.Environment.Add(GetEnvironmentString(i));
@@ -861,16 +864,16 @@ begin
     end;
   end;
 {$endif linux}
-  FHomeDir:=Application.GetOptionValue('home');
+  FHomeDir:=GetCmdSwitchValue('home');
   if FHomeDir = '' then begin
-    if FileExists(ChangeFileExt(ParamStr(0), '.ini')) then
-      FHomeDir:=ExtractFilePath(ParamStr(0)) // Portable mode
+    if FileExistsUTF8(ChangeFileExt(ParamStrUTF8(0), '.ini')) then
+      FHomeDir:=ExtractFilePath(ParamStrUTF8(0)) // Portable mode
     else
-      FHomeDir:=IncludeTrailingPathDelimiter(GetAppConfigDir(False));
+      FHomeDir:=IncludeTrailingPathDelimiter(GetAppConfigDirUTF8(False));
   end
   else
     FHomeDir:=IncludeTrailingPathDelimiter(FHomeDir);
-  ForceDirectories(FHomeDir);
+  ForceDirectoriesUTF8(FHomeDir);
   FIPCFileName:=FHomeDir + 'ipc.txt';
   FRunFileName:=FHomeDir + 'run';
 
@@ -879,8 +882,8 @@ begin
     if IsProtocolSupported(s) or FileExistsUTF8(s) then
       AddTorrentFile(s);
   end;
-  if FileExists(FRunFileName) then begin
-    h:=FileOpen(FRunFileName, fmOpenRead or fmShareDenyNone);
+  if FileExistsUTF8(FRunFileName) then begin
+    h:=FileOpenUTF8(FRunFileName, fmOpenRead or fmShareDenyNone);
     if FileRead(h, pid, SizeOf(pid)) = SizeOf(pid) then begin
 {$ifdef mswindows}
       AllowSetForegroundWindow(pid);
@@ -888,10 +891,10 @@ begin
     end;
     FileClose(h);
 
-    if not FileExists(FIPCFileName) then
-      FileClose(FileCreate(FIPCFileName, fmCreate));
+    if not FileExistsUTF8(FIPCFileName) then
+      FileClose(FileCreateUTF8(FIPCFileName, fmCreate));
     for i:=1 to 50 do
-      if not FileExists(FIPCFileName) then begin
+      if not FileExistsUTF8(FIPCFileName) then begin
         Result:=False;
         exit;
       end
@@ -899,7 +902,7 @@ begin
         Sleep(200);
   end
   else begin
-    h:=FileCreate(FRunFileName, fmCreate);
+    h:=FileCreateUTF8(FRunFileName, fmCreate);
     pid:=GetProcessID;
     FileWrite(h, pid, SizeOf(pid));
     FileClose(h);
@@ -929,9 +932,9 @@ var
 begin
 {$ifdef darwin}
   // Load better icon if possible
-  s:=ExtractFilePath(ParamStr(0)) + '..' + DirectorySeparator + 'Resources'
-     + DirectorySeparator + ChangeFileExt(ExtractFileName(ParamStr(0)), '.icns');
-  if FileExists(s) then begin
+  s:=ExtractFilePath(ParamStrUTF8(0)) + '..' + DirectorySeparator + 'Resources'
+     + DirectorySeparator + ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.icns');
+  if FileExistsUTF8(s) then begin
     pic:=TPicture.Create;
     try
       pic.LoadFromFile(s);
@@ -957,7 +960,7 @@ begin
   FFiles:=lvFiles.Items;
   lvPeers.Items.ExtraColumns:=PeersExtraColumns;
   lvTrackers.Items.ExtraColumns:=TrackersExtraColumns;
-  FIni:=TIniFile.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
+  FIni:=TIniFileUtf8.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.ini'));
   FTrackers:=TStringList.Create;
   FTrackers.Sorted:=True;
   FReconnectTimeOut:=-1;
@@ -1045,7 +1048,7 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  DeleteFile(FRunFileName);
+  DeleteFileUTF8(FRunFileName);
   FResolver.Free;
   FIni.Free;
   FTrackers.Free;
@@ -1487,7 +1490,7 @@ var
   id: integer;
   t, files: TJSONArray;
   i: integer;
-  fs: TFileStream;
+  fs: TFileStreamUTF8;
   s, ss, OldDownloadDir, IniSec, path: string;
   tt: TDateTime;
   ok: boolean;
@@ -1497,7 +1500,7 @@ begin
   if IsProtocolSupported(FileName) then
     torrent:='-'
   else begin
-    fs:=TFileStream.Create(UTF8ToSys(FileName), fmOpenRead or fmShareDenyNone);
+    fs:=TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyNone);
     try
       SetLength(torrent, fs.Size);
       fs.ReadBuffer(PChar(torrent)^, Length(torrent));
@@ -1678,7 +1681,7 @@ begin
 
         id:=0;
         if FIni.ReadBool('Interface', 'DeleteTorrentFile', False) and not IsProtocolSupported(FileName) then
-          DeleteFile(UTF8ToSys(FileName));
+          DeleteFileUTF8(FileName);
 
         FIni.WriteInteger(IniSec, 'PeerLimit', edPeerLimit.Value);
         SaveDownloadDirs(cbDestFolder);
@@ -1749,25 +1752,38 @@ begin
   TrayIcon.ShowBalloonHint;
 end;
 
+Procedure TMainForm.DoOpenFlagsZip(Sender: TObject; var AStream: TStream);
+begin
+  AStream:=TFileStreamUTF8.Create(TUnZipper(Sender).FileName, fmOpenRead or fmShareDenyWrite);
+end;
+
+Procedure TMainForm.DoCreateOutZipStream(Sender : TObject; var AStream : TStream; AItem : TFullZipFileEntry);
+begin
+  ForceDirectoriesUTF8(FFlagsPath);
+  AStream:=TFileStreamUTF8.Create(FFlagsPath + AItem.DiskFileName, fmCreate);
+end;
+
 function TMainForm.GetFlagImage(const CountryCode: string): integer;
 var
-  s, FlagsPath, ImageName: string;
+  s, ImageName: string;
   pic: TPicture;
+  fs: TFileStreamUTF8;
 begin
   Result:=0;
   if CountryCode = '' then exit;
   try
     ImageName:=CountryCode + '.png';
-    FlagsPath:=FHomeDir + 'flags' + DirectorySeparator;
-    if not FileExists(FlagsPath + ImageName) then begin
+    if FFlagsPath = '' then
+      FFlagsPath:=FHomeDir + 'flags' + DirectorySeparator;
+    if not FileExistsUTF8(FFlagsPath + ImageName) then begin
       // Unzipping flag image
       if FUnZip = nil then begin
         s:=GetFlagsArchive;
         if s <> '' then begin
-          ForceDirectories(FlagsPath);
           FUnZip:=TUnZipper.Create;
-          FUnZip.OutputPath:=FlagsPath;
           FUnZip.FileName:=s;
+          FUnZip.OnOpenInputStream:=@DoOpenFlagsZip;
+          FUnZip.OnCreateStream:=@DoCreateOutZipStream;
         end
         else
           exit;
@@ -1779,17 +1795,19 @@ begin
         FUnZip.UnZipAllFiles;
       except
         FreeAndNil(FUnZip);
-        DeleteFile(GetFlagsArchive);
+        DeleteFileUTF8(GetFlagsArchive);
         acShowCountryFlag.Checked:=False;
         MessageDlg(sUnableExtractFlag + LineEnding + Exception(ExceptObject).Message, mtError, [mbOK], 0);
         exit;
       end;
-      if not FileExists(FlagsPath + ImageName) then exit;
+      if not FileExistsUTF8(FFlagsPath + ImageName) then exit;
     end;
 
+    fs:=nil;
     pic:=TPicture.Create;
     try
-      pic.LoadFromFile(UTF8Encode(FlagsPath + ImageName));
+      fs:=TFileStreamUTF8.Create(FFlagsPath + ImageName, fmOpenRead or fmShareDenyWrite);
+      pic.LoadFromStream(fs);
       if imgFlags.Count = 1 then begin
         imgFlags.Width:=pic.Width;
         imgFlags.Height:=pic.Height;
@@ -1797,6 +1815,7 @@ begin
       Result:=imgFlags.AddMasked(pic.Bitmap, clNone);
     finally
       pic.Free;
+      fs.Free;
     end;
   except
   end;
@@ -1831,12 +1850,12 @@ end;
 
 function TMainForm.GetGeoIpDatabase: string;
 begin
-  Result:=LocateFile('GeoIP.dat', [FHomeDir, ExtractFilePath(ParamStr(0))]);
+  Result:=LocateFile('GeoIP.dat', [FHomeDir, ExtractFilePath(ParamStrUTF8(0))]);
 end;
 
 function TMainForm.GetFlagsArchive: string;
 begin
-  Result:=LocateFile('flags.zip', [FHomeDir, ExtractFilePath(ParamStr(0))]);
+  Result:=LocateFile('flags.zip', [FHomeDir, ExtractFilePath(ParamStrUTF8(0))]);
 end;
 
 function TMainForm.DownloadGeoIpDatabase(AUpdate: boolean): boolean;
@@ -1845,11 +1864,11 @@ const
 var
   tmp: string;
   gz: TGZFileStream;
-  fs: TFileStream;
+  fs: TFileStreamUTF8;
 begin
   Result:=False;
-  tmp:=FHomeDir + 'GeoIP.dat.gz';
-  if not FileExists(tmp) or AUpdate then begin
+  tmp:=SysToUTF8(GetTempDir(True)) + 'GeoIP.dat.gz';
+  if not FileExistsUTF8(tmp) or AUpdate then begin
     if MessageDlg('', sGeoIPConfirm, mtConfirmation, mbYesNo, 0, mbYes) <> mrYes then
       exit;
     if not DownloadFile(GeoLiteURL, ExtractFilePath(tmp), ExtractFileName(tmp)) then
@@ -1859,7 +1878,7 @@ begin
     FreeAndNil(FResolver);
     gz:=TGZFileStream.Create(tmp, gzopenread);
     try
-      fs:=TFileStream.Create(FHomeDir + 'GeoIP.dat', fmCreate);
+      fs:=TFileStreamUTF8.Create(FHomeDir + 'GeoIP.dat', fmCreate);
       try
         while fs.CopyFrom(gz, 64*1024) = 64*1024 do
           ;
@@ -1869,10 +1888,10 @@ begin
     finally
       gz.Free;
     end;
-    DeleteFile(tmp);
+    DeleteFileUTF8(tmp);
   except
-    DeleteFile(FHomeDir + 'GeoIP.dat');
-    DeleteFile(tmp);
+    DeleteFileUTF8(FHomeDir + 'GeoIP.dat');
+    DeleteFileUTF8(tmp);
     raise;
   end;
   Result:=True;
@@ -3013,9 +3032,9 @@ begin
       panSearch.AutoSize:=False;
     end;
 
-    if FileExists(FIPCFileName) then begin
-      s:=ReadFileToString(UTF8Encode(FIPCFileName));
-      DeleteFile(FIPCFileName);
+    if FileExistsUTF8(FIPCFileName) then begin
+      s:=ReadFileToString(FIPCFileName);
+      DeleteFileUTF8(FIPCFileName);
       ShowApp;
 
       if s = '' then

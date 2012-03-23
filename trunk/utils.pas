@@ -24,7 +24,7 @@ unit utils;
 interface
 
 uses
-  SysUtils, Controls, Forms,
+  SysUtils, Classes, Controls, Forms, IniFiles,
 {$ifdef windows}
   Windows, win32int, InterfaceBase
 {$endif}
@@ -32,6 +32,36 @@ uses
   baseunix, unix, unixutil, process
 {$endif}
   ;
+
+type
+
+  { TFileStreamUTF8 }
+
+  TFileStreamUTF8 = class(THandleStream)
+  private
+    FFileName: utf8string;
+  public
+    constructor Create(const AFileName: utf8string; Mode: Word);
+    constructor Create(const AFileName: utf8string; Mode: Word; Rights: Cardinal);
+    destructor Destroy; override;
+    property FileName: utf8string Read FFilename;
+  end;
+
+  { TIniFileUtf8 }
+
+  TIniFileUtf8 = class(TIniFile)
+  private
+    FStream: TFileStreamUTF8;
+    FFileName: string;
+  public
+    constructor Create(const AFileName: string; AEscapeLineFeeds : Boolean = False); override;
+    destructor Destroy; override;
+    procedure UpdateFile; override;
+  end;
+
+function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
+function FileCreateUTF8(Const FileName : string) : THandle;
+function FileCreateUTF8(Const FileName : string; Rights: Cardinal) : THandle;
 
 function GetTimeZoneDelta: TDateTime;
 
@@ -46,6 +76,10 @@ procedure AppBusy;
 procedure AppNormal;
 procedure ForceAppNormal;
 
+function ParamStrUTF8(Param: Integer): utf8string;
+function ParamCount: integer;
+function GetCmdSwitchValue(const Switch: string): string;
+
 {$ifdef mswindows}
 procedure AllowSetForegroundWindow(dwProcessId: DWORD);
 {$endif mswindows}
@@ -53,6 +87,229 @@ procedure AllowSetForegroundWindow(dwProcessId: DWORD);
 implementation
 
 uses FileUtil;
+
+{$ifdef windows}
+function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
+const
+  AccessMode: array[0..2] of Cardinal  = (
+    GENERIC_READ,
+    GENERIC_WRITE,
+    GENERIC_READ or GENERIC_WRITE);
+  ShareMode: array[0..4] of Integer = (
+               0,
+               0,
+               FILE_SHARE_READ,
+               FILE_SHARE_WRITE,
+               FILE_SHARE_READ or FILE_SHARE_WRITE);
+begin
+  Result := CreateFileW(PWideChar(UTF8Decode(FileName)), dword(AccessMode[Mode and 3]),
+                       dword(ShareMode[(Mode and $F0) shr 4]), nil, OPEN_EXISTING,
+                       FILE_ATTRIBUTE_NORMAL, 0);
+  //if fail api return feInvalidHandle (INVALIDE_HANDLE=feInvalidHandle=-1)
+end;
+
+function FileCreateUTF8(Const FileName : string) : THandle;
+begin
+  Result := CreateFileW(PWideChar(UTF8Decode(FileName)), GENERIC_READ or GENERIC_WRITE,
+                       0, nil, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+end;
+
+function FileCreateUTF8(Const FileName : string; Rights: Cardinal) : THandle;
+begin
+  Result := CreateFileW(PWideChar(UTF8Decode(FileName)), GENERIC_READ or GENERIC_WRITE,
+                       0, nil, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+end;
+
+var
+  FParams: TStringList;
+
+function ParamStrUTF8(Param: Integer): utf8string;
+
+  function SkipSpaces( P: PWideChar ): PWideChar;
+  begin
+    while True do
+    begin
+      while (P[0] <> #0) and (P[0] <= ' ') do Inc(P);
+      if (P[0] = '"') and (P[1] = '"') then Inc(P, 2) else Break;
+    end;
+    Result := P;
+  end;
+
+  function SkipParam(P: PWideChar): PWideChar;
+  begin
+    P := SkipSpaces( P );
+    while P[0] > ' ' do
+      if P[0] = '"' then
+      begin
+        Inc(P);
+        while (P[0] <> #0) and (P[0] <> '"') do
+          Inc(P);
+        if P[0] <> #0 then Inc(P);
+      end
+        else
+        Inc(P);
+    Result := P;
+  end;
+
+var
+  P, P1: PWideChar;
+  s: widestring;
+begin
+  if Win32Platform <> VER_PLATFORM_WIN32_NT then begin
+    Result:=FileUtil.ParamStrUTF8(Param);
+    exit;
+  end;
+
+  if FParams <> nil then begin
+    if Param >= FParams.Count then
+      Result:=''
+    else
+      Result:=FParams[Param];
+    exit;
+  end;
+
+  FParams:=TStringList.Create;
+  P := GetCommandLineW;
+  while True do begin
+    P := SkipSpaces( P );
+    P1 := P;
+    P := SkipParam(P);
+    if P = P1 then
+      break;
+    s := Copy( P1, 1, P - P1 );
+    if Length(s) >= 2 then
+      if (s[1] = '"') and (s[Length(s)] = '"') then
+        s:=Copy(s, 2, Length(s) - 2);
+    FParams.Add(UTF8Encode(s));
+  end;
+end;
+
+function ParamCount: integer;
+begin
+  if Win32Platform <> VER_PLATFORM_WIN32_NT then
+    Result:=System.ParamCount
+  else begin
+    if FParams = nil then
+      ParamStrUTF8(0);
+    Result:=FParams.Count - 1;
+  end;
+end;
+
+{$else} // Non-Windows targets
+
+function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
+begin
+  Result:=FileOpen(FileName, Mode);
+end;
+
+function FileCreateUTF8(Const FileName : string) : THandle;
+begin
+  Result:=FileCreate(FileName);
+end;
+
+function FileCreateUTF8(Const FileName : string; Rights: Cardinal) : THandle;
+begin
+  Result:=FileCreate(FileName, Rights);
+end;
+
+function ParamStrUTF8(Param: Integer): utf8string;
+begin
+  Result:=FileUtil.ParamStrUTF8(Param);
+end;
+
+function ParamCount: integer;
+begin
+  Result:=System.ParamCount;
+end;
+
+{$endif windows}
+
+{ TFileStreamUTF8 }
+
+constructor TFileStreamUTF8.Create(const AFileName: utf8string; Mode: Word);
+var
+  lHandle: THandle;
+begin
+  FFileName:= AFileName;
+  if Mode = fmcreate then
+    lHandle:= FileCreateUTF8(AFileName)
+  else
+    lHandle:= FileOpenUTF8(AFileName, Mode);
+
+  If (THandle(lHandle)=feInvalidHandle) then
+  begin
+    if Mode = fmCreate then
+      raise EFCreateError.createfmt({SFCreateError}'Unable to create file "%s"', [AFileName])
+    else
+      raise EFOpenError.Createfmt({SFOpenError}'Unable to open file "%s"', [AFilename]);
+  end
+  else
+    inherited Create(lHandle);
+end;
+
+constructor TFileStreamUTF8.Create(const AFileName: utf8string; Mode: Word; Rights: Cardinal);
+var
+  lHandle: THandle;
+begin
+  FFileName:=AFileName;
+  if Mode=fmcreate then
+    lHandle:=FileCreateUTF8(AFileName,Rights)
+  else
+    lHandle:=FileOpenUTF8(AFileName,Mode);
+
+  if (THandle(lHandle)=feInvalidHandle) then
+  begin
+    if Mode=fmcreate then
+      raise EFCreateError.createfmt({SFCreateError}'Unable to create file "%s"',[AFileName])
+    else
+      raise EFOpenError.Createfmt({SFOpenError}'Unable to open file "%s"',[AFilename]);
+  end
+  else
+    inherited Create(lHandle);
+end;
+
+destructor TFileStreamUTF8.Destroy;
+begin
+  FileClose(Handle);
+end;
+
+{ TIniFileUtf8 }
+
+constructor TIniFileUtf8.Create(const AFileName: string; AEscapeLineFeeds: Boolean);
+var
+  m: integer;
+begin
+  FFileName:=AFileName;
+  if FileExistsUTF8(FFileName) then
+    m:=fmOpenRead or fmShareDenyNone
+  else
+    m:=fmCreate;
+  FStream:=TFileStreamUTF8.Create(AFileName, m);
+  inherited Create(FStream, AEscapeLineFeeds);
+  FileClose(FStream.Handle);
+end;
+
+destructor TIniFileUtf8.Destroy;
+begin
+  THandle(pointer(@FStream.Handle)^):=0;
+  FStream.Free;
+  inherited Destroy;
+end;
+
+procedure TIniFileUtf8.UpdateFile;
+var
+  h: THANDLE;
+begin
+  if FileExistsUTF8(FFileName) then
+    h:=FileOpenUTF8(FFileName, fmOpenWrite or fmShareDenyWrite)
+  else
+    h:=FileCreateUTF8(FFileName);
+  THandle(pointer(@FStream.Handle)^):=h;
+  inherited UpdateFile;
+  FileClose(FStream.Handle);
+end;
+
+// ---------------------------------------------
 
 function GetTimeZoneDelta: TDateTime;
 {$ifdef windows}
@@ -204,6 +461,28 @@ begin
   Result:=AnsiCompareStr(UTF8Decode(p1), UTF8Decode(p2));
 {$endif windows}
 end;
+
+function GetCmdSwitchValue(const Switch: string): string;
+var
+  i, len: integer;
+  s, ss: string;
+begin
+  Result:='';
+  ss:='--' + Switch + '=';
+  len:=Length(ss);
+  for i:=1 to ParamCount do begin
+    s:=ParamStrUTF8(i);
+    if Copy(s, 1, len) = ss then begin
+      Result:=Copy(s, len + 1, MaxInt);
+      break;
+    end;
+  end;
+end;
+
+finalization
+{$ifdef windows}
+  FreeAndNil(FParams);
+{$endif windows}
 
 end.
 

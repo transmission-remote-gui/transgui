@@ -25,7 +25,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  httpsend, synsock, ExtCtrls, BaseForm;
+  httpsend, synsock, ExtCtrls, BaseForm, utils;
 
 resourcestring
   SDownloadProgress = '%s of %s downloaded';
@@ -69,7 +69,7 @@ type
     FForm: TDownloadForm;
     FUrl: string;
     FDestFileName: string;
-    FOut: TFileStream;
+    FOut: TFileStreamUTF8;
 
     procedure DoMonitor(Sender: TObject; Writing: Boolean; const Buffer: TMemory; Len: Integer);
     procedure WriteToFile;
@@ -121,7 +121,7 @@ end;
 procedure TDownloadThread.WriteToFile;
 begin
   if FOut = nil then
-    FOut:=TFileStream.Create(FDestFileName, fmCreate);
+    FOut:=TFileStreamUTF8.Create(FDestFileName, fmCreate);
 
   FHttp.Document.Position:=0;
   FOut.CopyFrom(FHttp.Document, FHttp.Document.Size);
