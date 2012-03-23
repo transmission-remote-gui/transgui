@@ -102,7 +102,7 @@ const
 implementation
 
 uses
-  Forms;
+  Forms, utils;
 
 const
   LineSeparator = '###################';
@@ -146,7 +146,7 @@ var
   LangName: AnsiString;
 begin
   Result:= TStringList.Create;
-  if FindFirst(IncludeTrailingPathDelimiter(SearchPath) + '*', faArchive or faReadOnly, Sr) = 0 then
+  if FindFirstUTF8(IncludeTrailingPathDelimiter(SearchPath) + '*', faArchive or faReadOnly, Sr) = 0 then
     with Result do begin
       NameValueSeparator:= '=';
       QuoteChar:= '"';
@@ -156,7 +156,7 @@ begin
         LangName:= ExtractLangName(IncludeTrailingPathDelimiter(ExtractFilePath(SearchPath)) + Sr.Name);
         if LangName <> '' then
           Add(LangName + NameValueSeparator + Sr.Name);
-      until FindNext(Sr) <> 0;
+      until FindNextUTF8(Sr) <> 0;
       FindClose(Sr);
     end;
 end;
@@ -170,7 +170,7 @@ function DefaultLangDir: AnsiString;
   var
     sr: TSearchRec;
   begin
-    Result:=FindFirst(dir + ExtractFileNameOnly(ParamStr(0)) + '.*', faAnyFile, sr) = 0;
+    Result:=FindFirstUtf8(dir + ExtractFileNameOnly(ParamStrUtf8(0)) + '.*', faAnyFile, sr) = 0;
     FindClose(sr);
   end;
 
@@ -179,14 +179,14 @@ var
 {$endif unix}
 begin
   if FDefaultLangDir = '' then begin
-    FDefaultLangDir:=ExtractFilePath(ParamStr(0)) + 'lang' + DirectorySeparator;
+    FDefaultLangDir:=ExtractFilePath(ParamStrUtf8(0)) + 'lang' + DirectorySeparator;
 {$ifdef unix}
     if not _IsLangDir(FDefaultLangDir) then begin
-      s:='/usr/share/' + ExtractFileNameOnly(ParamStr(0)) + '/lang/';
+      s:='/usr/share/' + ExtractFileNameOnly(ParamStrUtf8(0)) + '/lang/';
       if _IsLangDir(s) then
         FDefaultLangDir:=s
       else begin
-        s:='/usr/local/share/' + ExtractFileNameOnly(ParamStr(0)) + '/lang/';
+        s:='/usr/local/share/' + ExtractFileNameOnly(ParamStrUtf8(0)) + '/lang/';
         if _IsLangDir(s) then
           FDefaultLangDir:=s;
       end;
@@ -235,8 +235,8 @@ var
 begin
   LCLGetLanguageIDs(lLang, sLang);
   sLang:=AnsiLowerCase(sLang);
-  s:=ExtractFileNameOnly(ParamStr(0));
-  if (sLang <> '') and not FileExists(DefaultLangDir + s + '.' + sLang) then
+  s:=ExtractFileNameOnly(ParamStrUtf8(0));
+  if (sLang <> '') and not FileExistsUTF8(DefaultLangDir + s + '.' + sLang) then
     s:=s + '.' + sLang
   else
     s:=s + '.lng';
@@ -289,8 +289,8 @@ begin
       for i := 0 to Count - 1 do
         SupplementTranslationFile(IncludeTrailingPathDelimiter(TranslationFilesPath) + ValueFromIndex[i]);
     // Supplement template file
-    s:=IncludeTrailingPathDelimiter(TranslationFilesPath) + ExtractFileNameOnly(ParamStr(0)) + '.template';
-    if FileExists(s) then
+    s:=IncludeTrailingPathDelimiter(TranslationFilesPath) + ExtractFileNameOnly(ParamStrUtf8(0)) + '.template';
+    if FileExistsUTF8(s) then
       SupplementTranslationFile(s);
   end;
 end;
@@ -305,7 +305,7 @@ var
   lLang, sLang: string;
 begin
   LCLGetLanguageIDs(lLang, sLang);
-  Result := IncludeTrailingPathDelimiter(TranslationFilesPath) + ExtractFileNameOnly(ParamStr(0))+ '.' + AnsiLowerCase(sLang);
+  Result := IncludeTrailingPathDelimiter(TranslationFilesPath) + ExtractFileNameOnly(ParamStrUtf8(0))+ '.' + AnsiLowerCase(sLang);
   Result := LoadTranslationFile(Result, OnTranslate);
 end;
 
@@ -322,7 +322,7 @@ begin
   Result:= GetTranslationFileName(Language, Sl);
   if Result <> '' then
     Result := IncludeTrailingPathDelimiter(TranslationFilesPath) + Result;
-  if FileExists(Result) then
+  if FileExistsUTF8(Result) then
     LoadTranslationFile(Result, OnTranslate);
 end;
 
@@ -466,12 +466,12 @@ end;
 
 procedure TTranslateStringList.LoadFromFile(const FileName: string);
 var
-  FS: TFileStream;
+  FS: TFileStreamUTF8;
   buff: array[1..3] of char;
   i, j: integer;
   s: string;
 begin
-  FS:= TFileStream.Create(FileName, fmOpenRead);
+  FS:= TFileStreamUTF8.Create(FileName, fmOpenRead);
   try
     // Skip UTF8 header
     buff := '';
@@ -498,10 +498,10 @@ end;
 
 procedure TTranslateStringList.SaveToFile(const FileName: string);
 var
-  FS: TFileStream;
+  FS: TFileStreamUTF8;
 begin
   ForceDirectories(ExtractFilePath(FileName));
-  FS := TFileStream.Create(FileName, fmCreate);
+  FS := TFileStreamUTF8.Create(FileName, fmCreate);
   try
     FS.WriteBuffer(UTF8FileHeader, SizeOf(UTF8FileHeader));
     SaveToStream(FS);
@@ -539,7 +539,7 @@ begin
     Duplicates := dupIgnore;
     CaseSensitive := False;
     CheckSpecialChars;
-    if FileExists(FTranslationFile) then begin
+    if FileExistsUTF8(FTranslationFile) then begin
       LoadFromFile(FTranslationFile);
       FTranslationLanguage := AnsiDequotedStr(CValues[AnsiQuotedStr(sLanguageIDName, QuoteChar)], QuoteChar);
     end;
@@ -688,10 +688,10 @@ end;
 
 procedure TResTranslator.SaveFile(const aFileName: string);
 var
-  FS: TFileStream;
+  FS: TFileStreamUTF8;
 begin
   ForceDirectories(ExtractFilePath(aFileName));
-  FS := TFileStream.Create(aFileName, fmCreate);
+  FS := TFileStreamUTF8.Create(aFileName, fmCreate);
   try
     FS.WriteBuffer(UTF8FileHeader, SizeOf(UTF8FileHeader));
     FStrResLst.SaveToStream(FS);

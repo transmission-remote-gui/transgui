@@ -27,7 +27,7 @@ unit GeoIP;
 
 interface
 
-uses Classes, SysUtils, {$ifdef FPC} sockets {$else} WinSock {$endif};
+uses Classes, SysUtils, utils, {$ifdef FPC} sockets {$else} WinSock {$endif};
 
 type
   TGeoIPResult = (
@@ -78,7 +78,7 @@ type
 
   TGeoIP = class
   private
-    FInputFile: TFileStream;
+    FInputFile: TFileStreamUTF8;
     FDatabaseType: TGeoIPDBTypes;
     FDatabaseSegments: array of Cardinal;
     FDatabaseInfo: string;
@@ -139,7 +139,7 @@ const
 constructor TGeoIP.Create(const FileName: string);
 begin
   inherited Create;
-  FInputFile := TFileStream.Create(FileName, fmOpenRead or fmShareDenyNone);
+  FInputFile := TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyNone);
   InitDBFile;
 end;
 
