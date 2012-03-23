@@ -28,4 +28,4 @@
 
 *Q:* What's the meaning of an icon with red arrow (up or down) in the names column? 
 
-*A:* A red icon indicates a error. To find out the error message, look at the "Error" in the General page on the bottom of the main window.
+*A:* A red icon indicates a error. To find out the error message, look at the "Error" in the General page at the bottom of the main window.
