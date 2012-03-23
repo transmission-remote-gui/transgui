@@ -24,7 +24,7 @@ unit VarGrid;
 interface
 
 uses
-  Classes, SysUtils, Grids, VarList, Graphics, Controls, LMessages, Forms, StdCtrls;
+  Classes, SysUtils, Grids, VarList, Graphics, Controls, LMessages, Forms, StdCtrls, LCLType, ExtCtrls;
 
 type
   TVarGrid = class;
@@ -67,6 +67,8 @@ type
     FOnSortColumn: TOnSortColumnEvent;
     FRow: integer;
     FHintCell: TPoint;
+    FCurSearch: string;
+    FSearchTimer: TTimer;
 
     function GetRow: integer;
     function GetRowSelected(RowIndex: integer): boolean;
@@ -85,6 +87,8 @@ type
     procedure CMHintShow(var Message: TCMHintShow); message CM_HINTSHOW;
     function CellNeedsCheckboxBitmaps(const aCol,aRow: Integer): boolean;
     procedure DrawCellCheckboxBitmaps(const aCol,aRow: Integer; const aRect: TRect);
+    function FindRow(const SearchStr: string; StartRow: integer): integer;
+    procedure DoSearchTimer(Sender: TObject);
 
   protected
     procedure SizeChanged(OldColCount, OldRowCount: Integer); override;
@@ -94,6 +98,7 @@ type
     procedure MouseDown(Button: TMouseButton; Shift:TShiftState; X,Y:Integer); override;
     procedure MouseMove(Shift: TShiftState; X,Y: Integer);override;
     procedure KeyDown(var Key : Word; Shift : TShiftState); override;
+    procedure UTF8KeyPress(var UTF8Key: TUTF8Char); override;
     procedure DoOnCellAttributes(ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure HeaderClick(IsColumn: Boolean; index: Integer); override;
     procedure AutoAdjustColumn(aCol: Integer); override;
@@ -198,7 +203,7 @@ procedure Register;
 
 implementation
 
-uses Variants, LCLType, Math, GraphType, lclintf, Themes, types
+uses Variants, Math, GraphType, lclintf, Themes, types, lclproc
      {$ifdef LCLcarbon} , carbonproc {$endif LCLcarbon};
 
 const
@@ -455,6 +460,33 @@ begin
   AState := cbUnchecked;
   GetCheckBoxState(aCol, aRow, aState);
   DrawGridCheckboxBitmaps(aCol, aRow, aRect, aState);
+end;
+
+function TVarGrid.FindRow(const SearchStr: string; StartRow: integer): integer;
+var
+  i, c: integer;
+  s, ss: string;
+begin
+  Result:=-1;
+  if Columns.Count = 0 then
+    exit;
+  c:=SortColumn;
+  if (c < 0) or (c >= Items.ColCnt) then
+    c:=0;
+  ss:=UTF8UpperCase(SearchStr);
+  for i:=StartRow to Items.Count - 1 do begin
+    s:=UTF8UpperCase(UTF8Encode(widestring(Items[c, i])));
+    if Copy(s, 1, Length(ss)) = ss then begin
+      Result:=i;
+      break;
+    end;
+  end;
+end;
+
+procedure TVarGrid.DoSearchTimer(Sender: TObject);
+begin
+  FSearchTimer.Enabled:=False;
+  FCurSearch:='';
 end;
 
 procedure TVarGrid.SizeChanged(OldColCount, OldRowCount: Integer);
@@ -733,6 +765,25 @@ begin
     OnDblClick(Self);
 end;
 
+procedure TVarGrid.UTF8KeyPress(var UTF8Key: TUTF8Char);
+var
+  i: integer;
+begin
+  inherited UTF8KeyPress(UTF8Key);
+  if UTF8Key = #0 then
+    exit;
+  FSearchTimer.Enabled:=False;
+  FSearchTimer.Enabled:=True;
+  if FCurSearch = '' then
+    i:=0
+  else
+    i:=Row;
+  FCurSearch:=FCurSearch + UTF8Key;
+  i:=FindRow(FCurSearch, i);
+  if i >= 0 then
+    Row:=i;
+end;
+
 procedure TVarGrid.DoOnCellAttributes(ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
 begin
   if Assigned(FOnCellAttributes) then
@@ -982,6 +1033,12 @@ begin
   ShowHint:=True;
   SetLength(FColumnsMap, 1);
   FColumnsMap[0]:=0;
+  FSearchTimer:=TTimer.Create(Self);
+  with FSearchTimer do begin
+    Enabled:=False;
+    Interval:=2000;
+    OnTimer:=@DoSearchTimer;
+  end;
 end;
 
 destructor TVarGrid.Destroy;
