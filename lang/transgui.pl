@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Polski
+TranslationLanguage=Polski
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapowania ścieżek zdalnych do lokalnych.~~Przykłady:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (pobrano %d)
@@ -85,10 +85,10 @@ Geo IP database is needed to resolve country by IP address.~Download this databa
 Global bandwidth settings=Ogólne ustawienia prędkości
 Global peer limit=Ogólny limit peerów
 Hash=Hash
-Have=Ma
+Have=Pobrał
 Hide=Ukryj
 High priority=Wysoki priorytet
-high=wysoki
+high=Wysoki
 Host=Host
 in swarm=w kolejce
 Inactive=Nieaktywne
@@ -176,7 +176,7 @@ Torrent verification may take a long time.~Are you sure to start verification of
 Torrents (*.torrent)|*.torrent|All files (*.*)|*.*=Torrenty (*.torrent)|*.torrent|Wszystkie pliki (*.*)|*.*
 Total size=Łączny rozmiar
 Tracker status=Status trackera
-Tracker update on=Uaktualnianie trackera o
+Tracker update on=Aktualizacja trackera o
 Tracker=Tracker
 Trackers=Trackery
 Transfer=Transfer
@@ -194,8 +194,8 @@ Up speed=Wysyłanie
 Up=W górę
 Update complete=Uaktualnianie zakończone
 Update GeoIP database=Uaktualnij bazę GeoIP
-Update in=Uaktualnienie za
-Updating=Uaktualnianie
+Update in=Aktualizacja za
+Updating=Aktualizacja
 Upload speed=Prędkość wysyłania
 Uploaded=Wysłane
 Use proxy server=Używaj serwera proxy
@@ -207,7 +207,7 @@ Version %s=Wersja %s
 Waiting=Oczekiwanie
 Warning=Ostrzeżenie
 Wasted=Zmarnowane
-Working=Pracuje
+Working=Działa
 Yes to &All=Tak na &Wszystkie
 You should restart the application to apply changes=Uruchom ponownie aplikację aby zastosować zmiany
 No tracker=Brak trackera
