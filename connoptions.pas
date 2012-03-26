@@ -380,6 +380,7 @@ begin
     WriteInteger('Hosts', 'Count', cbConnection.Items.Count);
     for i:=0 to cbConnection.Items.Count - 1 do
       WriteString('Hosts', Format('Host%d', [i + 1]), cbConnection.Items[i]);
+    UpdateFile;
   end;
 end;
 
@@ -473,6 +474,7 @@ begin
     i:=cbConnection.Items.IndexOf(ConnName);
     if i < 0 then
       cbConnection.Items.Insert(0, ConnName);
+    UpdateFile;
   end;
 end;
 

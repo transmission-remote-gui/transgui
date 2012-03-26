@@ -961,6 +961,7 @@ begin
   lvPeers.Items.ExtraColumns:=PeersExtraColumns;
   lvTrackers.Items.ExtraColumns:=TrackersExtraColumns;
   FIni:=TIniFileUtf8.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.ini'));
+  FIni.CacheUpdates:=True;
   FTrackers:=TStringList.Create;
   FTrackers.Sorted:=True;
   FReconnectTimeOut:=-1;
@@ -1050,7 +1051,6 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   DeleteFileUTF8(FRunFileName);
   FResolver.Free;
-  FIni.Free;
   FTrackers.Free;
   FUnZip.Free;
   RpcObj.Free;
@@ -1062,6 +1062,10 @@ begin
     SupplementTranslationFiles;
   if Application.HasOption('makelang') then
     MakeTranslationFile;
+  try
+    FIni.Free;
+  except
+  end;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -1344,6 +1348,7 @@ begin
       FIni.WriteBool('Interface', 'ShowAddTorrentWindow', cbShowAddTorrentWindow.Checked);
       FIni.WriteBool('Interface', 'DeleteTorrentFile', cbDeleteTorrentFile.Checked);
 
+      Ini.UpdateFile;
       UpdateTray;
       AppNormal;
     end;
@@ -1843,6 +1848,12 @@ begin
   FIni.WriteBool('PeersList', 'ResolveHost', acResolveHost.Checked);
   FIni.WriteBool('PeersList', 'ResolveCountry', acResolveCountry.Checked);
   FIni.WriteBool('PeersList', 'ShowCountryFlag', acShowCountryFlag.Checked);
+
+  try
+    FIni.UpdateFile;
+  except
+    Application.HandleException(nil);
+  end;
 
   DoDisconnect;
   Application.ProcessMessages;
@@ -3251,6 +3262,7 @@ begin
           Ini.WriteString('Hosts', Format('Host%d', [j]), Caption);
           Inc(j);
         end;
+    Ini.UpdateFile;
     UpdateConnections;
   end
   else
@@ -4989,6 +5001,7 @@ begin
   FIni.WriteInteger(IniSec, 'FolderCount', CB.Items.Count);
   for i:=0 to CB.Items.Count - 1 do
     FIni.WriteString(IniSec, Format('Folder%d', [i]), CB.Items[i]);
+  Ini.UpdateFile;
 end;
 
 function TMainForm.PriorityToStr(p: integer; var ImageIndex: integer): string;
