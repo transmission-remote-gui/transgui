@@ -306,7 +306,9 @@ begin
         Synchronize(@DoFillSessionInfo);
     finally
       args.Free;
-    end;
+    end
+    else
+      ASSERT(FRpc.Status <> '');
   finally
     req.Free;
   end;
@@ -585,8 +587,14 @@ begin
               XTorrentSession:=Http.Headers[j];
               break;
             end;
-          if XTorrentSession <> '' then
+          if XTorrentSession <> '' then begin
+            if i = 2 then begin
+              if FMainThreadId <> GetCurrentThreadId then
+                ReconnectAllowed:=True;
+              Status:='Session ID error.';
+            end;
             continue;
+          end;
         end;
 
         if Http.ResultCode <> 200 then begin
@@ -652,8 +660,11 @@ begin
             if obj is TJSONObject then begin
               res:=obj as TJSONObject;
               s:=res.Strings['result'];
-              if AnsiCompareText(s, 'success') <> 0 then
-                Status:=s
+              if AnsiCompareText(s, 'success') <> 0 then begin
+                if Trim(s) = '' then
+                  s:='Unknown error.';
+                Status:=s;
+              end
               else begin
                 if ReturnArguments then begin
                   res:=res.Objects['arguments'];
