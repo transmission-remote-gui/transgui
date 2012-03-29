@@ -305,7 +305,7 @@ begin
     h:=FileOpenUTF8(FFileName, fmOpenWrite or fmShareDenyWrite)
   else
     h:=FileCreateUTF8(FFileName);
-  if h = INVALID_HANDLE_VALUE then
+  if h = THandle(-1) then
     raise Exception.Create('Unable to write to INI file.' + LineEnding + SysErrorMessageUTF8(GetLastOSError));
   THandle(pointer(@FStream.Handle)^):=h;
   try
