@@ -466,6 +466,7 @@ function TVarGrid.FindRow(const SearchStr: string; StartRow: integer): integer;
 var
   i, c: integer;
   s, ss: string;
+  v: variant;
 begin
   Result:=-1;
   if Columns.Count = 0 then
@@ -475,7 +476,11 @@ begin
     c:=0;
   ss:=UTF8UpperCase(SearchStr);
   for i:=StartRow to Items.Count - 1 do begin
-    s:=UTF8UpperCase(UTF8Encode(widestring(Items[c, i])));
+    v:=Items[c, i];
+    if VarIsNull(v) or VarIsEmpty(v) then
+      s:=''
+    else
+      s:=UTF8UpperCase(UTF8Encode(widestring(v)));
     if Copy(s, 1, Length(ss)) = ss then begin
       Result:=i;
       break;
