@@ -44,6 +44,9 @@ type
 procedure AutoSizeForm(Form: TCustomForm);
 function ScaleInt(i: integer): integer;
 
+var
+  IntfScale: integer = 100;
+
 implementation
 
 uses LCLType, ButtonPanel, VarGrid, ComCtrls, StdCtrls, ExtCtrls;
@@ -148,6 +151,10 @@ begin
         with TVarGrid(C).Columns do
           for i:=0 to Count - 1 do
              Items[i].Width:=ScaleInt(Items[i].Width);
+      if C is TStatusBar then
+        with TStatusBar(C) do
+          for i:=0 to Panels.Count - 1 do
+             Panels[i].Width:=ScaleInt(Panels[i].Width);
 {$ifdef LCLgtk2}
       // Fix panel color bug on GTK2
       if (C is TCustomPanel) and ParentColor and (Color = clDefault) then
@@ -216,6 +223,8 @@ begin
   end
   else
     ScaleM:=Abs(i);
+  ScaleM:=ScaleM*IntfScale;
+  ScaleD:=ScaleD*100;
 end;
 
 initialization
