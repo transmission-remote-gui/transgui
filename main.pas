@@ -139,6 +139,11 @@ type
     acNewConnection: TAction;
     acDisconnect: TAction;
     acAltSpeed: TAction;
+    acForceStartTorrent: TAction;
+    acQMoveTop: TAction;
+    acQMoveUp: TAction;
+    acQMoveDown: TAction;
+    acQMoveBottom: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
@@ -157,6 +162,18 @@ type
     MenuItem41: TMenuItem;
     MenuItem43: TMenuItem;
     MenuItem63: TMenuItem;
+    MenuItem64: TMenuItem;
+    MenuItem77: TMenuItem;
+    MenuItem78: TMenuItem;
+    MenuItem79: TMenuItem;
+    MenuItem80: TMenuItem;
+    MenuItem81: TMenuItem;
+    MenuItem82: TMenuItem;
+    MenuItem83: TMenuItem;
+    MenuItem84: TMenuItem;
+    MenuItem85: TMenuItem;
+    pmiQueue: TMenuItem;
+    miQueue: TMenuItem;
     sepTrackers: TMenuItem;
     MenuItem65: TMenuItem;
     MenuItem66: TMenuItem;
@@ -209,6 +226,9 @@ type
     tbConnect: TToolButton;
     tbtAltSpeed: TToolButton;
     sepAltSpeed: TToolButton;
+    sepQueue: TToolButton;
+    tbQMoveUp: TToolButton;
+    tbQMoveDown: TToolButton;
     ToolButton9: TToolButton;
     txConnErrorLabel: TLabel;
     panSearch: TPanel;
@@ -306,7 +326,7 @@ type
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
-    ToolButton5: TToolButton;
+    tbStopTorrent: TToolButton;
     ToolButton6: TToolButton;
     ToolButton7: TToolButton;
     ToolButton8: TToolButton;
@@ -361,6 +381,7 @@ type
     procedure acConnOptionsExecute(Sender: TObject);
     procedure acDelTrackerExecute(Sender: TObject);
     procedure acEditTrackerExecute(Sender: TObject);
+    procedure acForceStartTorrentExecute(Sender: TObject);
     procedure acHideAppExecute(Sender: TObject);
     procedure acMoveTorrentExecute(Sender: TObject);
     procedure acNewConnectionExecute(Sender: TObject);
@@ -370,6 +391,10 @@ type
     procedure acDisconnectExecute(Sender: TObject);
     procedure acExitExecute(Sender: TObject);
     procedure acDaemonOptionsExecute(Sender: TObject);
+    procedure acQMoveBottomExecute(Sender: TObject);
+    procedure acQMoveDownExecute(Sender: TObject);
+    procedure acQMoveTopExecute(Sender: TObject);
+    procedure acQMoveUpExecute(Sender: TObject);
     procedure acReannounceTorrentExecute(Sender: TObject);
     procedure acRemoveTorrentAndDataExecute(Sender: TObject);
     procedure acRemoveTorrentExecute(Sender: TObject);
@@ -509,6 +534,7 @@ type
     procedure SetSpeedLimit(const Dir: string; Speed: integer);
     function FixSeparators(const p: string): string;
     function MapRemoteToLocal(const RemotePath: string): string;
+    procedure UpdateUIRpcVersion(RpcVersion: integer);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -560,13 +586,13 @@ const
   idxPriority = 18;
   idxSizeToDowload = 19;
   idxTorrentId = 20;
+  idxQueuePos = 21;
 
   idxTag = -1;
   idxSeedsTotal = -2;
   idxLeechersTotal = -3;
-//  idxPeersTotal = -4;
-  idxStateImg = -5;
-  TorrentsExtraColumns = 5;
+  idxStateImg = -4;
+  TorrentsExtraColumns = 4;
 
   // Peers list
   idxPeerHost = 0;
@@ -625,11 +651,11 @@ const
 
   StatusFiltersCount = 6;
 
-  TorrentFieldsMap: array[idxName..idxTorrentId] of string =
+  TorrentFieldsMap: array[idxName..idxQueuePos] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
      'peersGettingFromUs,leechers', 'rateDownload', 'rateUpload', 'eta', 'uploadRatio',
      'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority',
-     '', '');
+     '', '', 'queuePosition');
 
 implementation
 
@@ -1044,6 +1070,11 @@ begin
     FormShow(nil);
   end;
   UpdateConnections;
+
+  i:=Ini.ReadInteger('Interface', 'LastRpcVersion', -1);
+  if i >= 0 then
+    UpdateUIRpcVersion(i);
+
   Application.OnException:=@ApplicationPropertiesException;
 end;
 
@@ -1159,6 +1190,11 @@ end;
 procedure TMainForm.acEditTrackerExecute(Sender: TObject);
 begin
   AddTracker(True);
+end;
+
+procedure TMainForm.acForceStartTorrentExecute(Sender: TObject);
+begin
+  TorrentAction(GetSelectedTorrents, 'torrent-start-now');
 end;
 
 procedure TMainForm.acHideAppExecute(Sender: TObject);
@@ -1617,7 +1653,7 @@ begin
         Self.Update;
 
         if OldDownloadDir <> cbDestFolder.Text then begin
-          TorrentAction(VarArrayOf([id]), 'remove');
+          TorrentAction(VarArrayOf([id]), 'torrent-remove');
           id:=0;
           args:=TJSONObject.Create;
           args.Add('paused', TJSONIntegerNumber.Create(1));
@@ -1668,7 +1704,7 @@ begin
         end;
 
         if cbStartTorrent.Checked then
-          TorrentAction(VarArrayOf([id]), 'start');
+          TorrentAction(VarArrayOf([id]), 'torrent-start');
 
         tt:=Now;
         while (Now - tt < 2/SecsPerDay) and (id <> 0) do begin
@@ -1697,7 +1733,7 @@ begin
     end;
   finally
     if id <> 0 then
-      TorrentAction(VarArrayOf([id]), 'remove');
+      TorrentAction(VarArrayOf([id]), 'torrent-remove');
   end;
 end;
 
@@ -1848,6 +1884,9 @@ begin
   FIni.WriteBool('PeersList', 'ResolveHost', acResolveHost.Checked);
   FIni.WriteBool('PeersList', 'ResolveCountry', acResolveCountry.Checked);
   FIni.WriteBool('PeersList', 'ShowCountryFlag', acShowCountryFlag.Checked);
+
+  if RpcObj.Connected then
+    Ini.WriteInteger('Interface', 'LastRpcVersion', RpcObj.RPCVersion);
 
   try
     FIni.UpdateFile;
@@ -2266,9 +2305,29 @@ begin
   end;
 end;
 
+procedure TMainForm.acQMoveBottomExecute(Sender: TObject);
+begin
+  TorrentAction(GetSelectedTorrents, 'queue-move-bottom');
+end;
+
+procedure TMainForm.acQMoveDownExecute(Sender: TObject);
+begin
+  TorrentAction(GetSelectedTorrents, 'queue-move-down');
+end;
+
+procedure TMainForm.acQMoveTopExecute(Sender: TObject);
+begin
+  TorrentAction(GetSelectedTorrents, 'queue-move-top');
+end;
+
+procedure TMainForm.acQMoveUpExecute(Sender: TObject);
+begin
+  TorrentAction(GetSelectedTorrents, 'queue-move-up');
+end;
+
 procedure TMainForm.acReannounceTorrentExecute(Sender: TObject);
 begin
-  TorrentAction(GetSelectedTorrents, 'reannounce');
+  TorrentAction(GetSelectedTorrents, 'torrent-reannounce');
 end;
 
 procedure TMainForm.acRemoveTorrentAndDataExecute(Sender: TObject);
@@ -2389,24 +2448,22 @@ end;
 
 procedure TMainForm.acStartAllTorrentsExecute(Sender: TObject);
 begin
-  TorrentAction(NULL, 'start');
+  TorrentAction(NULL, 'torrent-start');
 end;
 
 procedure TMainForm.acStartTorrentExecute(Sender: TObject);
 begin
-  if gTorrents.Items.Count = 0 then exit;
-  TorrentAction(GetSelectedTorrents, 'start');
+  TorrentAction(GetSelectedTorrents, 'torrent-start');
 end;
 
 procedure TMainForm.acStopAllTorrentsExecute(Sender: TObject);
 begin
-  TorrentAction(NULL, 'stop');
+  TorrentAction(NULL, 'torrent-stop');
 end;
 
 procedure TMainForm.acStopTorrentExecute(Sender: TObject);
 begin
-  if gTorrents.Items.Count = 0 then exit;
-  TorrentAction(GetSelectedTorrents, 'stop');
+  TorrentAction(GetSelectedTorrents, 'torrent-stop');
 end;
 
 procedure TMainForm.acTorrentPropsExecute(Sender: TObject);
@@ -2648,7 +2705,7 @@ begin
   finally
     gTorrents.Tag:=0;
   end;
-  TorrentAction(ids, 'verify');
+  TorrentAction(ids, 'torrent-verify');
 end;
 
 procedure TMainForm.AnimateTimerTimer(Sender: TObject);
@@ -3429,6 +3486,7 @@ begin
   acStartAllTorrents.Enabled:=e and RpcObj.Connected;
   acStopAllTorrents.Enabled:=acStartAllTorrents.Enabled;
   acStartTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
+  acForceStartTorrent.Enabled:=acStartTorrent.Enabled and (RpcObj.RPCVersion >= 14);
   acStopTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
   acVerifyTorrent.Enabled:=e and (gTorrents.Items.Count > 0);
   acRemoveTorrent.Enabled:=e and (gTorrents.Items.Count > 0) and not edSearch.Focused;
@@ -3444,6 +3502,12 @@ begin
                         ((lvFiles.Items.Count > 0) and (PageInfo.ActivePage = tabFiles)) );
   acSetNormalPriority.Enabled:=acSetHighPriority.Enabled;
   acSetLowPriority.Enabled:=acSetHighPriority.Enabled;
+  miQueue.Enabled:=e and (gTorrents.Items.Count > 0) and (RpcObj.RPCVersion >= 14);
+  pmiQueue.Enabled:=miQueue.Enabled;
+  acQMoveTop.Enabled:=miQueue.Enabled;
+  acQMoveUp.Enabled:=miQueue.Enabled;
+  acQMoveDown.Enabled:=miQueue.Enabled;
+  acQMoveBottom.Enabled:=miQueue.Enabled;
   acOpenFile.Enabled:=acSetHighPriority.Enabled and (lvFiles.SelCount < 2) and (RpcObj.RPCVersion >= 4);
   acSetNotDownload.Enabled:=acSetHighPriority.Enabled;
   acSetupColumns.Enabled:=e;
@@ -3643,6 +3707,7 @@ var
   IsActive: boolean;
   Paths: TStringList;
   v: variant;
+  FieldExists: array of boolean;
 begin
   if gTorrents.Tag <> 0 then exit;
   if list = nil then begin
@@ -3679,6 +3744,18 @@ begin
 
   for i:=0 to FTrackers.Count - 1 do
     FTrackers.Objects[i]:=nil;
+
+  // Check fields' existence
+  SetLength(FieldExists, FTorrents.ColCnt);
+  if list.Count > 0 then begin
+    t:=list[0] as TJSONObject;
+    FieldExists[idxName]:=t.IndexOfName('name') >= 0;
+    FieldExists[idxRatio]:=t.IndexOfName('uploadRatio') >= 0;
+    FieldExists[idxTracker]:=t.IndexOfName('trackers') >= 0;
+    FieldExists[idxPath]:=t.IndexOfName('downloadDir') >= 0;
+    FieldExists[idxPriority]:=t.IndexOfName('bandwidthPriority') >= 0;
+    FieldExists[idxQueuePos]:=t.IndexOfName('queuePosition') >= 0;
+  end;
 
   UpSpeed:=0;
   DownSpeed:=0;
@@ -3718,7 +3795,7 @@ begin
 
     FTorrents[idxTorrentId, row]:=t.Integers['id'];
 
-    if t.IndexOfName('name') >= 0 then
+    if FieldExists[idxName] then
       FTorrents[idxName, row]:=t.Strings['name'];
 
     j:=t.Integers['status'];
@@ -3810,7 +3887,7 @@ begin
       GetTorrentValue(idxSeedsTotal, 'seeders', vtInteger);
       GetTorrentValue(idxLeechersTotal, 'leechers', vtInteger);
     end;
-    if t.IndexOfName('uploadRatio') >= 0 then begin
+    if FieldExists[idxRatio] then begin
       f:=t.Floats['uploadRatio'];
       if f = -2 then
         f:=MaxInt;
@@ -3826,7 +3903,7 @@ begin
         s:=sNoTracker;
     end
     else
-      if t.IndexOfName('trackers') >= 0 then
+      if FieldExists[idxTracker] then
         s:=UTF8Encode(t.Arrays['trackers'].Objects[0].Strings['announce'])
       else begin
         s:='';
@@ -3856,7 +3933,7 @@ begin
       FTorrents[idxTracker, row]:=UTF8Decode(s);
     end;
 
-    if t.IndexOfName('downloadDir') >= 0 then
+    if FieldExists[idxPath] then
       FTorrents[idxPath, row]:=UTF8Decode(ExcludeTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir'])))
     else
       if VarIsEmpty(FTorrents[idxPath, row]) then
@@ -3871,8 +3948,11 @@ begin
         Paths.Objects[j]:=TObject(PtrInt(Paths.Objects[j]) + 1);
     end;
 
-    if t.IndexOfName('bandwidthPriority') >= 0 then
+    if FieldExists[idxPriority] then
       FTorrents[idxPriority, row]:=t.Integers['bandwidthPriority'];
+
+    if FieldExists[idxQueuePos] then
+      FTorrents[idxQueuePos, row]:=t.Integers['queuePosition'];
 
     DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, row];
     UpSpeed:=UpSpeed + FTorrents[idxUpSpeed, row];
@@ -4201,7 +4281,7 @@ begin
   args:=TJSONObject.Create;
   if RemoveLocalData then
     args.Add('delete-local-data', TJSONIntegerNumber.Create(1));
-  TorrentAction(ids, 'remove', args);
+  TorrentAction(ids, 'torrent-remove', args);
   if RemoveLocalData then
     RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
 end;
@@ -4604,22 +4684,8 @@ begin
     TR_STATUS_SEED_WAIT:=TR_STATUS_SEED_WAIT_2;
     TR_STATUS_SEED:=TR_STATUS_SEED_2;
   end;
-  acRemoveTorrentAndData.Visible:=RpcObj.RPCVersion >= 4;
-  acReannounceTorrent.Visible:=RpcObj.RPCVersion >= 5;
-  acUpdateBlocklist.Visible:=RpcObj.RPCVersion >= 5;
-  acMoveTorrent.Visible:=RpcObj.RPCVersion >= 6;
-  pmiPriority.Visible:=RpcObj.RPCVersion >= 5;
-  miPriority.Visible:=pmiPriority.Visible;
-  acOpenContainingFolder.Visible:=RpcObj.RPCVersion >= 4;
-  acOpenFile.Visible:=acOpenContainingFolder.Visible;
-  pmSepOpen1.Visible:=acOpenContainingFolder.Visible;
-  pmSepOpen2.Visible:=acOpenContainingFolder.Visible;
-  sepAltSpeed.Visible:=RpcObj.RPCVersion >= 5;
-  acAltSpeed.Visible:=RpcObj.RPCVersion >= 5;
-  acAddTracker.Visible:=RpcObj.RPCVersion >= 10;
-  acEditTracker.Visible:=acAddTracker.Visible;
-  acDelTracker.Visible:=acAddTracker.Visible;
-  sepTrackers.Visible:=acAddTracker.Visible;
+
+  UpdateUIRpcVersion(RpcObj.RPCVersion);
 
   if RpcObj.RPCVersion >= 5 then begin
 {$ifdef LCLcarbon}
@@ -4711,11 +4777,13 @@ var
   ids: TJSONArray;
   i: integer;
 begin
+  if VarIsEmpty(TorrentIds) then
+    exit;
   Application.ProcessMessages;
   AppBusy;
   req:=TJSONObject.Create;
   try
-    req.Add('method', 'torrent-' + AAction);
+    req.Add('method', AAction);
     if args = nil then
       args:=TJSONObject.Create;
     if not VarIsNull(TorrentIds) then begin
@@ -4806,7 +4874,7 @@ begin
   if gTorrents.Items.Count = 0 then exit;
   args:=TJSONObject.Create;
   args.Add('bandwidthPriority', TJSONIntegerNumber.Create(APriority));
-  TorrentAction(GetSelectedTorrents, 'set', args);
+  TorrentAction(GetSelectedTorrents, 'torrent-set', args);
 end;
 
 procedure TMainForm.ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
@@ -4953,6 +5021,10 @@ var
   i, j: integer;
 begin
   with gTorrents do begin
+    if Items.Count = 0 then begin
+      Result:=Unassigned;
+      exit;
+    end;
     if SelCount = 0 then
       Result:=VarArrayOf([Items[idxTorrentId, Row]])
     else begin
@@ -5191,6 +5263,48 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TMainForm.UpdateUIRpcVersion(RpcVersion: integer);
+var
+  vc: boolean;
+begin
+  acRemoveTorrentAndData.Visible:=RPCVersion >= 4;
+  acReannounceTorrent.Visible:=RPCVersion >= 5;
+  acUpdateBlocklist.Visible:=RPCVersion >= 5;
+  acMoveTorrent.Visible:=RPCVersion >= 6;
+  pmiPriority.Visible:=RPCVersion >= 5;
+  miPriority.Visible:=pmiPriority.Visible;
+  acOpenContainingFolder.Visible:=RPCVersion >= 4;
+  acOpenFile.Visible:=acOpenContainingFolder.Visible;
+  pmSepOpen1.Visible:=acOpenContainingFolder.Visible;
+  pmSepOpen2.Visible:=acOpenContainingFolder.Visible;
+
+  vc:=not sepAltSpeed.Visible and (RPCVersion >= 5);
+  sepAltSpeed.Visible:=RPCVersion >= 5;
+  acAltSpeed.Visible:=RPCVersion >= 5;
+  if vc then begin
+    sepAltSpeed.Left:=tbStopTorrent.Left + 1;
+    tbtAltSpeed.Left:=sepAltSpeed.Left + 1;
+  end;
+
+  acAddTracker.Visible:=RPCVersion >= 10;
+  acEditTracker.Visible:=acAddTracker.Visible;
+  acDelTracker.Visible:=acAddTracker.Visible;
+  sepTrackers.Visible:=acAddTracker.Visible;
+
+  vc:=not sepQueue.Visible and (RPCVersion >= 14);
+  sepQueue.Visible:=RPCVersion >= 14;
+  acQMoveUp.Visible:=RPCVersion >= 14;
+  acQMoveDown.Visible:=RPCVersion >= 14;
+  miQueue.Visible:=RPCVersion >= 14;
+  pmiQueue.Visible:=RPCVersion >= 14;
+  if vc then begin
+    sepQueue.Left:=tbStopTorrent.Left + 1;
+    tbQMoveUp.Left:=sepQueue.Left + 1;
+    tbQMoveDown.Left:=tbQMoveUp.Left + 1;
+  end;
+  acForceStartTorrent.Visible:=RPCVersion >= 14;
 end;
 
 procedure TMainForm.FillSpeedsMenu;
