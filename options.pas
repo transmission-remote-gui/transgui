@@ -39,12 +39,15 @@ type
     cbTrayIconAlways: TCheckBox;
     cbTrayMinimize: TCheckBox;
     edRefreshInterval: TSpinEdit;
+    edIntfScale: TSpinEdit;
     edRefreshIntervalMin: TSpinEdit;
     gbTray: TGroupBox;
+    txPerc: TLabel;
     Page: TPageControl;
     tabInterface: TTabSheet;
     txLanguage: TLabel;
     txRefreshInterval: TLabel;
+    txIntfScale: TLabel;
     txRefreshIntervalMin: TLabel;
     txSeconds: TLabel;
     txSeconds2: TLabel;
@@ -69,6 +72,8 @@ uses main, utils, ResTranslator;
 { TOptionsForm }
 
 procedure TOptionsForm.FormCreate(Sender: TObject);
+var
+  i: integer;
 begin
   Page.ActivePageIndex:=0;
   Buttons.OKButton.ModalResult:=mrNone;
@@ -76,6 +81,11 @@ begin
 
   cbLanguage.Items.Add(FTranslationLanguage);
   cbLanguage.ItemIndex:=0;
+  i:=80*100 div (ScaleInt(100)*100 div IntfScale);
+  i:=i - i mod 5;
+  if i < 10 then
+    i:=10;
+  edIntfScale.MinValue:=i;
 {$ifdef LCLgtk2}
   cbLanguage.OnDropDown:=@cbLanguageEnter;
   cbLanguage.OnMouseMove:=@cbLanguageMouseMove;
@@ -128,16 +138,23 @@ end;
 procedure TOptionsForm.OKButtonClick(Sender: TObject);
 var
   s: string;
+  restart: boolean;
 begin
+  restart:=False;
   if cbLanguage.Text <> FTranslationLanguage then begin
     if cbLanguage.Text = 'English' then
       s:='-'
     else
       s:=FLangList.Values[cbLanguage.Text];
-    MainForm.Ini.WriteString('Interface', 'TranslationFile', s);
-    MessageDlg(sRestartRequired, mtInformation, [mbOk], 0);
+    Ini.WriteString('Interface', 'TranslationFile', s);
+    restart:=True;
   end;
 
+  if edIntfScale.Value <> IntfScale then
+    restart:=True;
+
+  if restart then
+    MessageDlg(sRestartRequired, mtInformation, [mbOk], 0);
   ModalResult:=mrOk;
 end;
 

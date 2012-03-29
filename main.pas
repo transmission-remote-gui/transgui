@@ -473,7 +473,6 @@ type
     FLastPieces: string;
     FLastPieceCount: integer;
     FLastDone: double;
-    FIni: TIniFileUtf8;
     FCurConn: string;
     FPathMap: TStringList;
     FLastFilerIndex: integer;
@@ -552,7 +551,6 @@ type
     procedure SetTorrentPriority(APriority: integer);
     procedure ClearDetailsInfo;
     function SelectRemoteFolder(const CurFolder, DialogTitle: string): string;
-    property Ini: TIniFileUtf8 read FIni;
   end;
 
 function CheckAppParams: boolean;
@@ -565,6 +563,7 @@ var
   FTranslationLanguage: string;
   FAlterColor: TColor;
   IsUnity: boolean;
+  Ini: TIniFileUtf8;
 
 const
   // Torrents list
@@ -835,22 +834,15 @@ begin
 end;
 
 procedure LoadTranslation;
-var
-  aIni: TIniFileUtf8;
 begin
-  aIni:=TIniFileUtf8.Create(FHomeDir + ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.ini'));
-  try
-    FTranslationFileName := aIni.ReadString('Interface', 'TranslationFile', '');
-    if FTranslationFileName = '' then
-      FTranslationLanguage := LoadDefaultTranslationFile(@OnTranslate)
-    else
-      if FTranslationFileName <> '-' then
-        FTranslationLanguage := LoadTranslationFile(DefaultLangDir + FTranslationFileName, @OnTranslate);
-    if FTranslationLanguage = '' then
-      FTranslationLanguage := 'English'
-  finally
-    aIni.Free;
-  end;
+  FTranslationFileName := Ini.ReadString('Interface', 'TranslationFile', '');
+  if FTranslationFileName = '' then
+    FTranslationLanguage := LoadDefaultTranslationFile(@OnTranslate)
+  else
+    if FTranslationFileName <> '-' then
+      FTranslationLanguage := LoadTranslationFile(DefaultLangDir + FTranslationFileName, @OnTranslate);
+  if FTranslationLanguage = '' then
+    FTranslationLanguage := 'English'
 end;
 
 function IsProtocolSupported(const url: string): boolean;
@@ -920,6 +912,9 @@ begin
   FIPCFileName:=FHomeDir + 'ipc.txt';
   FRunFileName:=FHomeDir + 'run';
 
+  Ini:=TIniFileUtf8.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.ini'));
+  Ini.CacheUpdates:=True;
+
   for i:=1 to ParamCount do begin
     s:=ParamStrUTF8(i);
     if IsProtocolSupported(s) or FileExistsUTF8(s) then
@@ -936,7 +931,7 @@ begin
     FileClose(h);
 
     if not FileExistsUTF8(FIPCFileName) then
-      FileClose(FileCreateUTF8(FIPCFileName, fmCreate));
+      FileClose(FileCreateUTF8(FIPCFileName));
     for i:=1 to 50 do
       if not FileExistsUTF8(FIPCFileName) then begin
         Result:=False;
@@ -946,7 +941,7 @@ begin
         Sleep(200);
   end
   else begin
-    h:=FileCreateUTF8(FRunFileName, fmCreate);
+    h:=FileCreateUTF8(FRunFileName);
     pid:=GetProcessID;
     FileWrite(h, pid, SizeOf(pid));
     FileClose(h);
@@ -958,6 +953,8 @@ begin
   SizeNames[3]:=sMByte;
   SizeNames[4]:=sGByte;
   SizeNames[5]:=sTByte;
+
+  IntfScale:=Ini.ReadInteger('Interface', 'Scaling', 100);
 
   Result:=True;
 end;
@@ -1004,8 +1001,6 @@ begin
   FFiles:=lvFiles.Items;
   lvPeers.Items.ExtraColumns:=PeersExtraColumns;
   lvTrackers.Items.ExtraColumns:=TrackersExtraColumns;
-  FIni:=TIniFileUtf8.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.ini'));
-  FIni.CacheUpdates:=True;
   FTrackers:=TStringList.Create;
   FTrackers.Sorted:=True;
   FReconnectTimeOut:=-1;
@@ -1039,7 +1034,7 @@ begin
   txTransferHeader.Height:=txTransferHeader.Canvas.TextHeight(txTransferHeader.Caption) + 2;
   txTorrentHeader.Height:=txTorrentHeader.Canvas.TextHeight(txTorrentHeader.Caption) + 2;
 
-  if FIni.ReadInteger('MainForm', 'State', -1) = -1 then begin
+  if Ini.ReadInteger('MainForm', 'State', -1) = -1 then begin
     R:=Screen.MonitorFromRect(BoundsRect).WorkareaRect;
     if R.Right - R.Left < 300 then
       R:=Rect(0, 0, Screen.Width, Screen.Height);
@@ -1061,11 +1056,11 @@ begin
     Top:=(R.Bottom - R.Top - Height) div 2;
   end
   else begin
-    ws:=TWindowState(FIni.ReadInteger('MainForm', 'State', integer(WindowState)));
-    Left:=FIni.ReadInteger('MainForm', 'Left', Left);
-    Top:=FIni.ReadInteger('MainForm', 'Top', Top);
-    Width:=FIni.ReadInteger('MainForm', 'Width', Width);
-    Height:=FIni.ReadInteger('MainForm', 'Height', Height);
+    ws:=TWindowState(Ini.ReadInteger('MainForm', 'State', integer(WindowState)));
+    Left:=Ini.ReadInteger('MainForm', 'Left', Left);
+    Top:=Ini.ReadInteger('MainForm', 'Top', Top);
+    Width:=Ini.ReadInteger('MainForm', 'Width', Width);
+    Height:=Ini.ReadInteger('MainForm', 'Height', Height);
     if ws = wsMaximized then
       WindowState:=wsMaximized;
   end;
@@ -1076,13 +1071,13 @@ begin
   LoadColumns(lvPeers, 'PeerList');
   LoadColumns(lvTrackers, 'TrackersList');
 
-  acResolveHost.Checked:=FIni.ReadBool('PeersList', 'ResolveHost', True);
-  acResolveCountry.Checked:=FIni.ReadBool('PeersList', 'ResolveCountry', True) and (GetGeoIpDatabase <> '');
-  acShowCountryFlag.Checked:=FIni.ReadBool('PeersList', 'ShowCountryFlag', True) and (GetFlagsArchive <> '');
+  acResolveHost.Checked:=Ini.ReadBool('PeersList', 'ResolveHost', True);
+  acResolveCountry.Checked:=Ini.ReadBool('PeersList', 'ResolveCountry', True) and (GetGeoIpDatabase <> '');
+  acShowCountryFlag.Checked:=Ini.ReadBool('PeersList', 'ShowCountryFlag', True) and (GetFlagsArchive <> '');
   acShowCountryFlag.Enabled:=acResolveCountry.Checked;
-  FCurConn:=FIni.ReadString('Hosts', 'CurHost', '');
+  FCurConn:=Ini.ReadString('Hosts', 'CurHost', '');
   if FCurConn = '' then
-    FCurConn:=FIni.ReadString('Connection', 'Host', '');
+    FCurConn:=Ini.ReadString('Connection', 'Host', '');
   FPathMap:=TStringList.Create;
   if Application.HasOption('hidden') then begin
     ApplicationProperties.ShowMainForm:=False;
@@ -1114,7 +1109,7 @@ begin
   if Application.HasOption('makelang') then
     MakeTranslationFile;
   try
-    FIni.Free;
+    Ini.UpdateFile;
   except
   end;
 end;
@@ -1128,8 +1123,8 @@ end;
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   if not FStarted then begin
-    VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
-    HSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
+    VSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
+    HSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
     TickTimer.Enabled:=True;
   end;
   UpdateTray;
@@ -1367,19 +1362,20 @@ begin
   AppBusy;
   with TOptionsForm.Create(Self) do
   try
-    edRefreshInterval.Value:=FIni.ReadInteger('Interface', 'RefreshInterval', 5);
-    edRefreshIntervalMin.Value:=FIni.ReadInteger('Interface', 'RefreshIntervalMin', 20);
+    edRefreshInterval.Value:=Ini.ReadInteger('Interface', 'RefreshInterval', 5);
+    edRefreshIntervalMin.Value:=Ini.ReadInteger('Interface', 'RefreshIntervalMin', 20);
 {$ifndef darwin}
-    cbTrayClose.Checked:=FIni.ReadBool('Interface', 'TrayClose', False);
-    cbTrayMinimize.Checked:=FIni.ReadBool('Interface', 'TrayMinimize', True);
+    cbTrayClose.Checked:=Ini.ReadBool('Interface', 'TrayClose', False);
+    cbTrayMinimize.Checked:=Ini.ReadBool('Interface', 'TrayMinimize', True);
 {$else}
     cbTrayClose.Enabled:=False;
     cbTrayMinimize.Enabled:=False;
 {$endif}
-    cbTrayIconAlways.Checked:=FIni.ReadBool('Interface', 'TrayIconAlways', True);
+    cbTrayIconAlways.Checked:=Ini.ReadBool('Interface', 'TrayIconAlways', True);
 
-    cbShowAddTorrentWindow.Checked:=FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
-    cbDeleteTorrentFile.Checked:=FIni.ReadBool('Interface', 'DeleteTorrentFile', False);
+    cbShowAddTorrentWindow.Checked:=Ini.ReadBool('Interface', 'ShowAddTorrentWindow', True);
+    cbDeleteTorrentFile.Checked:=Ini.ReadBool('Interface', 'DeleteTorrentFile', False);
+    edIntfScale.Value:=Ini.ReadInteger('Interface', 'Scaling', 100);
 {$ifdef linux}
     if IsUnity then begin
       cbTrayIconAlways.Enabled:=False;
@@ -1393,16 +1389,18 @@ begin
     AppNormal;
     if ShowModal = mrOk then begin
       AppBusy;
-      FIni.WriteInteger('Interface', 'RefreshInterval', edRefreshInterval.Value);
-      FIni.WriteInteger('Interface', 'RefreshIntervalMin', edRefreshIntervalMin.Value);
+      Ini.WriteInteger('Interface', 'RefreshInterval', edRefreshInterval.Value);
+      Ini.WriteInteger('Interface', 'RefreshIntervalMin', edRefreshIntervalMin.Value);
 {$ifndef darwin}
-      FIni.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
-      FIni.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
+      Ini.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
+      Ini.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
 {$endif}
-      FIni.WriteBool('Interface', 'TrayIconAlways', cbTrayIconAlways.Checked);
+      Ini.WriteBool('Interface', 'TrayIconAlways', cbTrayIconAlways.Checked);
 
-      FIni.WriteBool('Interface', 'ShowAddTorrentWindow', cbShowAddTorrentWindow.Checked);
-      FIni.WriteBool('Interface', 'DeleteTorrentFile', cbDeleteTorrentFile.Checked);
+      Ini.WriteBool('Interface', 'ShowAddTorrentWindow', cbShowAddTorrentWindow.Checked);
+      Ini.WriteBool('Interface', 'DeleteTorrentFile', cbDeleteTorrentFile.Checked);
+
+      Ini.WriteInteger('Interface', 'Scaling', edIntfScale.Value);
 
       Ini.UpdateFile;
       UpdateTray;
@@ -1611,7 +1609,7 @@ begin
 
         args:=TJSONObject.Create;
         args.Add('paused', TJSONIntegerNumber.Create(1));
-        i:=FIni.ReadInteger(IniSec, 'PeerLimit', 0);
+        i:=Ini.ReadInteger(IniSec, 'PeerLimit', 0);
         if i <> 0 then
           args.Add('peer-limit', TJSONIntegerNumber.Create(i));
         args.Add('download-dir', TJSONString.Create(UTF8Decode(cbDestFolder.Text)));
@@ -1663,7 +1661,7 @@ begin
         OldDownloadDir:=cbDestFolder.Text;
         AppNormal;
 
-        ok:=not FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
+        ok:=not Ini.ReadBool('Interface', 'ShowAddTorrentWindow', True);
         if ok then
           btSelectAllClick(nil)
         else begin
@@ -1745,10 +1743,10 @@ begin
           end;
 
           id:=0;
-          if FIni.ReadBool('Interface', 'DeleteTorrentFile', False) and not IsProtocolSupported(FileName) then
+          if Ini.ReadBool('Interface', 'DeleteTorrentFile', False) and not IsProtocolSupported(FileName) then
             DeleteFileUTF8(FileName);
 
-          FIni.WriteInteger(IniSec, 'PeerLimit', edPeerLimit.Value);
+          Ini.WriteInteger(IniSec, 'PeerLimit', edPeerLimit.Value);
           SaveDownloadDirs(cbDestFolder);
           Result:=True;
           AppNormal;
@@ -1769,7 +1767,7 @@ procedure TMainForm.UpdateTray;
 begin
   TrayIcon.Visible:=not IsUnity and
     (not Self.Visible or (WindowState = wsMinimized)
-     or FIni.ReadBool('Interface', 'TrayIconAlways', True));
+     or Ini.ReadBool('Interface', 'TrayIconAlways', True));
 {$ifdef darwin}
   acShowApp.Visible:=False;
   acHideApp.Visible:=False;
@@ -1893,31 +1891,31 @@ end;
 procedure TMainForm.BeforeCloseApp;
 begin
   if WindowState = wsNormal then begin
-    FIni.WriteInteger('MainForm', 'Left', Left);
-    FIni.WriteInteger('MainForm', 'Top', Top);
-    FIni.WriteInteger('MainForm', 'Width', Width);
-    FIni.WriteInteger('MainForm', 'Height', Height);
+    Ini.WriteInteger('MainForm', 'Left', Left);
+    Ini.WriteInteger('MainForm', 'Top', Top);
+    Ini.WriteInteger('MainForm', 'Width', Width);
+    Ini.WriteInteger('MainForm', 'Height', Height);
   end;
   if WindowState <> wsMinimized then
-    FIni.WriteInteger('MainForm', 'State', integer(WindowState));
+    Ini.WriteInteger('MainForm', 'State', integer(WindowState));
 
-  FIni.WriteInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition);
-  FIni.WriteInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition);
+  Ini.WriteInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition);
+  Ini.WriteInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition);
 
   SaveColumns(gTorrents, 'TorrentsList');
   SaveColumns(lvFiles, 'FilesList');
   SaveColumns(lvPeers, 'PeerList');
   SaveColumns(lvTrackers, 'TrackersList');
 
-  FIni.WriteBool('PeersList', 'ResolveHost', acResolveHost.Checked);
-  FIni.WriteBool('PeersList', 'ResolveCountry', acResolveCountry.Checked);
-  FIni.WriteBool('PeersList', 'ShowCountryFlag', acShowCountryFlag.Checked);
+  Ini.WriteBool('PeersList', 'ResolveHost', acResolveHost.Checked);
+  Ini.WriteBool('PeersList', 'ResolveCountry', acResolveCountry.Checked);
+  Ini.WriteBool('PeersList', 'ShowCountryFlag', acShowCountryFlag.Checked);
 
   if RpcObj.Connected then
     Ini.WriteInteger('Interface', 'LastRpcVersion', RpcObj.RPCVersion);
 
   try
-    FIni.UpdateFile;
+    Ini.UpdateFile;
   except
     Application.HandleException(nil);
   end;
@@ -2767,7 +2765,7 @@ end;
 procedure TMainForm.ApplicationPropertiesMinimize(Sender: TObject);
 begin
 {$ifndef darwin}
-  if not IsUnity and FIni.ReadBool('Interface', 'TrayMinimize', True) then
+  if not IsUnity and Ini.ReadBool('Interface', 'TrayMinimize', True) then
     HideApp;
 {$endif darwin}
   UpdateTray;
@@ -2884,8 +2882,8 @@ end;
 procedure TMainForm.gTorrentsResize(Sender: TObject);
 begin
   if not FStarted then begin
-    VSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
-    HSplitter.SetSplitterPosition(FIni.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
+    VSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
+    HSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
   end;
 end;
 
@@ -3118,12 +3116,12 @@ begin
       with panGeneralInfo do
         ClientHeight:=Controls[ControlCount - 1].BoundsRect.Bottom + ChildSizing.TopBottomSpacing;
 
-      if FIni.ReadBool('MainForm', 'FirstRun', True) then begin
+      if Ini.ReadBool('MainForm', 'FirstRun', True) then begin
         if not acResolveCountry.Checked then
           acResolveCountry.Execute;
         if acResolveCountry.Checked and not acShowCountryFlag.Checked then
           acShowCountryFlag.Execute;
-        FIni.WriteBool('MainForm', 'FirstRun', False);
+        Ini.WriteBool('MainForm', 'FirstRun', False);
       end;
       panSearch.AutoSize:=False;
     end;
@@ -3161,7 +3159,7 @@ end;
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
 {$ifndef darwin}
-  if not IsUnity and FIni.ReadBool('Interface', 'TrayClose', False) then begin
+  if not IsUnity and Ini.ReadBool('Interface', 'TrayClose', False) then begin
     CloseAction:=caHide;
     HideApp;
     UpdateTray;
@@ -3286,9 +3284,9 @@ begin
   panReconnect.Hide;
   DoDisconnect;
   Sec:='Connection.' + FCurConn;
-  if not FIni.SectionExists(Sec) then
+  if not Ini.SectionExists(Sec) then
     Sec:='Connection';
-  if FIni.ReadBool(Sec, 'UseSSL', False) then begin
+  if Ini.ReadBool(Sec, 'UseSSL', False) then begin
     RpcObj.InitSSL;
     if not IsSSLloaded then begin
       MessageDlg(Format(sSSLLoadError, [DLLSSLName, DLLUtilName]), mtError, [mbOK], 0);
@@ -3298,13 +3296,13 @@ begin
   end
   else
     RpcObj.Url:='http';
-  RpcObj.Http.UserName:=FIni.ReadString(Sec, 'UserName', '');
-  RpcObj.Http.Password:=DecodeBase64(FIni.ReadString(Sec, 'Password', ''));
-  if FIni.ReadBool(Sec, 'UseProxy', False) then begin
-    RpcObj.Http.ProxyHost:=FIni.ReadString(Sec, 'ProxyHost', '');
-    RpcObj.Http.ProxyPort:=IntToStr(FIni.ReadInteger(Sec, 'ProxyPort', 8080));
-    RpcObj.Http.ProxyUser:=FIni.ReadString(Sec, 'ProxyUser', '');
-    RpcObj.Http.ProxyPass:=DecodeBase64(FIni.ReadString(Sec, 'ProxyPass', ''));
+  RpcObj.Http.UserName:=Ini.ReadString(Sec, 'UserName', '');
+  RpcObj.Http.Password:=DecodeBase64(Ini.ReadString(Sec, 'Password', ''));
+  if Ini.ReadBool(Sec, 'UseProxy', False) then begin
+    RpcObj.Http.ProxyHost:=Ini.ReadString(Sec, 'ProxyHost', '');
+    RpcObj.Http.ProxyPort:=IntToStr(Ini.ReadInteger(Sec, 'ProxyPort', 8080));
+    RpcObj.Http.ProxyUser:=Ini.ReadString(Sec, 'ProxyUser', '');
+    RpcObj.Http.ProxyPass:=DecodeBase64(Ini.ReadString(Sec, 'ProxyPass', ''));
   end
   else begin
     RpcObj.Http.ProxyHost:='';
@@ -3312,7 +3310,7 @@ begin
     RpcObj.Http.ProxyUser:='';
     RpcObj.Http.ProxyPass:='';
   end;
-  RpcObj.Url:=Format('%s://%s:%d/transmission/rpc', [RpcObj.Url, FIni.ReadString(Sec, 'Host', ''), FIni.ReadInteger(Sec, 'Port', 9091)]);
+  RpcObj.Url:=Format('%s://%s:%d/transmission/rpc', [RpcObj.Url, Ini.ReadString(Sec, 'Host', ''), Ini.ReadInteger(Sec, 'Port', 9091)]);
   SetRefreshInterval;
   RpcObj.InfoStatus:=sConnectingToDaemon;
   CheckStatus;
@@ -3575,16 +3573,16 @@ var
 begin
   for i:=0 to LV.Columns.Count - 1 do
     with LV.Columns[i] do begin
-      FIni.WriteInteger(AName, Format('Id%d', [i]), ID - 1);
-      FIni.WriteInteger(AName, Format('Width%d', [i]), Width);
+      Ini.WriteInteger(AName, Format('Id%d', [i]), ID - 1);
+      Ini.WriteInteger(AName, Format('Width%d', [i]), Width);
       if FullInfo then begin
-        FIni.WriteInteger(AName, Format('Index%d', [i]), Index);
-        FIni.WriteBool(AName, Format('Visible%d', [i]), Visible);
+        Ini.WriteInteger(AName, Format('Index%d', [i]), Index);
+        Ini.WriteBool(AName, Format('Visible%d', [i]), Visible);
       end;
     end;
   if LV.SortColumn >= 0 then begin
-    FIni.WriteInteger(AName, 'SortColumn', LV.SortColumn);
-    FIni.WriteInteger(AName, 'SortOrder', integer(LV.SortOrder));
+    Ini.WriteInteger(AName, 'SortColumn', LV.SortColumn);
+    Ini.WriteInteger(AName, 'SortOrder', integer(LV.SortOrder));
   end;
 end;
 
@@ -3595,24 +3593,24 @@ begin
   LV.Columns.BeginUpdate;
   try
     for i:=0 to LV.Columns.Count - 1 do begin
-      ColId:=FIni.ReadInteger(AName, Format('Id%d', [i]), -1);
+      ColId:=Ini.ReadInteger(AName, Format('Id%d', [i]), -1);
       if ColId = -1 then continue;
       for j:=0 to LV.Columns.Count - 1 do
         with LV.Columns[j] do
           if ID - 1 = ColId then begin
             if FullInfo then begin
-              Index:=FIni.ReadInteger(AName, Format('Index%d', [i]), Index);
-              Visible:=FIni.ReadBool(AName, Format('Visible%d', [i]), Visible);
+              Index:=Ini.ReadInteger(AName, Format('Index%d', [i]), Index);
+              Visible:=Ini.ReadBool(AName, Format('Visible%d', [i]), Visible);
             end;
-            Width:=FIni.ReadInteger(AName, Format('Width%d', [i]), Width);
+            Width:=Ini.ReadInteger(AName, Format('Width%d', [i]), Width);
             break;
           end;
     end;
   finally
     LV.Columns.EndUpdate;
   end;
-  LV.SortColumn:=FIni.ReadInteger(AName, 'SortColumn', LV.SortColumn);
-  LV.SortOrder:=TSortOrder(FIni.ReadInteger(AName, 'SortOrder', integer(LV.SortOrder)));
+  LV.SortColumn:=Ini.ReadInteger(AName, 'SortColumn', LV.SortColumn);
+  LV.SortOrder:=TSortOrder(Ini.ReadInteger(AName, 'SortOrder', integer(LV.SortOrder)));
 end;
 
 function TMainForm.GetTorrentError(t: TJSONObject): string;
@@ -5063,9 +5061,9 @@ var
 begin
   CB.Items.Clear;
   IniSec:='AddTorrent.' + FCurConn;
-  j:=FIni.ReadInteger(IniSec, 'FolderCount', 0);
+  j:=Ini.ReadInteger(IniSec, 'FolderCount', 0);
   for i:=0 to j - 1 do begin
-    s:=FIni.ReadString(IniSec, Format('Folder%d', [i]), '');
+    s:=Ini.ReadString(IniSec, Format('Folder%d', [i]), '');
     if s <> '' then
       CB.Items.Add(s);
   end;
@@ -5084,12 +5082,12 @@ begin
     CB.Items.Move(i, 0)
   else
     CB.Items.Insert(0, CB.Text);
-  i:=FIni.ReadInteger('Interface', 'MaxFoldersHistory', 10);
+  i:=Ini.ReadInteger('Interface', 'MaxFoldersHistory', 10);
   while CB.Items.Count > i do
     CB.Items.Delete(CB.Items.Count - 1);
-  FIni.WriteInteger(IniSec, 'FolderCount', CB.Items.Count);
+  Ini.WriteInteger(IniSec, 'FolderCount', CB.Items.Count);
   for i:=0 to CB.Items.Count - 1 do
-    FIni.WriteString(IniSec, Format('Folder%d', [i]), CB.Items[i]);
+    Ini.WriteString(IniSec, Format('Folder%d', [i]), CB.Items[i]);
   Ini.UpdateFile;
 end;
 
@@ -5109,9 +5107,9 @@ var
   i: TDateTime;
 begin
   if Visible and (WindowState <> wsMinimized) then
-    i:=FIni.ReadInteger('Interface', 'RefreshInterval', 5)
+    i:=Ini.ReadInteger('Interface', 'RefreshInterval', 5)
   else
-    i:=FIni.ReadInteger('Interface', 'RefreshIntervalMin', 20);
+    i:=Ini.ReadInteger('Interface', 'RefreshIntervalMin', 20);
   if i < 1 then
     i:=1;
   RpcObj.RefreshInterval:=i/SecsPerDay;
@@ -5452,4 +5450,9 @@ end;
 initialization
   {$I main.lrs}
 
+finalization
+  try
+    FreeAndNil(Ini);
+  except
+  end;
 end.

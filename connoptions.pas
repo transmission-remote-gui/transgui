@@ -178,9 +178,9 @@ begin
     exit;
   if MessageDlg('', Format(SDelConnection, [cbConnection.Text]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
   if FCurConn <> '' then begin
-    MainForm.Ini.EraseSection('Connection.' + FCurConn);
-    MainForm.Ini.EraseSection('Connection');
-    MainForm.Ini.EraseSection('AddTorrent.' + FCurConn);
+    Ini.EraseSection('Connection.' + FCurConn);
+    Ini.EraseSection('Connection');
+    Ini.EraseSection('AddTorrent.' + FCurConn);
 
     i:=cbConnection.ItemIndex;
     if i >= 0 then begin
@@ -258,9 +258,9 @@ begin
   edConnection.BoundsRect:=cbConnection.BoundsRect;
   edConnection.Parent:=cbConnection.Parent;
 
-  cnt:=MainForm.Ini.ReadInteger('Hosts', 'Count', 0);
+  cnt:=Ini.ReadInteger('Hosts', 'Count', 0);
   for i:=1 to cnt do begin
-    s:=MainForm.Ini.ReadString('Hosts', Format('Host%d', [i]), '');
+    s:=Ini.ReadString('Hosts', Format('Host%d', [i]), '');
     if s <> '' then
       cbConnection.Items.Add(s);
   end;
@@ -317,7 +317,7 @@ procedure TConnOptionsForm.EndEdit;
     sl: TStringList;
   begin
     sl:=TStringList.Create;
-    with MainForm.Ini do
+    with Ini do
     try
       ReadSectionValues(OldName, sl);
       for i:=0 to sl.Count - 1 do
@@ -375,7 +375,7 @@ procedure TConnOptionsForm.SaveConnectionsList;
 var
   i: integer;
 begin
-  with MainForm.Ini do begin
+  with Ini do begin
     WriteString('Hosts', 'CurHost', ActiveConnection);
     WriteInteger('Hosts', 'Count', cbConnection.Items.Count);
     for i:=0 to cbConnection.Items.Count - 1 do
@@ -401,7 +401,7 @@ procedure TConnOptionsForm.LoadConnSettings(const ConnName: string);
 var
   Sec: string;
 begin
-  with MainForm.Ini do begin
+  with Ini do begin
     Sec:='Connection.' + ConnName;
     if (ConnName <> '') and not SectionExists(Sec) then
       Sec:='Connection';
@@ -443,7 +443,7 @@ begin
     if IsConnSettingsChanged(ConnName) then
       ActiveSettingChanged:=True;
 
-  with MainForm.Ini do begin
+  with Ini do begin
     Sec:='Connection.' + ConnName;
     WriteString(Sec, 'Host', Trim(edHost.Text));
     WriteBool(Sec, 'UseSSL', cbSSL.Checked);
@@ -482,7 +482,7 @@ function TConnOptionsForm.IsConnSettingsChanged(const ConnName: string): boolean
 var
   Sec: string;
 begin
-  with MainForm.Ini do begin
+  with Ini do begin
     Sec:='Connection.' + ConnName;
     if not SectionExists(Sec) then
       Sec:='Connection';

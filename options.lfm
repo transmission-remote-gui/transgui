@@ -1,20 +1,20 @@
 inherited OptionsForm: TOptionsForm
   Left = 313
-  Height = 329
+  Height = 350
   Top = 230
   Width = 525
   AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 329
+  ClientHeight = 350
   ClientWidth = 525
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poMainFormCenter
   object Page: TPageControl[0]
     Left = 8
-    Height = 279
+    Height = 300
     Top = 8
     Width = 509
     ActivePage = tabInterface
@@ -24,7 +24,7 @@ inherited OptionsForm: TOptionsForm
     TabOrder = 0
     object tabInterface: TTabSheet
       Caption = 'Interface'
-      ClientHeight = 253
+      ClientHeight = 274
       ClientWidth = 501
       object txSeconds: TLabel
         Left = 396
@@ -45,7 +45,7 @@ inherited OptionsForm: TOptionsForm
       object txLanguage: TLabel
         Left = 8
         Height = 14
-        Top = 222
+        Top = 240
         Width = 52
         Caption = 'Language:'
         ParentColor = False
@@ -128,16 +128,16 @@ inherited OptionsForm: TOptionsForm
         TabOrder = 4
       end
       object cbLanguage: TComboBox
-        Left = 128
+        Left = 216
         Height = 21
-        Top = 220
-        Width = 364
+        Top = 238
+        Width = 276
         Anchors = [akTop, akLeft, akRight]
         ItemHeight = 13
         OnEnter = cbLanguageEnter
         OnMouseDown = cbLanguageMouseDown
         Style = csDropDownList
-        TabOrder = 5
+        TabOrder = 6
       end
       object edRefreshIntervalMin: TSpinEdit
         Left = 316
@@ -149,12 +149,39 @@ inherited OptionsForm: TOptionsForm
         TabOrder = 1
         Value = 1
       end
+      object txIntfScale: TLabel
+        Left = 8
+        Height = 14
+        Top = 213
+        Width = 108
+        Caption = 'User interface scaling:'
+        ParentColor = False
+      end
+      object edIntfScale: TSpinEdit
+        Left = 216
+        Height = 21
+        Top = 210
+        Width = 70
+        Increment = 5
+        MaxValue = 200
+        MinValue = 75
+        TabOrder = 5
+        Value = 100
+      end
+      object txPerc: TLabel
+        Left = 296
+        Height = 14
+        Top = 213
+        Width = 12
+        Caption = '%'
+        ParentColor = False
+      end
     end
   end
   object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
-    Top = 295
+    Top = 316
     Width = 525
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
