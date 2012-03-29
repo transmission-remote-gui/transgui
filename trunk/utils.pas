@@ -67,6 +67,7 @@ function GetTimeZoneDelta: TDateTime;
 
 procedure ShowTaskbarButton;
 procedure HideTaskbarButton;
+function IsTaskbarButtonVisible: boolean;
 
 function OpenURL(const URL: string; const Params: string = ''): boolean;
 
@@ -357,6 +358,15 @@ begin
   ShowWindow(TWin32WidgetSet(WidgetSet).AppHandle, SW_HIDE);
 {$else}
   Application.MainForm.Visible:=False;
+{$endif mswindows}
+end;
+
+function IsTaskbarButtonVisible: boolean;
+begin
+{$ifdef mswindows}
+  Result:=IsWindowVisible(TWin32WidgetSet(WidgetSet).AppHandle);
+{$else}
+  Result:=Application.MainForm.Visible;
 {$endif mswindows}
 end;
 

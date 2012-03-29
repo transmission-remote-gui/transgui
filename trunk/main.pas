@@ -483,6 +483,8 @@ type
     FCurDownSpeedLimit: integer;
     FCurUpSpeedLimit: integer;
     FFlagsPath: string;
+    FAddingTorrent: boolean;
+    FPendingTorrents: TStringList;
 
     procedure DoConnect;
     procedure DoCreateOutZipStream(Sender: TObject; var AStream: TStream; AItem: TFullZipFileEntry);
@@ -494,7 +496,7 @@ type
     procedure LoadColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
     function GetTorrentError(t: TJSONObject): string;
     function SecondsToString(j: integer): string;
-    procedure DoAddTorrent(const FileName: Utf8String);
+    function DoAddTorrent(const FileName: Utf8String): boolean;
     procedure UpdateTray;
     procedure HideApp;
     procedure ShowApp;
@@ -535,6 +537,7 @@ type
     function FixSeparators(const p: string): string;
     function MapRemoteToLocal(const RemotePath: string): string;
     procedure UpdateUIRpcVersion(RpcVersion: integer);
+    procedure CheckAddTorrents;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -809,12 +812,26 @@ var
 procedure AddTorrentFile(const FileName: string);
 var
   h: THandle;
+  t: TDateTime;
+  s: string;
 begin
-  h:=FileCreateUTF8(FIPCFileName, fmCreate);
-  if h <> THandle(-1) then begin
-    FileWrite(h, FileName[1], Length(FileName));
-    FileClose(h);
-  end;
+  if not FileExistsUTF8(FileName) then
+    exit;
+  t:=Now;
+  repeat
+    if FileExistsUTF8(FIPCFileName) then
+      h:=FileOpenUTF8(FIPCFileName, fmOpenWrite or fmShareDenyRead or fmShareDenyWrite)
+    else
+      h:=FileCreateUTF8(FIPCFileName);
+    if h <> THandle(-1) then begin
+      s:=FileName + LineEnding;
+      FileSeek(h, 0, soFromEnd);
+      FileWrite(h, s[1], Length(s));
+      FileClose(h);
+      break;
+    end;
+    Sleep(20);
+  until Now - t >= 3/SecsPerDay;
 end;
 
 procedure LoadTranslation;
@@ -903,11 +920,12 @@ begin
   FIPCFileName:=FHomeDir + 'ipc.txt';
   FRunFileName:=FHomeDir + 'run';
 
-  if ParamCount > 0 then begin
-    s:=ParamStrUTF8(1);
+  for i:=1 to ParamCount do begin
+    s:=ParamStrUTF8(i);
     if IsProtocolSupported(s) or FileExistsUTF8(s) then
       AddTorrentFile(s);
   end;
+
   if FileExistsUTF8(FRunFileName) then begin
     h:=FileOpenUTF8(FRunFileName, fmOpenRead or fmShareDenyNone);
     if FileRead(h, pid, SizeOf(pid)) = SizeOf(pid) then begin
@@ -998,6 +1016,7 @@ begin
   lvPeers.AlternateColor:=FAlterColor;
   lvTrackers.AlternateColor:=FAlterColor;
   FStatusImgIndex:=30;
+  FPendingTorrents:=TStringList.Create;
 
   DoDisconnect;
   PageInfo.ActivePageIndex:=0;
@@ -1089,6 +1108,7 @@ begin
   FStatusBmp.Free;
   FPathMap.Free;
   FTorrents.Free;
+  FPendingTorrents.Free;
   if Application.HasOption('updatelang') then
     SupplementTranslationFiles;
   if Application.HasOption('makelang') then
@@ -1441,7 +1461,7 @@ begin
   end;
 end;
 
-procedure TMainForm.DoAddTorrent(const FileName: Utf8String);
+function TMainForm.DoAddTorrent(const FileName: Utf8String): boolean;
 var
   torrent: string;
 
@@ -1536,204 +1556,212 @@ var
   tt: TDateTime;
   ok: boolean;
 begin
-  AppBusy;
-  id:=0;
-  if IsProtocolSupported(FileName) then
-    torrent:='-'
-  else begin
-    fs:=TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyNone);
-    try
-      SetLength(torrent, fs.Size);
-      fs.ReadBuffer(PChar(torrent)^, Length(torrent));
-    finally
-      fs.Free;
-    end;
-    torrent:=EncodeBase64(torrent);
-  end;
+  FAddingTorrent:=True;
   try
-    with TAddTorrentForm.Create(Self) do
+    AppBusy;
+    Result:=False;
+    id:=0;
+    if IsProtocolSupported(FileName) then
+      torrent:='-'
+    else begin
+      fs:=TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyNone);
+      try
+        SetLength(torrent, fs.Size);
+        fs.ReadBuffer(PChar(torrent)^, Length(torrent));
+      finally
+        fs.Free;
+      end;
+      torrent:=EncodeBase64(torrent);
+    end;
     try
-      Width:=Ini.ReadInteger('AddTorrent', 'Width', Width);
-      Height:=Ini.ReadInteger('AddTorrent', 'Height', Height);
-
-      IniSec:='AddTorrent.' + FCurConn;
-      FillDownloadDirs(cbDestFolder);
-
-      req:=TJSONObject.Create;
+      with TAddTorrentForm.Create(Self) do
       try
-        req.Add('method', 'session-get');
-        args:=RpcObj.SendRequest(req);
-        if args = nil then begin
-          CheckStatus(False);
-          exit;
-        end;
-        s:=UTF8Encode(args.Strings['download-dir']);
-        if cbDestFolder.Items.IndexOf(s) < 0 then begin
-          cbDestFolder.Items.Insert(0, s);
-          cbDestFolder.ItemIndex:=0;
-        end;
+        Width:=Ini.ReadInteger('AddTorrent', 'Width', Width);
+        Height:=Ini.ReadInteger('AddTorrent', 'Height', Height);
 
-        if args.IndexOfName('download-dir-free-space') >= 0 then
-          txDiskSpace.Caption:=txDiskSpace.Caption + ' ' + GetHumanSize(args.Floats['download-dir-free-space'])
-        else begin
-          txDiskSpace.Hide;
-          txSize.Top:=(txSize.Top + txDiskSpace.Top) div 2;
-        end;
-        args.Free;
-      finally
-        req.Free;
-      end;
-
-      lvFilter.Row:=0;
-
-      args:=TJSONObject.Create;
-      args.Add('paused', TJSONIntegerNumber.Create(1));
-      i:=FIni.ReadInteger(IniSec, 'PeerLimit', 0);
-      if i <> 0 then
-        args.Add('peer-limit', TJSONIntegerNumber.Create(i));
-      args.Add('download-dir', TJSONString.Create(UTF8Decode(cbDestFolder.Text)));
-      id:=_AddTorrent(args);
-      if id = 0 then
-        exit;
-
-      DoRefresh(True);
-
-      args:=RpcObj.RequestInfo(id, ['files', 'maxConnectedPeers']);
-      if args = nil then begin
-        CheckStatus(False);
-        exit;
-      end;
-      try
-        t:=args.Arrays['torrents'];
-        if t.Count = 0 then
-          raise Exception.Create(sUnableGetFilesList);
-        edPeerLimit.Value:=t.Objects[0].Integers['maxConnectedPeers'];
-        files:=t.Objects[0].Arrays['files'];
-        path:=GetFilesCommonPath(files);
-        lvFiles.Items.RowCnt:=files.Count;
-        for i:=0 to files.Count - 1 do begin
-          res:=files.Objects[i];
-          s:=UTF8Encode(res.Strings['name']);
-          if (path <> '') and (Copy(s, 1, Length(path)) = path) then
-            s:=Copy(s, Length(path) + 1, MaxInt);
-          ss:=ExtractFileName(s);
-          if ss <> s then
-            HasFolders:=True;
-          lvFiles.Items[idxAtName, i]:=UTF8Decode(ss);
-          lvFiles.Items[idxAtSize, i]:=res.Floats['length'];
-          lvFiles.Items[idxAtFullPath, i]:=UTF8Decode(s);
-          lvFiles.Items[idxAtFileID, i]:=i;
-          lvFiles.Items[idxAtLevel, i]:=_GetLevel(s);
-        end;
-        lvFiles.Items.Sort(idxAtFullPath);
-        i:=0;
-        _AddFolders(lvFiles.Items, '', i, lvFiles.Items.Count);
-        lvFiles.Items.Sort(idxAtFullPath);
-      finally
-        args.Free;
-      end;
-
-      if not HasFolders then
-        lvFiles.SortColumn:=0;
-
-      OldDownloadDir:=cbDestFolder.Text;
-      AppNormal;
-
-      ok:=not FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
-      if ok then
-        btSelectAllClick(nil)
-      else begin
-        ok:=ShowModal = mrOk;
-        Ini.WriteInteger('AddTorrent', 'Width', Width);
-        Ini.WriteInteger('AddTorrent', 'Height', Height);
-      end;
-
-      if ok then begin
-        AppBusy;
-        Self.Update;
-
-        if OldDownloadDir <> cbDestFolder.Text then begin
-          TorrentAction(VarArrayOf([id]), 'torrent-remove');
-          id:=0;
-          args:=TJSONObject.Create;
-          args.Add('paused', TJSONIntegerNumber.Create(1));
-          args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
-          args.Add('download-dir', TJSONString.Create(UTF8Decode(cbDestFolder.Text)));
-          id:=_AddTorrent(args);
-          if id = 0 then
-            exit;
-          DoRefresh(True);
-          Application.ProcessMessages;
-        end;
+        IniSec:='AddTorrent.' + FCurConn;
+        FillDownloadDirs(cbDestFolder);
 
         req:=TJSONObject.Create;
         try
-          req.Add('method', 'torrent-set');
-          args:=TJSONObject.Create;
-          args.Add('ids', TJSONArray.Create([id]));
-          args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
-
-          files:=TJSONArray.Create;
-          for i:=0 to lvFiles.Items.Count - 1 do
-            if not VarIsEmpty(lvFiles.Items[idxAtFileID, i]) and (integer(lvFiles.Items[idxAtChecked, i]) = 1) then
-              files.Add(integer(lvFiles.Items[idxAtFileID, i]));
-          if files.Count > 0 then
-            args.Add('files-wanted', files)
-          else
-            files.Free;
-
-          files:=TJSONArray.Create;
-          for i:=0 to lvFiles.Items.Count - 1 do
-            if not VarIsEmpty(lvFiles.Items[idxAtFileID, i]) and (integer(lvFiles.Items[idxAtChecked, i]) <> 1) then
-              files.Add(integer(lvFiles.Items[idxAtFileID, i]));
-          if files.Count > 0 then
-            args.Add('files-unwanted', files)
-          else
-            files.Free;
-
-          req.Add('arguments', args);
-          args:=nil;
-          args:=RpcObj.SendRequest(req, False);
+          req.Add('method', 'session-get');
+          args:=RpcObj.SendRequest(req);
           if args = nil then begin
             CheckStatus(False);
             exit;
+          end;
+          s:=UTF8Encode(args.Strings['download-dir']);
+          if cbDestFolder.Items.IndexOf(s) < 0 then begin
+            cbDestFolder.Items.Insert(0, s);
+            cbDestFolder.ItemIndex:=0;
+          end;
+
+          if args.IndexOfName('download-dir-free-space') >= 0 then
+            txDiskSpace.Caption:=txDiskSpace.Caption + ' ' + GetHumanSize(args.Floats['download-dir-free-space'])
+          else begin
+            txDiskSpace.Hide;
+            txSize.Top:=(txSize.Top + txDiskSpace.Top) div 2;
           end;
           args.Free;
         finally
           req.Free;
         end;
 
-        if cbStartTorrent.Checked then
-          TorrentAction(VarArrayOf([id]), 'torrent-start');
+        lvFilter.Row:=0;
 
-        tt:=Now;
-        while (Now - tt < 2/SecsPerDay) and (id <> 0) do begin
-          Application.ProcessMessages;
-          i:=gTorrents.Items.IndexOf(idxTorrentId, id);
-          if i >= 0 then begin
-            gTorrents.RemoveSelection;
-            gTorrents.Row:=i;
-            RpcObj.CurTorrentId:=id;
-            gTorrents.SetFocus;
-            break;
+        args:=TJSONObject.Create;
+        args.Add('paused', TJSONIntegerNumber.Create(1));
+        i:=FIni.ReadInteger(IniSec, 'PeerLimit', 0);
+        if i <> 0 then
+          args.Add('peer-limit', TJSONIntegerNumber.Create(i));
+        args.Add('download-dir', TJSONString.Create(UTF8Decode(cbDestFolder.Text)));
+        id:=_AddTorrent(args);
+        if id = 0 then
+          exit;
+
+        DoRefresh(True);
+
+        args:=RpcObj.RequestInfo(id, ['files','maxConnectedPeers','name']);
+        if args = nil then begin
+          CheckStatus(False);
+          exit;
+        end;
+        try
+          t:=args.Arrays['torrents'];
+          if t.Count = 0 then
+            raise Exception.Create(sUnableGetFilesList);
+          Caption:=Caption + ': ' + UTF8Encode(t.Objects[0].Strings['name']);
+          edPeerLimit.Value:=t.Objects[0].Integers['maxConnectedPeers'];
+          files:=t.Objects[0].Arrays['files'];
+          path:=GetFilesCommonPath(files);
+          lvFiles.Items.RowCnt:=files.Count;
+          for i:=0 to files.Count - 1 do begin
+            res:=files.Objects[i];
+            s:=UTF8Encode(res.Strings['name']);
+            if (path <> '') and (Copy(s, 1, Length(path)) = path) then
+              s:=Copy(s, Length(path) + 1, MaxInt);
+            ss:=ExtractFileName(s);
+            if ss <> s then
+              HasFolders:=True;
+            lvFiles.Items[idxAtName, i]:=UTF8Decode(ss);
+            lvFiles.Items[idxAtSize, i]:=res.Floats['length'];
+            lvFiles.Items[idxAtFullPath, i]:=UTF8Decode(s);
+            lvFiles.Items[idxAtFileID, i]:=i;
+            lvFiles.Items[idxAtLevel, i]:=_GetLevel(s);
           end;
-          Sleep(100);
+          lvFiles.Items.Sort(idxAtFullPath);
+          i:=0;
+          _AddFolders(lvFiles.Items, '', i, lvFiles.Items.Count);
+          lvFiles.Items.Sort(idxAtFullPath);
+        finally
+          args.Free;
         end;
 
-        id:=0;
-        if FIni.ReadBool('Interface', 'DeleteTorrentFile', False) and not IsProtocolSupported(FileName) then
-          DeleteFileUTF8(FileName);
+        if not HasFolders then
+          lvFiles.SortColumn:=0;
 
-        FIni.WriteInteger(IniSec, 'PeerLimit', edPeerLimit.Value);
-        SaveDownloadDirs(cbDestFolder);
+        OldDownloadDir:=cbDestFolder.Text;
         AppNormal;
+
+        ok:=not FIni.ReadBool('Interface', 'ShowAddTorrentWindow', True);
+        if ok then
+          btSelectAllClick(nil)
+        else begin
+          ok:=ShowModal = mrOk;
+          Ini.WriteInteger('AddTorrent', 'Width', Width);
+          Ini.WriteInteger('AddTorrent', 'Height', Height);
+        end;
+
+        if ok then begin
+          AppBusy;
+          Self.Update;
+
+          if OldDownloadDir <> cbDestFolder.Text then begin
+            TorrentAction(VarArrayOf([id]), 'torrent-remove');
+            id:=0;
+            args:=TJSONObject.Create;
+            args.Add('paused', TJSONIntegerNumber.Create(1));
+            args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
+            args.Add('download-dir', TJSONString.Create(UTF8Decode(cbDestFolder.Text)));
+            id:=_AddTorrent(args);
+            if id = 0 then
+              exit;
+            DoRefresh(True);
+            Application.ProcessMessages;
+          end;
+
+          req:=TJSONObject.Create;
+          try
+            req.Add('method', 'torrent-set');
+            args:=TJSONObject.Create;
+            args.Add('ids', TJSONArray.Create([id]));
+            args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
+
+            files:=TJSONArray.Create;
+            for i:=0 to lvFiles.Items.Count - 1 do
+              if not VarIsEmpty(lvFiles.Items[idxAtFileID, i]) and (integer(lvFiles.Items[idxAtChecked, i]) = 1) then
+                files.Add(integer(lvFiles.Items[idxAtFileID, i]));
+            if files.Count > 0 then
+              args.Add('files-wanted', files)
+            else
+              files.Free;
+
+            files:=TJSONArray.Create;
+            for i:=0 to lvFiles.Items.Count - 1 do
+              if not VarIsEmpty(lvFiles.Items[idxAtFileID, i]) and (integer(lvFiles.Items[idxAtChecked, i]) <> 1) then
+                files.Add(integer(lvFiles.Items[idxAtFileID, i]));
+            if files.Count > 0 then
+              args.Add('files-unwanted', files)
+            else
+              files.Free;
+
+            req.Add('arguments', args);
+            args:=nil;
+            args:=RpcObj.SendRequest(req, False);
+            if args = nil then begin
+              CheckStatus(False);
+              exit;
+            end;
+            args.Free;
+          finally
+            req.Free;
+          end;
+
+          if cbStartTorrent.Checked then
+            TorrentAction(VarArrayOf([id]), 'torrent-start');
+
+          tt:=Now;
+          while (Now - tt < 2/SecsPerDay) and (id <> 0) do begin
+            Application.ProcessMessages;
+            i:=gTorrents.Items.IndexOf(idxTorrentId, id);
+            if i >= 0 then begin
+              gTorrents.RemoveSelection;
+              gTorrents.Row:=i;
+              RpcObj.CurTorrentId:=id;
+              gTorrents.SetFocus;
+              break;
+            end;
+            Sleep(100);
+          end;
+
+          id:=0;
+          if FIni.ReadBool('Interface', 'DeleteTorrentFile', False) and not IsProtocolSupported(FileName) then
+            DeleteFileUTF8(FileName);
+
+          FIni.WriteInteger(IniSec, 'PeerLimit', edPeerLimit.Value);
+          SaveDownloadDirs(cbDestFolder);
+          Result:=True;
+          AppNormal;
+        end;
+      finally
+        Free;
       end;
     finally
-      Free;
+      if id <> 0 then
+        TorrentAction(VarArrayOf([id]), 'torrent-remove');
     end;
   finally
-    if id <> 0 then
-      TorrentAction(VarArrayOf([id]), 'torrent-remove');
+    FAddingTorrent:=False;
   end;
 end;
 
@@ -2756,9 +2784,11 @@ begin
 end;
 
 procedure TMainForm.FormDropFiles(Sender: TObject; const FileNames: array of String);
+var
+  i: integer;
 begin
-  if FileExistsUTF8(FileNames[0]) then
-    AddTorrentFile(FileNames[0]);
+  for i:=Low(FileNames) to High(FileNames) do
+    AddTorrentFile(FileNames[i]);
 end;
 
 procedure TMainForm.FormWindowStateChange(Sender: TObject);
@@ -3071,8 +3101,6 @@ type
 {$endif LCLcarbon}
 
 procedure TMainForm.TickTimerTimer(Sender: TObject);
-var
-  s: string;
 begin
   TickTimer.Enabled:=False;
   try
@@ -3100,18 +3128,7 @@ begin
       panSearch.AutoSize:=False;
     end;
 
-    if FileExistsUTF8(FIPCFileName) then begin
-      s:=ReadFileToString(FIPCFileName);
-      DeleteFileUTF8(FIPCFileName);
-      ShowApp;
-
-      if s = '' then
-        exit;
-
-      Application.ProcessMessages;
-      TickTimer.Enabled:=True;
-      DoAddTorrent(s);
-    end;
+    CheckAddTorrents;
 
     if RpcObj.Connected then
       FReconnectTimeOut:=0
@@ -3473,7 +3490,7 @@ procedure TMainForm.UpdateUI;
 var
   e: boolean;
 begin
-  e:=((Screen.ActiveForm = Self) or not Visible);
+  e:=((Screen.ActiveForm = Self) or not Visible or (WindowState = wsMinimized));
   acConnect.Enabled:=e;
   acOptions.Enabled:=e;
   acConnOptions.Enabled:=e;
@@ -5305,6 +5322,58 @@ begin
     tbQMoveDown.Left:=tbQMoveUp.Left + 1;
   end;
   acForceStartTorrent.Visible:=RPCVersion >= 14;
+end;
+
+procedure TMainForm.CheckAddTorrents;
+var
+  i: integer;
+  h: THandle;
+  s: string;
+  WasHidden: boolean;
+begin
+  h:=FileOpenUTF8(FIPCFileName, fmOpenRead or fmShareDenyWrite);
+  if h <> THandle(-1) then begin
+    i:=FileSeek(h, 0, soFromEnd);
+    SetLength(s, i);
+    if i > 0 then begin
+      FileSeek(h, 0, soFromBeginning);
+      SetLength(s, FileRead(h, s[1], i));
+    end;
+    FileTruncate(h, 0);
+    FileClose(h);
+    DeleteFileUTF8(FIPCFileName);
+
+    if s = '' then
+      exit;
+
+    FPendingTorrents.Text:=FPendingTorrents.Text + s;
+  end;
+
+  if FAddingTorrent then
+    exit;
+
+  if FPendingTorrents.Count > 0 then begin
+    Application.ProcessMessages;
+    TickTimer.Enabled:=True;
+    WasHidden:=not IsTaskbarButtonVisible;
+    if WasHidden then begin
+      ShowTaskbarButton;
+      Application.BringToFront;
+    end
+    else
+      ShowApp;
+    try
+      while FPendingTorrents.Count > 0 do begin
+        s:=FPendingTorrents[0];
+        if s <> '' then
+          DoAddTorrent(s);
+        FPendingTorrents.Delete(0);
+      end;
+    finally
+      if WasHidden then
+        HideTaskbarButton;
+    end;
+  end;
 end;
 
 procedure TMainForm.FillSpeedsMenu;
