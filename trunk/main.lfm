@@ -1909,6 +1909,20 @@ inherited MainForm: TMainForm
     end
     object miHelp: TMenuItem
       Caption = '&Help'
+      object MenuItem86: TMenuItem
+        Action = acCheckNewVersion
+      end
+      object miHomePage: TMenuItem
+        Caption = 'Visit home page'
+        OnClick = miHomePageClick
+      end
+      object miDonate: TMenuItem
+        Caption = 'Donate!'
+        OnClick = miDonateClick
+      end
+      object MenuItem87: TMenuItem
+        Caption = '-'
+      end
       object miAbout: TMenuItem
         Caption = 'About...'
         OnClick = miAboutClick
@@ -2161,6 +2175,10 @@ inherited MainForm: TMainForm
       Category = 'Torrent'
       Caption = 'Move bottom'
       OnExecute = acQMoveBottomExecute
+    end
+    object acCheckNewVersion: TAction
+      Caption = 'Check for updates'
+      OnExecute = acCheckNewVersionExecute
     end
   end
   object TorrentsListTimer: TTimer[8]

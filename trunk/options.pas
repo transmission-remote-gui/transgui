@@ -38,19 +38,24 @@ type
     cbTrayClose: TCheckBox;
     cbTrayIconAlways: TCheckBox;
     cbTrayMinimize: TCheckBox;
-    edRefreshInterval: TSpinEdit;
+    cbCheckNewVersion: TCheckBox;
     edIntfScale: TSpinEdit;
+    edCheckVersionDays: TSpinEdit;
+    edRefreshInterval: TSpinEdit;
     edRefreshIntervalMin: TSpinEdit;
     gbTray: TGroupBox;
+    txDays: TLabel;
+    tabGeneral: TTabSheet;
     txPerc: TLabel;
     Page: TPageControl;
     tabInterface: TTabSheet;
     txLanguage: TLabel;
-    txRefreshInterval: TLabel;
     txIntfScale: TLabel;
+    txRefreshInterval: TLabel;
     txRefreshIntervalMin: TLabel;
     txSeconds: TLabel;
     txSeconds2: TLabel;
+    procedure cbCheckNewVersionClick(Sender: TObject);
     procedure cbLanguageEnter(Sender: TObject);
     procedure cbLanguageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure cbLanguageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -96,6 +101,11 @@ procedure TOptionsForm.cbLanguageEnter(Sender: TObject);
 begin
   if not Assigned(FLangList) then
     FillLanguageItems;
+end;
+
+procedure TOptionsForm.cbCheckNewVersionClick(Sender: TObject);
+begin
+  edCheckVersionDays.Enabled:=cbCheckNewVersion.Checked;
 end;
 
 procedure TOptionsForm.cbLanguageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

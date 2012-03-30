@@ -99,6 +99,7 @@ resourcestring
   SRemoveTracker = 'Are you sure to remove tracker ''%s''?';
   SUnlimited = 'Unlimited';
   SAverage = 'average';
+  SCheckNewVersion = 'Do you wish to enable automatic checking for a new version of %s?';
 
 type
 
@@ -144,6 +145,7 @@ type
     acQMoveUp: TAction;
     acQMoveDown: TAction;
     acQMoveBottom: TAction;
+    acCheckNewVersion: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
@@ -172,6 +174,10 @@ type
     MenuItem83: TMenuItem;
     MenuItem84: TMenuItem;
     MenuItem85: TMenuItem;
+    MenuItem86: TMenuItem;
+    MenuItem87: TMenuItem;
+    miDonate: TMenuItem;
+    miHomePage: TMenuItem;
     pmiQueue: TMenuItem;
     miQueue: TMenuItem;
     sepTrackers: TMenuItem;
@@ -377,6 +383,7 @@ type
     procedure acAddTorrentExecute(Sender: TObject);
     procedure acAddTrackerExecute(Sender: TObject);
     procedure acAltSpeedExecute(Sender: TObject);
+    procedure acCheckNewVersionExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
     procedure acConnOptionsExecute(Sender: TObject);
     procedure acDelTrackerExecute(Sender: TObject);
@@ -441,6 +448,8 @@ type
     procedure lvTrackersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure lvTrackersDblClick(Sender: TObject);
     procedure lvTrackersKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure miDonateClick(Sender: TObject);
+    procedure miHomePageClick(Sender: TObject);
     procedure pbStatusPaint(Sender: TObject);
     procedure panReconnectResize(Sender: TObject);
     procedure pbDownloadedPaint(Sender: TObject);
@@ -784,8 +793,8 @@ const
       ('fpjson','jsonparser','jsonscanner','lclstrconsts','math',
        'rtlconsts','sysconst','variants','zbase','zipper','zstream', 'xmlcfg');
 
-  IgnoreControls: array[0..2] of string =
-    ('AboutForm.txAuthor', 'AboutForm.txHomePage', 'MainForm.miLn');
+  IgnoreControls: array[0..1] of string =
+    ('AboutForm.txAuthor', 'MainForm.miLn');
 
 var
   i: integer;
@@ -1358,6 +1367,8 @@ begin
 end;
 
 procedure TMainForm.acOptionsExecute(Sender: TObject);
+var
+  OldCheckVer: boolean;
 begin
   AppBusy;
   with TOptionsForm.Create(Self) do
@@ -1376,6 +1387,10 @@ begin
     cbShowAddTorrentWindow.Checked:=Ini.ReadBool('Interface', 'ShowAddTorrentWindow', True);
     cbDeleteTorrentFile.Checked:=Ini.ReadBool('Interface', 'DeleteTorrentFile', False);
     edIntfScale.Value:=Ini.ReadInteger('Interface', 'Scaling', 100);
+    cbCheckNewVersion.Checked:=Ini.ReadBool('Interface', 'CheckNewVersion', False);
+    edCheckVersionDays.Value:=Ini.ReadInteger('Interface', 'CheckNewVersionDays', 5);
+    cbCheckNewVersionClick(nil);
+    OldCheckVer:=cbCheckNewVersion.Checked;
 {$ifdef linux}
     if IsUnity then begin
       cbTrayIconAlways.Enabled:=False;
@@ -1402,6 +1417,11 @@ begin
 
       Ini.WriteInteger('Interface', 'Scaling', edIntfScale.Value);
 
+      Ini.WriteBool('Interface', 'CheckNewVersion', cbCheckNewVersion.Checked);
+      Ini.WriteInteger('Interface', 'CheckNewVersionDays', edCheckVersionDays.Value);
+
+      if cbCheckNewVersion.Checked and not OldCheckVer then
+        CheckNewVersion;
       Ini.UpdateFile;
       UpdateTray;
       AppNormal;
@@ -1443,6 +1463,14 @@ begin
     req.Free;
   end;
   RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
+  AppNormal;
+end;
+
+procedure TMainForm.acCheckNewVersionExecute(Sender: TObject);
+begin
+  Application.ProcessMessages;
+  AppBusy;
+  CheckNewVersion(False);
   AppNormal;
 end;
 
@@ -3053,6 +3081,16 @@ begin
   end;
 end;
 
+procedure TMainForm.miDonateClick(Sender: TObject);
+begin
+  GoDonate;
+end;
+
+procedure TMainForm.miHomePageClick(Sender: TObject);
+begin
+  GoHomePage;
+end;
+
 procedure TMainForm.pbStatusPaint(Sender: TObject);
 begin
   if FStatusBmp = nil then begin
@@ -3099,6 +3137,8 @@ type
 {$endif LCLcarbon}
 
 procedure TMainForm.TickTimerTimer(Sender: TObject);
+var
+  i: integer;
 begin
   TickTimer.Enabled:=False;
   try
@@ -3115,6 +3155,7 @@ begin
         ClientHeight:=Controls[ControlCount - 1].BoundsRect.Bottom + ChildSizing.TopBottomSpacing;
       with panGeneralInfo do
         ClientHeight:=Controls[ControlCount - 1].BoundsRect.Bottom + ChildSizing.TopBottomSpacing;
+      panSearch.AutoSize:=False;
 
       if Ini.ReadBool('MainForm', 'FirstRun', True) then begin
         if not acResolveCountry.Checked then
@@ -3123,7 +3164,18 @@ begin
           acShowCountryFlag.Execute;
         Ini.WriteBool('MainForm', 'FirstRun', False);
       end;
-      panSearch.AutoSize:=False;
+
+      i:=Ini.ReadInteger('Interface', 'LastNewVersionCheck', Trunc(Now));
+      if i + Ini.ReadInteger('Interface', 'CheckNewVersionDays', 5) <= Trunc(Now) then begin
+        if Ini.ReadBool('Interface', 'AskCheckNewVersion', True) then begin
+          Ini.WriteBool('Interface', 'AskCheckNewVersion', False);
+          if not Ini.ReadBool('Interface', 'CheckNewVersion', False) then
+            if MessageDlg(Format(SCheckNewVersion, [AppName]), mtConfirmation, mbYesNo, 0) = mrYes then
+              Ini.WriteBool('Interface', 'CheckNewVersion', True);
+        end;
+        if Ini.ReadBool('Interface', 'CheckNewVersion', False) then
+          CheckNewVersion;
+      end;
     end;
 
     CheckAddTorrents;
