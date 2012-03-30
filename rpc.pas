@@ -86,6 +86,7 @@ type
     FRPCVersion: integer;
     XTorrentSession: string;
     FMainThreadId: TThreadID;
+    FWebPath: string;
 
     function GetConnected: boolean;
     function GetConnecting: boolean;
@@ -549,12 +550,17 @@ var
   res: TJSONObject;
   jp: TJSONParser;
   s: string;
-  i, j, OldTimeOut: integer;
+  i, j, OldTimeOut, RetryCnt: integer;
   locked, r: boolean;
 begin
+  if FWebPath = '' then
+    FWebPath:='/transmission/rpc';
   Status:='';
   Result:=nil;
-  for i:=1 to 2 do begin
+  RetryCnt:=2;
+  i:=0;
+  repeat
+    Inc(i);
     HttpLock.Enter;
     locked:=True;
     try
@@ -569,7 +575,7 @@ begin
       if ATimeOut >= 0 then
         Http.Timeout:=ATimeOut;
       try
-        r:=Http.HTTPMethod('POST', Url);
+        r:=Http.HTTPMethod('POST', Url + FWebPath);
       finally
         Http.Timeout:=OldTimeOut;
       end;
@@ -588,11 +594,26 @@ begin
               break;
             end;
           if XTorrentSession <> '' then begin
-            if i = 2 then begin
+            if i = RetryCnt then begin
               if FMainThreadId <> GetCurrentThreadId then
                 ReconnectAllowed:=True;
               Status:='Session ID error.';
             end;
+            continue;
+          end;
+        end;
+
+        if Http.ResultCode = 301 then begin
+          s:=Trim(Http.Headers.Values['Location']);
+          if (s <> '') and (i = 1) then begin
+            j:=Length(s);
+            if Copy(s, j - 4, MaxInt) = '/web/' then
+              SetLength(s, j - 4)
+            else
+              if Copy(s, j - 3, MaxInt) = '/web' then
+                SetLength(s, j - 3);
+            FWebPath:=s + 'rpc';
+            Inc(RetryCnt);
             continue;
           end;
         end;
@@ -700,7 +721,7 @@ begin
       if locked then
         HttpLock.Leave;
     end;
-  end;
+  until i >= RetryCnt;
 end;
 
 function TRpc.RequestInfo(TorrentId: integer; const Fields: array of const; const ExtraFields: array of string): TJSONObject;
@@ -815,6 +836,7 @@ begin
   Http:=THTTPSend.Create;
   Http.Protocol:='1.1';
   Http.Timeout:=30000;
+  Http.Headers.NameValueSeparator:=':';
 end;
 
 procedure TRpc.Lock;
@@ -857,6 +879,7 @@ begin
   end;
   Status:='';
   RequestStartTime:=0;
+  FWebPath:='';
 end;
 
 end.
