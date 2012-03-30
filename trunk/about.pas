@@ -82,6 +82,7 @@ type
     FHttp: THTTPSend;
     FError: string;
     FVersion: string;
+    FExit: boolean;
 
     procedure CheckResult;
     function GetIntVersion(const Ver: string): integer;
@@ -103,7 +104,7 @@ begin
     CheckVersionThread.Resume
   else begin
     CheckVersionThread.Execute;
-    CheckVersionThread.Terminate;
+    CheckVersionThread.FExit:=True;
     CheckVersionThread.Resume;
   end;
 end;
@@ -169,7 +170,7 @@ end;
 
 procedure TCheckVersionThread.Execute;
 begin
-  if not Terminated then begin
+  if not FExit then begin
     try
       FHttp:=THTTPSend.Create;
       try
