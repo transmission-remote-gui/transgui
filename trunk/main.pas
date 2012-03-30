@@ -3310,7 +3310,7 @@ begin
     RpcObj.Http.ProxyUser:='';
     RpcObj.Http.ProxyPass:='';
   end;
-  RpcObj.Url:=Format('%s://%s:%d/transmission/rpc', [RpcObj.Url, Ini.ReadString(Sec, 'Host', ''), Ini.ReadInteger(Sec, 'Port', 9091)]);
+  RpcObj.Url:=Format('%s://%s:%d', [RpcObj.Url, Ini.ReadString(Sec, 'Host', ''), Ini.ReadInteger(Sec, 'Port', 9091)]);
   SetRefreshInterval;
   RpcObj.InfoStatus:=sConnectingToDaemon;
   CheckStatus;
