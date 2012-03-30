@@ -2191,6 +2191,7 @@ inherited MainForm: TMainForm
   object OpenTorrentDlg: TOpenDialog[9]
     Title = 'Select a .torrent to open'
     Filter = 'Torrents (*.torrent)|*.torrent|All files (*.*)|*.*'
+    Options = [ofAllowMultiSelect, ofEnableSizing, ofViewDetail]
     left = 213
     top = 55
   end

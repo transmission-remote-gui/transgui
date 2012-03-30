@@ -1434,7 +1434,8 @@ end;
 procedure TMainForm.acAddTorrentExecute(Sender: TObject);
 begin
   if not OpenTorrentDlg.Execute then exit;
-  DoAddTorrent(OpenTorrentDlg.FileName);
+  FPendingTorrents.AddStrings(OpenTorrentDlg.Files);
+  TickTimerTimer(nil);
 end;
 
 procedure TMainForm.acAddTrackerExecute(Sender: TObject);
