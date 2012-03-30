@@ -547,8 +547,8 @@ inherited AboutForm: TAboutForm
         Left = 86
         Height = 14
         Top = 86
-        Width = 242
-        Caption = 'http://code.google.com/p/transmisson-remote-gui'
+        Width = 55
+        Caption = 'Home page'
         Font.Color = clBlue
         Font.Style = [fsUnderline]
         ParentColor = False

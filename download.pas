@@ -144,9 +144,14 @@ begin
       end;
       FHttp.Sock.OnMonitor:=@DoMonitor;
       if FHttp.HTTPMethod('GET', FUrl) then begin
-        FForm.FDownloaded:=FHttp.DownloadSize;
-        WriteToFile;
-        res:=2;
+        if FHttp.ResultCode = 200 then begin
+          FForm.FDownloaded:=FHttp.DownloadSize;
+          WriteToFile;
+          res:=2;
+        end
+        else
+          if not Terminated then
+            FForm.FError:=Format('HTTP error: %d', [FHttp.ResultCode]);
       end
       else
         if not Terminated then
