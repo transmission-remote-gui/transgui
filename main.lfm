@@ -143,6 +143,7 @@ inherited MainForm: TMainForm
         FixedCols = 0
         FixedRows = 0
         Options = [goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize]
+        PopupMenu = pmFilter
         RowCount = 1
         ScrollBars = ssAutoVertical
         TabOrder = 1
@@ -1794,6 +1795,24 @@ inherited MainForm: TMainForm
         OnClick = acExitExecute
       end
     end
+    object miView: TMenuItem
+      Caption = 'View'
+      object MenuItem88: TMenuItem
+        Action = acSelectAll
+      end
+      object MenuItem34: TMenuItem
+        Action = acSetupColumns
+      end
+      object MenuItem35: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem41: TMenuItem
+        Action = acFolderGrouping
+      end
+      object MenuItem89: TMenuItem
+        Action = acTrackerGrouping
+      end
+    end
     object miTools: TMenuItem
       Caption = 'T&ools'
       object MenuItem18: TMenuItem
@@ -1843,17 +1862,6 @@ inherited MainForm: TMainForm
       object MenuItem17: TMenuItem
         Action = acOptions
         OnClick = acOptionsExecute
-      end
-      object MenuItem35: TMenuItem
-        Caption = '-'
-      end
-      object MenuItem41: TMenuItem
-        Action = acSelectAll
-        OnClick = acSelectAllExecute
-      end
-      object MenuItem34: TMenuItem
-        Action = acSetupColumns
-        OnClick = acSetupColumnsExecute
       end
       object MenuItem32: TMenuItem
         Caption = '-'
@@ -2031,7 +2039,7 @@ inherited MainForm: TMainForm
       OnExecute = acUpdateBlocklistExecute
     end
     object acSelectAll: TAction
-      Category = 'Tools'
+      Category = 'View'
       Caption = 'Select all'
       OnExecute = acSelectAllExecute
       ShortCut = 16449
@@ -2131,7 +2139,7 @@ inherited MainForm: TMainForm
       OnExecute = acStopAllTorrentsExecute
     end
     object acSetupColumns: TAction
-      Category = 'Torrent'
+      Category = 'View'
       Caption = 'Setup columns...'
       OnExecute = acSetupColumnsExecute
     end
@@ -2179,6 +2187,16 @@ inherited MainForm: TMainForm
     object acCheckNewVersion: TAction
       Caption = 'Check for updates'
       OnExecute = acCheckNewVersionExecute
+    end
+    object acFolderGrouping: TAction
+      Category = 'View'
+      Caption = 'Folder grouping'
+      OnExecute = acFolderGroupingExecute
+    end
+    object acTrackerGrouping: TAction
+      Category = 'View'
+      Caption = 'Tracker grouping'
+      OnExecute = acTrackerGroupingExecute
     end
   end
   object TorrentsListTimer: TTimer[8]
@@ -4492,5 +4510,15 @@ inherited MainForm: TMainForm
   object pmUpSpeeds: TPopupMenu[25]
     left = 732
     top = 96
+  end
+  object pmFilter: TPopupMenu[26]
+    left = 56
+    top = 72
+    object MenuItem90: TMenuItem
+      Action = acFolderGrouping
+    end
+    object MenuItem91: TMenuItem
+      Action = acTrackerGrouping
+    end
   end
 end
