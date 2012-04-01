@@ -4142,7 +4142,7 @@ begin
   end;
   gTorrentsClick(nil);
 
-  crow:=lvFilter.Row;
+  crow:=-1;
   lvFilter.Items.BeginUpdate;
   try
     lvFilter.Items[0, 0]:=UTF8Decode(Format('%s (%d)', [SAll, list.Count]));
@@ -4194,7 +4194,11 @@ begin
   finally
     lvFilter.Items.EndUpdate;
   end;
-  lvFilter.Row:=crow;
+  if crow >= 0 then
+    lvFilter.Row:=crow
+  else
+    if lvFilter.Row >= StatusFiltersCount then
+      lvFilterClick(nil);
 
   CheckStatus;
 
