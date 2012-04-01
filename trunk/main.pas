@@ -690,6 +690,9 @@ uses
 {$ifdef linux}
   process,
 {$endif linux}
+{$ifdef darwin}
+  urllistenerosx,
+{$endif darwin}
   AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, TorrProps, DaemonOptions, About,
   ToolWin, download, ColSetup, types, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
   Options, ButtonPanel;
@@ -833,13 +836,30 @@ var
   FIPCFileName: string;
   FRunFileName: string;
 
+function IsProtocolSupported(const url: string): boolean;
+const
+  Protocols: array [1..3] of string =
+    ('http:', 'https:', 'magnet:');
+var
+  i: integer;
+  s: string;
+begin
+  s:=AnsiLowerCase(url);
+  for i:=Low(Protocols) to High(Protocols) do
+    if Copy(s, 1, Length(Protocols[i])) = Protocols[i] then begin
+      Result:=True;
+      exit;
+    end;
+  Result:=False;
+end;
+
 procedure AddTorrentFile(const FileName: string);
 var
-  h: THandle;
+  h: System.THandle;
   t: TDateTime;
   s: string;
 begin
-  if not FileExistsUTF8(FileName) then
+  if not IsProtocolSupported(FileName) and not FileExistsUTF8(FileName) then
     exit;
   t:=Now;
   repeat
@@ -847,7 +867,7 @@ begin
       h:=FileOpenUTF8(FIPCFileName, fmOpenWrite or fmShareDenyRead or fmShareDenyWrite)
     else
       h:=FileCreateUTF8(FIPCFileName);
-    if h <> THandle(-1) then begin
+    if h <> System.THandle(-1) then begin
       s:=FileName + LineEnding;
       FileSeek(h, 0, soFromEnd);
       FileWrite(h, s[1], Length(s));
@@ -870,28 +890,11 @@ begin
     FTranslationLanguage := 'English'
 end;
 
-function IsProtocolSupported(const url: string): boolean;
-const
-  Protocols: array [1..3] of string =
-    ('http:', 'https:', 'magnet:');
-var
-  i: integer;
-  s: string;
-begin
-  s:=AnsiLowerCase(url);
-  for i:=Low(Protocols) to High(Protocols) do
-    if Copy(s, 1, Length(Protocols[i])) = Protocols[i] then begin
-      Result:=True;
-      exit;
-    end;
-  Result:=False;
-end;
-
 function CheckAppParams: boolean;
 var
   i: integer;
   s: string;
-  h: THandle;
+  h: System.THandle;
   pid: SizeUInt;
 {$ifdef linux}
   proc: TProcess;
@@ -1012,6 +1015,8 @@ begin
       pic.Free;
     end;
   end;
+
+  RegisterURLHandler(@AddTorrentFile);
 {$endif darwin}
   Application.Title:=AppName;
   Caption:=Application.Title;
@@ -1689,7 +1694,7 @@ begin
           t:=args.Arrays['torrents'];
           if t.Count = 0 then
             raise Exception.Create(sUnableGetFilesList);
-          Caption:=Caption + ': ' + UTF8Encode(t.Objects[0].Strings['name']);
+          Caption:=Caption + ' - ' + UTF8Encode(t.Objects[0].Strings['name']);
           edPeerLimit.Value:=t.Objects[0].Integers['maxConnectedPeers'];
           files:=t.Objects[0].Arrays['files'];
           path:=GetFilesCommonPath(files);
@@ -5525,12 +5530,12 @@ end;
 procedure TMainForm.CheckAddTorrents;
 var
   i: integer;
-  h: THandle;
+  h: System.THandle;
   s: string;
   WasHidden: boolean;
 begin
   h:=FileOpenUTF8(FIPCFileName, fmOpenRead or fmShareDenyWrite);
-  if h <> THandle(-1) then begin
+  if h <> System.THandle(-1) then begin
     i:=FileSeek(h, 0, soFromEnd);
     SetLength(s, i);
     if i > 0 then begin
