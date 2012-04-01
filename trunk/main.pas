@@ -147,6 +147,8 @@ type
     acQMoveDown: TAction;
     acQMoveBottom: TAction;
     acCheckNewVersion: TAction;
+    acFolderGrouping: TAction;
+    acTrackerGrouping: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
     acTorrentProps: TAction;
@@ -161,6 +163,8 @@ type
     lvFilter: TVarGrid;
     lvTrackers: TVarGrid;
     MenuItem25: TMenuItem;
+    MenuItem34: TMenuItem;
+    MenuItem35: TMenuItem;
     MenuItem40: TMenuItem;
     MenuItem41: TMenuItem;
     MenuItem43: TMenuItem;
@@ -177,10 +181,16 @@ type
     MenuItem85: TMenuItem;
     MenuItem86: TMenuItem;
     MenuItem87: TMenuItem;
+    MenuItem88: TMenuItem;
+    MenuItem89: TMenuItem;
+    MenuItem90: TMenuItem;
+    MenuItem91: TMenuItem;
+    miView: TMenuItem;
     miDonate: TMenuItem;
     miHomePage: TMenuItem;
     pmiQueue: TMenuItem;
     miQueue: TMenuItem;
+    pmFilter: TPopupMenu;
     sepTrackers: TMenuItem;
     MenuItem65: TMenuItem;
     MenuItem66: TMenuItem;
@@ -269,8 +279,6 @@ type
     MenuItem31: TMenuItem;
     MenuItem32: TMenuItem;
     MenuItem33: TMenuItem;
-    MenuItem34: TMenuItem;
-    MenuItem35: TMenuItem;
     MenuItem36: TMenuItem;
     MenuItem37: TMenuItem;
     miAbout: TMenuItem;
@@ -389,6 +397,7 @@ type
     procedure acConnOptionsExecute(Sender: TObject);
     procedure acDelTrackerExecute(Sender: TObject);
     procedure acEditTrackerExecute(Sender: TObject);
+    procedure acFolderGroupingExecute(Sender: TObject);
     procedure acForceStartTorrentExecute(Sender: TObject);
     procedure acHideAppExecute(Sender: TObject);
     procedure acMoveTorrentExecute(Sender: TObject);
@@ -421,6 +430,7 @@ type
     procedure acStopAllTorrentsExecute(Sender: TObject);
     procedure acStopTorrentExecute(Sender: TObject);
     procedure acTorrentPropsExecute(Sender: TObject);
+    procedure acTrackerGroupingExecute(Sender: TObject);
     procedure acUpdateBlocklistExecute(Sender: TObject);
     procedure acUpdateGeoIPExecute(Sender: TObject);
     procedure acVerifyTorrentExecute(Sender: TObject);
@@ -1100,6 +1110,9 @@ begin
   if i >= 0 then
     UpdateUIRpcVersion(i);
 
+  acFolderGrouping.Checked:=Ini.ReadBool('Interface', 'FolderGrouping', True);
+  acTrackerGrouping.Checked:=Ini.ReadBool('Interface', 'TrackerGrouping', True);
+
   Application.OnException:=@ApplicationPropertiesException;
 end;
 
@@ -1216,6 +1229,13 @@ end;
 procedure TMainForm.acEditTrackerExecute(Sender: TObject);
 begin
   AddTracker(True);
+end;
+
+procedure TMainForm.acFolderGroupingExecute(Sender: TObject);
+begin
+  acFolderGrouping.Checked:=not acFolderGrouping.Checked;
+  Ini.WriteBool('Interface', 'FolderGrouping', acFolderGrouping.Checked);
+  RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtTorrents];
 end;
 
 procedure TMainForm.acForceStartTorrentExecute(Sender: TObject);
@@ -2714,6 +2734,13 @@ begin
   end;
 end;
 
+procedure TMainForm.acTrackerGroupingExecute(Sender: TObject);
+begin
+  acTrackerGrouping.Checked:=not acTrackerGrouping.Checked;
+  Ini.WriteBool('Interface', 'TrackerGrouping', acTrackerGrouping.Checked);
+  RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtTorrents];
+end;
+
 procedure TMainForm.acUpdateBlocklistExecute(Sender: TObject);
 var
   req: TJSONObject;
@@ -4154,42 +4181,49 @@ begin
     lvFilter.Items[0, 6]:=UTF8Decode(Format('%s (%d)', [sErrorState, ErrorCnt]));
 
     j:=StatusFiltersCount;
-    lvFilter.Items[0, j]:=NULL;
-    Inc(j);
 
-    for i:=0 to Paths.Count - 1 do begin
-      s:=ExtractFileName(Paths[i]);
-      for row:=StatusFiltersCount + 1 to j - 1 do
-        if ExtractFileName(UTF8Encode(widestring(lvFilter.Items[-1, row]))) = s then begin
-          s:=Paths[i];
-          lvFilter.Items[0, row]:=UTF8Decode(Format('%s (%d)', [UTF8Encode(widestring(lvFilter.Items[-1, row])), ptruint(Paths.Objects[row - StatusFiltersCount - 1])]));
-        end;
-      lvFilter.Items[0, j]:=UTF8Decode(Format('%s (%d)', [s, ptruint(Paths.Objects[i])]));
-      lvFilter.Items[-1, j]:=UTF8Decode(Paths[i]);
-      if Paths[i] = PathFilter then
-        crow:=j;
+    if acFolderGrouping.Checked then begin
+      lvFilter.Items[0, j]:=NULL;
       Inc(j);
+
+      for i:=0 to Paths.Count - 1 do begin
+        s:=ExtractFileName(Paths[i]);
+        for row:=StatusFiltersCount + 1 to j - 1 do
+          if ExtractFileName(UTF8Encode(widestring(lvFilter.Items[-1, row]))) = s then begin
+            s:=Paths[i];
+            lvFilter.Items[0, row]:=UTF8Decode(Format('%s (%d)', [UTF8Encode(widestring(lvFilter.Items[-1, row])), ptruint(Paths.Objects[row - StatusFiltersCount - 1])]));
+          end;
+        lvFilter.Items[0, j]:=UTF8Decode(Format('%s (%d)', [s, ptruint(Paths.Objects[i])]));
+        lvFilter.Items[-1, j]:=UTF8Decode(Paths[i]);
+        if Paths[i] = PathFilter then
+          crow:=j;
+        Inc(j);
+      end;
     end;
 
     row:=j;
-    if row > StatusFiltersCount + 1 then begin
-      lvFilter.Items[0, row]:=NULL;
-      Inc(row);
+
+    if acTrackerGrouping.Checked then begin
+      if not VarIsNull(lvFilter.Items[0, row - 1]) then begin
+        lvFilter.Items[0, row]:=NULL;
+        Inc(row);
+      end;
+
+      i:=0;
+      while i < FTrackers.Count do begin
+        j:=ptruint(FTrackers.Objects[i]);
+        if j > 0 then begin
+          lvFilter.Items[0, row]:=UTF8Decode(Format('%s (%d)', [FTrackers[i], j]));
+          if FTrackers[i] = TrackerFilter then
+            crow:=row;
+          Inc(i);
+          Inc(row);
+        end
+        else
+          FTrackers.Delete(i);
+      end;
     end;
 
-    i:=0;
-    while i < FTrackers.Count do begin
-      j:=ptruint(FTrackers.Objects[i]);
-      if j > 0 then begin
-        lvFilter.Items[0, row]:=UTF8Decode(Format('%s (%d)', [FTrackers[i], j]));
-        if FTrackers[i] = TrackerFilter then
-          crow:=row;
-        Inc(i);
-        Inc(row);
-      end
-      else
-        FTrackers.Delete(i);
-    end;
     lvFilter.Items.RowCnt:=row;
   finally
     lvFilter.Items.EndUpdate;
