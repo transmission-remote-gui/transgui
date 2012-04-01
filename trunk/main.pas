@@ -45,6 +45,7 @@ resourcestring
   sConnected = 'connected';
   sActive = 'Active';
   sInactive = 'Inactive';
+  sErrorState = 'Error';
   sUpdating = 'Updating...';
   sFinishedDownload = '''%s'' has finished downloading';
   sDownloadComplete = 'Download complete';
@@ -646,6 +647,7 @@ const
   fltActive   = 3;
   fltInactive = 4;
   fltStopped  = 5;
+  fltError  = 6;
 
   // Status images
   imgDown      = 9;
@@ -660,7 +662,7 @@ const
   imgAll       = 19;
   imgActive    = 20;
 
-  StatusFiltersCount = 6;
+  StatusFiltersCount = 7;
 
   TorrentFieldsMap: array[idxName..idxQueuePos] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
@@ -2972,6 +2974,7 @@ begin
       3: ImageIndex:=imgActive;
       4: ImageIndex:=15;
       5: ImageIndex:=imgStopped;
+      6: ImageIndex:=imgError;
       else
         if Text <> '' then
           if ARow >= Sender.Items.Count - FTrackers.Count then
@@ -3421,6 +3424,7 @@ begin
     Items[0, 3]:=UTF8Decode(SActive);
     Items[0, 4]:=UTF8Decode(SInactive);
     Items[0, 5]:=UTF8Decode(sStopped);
+    Items[0, 6]:=UTF8Decode(sErrorState);
   end;
   edSearch.Enabled:=False;
   edSearch.Color:=gTorrents.Color;
@@ -3771,7 +3775,7 @@ var
   FilterIdx, OldId: integer;
   TrackerFilter, PathFilter: string;
   UpSpeed, DownSpeed: double;
-  DownCnt, SeedCnt, CompletedCnt, ActiveCnt, StoppedCnt: integer;
+  DownCnt, SeedCnt, CompletedCnt, ActiveCnt, StoppedCnt, ErrorCnt: integer;
   IsActive: boolean;
   Paths: TStringList;
   v: variant;
@@ -3832,6 +3836,7 @@ begin
   CompletedCnt:=0;
   ActiveCnt:=0;
   StoppedCnt:=0;
+  ErrorCnt:=0;
 
   FilterIdx:=lvFilter.Row;
   if VarIsNull(lvFilter.Items[0, FilterIdx]) then
@@ -4059,8 +4064,12 @@ begin
       if j = TR_STATUS_FINISHED then
         Inc(CompletedCnt);
 
-      if integer(FTorrents[idxStateImg, i]) in [imgStopped, imgDone] then
-        Inc(StoppedCnt);
+      StateImg:=FTorrents[idxStateImg, i];
+      if StateImg in [imgStopped, imgDone] then
+        Inc(StoppedCnt)
+      else
+        if StateImg in [imgDownError, imgSeedError, imgError] then
+          Inc(ErrorCnt);
 
       if not VarIsEmpty(FTorrents[idxTracker, i]) then begin
         s:=UTF8Encode(widestring(FTorrents[idxTracker, i]));
@@ -4086,10 +4095,13 @@ begin
           if FTorrents[idxStatus, i] <> TR_STATUS_DOWNLOAD then
             continue;
         fltDone:
-          if (FTorrents[idxStateImg, i] <> imgDone) and (FTorrents[idxStatus, i] <> TR_STATUS_SEED) then
+          if (StateImg <> imgDone) and (FTorrents[idxStatus, i] <> TR_STATUS_SEED) then
             continue;
         fltStopped:
-          if not (integer(FTorrents[idxStateImg, i]) in [imgStopped, imgDone]) then
+          if not (StateImg in [imgStopped, imgDone]) then
+            continue;
+        fltError:
+          if not (StateImg in [imgDownError, imgSeedError, imgError]) then
             continue;
       end;
 
@@ -4139,6 +4151,7 @@ begin
     lvFilter.Items[0, 3]:=UTF8Decode(Format('%s (%d)', [SActive, ActiveCnt]));
     lvFilter.Items[0, 4]:=UTF8Decode(Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt]));
     lvFilter.Items[0, 5]:=UTF8Decode(Format('%s (%d)', [sStopped, StoppedCnt]));
+    lvFilter.Items[0, 6]:=UTF8Decode(Format('%s (%d)', [sErrorState, ErrorCnt]));
 
     j:=StatusFiltersCount;
     lvFilter.Items[0, j]:=NULL;
