@@ -546,8 +546,8 @@ type
     procedure ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
     function ExecRemoteFile(const FileName: string; SelectFile: boolean): boolean;
     function GetSelectedTorrents: variant;
-    procedure FillDownloadDirs(CB: TComboBox);
-    procedure SaveDownloadDirs(CB: TComboBox);
+    procedure FillDownloadDirs(CB: TComboBox; const CurFolderParam: string);
+    procedure SaveDownloadDirs(CB: TComboBox; const CurFolderParam: string);
     function PriorityToStr(p: integer; var ImageIndex: integer): string;
     procedure SetRefreshInterval;
     procedure AddTracker(EditMode: boolean);
@@ -1270,7 +1270,7 @@ begin
   try
     gTorrents.Tag:=1;
     gTorrents.EnsureSelectionVisible;
-    FillDownloadDirs(edTorrentDir);
+    FillDownloadDirs(edTorrentDir, 'LastMoveDir');
     if gTorrents.SelCount = 0 then
       gTorrents.RowSelected[gTorrents.Row]:=True;
     ids:=GetSelectedTorrents;
@@ -1308,7 +1308,7 @@ begin
       if args = nil then
         CheckStatus(False)
       else begin
-        SaveDownloadDirs(edTorrentDir);
+        SaveDownloadDirs(edTorrentDir, 'LastMoveDir');
         ok:=False;
         t:=Now;
         with gTorrents do
@@ -1639,7 +1639,7 @@ begin
         Height:=Ini.ReadInteger('AddTorrent', 'Height', Height);
 
         IniSec:='AddTorrent.' + FCurConn;
-        FillDownloadDirs(cbDestFolder);
+        FillDownloadDirs(cbDestFolder, 'LastDownloadDir');
 
         req:=TJSONObject.Create;
         try
@@ -1808,7 +1808,7 @@ begin
             DeleteFileUTF8(FileName);
 
           Ini.WriteInteger(IniSec, 'PeerLimit', edPeerLimit.Value);
-          SaveDownloadDirs(cbDestFolder);
+          SaveDownloadDirs(cbDestFolder, 'LastDownloadDir');
           Result:=True;
           AppNormal;
         end;
@@ -5245,7 +5245,7 @@ begin
   end;
 end;
 
-procedure TMainForm.FillDownloadDirs(CB: TComboBox);
+procedure TMainForm.FillDownloadDirs(CB: TComboBox; const CurFolderParam: string);
 var
   i, j: integer;
   s, IniSec: string;
@@ -5258,11 +5258,19 @@ begin
     if s <> '' then
       CB.Items.Add(s);
   end;
+
+  s:=Ini.ReadString(IniSec, CurFolderParam, '');
+  if s <> '' then begin
+    i:=CB.Items.IndexOf(s);
+    if i > 0 then
+      CB.Items.Move(i, 0);
+  end;
+
   if CB.Items.Count > 0 then
     CB.ItemIndex:=0;
 end;
 
-procedure TMainForm.SaveDownloadDirs(CB: TComboBox);
+procedure TMainForm.SaveDownloadDirs(CB: TComboBox; const CurFolderParam: string);
 var
   i: integer;
   IniSec: string;
@@ -5279,6 +5287,7 @@ begin
   Ini.WriteInteger(IniSec, 'FolderCount', CB.Items.Count);
   for i:=0 to CB.Items.Count - 1 do
     Ini.WriteString(IniSec, Format('Folder%d', [i]), CB.Items[i]);
+  Ini.WriteString(IniSec, CurFolderParam, CB.Items[0]);
   Ini.UpdateFile;
 end;
 
