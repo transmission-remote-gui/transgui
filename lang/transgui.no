@@ -1,4 +1,4 @@
-TranslationLanguage=Norsk
+﻿TranslationLanguage=Norsk
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Fjern til lokal banerelasjon.~~For eksempel:~/share=\\pch\share~/var/downloads/musikk=Z:\musikk"
 %d x %s (have %d)=%d x %s (har %d)
@@ -288,3 +288,31 @@ Browse=Bla gjennom
 Enable µTP=Slå på µTP
 Select a folder for download=Velg nedlastingsmappe
 Select torrent location=Velg torrentplassering
+A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?
+Advanced=Advanced
+Check for new version every=Check for new version every
+Check for updates=Check for updates
+Consider active torrents as stalled when idle for=Consider active torrents as stalled when idle for
+Do you wish to enable automatic checking for a new version of %s?=Do you wish to enable automatic checking for a new version of %s?
+Donate!=Donate!
+Download queue size=Download queue size
+Error checking for new version=Error checking for new version
+Folder grouping=Folder grouping
+Force start=Force start
+Home page=Home page
+Modify trackers=Modify trackers
+Move bottom=Move bottom
+Move down queue=Move down queue
+Move down=Move down
+Move top=Move top
+Move up queue=Move up queue
+Move up=Move up
+No updates have been found.~You are running the latest version of %s=No updates have been found.~You are running the latest version of %s
+Queue position=Queue position
+Queue=Queue
+Torrents that are idle for N minuets aren't counted toward the Download queue or Upload queue=Torrents that are idle for N minuets aren't counted toward the Download queue or Upload queue
+Tracker grouping=Tracker grouping
+Upload queue size=Upload queue size
+User interface scaling=User interface scaling
+View=View
+Visit home page=Visit home page
