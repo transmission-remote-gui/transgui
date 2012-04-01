@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Portugues do Brasil
+TranslationLanguage=Portugues do Brasil
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapeamentos de caminho  remoto para local. Examplo:~/share=\\pch\share~/var/downloads/musicas=Z:\musicas"
 %d x %s (have %d)=%d x %s (have %d)
@@ -56,7 +56,7 @@ Destination folder=Pasta de destino
 Directory for incomplete files=Pasta dos arquivos incompletos
 Disconnected=Desconectado
 Donate to support further development=Doar para suporte e desenvolvimento
-Donate via Plimus=Doação via Plimus
+Donate via PayPal,WebMoney,Credit card=Doação via PayPal,WebMoney,Credit card
 Done=Pronto
 Don't download=Não baixar
 Down limit=Limite de download

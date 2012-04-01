@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Dansk
+TranslationLanguage=Dansk
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Fjernadgang til lokale stier og mapper.~~Eks:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (downloaded %d)
@@ -53,7 +53,7 @@ Delete host settings=Slet server settings
 Destination folder=Destinations mappe
 Disconnected=Ikke forbundet
 Donate to support further development=Doner penge
-Donate via Plimus=Doner via Plimus
+Donate via PayPal,WebMoney,Credit card=Doner via PayPal,WebMoney,Credit card
 Done=Færdig
 Don't download=Download ikke
 Down limit=Download grænse

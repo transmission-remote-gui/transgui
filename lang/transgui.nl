@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Nederlands
+TranslationLanguage=Nederlands
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Remote naar lokale path mappings.~~Voorbeelden:~/share=\\pch\share~/var/downloads/muziek=Z:\muziek"
 %d x %s (have %d)=%d x %s (heb %d)
@@ -53,7 +53,7 @@ Delete host settings=Host instellingen verwijderen
 Destination folder=Doel map
 Disconnected=Niet verbonden
 Donate to support further development=Doneer om verdere ontwikkeling te steunen
-Donate via Plimus=Doneer via Plimux
+Donate via PayPal,WebMoney,Credit card=Doneer via PayPal,WebMoney,Credit card
 Done=Klaar
 Don't download=Niet downloaden
 Down limit=Down limiet

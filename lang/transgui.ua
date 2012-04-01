@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Українська
+TranslationLanguage=Українська
 
 %dd, %dh=%dд, %dг
 %dh, %dm=%dг, %dхв
@@ -50,7 +50,7 @@ Delete host settings=Видалити налаштування хоста
 Destination folder=Папка для завантаження
 Disconnected=Відключено
 Donate to support further development=Підтримайте фінансово подальший розвиток
-Donate via Plimus=Перерахувати кошти через Plimus
+Donate via PayPal,WebMoney,Credit card=Перерахувати кошти через PayPal,WebMoney,Credit card
 Done=Готово
 Don't download=Не завантажувати
 Down limit=Ліміт завантаження

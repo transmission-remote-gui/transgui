@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Ελληνικά
+TranslationLanguage=Ελληνικά
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Χαρτογράφηση μονοπατιού απομακρυσμένο σε τοπικό.~~Παραδείγματα:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (έχω %d)
@@ -53,7 +53,7 @@ Delete host settings=Διαγραφή ρυθμίσεων host
 Destination folder=Φάκελος προορισμού
 Disconnected=Αποσυνδέθηκε
 Donate to support further development=Υποστηρίξτε την περαιτέρω ανάπτυξη μέσω ΔΩΡΕΑΣ 
-Donate via Plimus=Δωρίστε μέσω Plimus
+Donate via PayPal,WebMoney,Credit card=Δωρίστε μέσω PayPal,WebMoney,Credit card
 Done=Έχω
 Don't download=Μην κατεβάσεις
 Down limit=Όριο λήψης

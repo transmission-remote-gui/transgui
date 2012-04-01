@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Latviešu
+TranslationLanguage=Latviešu
 
 %dd, %dh=%dd, %ds
 %dh, %dm=%ds, %dmin
@@ -50,7 +50,7 @@ Delete host settings=Dzēst IP uzstādījumus
 Destination folder=Mape saglabāšanai
 Disconnected=Atslēgts
 Donate to support further development=Atbalstiet finansiāli tālāko attīstību
-Donate via Plimus=Pārskaitīt naudu caur Plimus
+Donate via PayPal,WebMoney,Credit card=Pārskaitīt naudu caur PayPal,WebMoney,Credit card
 Done=Pabeigts
 Don't download=Nevilkt
 Down limit=Vilk. limits

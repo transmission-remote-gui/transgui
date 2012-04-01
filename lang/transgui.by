@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Беларуская
+TranslationLanguage=Беларуская
 
 %dd, %dh=%dд, %dг
 %dh, %dm=%dг, %dхв
@@ -50,7 +50,7 @@ Delete host settings=Выдаліць налады хосту
 Destination folder=Тэчка для запампоўкі
 Disconnected=Адлучаны
 Donate to support further development=Калі-ласка, падтрымайце далейшае разьвіцьцё праекту
-Donate via Plimus=Пералічыць сродкі праз Plimus
+Donate via PayPal,WebMoney,Credit card=Пералічыць сродкі праз PayPal,WebMoney,Credit card
 Done=Гатова
 Don't download=Не пампаваць
 Down limit=Ліміт запампоўкі

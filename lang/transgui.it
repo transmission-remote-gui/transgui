@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Italiano
+TranslationLanguage=Italiano
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Associazione risorse locali con cartella remota.~~Esempio:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (gia' scaricati %d)
@@ -53,7 +53,7 @@ Delete host settings=Cancella impostazioni host
 Destination folder=Cartella di destinazione
 Disconnected=Disconnesso
 Donate to support further development=Dona per supportare futuri aggiornamenti
-Donate via Plimus=Dona via Plimus
+Donate via PayPal,WebMoney,Credit card=Dona via PayPal,WebMoney,Credit card
 Done=Fatto
 Don't download=Non scaricare 
 Down limit=Limite DownL
