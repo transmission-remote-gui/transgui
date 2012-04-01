@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Norsk
+TranslationLanguage=Norsk
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Fjern til lokal banerelasjon.~~For eksempel:~/share=\\pch\share~/var/downloads/musikk=Z:\musikk"
 %d x %s (have %d)=%d x %s (har %d)
@@ -53,7 +53,7 @@ Delete host settings=Fjern vertsinstillinger
 Destination folder=Destinasjonsmappe
 Disconnected=Frakoblet
 Donate to support further development=Doner for å støtte videre utvikling
-Donate via Plimus=Doner via Plimus
+Donate via PayPal,WebMoney,Credit card=Doner via PayPal,WebMoney,Credit card
 Done=Ferdig
 Don't download=Ikke last ned
 Down limit=Ned grense

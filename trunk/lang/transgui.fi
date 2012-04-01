@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Suomi
+TranslationLanguage=Suomi
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Etäsijaintien määrittäminen paikallisten kanssa.~~Esimerkkejä:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (valmiina %d)
@@ -53,7 +53,7 @@ Delete host settings=Poista palvelimen asetukset
 Destination folder=Kohdekansio
 Disconnected=Yhteys katkaistu
 Donate to support further development=Tee lahjoitus tukeaksesi ohjelman kehitystä
-Donate via Plimus=Tee lahjoitus 'Plimus' kautta
+Donate via PayPal,WebMoney,Credit card=Tee lahjoitus PayPal,WebMoney,Credit card kautta
 Done=Tila
 Don't download=Älä lataa
 Down limit=Latausraja

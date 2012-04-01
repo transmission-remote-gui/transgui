@@ -1,4 +1,4 @@
-﻿TranslationLanguage=???
+TranslationLanguage=???
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (have %d)
@@ -53,7 +53,7 @@ Delete host settings=Delete host settings
 Destination folder=Destination folder
 Disconnected=Disconnected
 Donate to support further development=Donate to support further development
-Donate via Plimus=Donate via Plimus
+Donate via PayPal,WebMoney,Credit card=Donate via PayPal,WebMoney,Credit card
 Done=Done
 Don't download=Don't download
 Down limit=Down limit

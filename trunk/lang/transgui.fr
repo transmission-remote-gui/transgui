@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Français
+TranslationLanguage=Français
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Correspondances entre système de fichier distant et local.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (%d obtenus)
@@ -53,7 +53,7 @@ Delete host settings=Supprimer les propriétés de l'hôte
 Destination folder=Dossier de destination
 Disconnected=Déconnecté
 Donate to support further development=Faire un don en soutien des futurs développements
-Donate via Plimus=Faire un don via Plimus
+Donate via PayPal,WebMoney,Credit card=Faire un don via PayPal,WebMoney,Credit card
 Done=Accompli
 Don't download=Ne pas télécharger
 Down limit=Débit tel max

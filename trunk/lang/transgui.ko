@@ -1,4 +1,4 @@
-﻿TranslationLanguage=한국어
+TranslationLanguage=한국어
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="리모트와 로컬간의 경로설정.~~사용예:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (%d 소유)
@@ -53,7 +53,7 @@ Delete host settings=호스트 설정 삭제
 Destination folder=대상 폴더
 Disconnected=연결종료
 Donate to support further development=개발 지원을 위한 기부
-Donate via Plimus=Plimus를 통한 기부
+Donate via PayPal,WebMoney,Credit card=PayPal,WebMoney,Credit card를 통한 기부
 Done=완료
 Don't download=다운로드 하지않음
 Down limit=다운 제한

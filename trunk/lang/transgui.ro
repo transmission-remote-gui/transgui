@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Română
+TranslationLanguage=Română
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Maparea căilor de la distanţă către local.~~Exemple:~/share=\\pch\share~/var/downloads/muzica=Z:\muzica"
 %d x %s (have %d)=%d x %s (have %d)
@@ -53,7 +53,7 @@ Delete host settings=Ştergere setări gazdă
 Destination folder=Director destinaţie
 Disconnected=Deconectat
 Donate to support further development=Donaţi pentru susţinerea în dezvoltare
-Donate via Plimus=Donaţi prin Plimus
+Donate via PayPal,WebMoney,Credit card=Donaţi prin PayPal,WebMoney,Credit card
 Done=Gata
 Don't download=Nu descărca
 Down limit=Limita descărcare

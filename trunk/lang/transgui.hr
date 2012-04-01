@@ -1,4 +1,4 @@
-﻿TranslationLanguage=hrvatski
+TranslationLanguage=hrvatski
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Unesite put do odredišne mape.~~Primjer:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (have %d)
@@ -53,7 +53,7 @@ Delete host settings=Obrišite postavke poslužitelja
 Destination folder=Odredišna mapa
 Disconnected=Nije povezano
 Donate to support further development=Donirajte kako bi pomogli daljnji razvoj ove aplikacije
-Donate via Plimus=Donirajte putem Plimusa
+Donate via PayPal,WebMoney,Credit card=Donirajte putem PayPal,WebMoney,Credit card
 Done=Dovršeno
 Don't download=Nemoj downloadati
 Down limit=Ograničenja skidanja

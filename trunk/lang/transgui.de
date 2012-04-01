@@ -1,4 +1,4 @@
-﻿TranslationLanguage=German
+TranslationLanguage=German
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Pfadzuordnung Remote zu lokal.~~Beispiel:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (noch %d)
@@ -53,7 +53,7 @@ Delete host settings=Einstellungen löschen
 Destination folder=Zielordner
 Disconnected=nicht verbunden
 Donate to support further development=Spenden um die Weiterentwicklung zu unterstützen
-Donate via Plimus=Spenden über Plimus
+Donate via PayPal,WebMoney,Credit card=Spenden über PayPal,WebMoney,Credit card
 Done=Fertig
 Don't download=nicht herunterladen
 Down limit=Download Grenze
