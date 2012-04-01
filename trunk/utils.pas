@@ -412,13 +412,16 @@ end;
 function OpenURL(const URL, Params: string): boolean;
 {$ifdef mswindows}
 var
-  s, p: string;
+  s, p: widestring;
 {$endif mswindows}
 begin
 {$ifdef mswindows}
   s:=UTF8Decode(URL);
   p:=UTF8Decode(Params);
-  Result:=ShellExecute(0, 'open', PChar(s), PChar(p), nil, SW_SHOWNORMAL) > 32;
+  if Win32Platform = VER_PLATFORM_WIN32_NT then
+    Result:=ShellExecuteW(0, 'open', PWideChar(s), PWideChar(p), nil, SW_SHOWNORMAL) > 32
+  else
+    Result:=ShellExecuteA(0, 'open', PChar(ansistring(s)), PChar(ansistring(p)), nil, SW_SHOWNORMAL) > 32;
 {$endif mswindows}
 
 {$ifdef darwin}

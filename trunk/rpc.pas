@@ -235,7 +235,7 @@ end;
 procedure TRpcThread.DoFillFilesList;
 var
   t: TJSONObject;
-  dir: string;
+  dir: widestring;
 begin
   if ResultData = nil then begin
     MainForm.ClearDetailsInfo;
