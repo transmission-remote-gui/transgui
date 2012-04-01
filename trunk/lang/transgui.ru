@@ -1,4 +1,4 @@
-TranslationLanguage=Русский
+﻿TranslationLanguage=Русский
 
 %dd, %dh=%dд, %dч
 %dh, %dm=%dч, %dмин
