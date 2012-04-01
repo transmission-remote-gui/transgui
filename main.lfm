@@ -2198,6 +2198,11 @@ inherited MainForm: TMainForm
       Caption = 'Tracker grouping'
       OnExecute = acTrackerGroupingExecute
     end
+    object acAdvEditTrackers: TAction
+      Category = 'Trackers'
+      Caption = 'Modify trackers...'
+      OnExecute = acAdvEditTrackersExecute
+    end
   end
   object TorrentsListTimer: TTimer[8]
     Enabled = False
@@ -4465,6 +4470,9 @@ inherited MainForm: TMainForm
     object MenuItem66: TMenuItem
       Action = acEditTracker
       OnClick = acEditTrackerExecute
+    end
+    object MenuItem92: TMenuItem
+      Action = acAdvEditTrackers
     end
     object MenuItem67: TMenuItem
       Action = acDelTracker

@@ -24,7 +24,7 @@ unit TorrProps;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ButtonPanel, BaseForm;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ButtonPanel, ComCtrls, BaseForm;
 
 type
 
@@ -40,8 +40,12 @@ type
     edMaxUp: TSpinEdit;
     edPeerLimit: TSpinEdit;
     edSeedRatio: TFloatSpinEdit;
-    gbOptions: TGroupBox;
     edMaxDown: TSpinEdit;
+    edTrackers: TMemo;
+    txTrackers: TLabel;
+    Page: TPageControl;
+    tabGeneral: TTabSheet;
+    tabAdvanced: TTabSheet;
     txKbs1: TLabel;
     txKbs2: TLabel;
     txMinutes: TLabel;
@@ -86,9 +90,7 @@ end;
 
 procedure TTorrPropsForm.FormCreate(Sender: TObject);
 begin
-{$ifdef windows}
-  gbOptions.Caption:='';
-{$endif windows}
+  Page.ActivePageIndex:=0;
 end;
 
 initialization

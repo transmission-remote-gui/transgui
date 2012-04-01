@@ -148,6 +148,7 @@ type
     acQMoveBottom: TAction;
     acCheckNewVersion: TAction;
     acFolderGrouping: TAction;
+    acAdvEditTrackers: TAction;
     acTrackerGrouping: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
@@ -185,6 +186,7 @@ type
     MenuItem89: TMenuItem;
     MenuItem90: TMenuItem;
     MenuItem91: TMenuItem;
+    MenuItem92: TMenuItem;
     miView: TMenuItem;
     miDonate: TMenuItem;
     miHomePage: TMenuItem;
@@ -391,6 +393,7 @@ type
     procedure acAddLinkExecute(Sender: TObject);
     procedure acAddTorrentExecute(Sender: TObject);
     procedure acAddTrackerExecute(Sender: TObject);
+    procedure acAdvEditTrackersExecute(Sender: TObject);
     procedure acAltSpeedExecute(Sender: TObject);
     procedure acCheckNewVersionExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
@@ -509,6 +512,7 @@ type
     procedure DoCreateOutZipStream(Sender: TObject; var AStream: TStream; AItem: TFullZipFileEntry);
     procedure DoDisconnect;
     procedure DoOpenFlagsZip(Sender: TObject; var AStream: TStream);
+    procedure TorrentProps(PageNo: integer);
     procedure UpdateUI;
     procedure ShowConnOptions(NewConnection: boolean);
     procedure SaveColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
@@ -1463,6 +1467,12 @@ end;
 procedure TMainForm.acAddTrackerExecute(Sender: TObject);
 begin
   AddTracker(False);
+end;
+
+procedure TMainForm.acAdvEditTrackersExecute(Sender: TObject);
+begin
+  gTorrents.RemoveSelection;
+  TorrentProps(1);
 end;
 
 procedure TMainForm.acAltSpeedExecute(Sender: TObject);
@@ -2544,6 +2554,11 @@ begin
 end;
 
 procedure TMainForm.acTorrentPropsExecute(Sender: TObject);
+begin
+  TorrentProps(0);
+end;
+
+procedure TMainForm.TorrentProps(PageNo: integer);
 const
   TR_RATIOLIMIT_GLOBAL    = 0; // follow the global settings
   TR_RATIOLIMIT_SINGLE    = 1; // override the global settings, seeding until a certain ratio
@@ -2554,23 +2569,26 @@ const
   TR_IDLELIMIT_UNLIMITED  = 2; // override the global settings, seeding regardless of activity
 
 var
-  req, args, t: TJSONObject;
+  req, args, t, tr: TJSONObject;
   i, j, id: integer;
-  ids: TJSONArray;
+  ids, Trackers, AddT, EditT, DelT: TJSONArray;
   TorrentIds: variant;
   s: string;
+  trlist, sl: TStringList;
 begin
   gTorrentsClick(nil);
   id:=RpcObj.CurTorrentId;
   if id = 0 then exit;
   AppBusy;
+  trlist:=nil;
   with TTorrPropsForm.Create(Self) do
   try
+    Page.ActivePageIndex:=PageNo;
     gTorrents.Tag:=1;
     gTorrents.EnsureSelectionVisible;
     TorrentIds:=GetSelectedTorrents;
     args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited', 'uploadLimit', 'uploadLimitMode', 'uploadLimited',
-                                  'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit', 'seedIdleLimit', 'seedIdleMode']);
+                                  'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit', 'seedIdleLimit', 'seedIdleMode', 'trackers']);
     if args = nil then begin
       CheckStatus(False);
       exit;
@@ -2578,14 +2596,13 @@ begin
     try
       t:=args.Arrays['torrents'].Objects[0];
 
-      if gTorrents.SelCount > 1 then begin
-        s:=Format(sSeveralTorrents, [gTorrents.SelCount]);
-        Caption:=Caption + ' - ' + s;
-      end
+      if gTorrents.SelCount > 1 then
+        s:=Format(sSeveralTorrents, [gTorrents.SelCount])
       else
         s:=UTF8Encode(t.Strings['name']);
 
       txName.Caption:=txName.Caption + ' ' + s;
+      Caption:=Caption + ' - ' + s;
       if RpcObj.RPCVersion < 5 then begin
         // RPC versions prior to v5
         j:=t.Integers['downloadLimitMode'];
@@ -2643,11 +2660,20 @@ begin
         end;
         edIdleSeedLimit.Value:=t.Integers['seedIdleLimit'];
         cbIdleSeedLimitClick(nil);
+
+        trlist:=TStringList.Create;
+        Trackers:=t.Arrays['trackers'];
+        for i:=0 to Trackers.Count - 1 do begin
+          tr:=Trackers[i] as TJSONObject;
+          trlist.AddObject(UTF8Decode(tr.Strings['announce']), TObject(PtrUInt(tr.Integers['id'])));
+        end;
+        edTrackers.Lines.Assign(trlist);
       end
       else begin
         cbIdleSeedLimit.Visible:=False;
         edIdleSeedLimit.Visible:=False;
         txMinutes.Visible:=False;
+        tabTrackers.TabVisible:=False;
       end;
       edPeerLimit.Value:=t.Integers['maxConnectedPeers'];
     finally
@@ -2711,6 +2737,65 @@ begin
           args.Add('seedIdleMode', i);
           if cbIdleSeedLimit.State = cbChecked then
             args.Add('seedIdleLimit', edIdleSeedLimit.Value);
+
+          sl:=TStringList.Create;
+          try
+            sl.Assign(edTrackers.Lines);
+            // Removing unchanged trackers
+            i:=0;
+            while i < sl.Count do begin
+              s:=Trim(sl[i]);
+              if s = '' then begin
+                sl.Delete(i);
+                continue;
+              end;
+              j:=trlist.IndexOf(s);
+              if j >= 0 then begin
+                trlist.Delete(j);
+                sl.Delete(i);
+                continue;
+              end;
+              Inc(i);
+            end;
+
+            AddT:=TJSONArray.Create;
+            EditT:=TJSONArray.Create;
+            DelT:=TJSONArray.Create;
+            try
+              for i:=0 to sl.Count - 1 do begin
+                s:=Trim(sl[i]);
+                if trlist.Count > 0 then begin
+                  EditT.Add(PtrUInt(trlist.Objects[0]));
+                  EditT.Add(UTF8Decode(s));
+                  trlist.Delete(0);
+                end
+                else
+                  AddT.Add(UTF8Decode(s));
+              end;
+
+              for i:=0 to trlist.Count - 1 do
+                DelT.Add(PtrUInt(trlist.Objects[i]));
+
+              if AddT.Count > 0 then begin
+                args.Add('trackerAdd', AddT);
+                AddT:=nil;
+              end;
+              if EditT.Count > 0 then begin
+                args.Add('trackerReplace', EditT);
+                EditT:=nil;
+              end;
+              if DelT.Count > 0 then begin
+                args.Add('trackerRemove', DelT);
+                DelT:=nil;
+              end;
+            finally
+              DelT.Free;
+              EditT.Free;
+              AddT.Free;
+            end;
+          finally
+            sl.Free;
+          end;
         end;
 
         args.Add('peer-limit', edPeerLimit.Value);
@@ -2731,6 +2816,7 @@ begin
   finally
     gTorrents.Tag:=0;
     Free;
+    trlist.Free;
   end;
 end;
 
@@ -3612,6 +3698,7 @@ begin
   acSetupColumns.Enabled:=e;
   acUpdateBlocklist.Enabled:=(acUpdateBlocklist.Tag <> 0) and e and (RpcObj.RPCVersion >= 5);
   acAddTracker.Enabled:=acTorrentProps.Enabled and (RpcObj.RPCVersion >= 10);
+  acAdvEditTrackers.Enabled:=acAddTracker.Enabled;
   acEditTracker.Enabled:=acAddTracker.Enabled and (lvTrackers.Items.Count > 0);
   acDelTracker.Enabled:=acEditTracker.Enabled;
   acAltSpeed.Enabled:=e and (RpcObj.RPCVersion >= 5);
