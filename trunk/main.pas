@@ -505,7 +505,7 @@ type
     FCurDownSpeedLimit: integer;
     FCurUpSpeedLimit: integer;
     FFlagsPath: string;
-    FAddingTorrent: boolean;
+    FAddingTorrent: integer;
     FPendingTorrents: TStringList;
 
     procedure DoConnect;
@@ -1620,7 +1620,7 @@ var
   tt: TDateTime;
   ok: boolean;
 begin
-  FAddingTorrent:=True;
+  Inc(FAddingTorrent);
   try
     AppBusy;
     Result:=False;
@@ -1640,6 +1640,9 @@ begin
     try
       with TAddTorrentForm.Create(Self) do
       try
+        if not IsTaskbarButtonVisible then
+          ShowInTaskBar:=stAlways;
+
         Width:=Ini.ReadInteger('AddTorrent', 'Width', Width);
         Height:=Ini.ReadInteger('AddTorrent', 'Height', Height);
 
@@ -1825,7 +1828,7 @@ begin
         TorrentAction(VarArrayOf([id]), 'torrent-remove');
     end;
   finally
-    FAddingTorrent:=False;
+    Dec(FAddingTorrent);
   end;
 end;
 
@@ -1845,17 +1848,10 @@ begin
 end;
 
 procedure TMainForm.HideApp;
-var
-  i: integer;
 begin
-  for i:=0 to Screen.FormCount - 1 do
-    with Screen.Forms[i] do
-      if fsModal in FormState then
-        exit;
-
   if WindowState <> wsMinimized then
     Hide;
-  HideTaskbarButton;
+   HideTaskbarButton;
   UpdateTray;
 end;
 
@@ -5556,30 +5552,33 @@ begin
     FPendingTorrents.Text:=FPendingTorrents.Text + s;
   end;
 
-  if FAddingTorrent then
+  if FAddingTorrent <> 0 then
     exit;
 
-  if FPendingTorrents.Count > 0 then begin
-    Application.ProcessMessages;
-    TickTimer.Enabled:=True;
-    WasHidden:=not IsTaskbarButtonVisible;
-    if WasHidden then begin
-      ShowTaskbarButton;
-      Application.BringToFront;
-    end
-    else
-      ShowApp;
-    try
-      while FPendingTorrents.Count > 0 do begin
-        s:=FPendingTorrents[0];
-        if s <> '' then
-          DoAddTorrent(s);
-        FPendingTorrents.Delete(0);
-      end;
-    finally
+  Inc(FAddingTorrent);
+  try
+    if FPendingTorrents.Count > 0 then begin
+      Application.ProcessMessages;
+      TickTimer.Enabled:=True;
+      WasHidden:=not IsTaskbarButtonVisible;
       if WasHidden then
-        HideTaskbarButton;
+        Application.BringToFront
+      else
+        ShowApp;
+      try
+        while FPendingTorrents.Count > 0 do begin
+          s:=FPendingTorrents[0];
+          if s <> '' then
+            DoAddTorrent(s);
+          FPendingTorrents.Delete(0);
+        end;
+      finally
+        if WasHidden then
+          HideTaskbarButton;
+      end;
     end;
+  finally
+    Dec(FAddingTorrent);
   end;
 end;
 
