@@ -136,7 +136,7 @@ inherited MainForm: TMainForm
         Align = alClient
         Columns = <        
           item
-            Title.Caption = ''
+            Title.Caption = ' '
             Width = 10
           end>
         Constraints.MinWidth = 50
