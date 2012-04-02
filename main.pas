@@ -2007,6 +2007,8 @@ var
   tmp: string;
   gz: TGZFileStream;
   fs: TFileStreamUTF8;
+  buf: array[0..65535] of byte;
+  i: integer;
 begin
   Result:=False;
   tmp:=SysToUTF8(GetTempDir(True)) + 'GeoIP.dat.gz';
@@ -2022,8 +2024,10 @@ begin
     try
       fs:=TFileStreamUTF8.Create(FHomeDir + 'GeoIP.dat', fmCreate);
       try
-        while fs.CopyFrom(gz, 64*1024) = 64*1024 do
-          ;
+        repeat
+          i:=gz.read(buf, SizeOf(buf));
+          fs.WriteBuffer(buf, i);
+        until i < SizeOf(buf);
       finally
         fs.Free;
       end;
