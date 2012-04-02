@@ -198,6 +198,7 @@ inherited TorrPropsForm: TTorrPropsForm
         Top = 30
         Width = 428
         Anchors = [akTop, akLeft, akRight, akBottom]
+        ScrollBars = ssAutoVertical
         TabOrder = 0
       end
       object txTrackers: TLabel
