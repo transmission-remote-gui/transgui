@@ -101,11 +101,11 @@ begin
   CheckVersionThread:=TCheckVersionThread.Create(True);
   CheckVersionThread.FreeOnTerminate:=True;
   if Async then
-    CheckVersionThread.Resume
+    CheckVersionThread.Suspended:=False
   else begin
     CheckVersionThread.Execute;
     CheckVersionThread.FExit:=True;
-    CheckVersionThread.Resume;
+    CheckVersionThread.Suspended:=False;
   end;
 end;
 

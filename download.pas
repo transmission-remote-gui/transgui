@@ -95,7 +95,7 @@ begin
       s:=DestFileName;
     FThread.FUrl:=URL;
     FThread.FDestFileName:=IncludeTrailingPathDelimiter(DestFolder) + s;
-    FThread.Resume;
+    FThread.Suspended:=False;
     Result:=ShowModal = mrOk;
   finally
     Free;

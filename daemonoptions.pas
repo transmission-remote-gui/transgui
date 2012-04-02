@@ -269,7 +269,7 @@ begin
     j:=i + 1;
     if j > 7 then
       Dec(j, 7);
-    cb.Caption:=SysToUTF8(ShortDayNames[j]);
+    cb.Caption:=SysToUTF8(FormatSettings.ShortDayNames[j]);
     cb.Name:=Format('cbDay%d', [j]);
     cb.Left:=x;
     cb.Top:=txDays.Top - (cb.Height - txDays.Height) div 2;

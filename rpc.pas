@@ -860,7 +860,7 @@ begin
   with RpcThread do begin
     FreeOnTerminate:=True;
     FRpc:=Self;
-    Resume;
+    Suspended:=False;
   end;
 end;
 
