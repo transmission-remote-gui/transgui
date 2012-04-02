@@ -448,7 +448,7 @@ begin
   while (result < Count) do begin
     s:=Strings[result];
     Offset := ScanQuotSep(PChar(s));
-    if (Offset > 0) and AnsiSameText(n, Copy(s, 1, Offset)) then begin
+    if (Offset > 0) and (n = Copy(s, 1, Offset)) then begin
       inc(Offset, 2);
       exit;
     end;
