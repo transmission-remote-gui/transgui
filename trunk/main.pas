@@ -2897,9 +2897,36 @@ begin
 end;
 
 procedure TMainForm.ApplicationPropertiesException(Sender: TObject; E: Exception);
+var
+  msg: string;
+{$ifdef CALLSTACK}
+  sl: TStringList;
+{$endif CALLSTACK}
 begin
   ForceAppNormal;
-  MessageDlg(E.Message, mtError, [mbOK], 0);
+  msg:=E.Message;
+{$ifdef CALLSTACK}
+  try
+    sl:=TStringList.Create;
+    try
+      sl.Text:=GetLastExceptionCallStack;
+      Clipboard.AsText:=msg + LineEnding + sl.Text;
+      DebugLn(msg + LineEnding + sl.Text);
+      if sl.Count > 20 then begin
+        while sl.Count > 20 do
+          sl.Delete(20);
+        sl.Add('...');
+      end;
+      msg:=msg + LineEnding + '---' + LineEnding + 'The error details has been copied to the clipboard.' + LineEnding + '---';
+      msg:=msg + LineEnding + sl.Text;
+    finally
+      sl.Free;
+    end;
+  except
+    ; // suppress exception
+  end;
+{$endif CALLSTACK}
+  MessageDlg(msg, mtError, [mbOK], 0);
 end;
 
 procedure TMainForm.ApplicationPropertiesIdle(Sender: TObject; var Done: Boolean);

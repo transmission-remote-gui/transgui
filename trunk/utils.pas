@@ -81,13 +81,21 @@ function ParamStrUTF8(Param: Integer): utf8string;
 function ParamCount: integer;
 function GetCmdSwitchValue(const Switch: string): string;
 
+{$ifdef CALLSTACK}
+function GetLastExceptionCallStack: string;
+{$endif CALLSTACK}
+
 {$ifdef mswindows}
 procedure AllowSetForegroundWindow(dwProcessId: DWORD);
 {$endif mswindows}
 
 implementation
 
-uses FileUtil;
+uses
+{$ifdef CALLSTACK}
+  lineinfo2,
+{$endif CALLSTACK}
+  FileUtil;
 
 {$ifdef windows}
 function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
@@ -497,6 +505,39 @@ begin
     end;
   end;
 end;
+
+{$ifdef CALLSTACK}
+function GetLastExceptionCallStack: string;
+
+  function GetAddrInfo(addr: pointer): string;
+  var
+    func,
+    source : shortstring;
+    line   : longint;
+  begin
+    GetLineInfo(ptruint(addr), func, source, line);
+    Result:='$' + HexStr(ptruint(addr), sizeof(ptruint) * 2);
+    if func<>'' then
+      Result:=Result + '  ' + func;
+    if source<>'' then begin
+      if func<>'' then
+        Result:=Result + ', ';
+      if line<>0 then
+        Result:=Result + ' line ' + IntToStr(line);
+      Result:=Result + ' of ' + source;
+    end;
+  end;
+
+var
+  I: Integer;
+  Frames: PPointer;
+begin
+  Result := GetAddrInfo(ExceptAddr);
+  Frames := ExceptFrames;
+  for I := 0 to ExceptFrameCount - 1 do
+    Result := Result + LineEnding + GetAddrInfo(Frames[I]);
+end;
+{$endif CALLSTACK}
 
 finalization
 {$ifdef windows}
