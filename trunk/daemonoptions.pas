@@ -35,7 +35,7 @@ resourcestring
  sEncryptionRequired = 'Encryption required';
  SNoDownloadDir = 'The downloads directory was not specified.';
  SNoIncompleteDir = 'The directory for incomplete files was not specified.';
- SNoBlocklistURL = 'The blocklist URL was not specified.';
+// SNoBlocklistURL = 'The blocklist URL was not specified.';
  SInvalidTime = 'The invalid time value was entered.';
 
 type
@@ -202,12 +202,6 @@ begin
     exit;
   end;
   edBlocklistURL.Text:=Trim(edBlocklistURL.Text);
-  if cbBlocklist.Checked and edBlocklistURL.Visible and (edBlocklistURL.Text = '') then begin
-    Page.ActivePage:=tabNetwork;
-    edBlocklistURL.SetFocus;
-    MessageDlg(SNoBlocklistURL, mtError, [mbOK], 0);
-    exit;
-  end;
   if cbAutoAlt.Checked then begin
      if StrToTimeDef(edAltTimeBegin.Text, -1) < 0 then begin
        Page.ActivePage:=tabBandwidth;
