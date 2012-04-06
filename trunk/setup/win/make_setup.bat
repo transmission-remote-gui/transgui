@@ -3,7 +3,7 @@
 if (%1) == () goto usage
 if (%2) == () goto usage
 
-make -C ../.. LAZARUS_DIR="%1"
+make -C ../.. clean all LAZARUS_DIR="%1"
 if errorlevel 1 goto err
 
 set ISC=%~2
