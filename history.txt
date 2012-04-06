@@ -1,3 +1,28 @@
+4.0 (Apr 06, 2012)
+[+] Added WebMoney and restored PayPal donation options. It is the right time to donate! :)
+[+] Support for torrent queues in Transmission 2.40+. Issue #445.
+[+] Support for adding several torrents at once. Issue #508.
+[+] Display a torrent name in the title of the Add torrent window. Issue #533.
+[+] Filer category "Error". Issue #420.
+[+] Trackers can be bulk edited in the torrent properties window. Issue #389.
+[+] Handle custom "rpc-url". Issue #523.
+[+] Option "User interface scaling". Issue #505.
+[+] Options to show/hide folder and tracker grouping. Issue #265.
+[+] Checking for a new version. Issue #361.
+[+] Searching in the torrent list by pressing letter keys. Issue #314.
+[+] Swedish translation by pesegolsson.
+[+] Finnish translation by thomazuu.
+[*] Unicode support for file operations on Windows. Issue #454.
+[*] Handle magnet links on Mac OS X. Issue #403.
+[*] Do not show the main application window when adding torrents, while the application is minimized to tray. Issue #455.
+[*] Allow specifying empty blocklist URL. Issue #543.
+[*] Caching of writes to the settings file.
+[-] The application hangs on start on Ubuntu 12.04 (with libglib 2.31+). Issue #489.
+[-] Do not change the last download dir when setting torrent's location. Issue #482.
+[-] Stall during auto reconnection on the "Connecting to daemon..." stage.
+[-] Unable to click again on a grid's header after the first click, unless you move the mouse cursor.
+[-] Scaling of the status bar on high DPI settings. Issue #495.
+
 3.2 (Nov 01, 2011)
 ------------------
 [+] Support for Transmission 2.40+.
