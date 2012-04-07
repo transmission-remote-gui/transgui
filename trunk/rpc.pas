@@ -521,22 +521,35 @@ end;
 procedure TRpc.InitSSL;
 {$ifdef unix}
 {$ifndef darwin}
-var
-  hLib1, hLib2: TLibHandle;
+  procedure CheckOpenSSL;
+  const
+    OpenSSLVersions: array[1..2] of string =
+      ('0.9.8', '1.0.0');
+  var
+    hLib1, hLib2: TLibHandle;
+    i: integer;
+  begin
+    for i:=Low(OpenSSLVersions) to High(OpenSSLVersions) do begin
+      hlib1:=LoadLibrary(PChar('libssl.so.' + OpenSSLVersions[i]));
+      hlib2:=LoadLibrary(PChar('libcrypto.so.' + OpenSSLVersions[i]));
+      if hLib2 <> 0 then
+        FreeLibrary(hLib2);
+      if hLib1 <> 0 then
+        FreeLibrary(hLib1);
+      if (hLib1 <> 0) and (hLib2 <> 0) then begin
+        DLLSSLName:='libssl.so.' + OpenSSLVersions[i];
+        DLLUtilName:='libcrypto.so.' + OpenSSLVersions[i];
+        break;
+      end;
+    end;
+  end;
 {$endif darwin}
 {$endif unix}
 begin
   if IsSSLloaded then exit;
 {$ifdef unix}
 {$ifndef darwin}
-  hlib1:=LoadLibrary('libssl.so.0.9.8');
-  hlib2:=LoadLibrary('libcrypto.so.0.9.8');
-  if (hLib1 <> 0) and (hLib2 <> 0) then begin
-    DLLSSLName:='libssl.so.0.9.8';
-    DLLUtilName:='libcrypto.so.0.9.8';
-  end;
-  FreeLibrary(hLib2);
-  FreeLibrary(hLib1);
+  CheckOpenSSL;
 {$endif darwin}
 {$endif unix}
   if InitSSLInterface then
