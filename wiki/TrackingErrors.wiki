@@ -7,7 +7,7 @@ It is needed to provide more details, like call stack information with line numb
 
 To do that:
  * Download and install FPC and Lazarus, download the transgui source code. See the [Building] wiki page.
- * Build the program using the following command: `make clean debug`
+ * Build the program using the following command: {{{make clean debug}}}
  * Run transgui and reproduce the error.
  * You should see a call stack information in the error message box. The call stack information has been copied to the clipboard.
  * Paste this call stack information to your bug report.
