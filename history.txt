@@ -1,4 +1,4 @@
-4.0 (Apr 06, 2012)
+4.0 (Apr 07, 2012)
 [+] Added WebMoney and restored PayPal donation options. It is the right time to donate! :)
 [+] Support for torrent queues in Transmission 2.40+. Issue #445.
 [+] Support for adding several torrents at once. Issue #508.
@@ -22,6 +22,7 @@
 [-] Stall during auto reconnection on the "Connecting to daemon..." stage.
 [-] Unable to click again on a grid's header after the first click, unless you move the mouse cursor.
 [-] Scaling of the status bar on high DPI settings. Issue #495.
+[-] The "Access violation" error when connecting to a daemon using SSL in some cases. Issue #544.
 
 3.2 (Nov 01, 2011)
 ------------------
