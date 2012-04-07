@@ -6,10 +6,8 @@ It is needed to provide more details, like call stack information with line numb
 
 
 To do that:
- * Build the program using Lazarus IDE as described [Building here].
- * Run the program from the IDE by pressing the {{{F9}}} key or choosing {{{Run > Run}}} from the menu.
- * When the error will occur press the {{{Break}}} button in the error window.
- * Open the Call stack window using the {{{View > Debug windows > Call Stack}}} menu item.
- * Choose the {{{Max 50}}} on the toolbar of the Call Stack window.
- * Press the {{{Copy All}}} button to copy the call stack information to the clipboard.
+ * Download and install FPC and Lazarus, download the transgui source code. See the [Building] wiki page.
+ * Build the program using the following command: `make clean debug`
+ * Run transgui and reproduce the error.
+ * You should see a call stack information in the error message box. The call stack information has been copied to the clipboard.
  * Paste this call stack information to your bug report.
