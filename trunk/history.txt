@@ -1,3 +1,6 @@
+4.0.1 (Apr 08, 2012)
+[-] Incorrect folder filtering when tracker grouping is disabled. Issue #545.
+
 4.0 (Apr 07, 2012)
 [+] Added WebMoney and restored PayPal donation options. It is the right time to donate! :)
 [+] Support for torrent queues in Transmission 2.40+. Issue #445.
