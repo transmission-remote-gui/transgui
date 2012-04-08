@@ -1,0 +1,62 @@
+inherited AddTrackerForm: TAddTrackerForm
+  Left = 411
+  Height = 93
+  Top = 283
+  Width = 533
+  AutoSize = True
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Add tracker'
+  ClientHeight = 93
+  ClientWidth = 533
+  OnCreate = FormCreate
+  Position = poMainFormCenter
+  object Buttons: TButtonPanel[0]
+    Left = 0
+    Height = 26
+    Top = 59
+    Width = 533
+    BorderSpacing.Bottom = 8
+    BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&OK'
+    HelpButton.Name = 'HelpButton'
+    HelpButton.Caption = '&Help'
+    CloseButton.Name = 'CloseButton'
+    CloseButton.Caption = '&Close'
+    CancelButton.Name = 'CancelButton'
+    CancelButton.Caption = 'Cancel'
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+  object Panel1: TPanel[1]
+    Left = 8
+    Height = 43
+    Top = 8
+    Width = 517
+    Align = alClient
+    BorderSpacing.Around = 8
+    BevelOuter = bvNone
+    ClientHeight = 43
+    ClientWidth = 517
+    TabOrder = 0
+    object txTrackerURL: TLabel
+      Left = 0
+      Height = 14
+      Top = 0
+      Width = 113
+      Caption = 'Tracker announce URL:'
+      ParentColor = False
+    end
+    object edTracker: TEdit
+      Left = 0
+      Height = 21
+      Top = 20
+      Width = 516
+      Anchors = [akTop, akLeft, akRight]
+      TabOrder = 0
+    end
+  end
+end
