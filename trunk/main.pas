@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '4.0';
+  AppVersion = '4.0.1';
 
 resourcestring
   sAll = 'All';
@@ -3122,7 +3122,7 @@ begin
       6: ImageIndex:=imgError;
       else
         if Text <> '' then
-          if ARow >= Sender.Items.Count - FTrackers.Count then
+          if VarIsNull(Sender.Items[-1, ARow]) then
             ImageIndex:=5
           else
             ImageIndex:=22;
@@ -3988,7 +3988,7 @@ begin
   if VarIsNull(lvFilter.Items[0, FilterIdx]) then
     Dec(FilterIdx);
   if FilterIdx >= StatusFiltersCount then
-    if FilterIdx < lvFilter.Items.Count - FTrackers.Count then begin
+    if not VarIsNull(lvFilter.Items[-1, FilterIdx]) then begin
       PathFilter:=UTF8Encode(widestring(lvFilter.Items[-1, FilterIdx]));
       FilterIdx:=fltAll;
     end
@@ -4333,6 +4333,7 @@ begin
         j:=ptruint(FTrackers.Objects[i]);
         if j > 0 then begin
           lvFilter.Items[0, row]:=UTF8Decode(Format('%s (%d)', [FTrackers[i], j]));
+          lvFilter.Items[-1, row]:=NULL;
           if FTrackers[i] = TrackerFilter then
             crow:=row;
           Inc(i);

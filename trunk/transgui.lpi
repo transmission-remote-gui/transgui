@@ -20,6 +20,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="4"/>
+      <RevisionNr Value="1"/>
       <StringTable CompanyName="Yury Sidorov" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2012 by Yury Sidorov" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
