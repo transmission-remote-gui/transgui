@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '4.0.1';
+  AppVersion = '4.0.2';
 
 resourcestring
   sAll = 'All';
@@ -5574,8 +5574,10 @@ begin
     FileClose(h);
     DeleteFileUTF8(FIPCFileName);
 
-    if s = '' then
+    if s = '' then begin
+      ShowApp;
       exit;
+    end;
 
     FPendingTorrents.Text:=FPendingTorrents.Text + s;
   end;
