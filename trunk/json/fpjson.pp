@@ -1077,6 +1077,9 @@ begin
       vtString     : Result:=TJSONString.Create(vString^);
       vtAnsiString : Result:=TJSONString.Create(AnsiString(vAnsiString));
       vtWideString : Result:=TJSONString.Create(WideString(VWideString));
+{$ifndef VER2_4}
+      vtUnicodeString : Result:=TJSONString.Create(UnicodeString(VUnicodeString));
+{$endif VER2_4}
       vtPChar      : Result:=TJSONString.Create(StrPas(VPChar));
       vtPointer    : If (VPointer<>Nil) then
                        Raise EJSON.CreateFmt(SErrPointerNotNil,[SourceType])

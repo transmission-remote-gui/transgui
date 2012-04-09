@@ -1,5 +1,6 @@
-4.0.2 (Apr 08, 2012)
+4.0.2 (Apr 09, 2012)
 [-] A running instance of the application is not restored, when launching a new instance of the application.
+[-] Regression. Unable to add/edit trackers in v4.0. Issue #548.
 
 4.0.1 (Apr 08, 2012)
 [-] Incorrect folder filtering when tracker grouping is disabled. Issue #545.
