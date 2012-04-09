@@ -45,6 +45,7 @@ type
   TOnDrawCellEvent = procedure (Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean) of object;
   TOnSortColumnEvent = procedure (Sender: TVarGrid; var ASortCol: integer) of object;
   TCellNotifyEvent = procedure (Sender: TVarGrid; ACol, ARow, ADataCol: integer) of object;
+  TOnQuickSearch = procedure (Sender: TVarGrid; var SearchText: string; var ARow: integer) of object;
 
   { TVarGrid }
 
@@ -60,6 +61,7 @@ type
     FOnCellAttributes: TOnCellAttributes;
     FOnCheckBoxClick: TCellNotifyEvent;
     FOnDrawCell: TOnDrawCellEvent;
+    FOnQuickSearch: TOnQuickSearch;
     FOnTreeButtonClick: TCellNotifyEvent;
     FSelCount: integer;
     FAnchor: integer;
@@ -197,6 +199,7 @@ type
     property OnSortColumn: TOnSortColumnEvent read FOnSortColumn write FOnSortColumn;
     property OnCheckBoxClick: TCellNotifyEvent read FOnCheckBoxClick write FOnCheckBoxClick;
     property OnTreeButtonClick: TCellNotifyEvent read FOnTreeButtonClick write FOnTreeButtonClick;
+    property OnQuickSearch: TOnQuickSearch read FOnQuickSearch write FOnQuickSearch;
   end;
 
 procedure Register;
@@ -271,14 +274,17 @@ end;
 
 procedure TVarGrid.SetRow(const AValue: integer);
 var
-  i: integer;
+  i, r: integer;
 begin
   if FItems.IsUpdating then
     FRow:=AValue
   else begin
-    i:=LeftCol;
-    inherited Row:=AValue + FixedRows;
-    LeftCol:=i;
+    r:=AValue + FixedRows;
+    if r <> inherited Row then begin
+      i:=LeftCol;
+      inherited Row:=r;
+      LeftCol:=i;
+    end;
   end;
 end;
 
@@ -770,7 +776,7 @@ end;
 
 procedure TVarGrid.UTF8KeyPress(var UTF8Key: TUTF8Char);
 var
-  i: integer;
+  i, r: integer;
 begin
   inherited UTF8KeyPress(UTF8Key);
   if UTF8Key = #0 then
@@ -782,9 +788,17 @@ begin
   else
     i:=Row;
   FCurSearch:=FCurSearch + UTF8Key;
-  i:=FindRow(FCurSearch, i);
-  if i >= 0 then
-    Row:=i;
+  if Assigned(FOnQuickSearch) then begin
+    r:=i;
+    FOnQuickSearch(Self, FCurSearch, r);
+    if r <> i then
+      Row:=r;
+  end
+  else begin
+    i:=FindRow(FCurSearch, i);
+    if i >= 0 then
+      Row:=i;
+  end;
 end;
 
 procedure TVarGrid.DoOnCellAttributes(ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
@@ -1039,7 +1053,7 @@ begin
   FSearchTimer:=TTimer.Create(Self);
   with FSearchTimer do begin
     Enabled:=False;
-    Interval:=2000;
+    Interval:=1500;
     OnTimer:=@DoSearchTimer;
   end;
 end;
