@@ -723,8 +723,6 @@ var
 begin
   r:=Row;
   k:=Key;
-  if goRowSelect in Options then
-    Col:=FixedCols;
 
   if (Shift = []) and ( (k = VK_SPACE) or (k = VK_LEFT) or (k = VK_RIGHT) or (k = VK_ADD) or (k = VK_SUBTRACT) ) then begin
     SetupCell(FixedCols, inherited Row, [], ca);
