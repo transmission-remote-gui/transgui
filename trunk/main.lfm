@@ -284,6 +284,7 @@ inherited MainForm: TMainForm
       OnCellAttributes = gTorrentsCellAttributes
       OnDrawCell = gTorrentsDrawCell
       OnSortColumn = gTorrentsSortColumn
+      OnQuickSearch = gTorrentsQuickSearch
     end
   end
   object StatusBar: TStatusBar[1]

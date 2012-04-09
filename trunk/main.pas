@@ -449,6 +449,7 @@ type
     procedure gTorrentsClick(Sender: TObject);
     procedure gTorrentsDblClick(Sender: TObject);
     procedure gTorrentsDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
+    procedure gTorrentsQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer);
     procedure gTorrentsResize(Sender: TObject);
     procedure gTorrentsSortColumn(Sender: TVarGrid; var ASortCol: integer);
     procedure lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
@@ -3052,6 +3053,24 @@ begin
   if ADataCol = idxDone then begin
     ADefaultDrawing:=False;
     DrawProgressCell(Sender, ACol, ARow, ADataCol, AState, R);
+  end;
+end;
+
+procedure TMainForm.gTorrentsQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer);
+var
+  i: integer;
+  s: string;
+  v: variant;
+begin
+  s:=UTF8UpperCase(SearchText);
+  for i:=ARow to gTorrents.Items.Count - 1 do begin
+    v:=gTorrents.Items[idxName, i];
+    if VarIsEmpty(v) or VarIsNull(v) then
+      continue;
+    if Pos(s, Trim(UTF8UpperCase(UTF8Encode(widestring(v))))) = 1 then begin
+      ARow:=i;
+      break;
+    end;
   end;
 end;
 
