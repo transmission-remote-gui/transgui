@@ -1,6 +1,8 @@
 4.0.2 (Apr 09, 2012)
+[*] Always search on torrent names when a letter is pressed. Issue #314.
 [-] A running instance of the application is not restored, when launching a new instance of the application.
 [-] Regression. Unable to add/edit trackers in v4.0. Issue #548.
+[-] Do not jump to the first column on key press. Issue #549.
 
 4.0.1 (Apr 08, 2012)
 [-] Incorrect folder filtering when tracker grouping is disabled. Issue #545.
