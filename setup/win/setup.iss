@@ -12,27 +12,27 @@
 ;  #define AppVersion AppVersion+'-beta'
 #endif
 
-#define MyAppName "Transmission Remote GUI"
-#define MyAppVerName MyAppName + " " + AppVersion
-#define MyAppPublisher "Yury Sidorov"
-#define MyAppURL "http://code.google.com/p/transmisson-remote-gui/"
-#define MyAppExeName "transgui.exe"
+#define AppName "Transmission Remote GUI"
+#define AppVerName AppName + " " + AppVersion
+#define AppPublisher "Yury Sidorov"
+#define AppURL "http://code.google.com/p/transmisson-remote-gui/"
+#define AppExeName "transgui.exe"
 
 [Setup]
 AppId=transgui
-AppName={#MyAppName}
-AppVerName={#MyAppVerName}
-AppCopyright=Copyright (c) 2008-2010 by Yury Sidorov
-AppPublisher={#MyAppPublisher}
-AppPublisherURL={#MyAppURL}
-AppSupportURL={#MyAppURL}
-AppUpdatesURL={#MyAppURL}
+AppName={#AppName}
+AppVerName={#AppVerName}
+AppCopyright=Copyright (c) 2008-2012 by Yury Sidorov
+AppPublisher={#AppPublisher}
+AppPublisherURL={#AppURL}
+AppSupportURL={#AppURL}
+AppUpdatesURL={#AppURL}
 
 VersionInfoVersion={#GetFileVersion(SourcePath+'..\..\transgui.exe')}
 VersionInfoTextVersion={#GetFileVersion(SourcePath+'..\..\transgui.exe')}
 
-DefaultDirName={pf}\{#MyAppName}
-DefaultGroupName={#MyAppName}
+DefaultDirName={pf}\{#AppName}
+DefaultGroupName={#AppName}
 AllowNoIcons=yes
 LicenseFile=..\..\LICENSE.txt
 InfoAfterFile=..\..\history.txt
@@ -49,6 +49,11 @@ ChangesAssociations=yes
 WizardImageFile=compiler:\WizModernImage-IS.bmp
 WizardSmallImageFile=compiler:\WizModernSmallImage-IS.bmp
 
+#if GetEnv("CODECERT") != ""
+#define CODECERT GetEnv("CODECERT")
+SignTool=signtool sign /d "{#AppName} Setup" /du "{#AppURL}" /f "{#CODECERT}" /t "http://timestamp.verisign.com/scripts/timestamp.dll" /v $f
+#endif
+
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
@@ -62,8 +67,8 @@ Name: "app"; Description: "Main application files"; Types: full compact custom; 
 Name: "lang"; Description: "Language files"; Types: full custom
 
 [Tasks]
-Name: regfileext; Description: "{cm:AssocFileExtension,{#MyAppName},.torrent}"; Flags: unchecked
-Name: regmagnet; Description: "Handle magnet links by {#MyAppName}"; Flags: unchecked
+Name: regfileext; Description: "{cm:AssocFileExtension,{#AppName},.torrent}"; Flags: unchecked
+Name: regmagnet; Description: "Handle magnet links by {#AppName}"; Flags: unchecked
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
@@ -75,30 +80,30 @@ Source: "..\..\history.txt"; DestDir: "{app}"; Flags: ignoreversion; Components:
 Source: "..\..\lang\transgui.*"; DestDir: "{app}\lang"; Flags: ignoreversion; Components: lang
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"
 Name: "{group}\History"; Filename: "{app}\history.txt"
 Name: "{group}\Read me"; Filename: "{app}\readme.txt"
 Name: "{group}\License"; Filename: "{app}\LICENSE.txt"
-Name: "{group}\Home page"; Filename: "{#MyAppURL}"
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
+Name: "{group}\Home page"; Filename: "{#AppURL}"
+Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"
+Name: "{userdesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: quicklaunchicon
 
 [Registry]
-Root: HKCU; Subkey: "Software\Classes\.torrent"; ValueType: string; ValueName: ""; ValueData: "{#MyAppName}"; Flags: uninsdeletevalue; Tasks: regfileext
-Root: HKCU; Subkey: "Software\Classes\{#MyAppName}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"",0"; Flags: uninsdeletevalue; Tasks: regfileext
-Root: HKCU; Subkey: "Software\Classes\{#MyAppName}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletevalue; Tasks: regfileext
+Root: HKCU; Subkey: "Software\Classes\.torrent"; ValueType: string; ValueName: ""; ValueData: "{#AppName}"; Flags: uninsdeletevalue; Tasks: regfileext
+Root: HKCU; Subkey: "Software\Classes\{#AppName}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"",0"; Flags: uninsdeletevalue; Tasks: regfileext
+Root: HKCU; Subkey: "Software\Classes\{#AppName}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Flags: uninsdeletevalue; Tasks: regfileext
 
 Root: HKCU; Subkey: "Software\Classes\Magnet"; ValueType: string; ValueName: ""; ValueData: "Magnet URI"; Flags: uninsdeletevalue; Tasks: regmagnet
 Root: HKCU; Subkey: "Software\Classes\Magnet"; ValueType: string; ValueName: "Content Type"; ValueData: "application/x-magnet"; Flags: uninsdeletevalue; Tasks: regmagnet
 Root: HKCU; Subkey: "Software\Classes\Magnet"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""; Flags: uninsdeletevalue; Tasks: regmagnet
-Root: HKCU; Subkey: "Software\Classes\Magnet\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"",0"; Flags: uninsdeletevalue; Tasks: regmagnet
+Root: HKCU; Subkey: "Software\Classes\Magnet\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"",0"; Flags: uninsdeletevalue; Tasks: regmagnet
 Root: HKCU; Subkey: "Software\Classes\Magnet\shell"; ValueType: string; ValueName: ""; ValueData: "open"; Flags: uninsdeletevalue; Tasks: regmagnet
-Root: HKCU; Subkey: "Software\Classes\Magnet\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletevalue; Tasks: regmagnet
+Root: HKCU; Subkey: "Software\Classes\Magnet\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Flags: uninsdeletevalue; Tasks: regmagnet
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
-Type: filesandordirs ; Name: "{localappdata}\{#MyAppName}"
+Type: filesandordirs ; Name: "{localappdata}\{#AppName}"
 
