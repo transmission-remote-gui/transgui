@@ -80,14 +80,14 @@ Source: "..\..\history.txt"; DestDir: "{app}"; Flags: ignoreversion; Components:
 Source: "..\..\lang\transgui.*"; DestDir: "{app}\lang"; Flags: ignoreversion; Components: lang
 
 [Icons]
-Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"
-Name: "{group}\History"; Filename: "{app}\history.txt"
-Name: "{group}\Read me"; Filename: "{app}\readme.txt"
-Name: "{group}\License"; Filename: "{app}\LICENSE.txt"
-Name: "{group}\Home page"; Filename: "{#AppURL}"
-Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"
-Name: "{userdesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: quicklaunchicon
+Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: {app}
+Name: "{group}\History"; Filename: "{app}\history.txt"; WorkingDir: {app}
+Name: "{group}\Read me"; Filename: "{app}\readme.txt"; WorkingDir: {app}
+Name: "{group}\License"; Filename: "{app}\LICENSE.txt"; WorkingDir: {app}
+Name: "{group}\Home page"; Filename: "{#AppURL}"; WorkingDir: {app}
+Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"; WorkingDir: {app}
+Name: "{userdesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: {app}; Tasks: desktopicon
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: {app}; Tasks: quicklaunchicon
 
 [Registry]
 Root: HKCU; Subkey: "Software\Classes\.torrent"; ValueType: string; ValueName: ""; ValueData: "{#AppName}"; Flags: uninsdeletevalue; Tasks: regfileext
