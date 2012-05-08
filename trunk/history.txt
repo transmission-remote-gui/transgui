@@ -1,6 +1,7 @@
 4.0.3 (May 08, 2012)
-[*] Show a status message when adding a new torrent while the main window is hidden.
-[-] Fixed the "MainForm:TMainForm Can not focus" error when adding a new torrent while the application is closed to tray. Issue #553.
+[*] Show a wait window when adding a new torrent while the main window is hidden.
+[-] The "MainForm:TMainForm Can not focus" error when adding a new torrent while the application is closed to tray. Issue #553.
+[-] Crash when adding non-existing torrent file. Issue #555.
 
 4.0.2 (Apr 09, 2012)
 [*] Always search on torrent names when a letter is pressed. Issue #314.
