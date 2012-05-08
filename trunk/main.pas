@@ -1529,7 +1529,7 @@ end;
 function TMainForm.DoAddTorrent(const FileName: Utf8String): boolean;
 var
   torrent: string;
-  WaitForm: TForm;
+  WaitForm: TBaseForm;
   IsAppHidden: boolean;
 
   function _AddTorrent(args: TJSONObject): integer;
@@ -1616,7 +1616,7 @@ var
   procedure ShowWaitMsg(const AText: string);
   begin
     if WaitForm = nil then begin
-      WaitForm:=TForm.CreateNew(Self);
+      WaitForm:=TBaseForm.CreateNew(Self);
       with WaitForm do begin
 {$ifndef windows}
         if IsAppHidden then
@@ -1630,8 +1630,6 @@ var
         AutoSize:=True;
         BorderWidth:=ScaleInt(16);
         with TLabel.Create(WaitForm) do begin
-          Top:=0;
-          Left:=0;
           Alignment:=taCenter;
           Align:=alClient;
           Parent:=WaitForm;
@@ -1642,7 +1640,14 @@ var
       TLabel(Controls[0]).Caption:=AText + '...';
       Show;
       BringToFront;
+{$ifdef lclgtk2}
+      Application.ProcessMessages;
+{$endif lclgtk2}
       Update;
+{$ifdef lclgtk2}
+      sleep(100);
+      Application.ProcessMessages;
+{$endif lclgtk2}
     end;
   end;
 
