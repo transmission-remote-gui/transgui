@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '4.0.2';
+  AppVersion = '4.0.3';
 
 resourcestring
   sAll = 'All';
@@ -1529,6 +1529,8 @@ end;
 function TMainForm.DoAddTorrent(const FileName: Utf8String): boolean;
 var
   torrent: string;
+  WaitForm: TForm;
+  IsAppHidden: boolean;
 
   function _AddTorrent(args: TJSONObject): integer;
   var
@@ -1611,6 +1613,45 @@ var
     end;
   end;
 
+  procedure ShowWaitMsg(const AText: string);
+  begin
+    if WaitForm = nil then begin
+      WaitForm:=TForm.CreateNew(Self);
+      with WaitForm do begin
+{$ifndef windows}
+        if IsAppHidden then
+          ShowInTaskBar:=stAlways;
+{$endif windows}
+        Caption:=AppName;
+        BorderStyle:=bsToolWindow;
+        BorderIcons:=[];
+        Position:=poScreenCenter;
+        Constraints.MinWidth:=300;
+        AutoSize:=True;
+        BorderWidth:=ScaleInt(16);
+        with TLabel.Create(WaitForm) do begin
+          Top:=0;
+          Left:=0;
+          Alignment:=taCenter;
+          Align:=alClient;
+          Parent:=WaitForm;
+        end;
+      end;
+    end;
+    with WaitForm do begin
+      TLabel(Controls[0]).Caption:=AText + '...';
+      Show;
+      BringToFront;
+      Update;
+    end;
+  end;
+
+  procedure HideWaitMsg;
+  begin
+    if WaitForm <> nil then
+      FreeAndNil(WaitForm);
+  end;
+
 var
   req, res, args: TJSONObject;
   id: integer;
@@ -1621,28 +1662,35 @@ var
   tt: TDateTime;
   ok: boolean;
 begin
+  Result:=False;
+  WaitForm:=nil;
+  id:=0;
   Inc(FAddingTorrent);
   try
     AppBusy;
-    Result:=False;
-    id:=0;
-    if IsProtocolSupported(FileName) then
-      torrent:='-'
-    else begin
-      fs:=TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyNone);
-      try
-        SetLength(torrent, fs.Size);
-        fs.ReadBuffer(PChar(torrent)^, Length(torrent));
-      finally
-        fs.Free;
-      end;
-      torrent:=EncodeBase64(torrent);
-    end;
     try
+      IsAppHidden:=not Self.Visible or (Self.WindowState = wsMinimized);
       with TAddTorrentForm.Create(Self) do
       try
-        if not IsTaskbarButtonVisible then
+        if IsAppHidden then begin
+          ShowWaitMsg(Caption);
+{$ifndef windows}
           ShowInTaskBar:=stAlways;
+{$endif windows}
+        end;
+
+        if IsProtocolSupported(FileName) then
+          torrent:='-'
+        else begin
+          fs:=TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyNone);
+          try
+            SetLength(torrent, fs.Size);
+            fs.ReadBuffer(PChar(torrent)^, Length(torrent));
+          finally
+            fs.Free;
+          end;
+          torrent:=EncodeBase64(torrent);
+        end;
 
         Width:=Ini.ReadInteger('AddTorrent', 'Width', Width);
         Height:=Ini.ReadInteger('AddTorrent', 'Height', Height);
@@ -1735,12 +1783,15 @@ begin
         if ok then
           btSelectAllClick(nil)
         else begin
+          HideWaitMsg;
           ok:=ShowModal = mrOk;
           Ini.WriteInteger('AddTorrent', 'Width', Width);
           Ini.WriteInteger('AddTorrent', 'Height', Height);
         end;
 
         if ok then begin
+          if IsAppHidden then
+            ShowWaitMsg(Caption);
           AppBusy;
           Self.Update;
 
@@ -1806,7 +1857,8 @@ begin
               gTorrents.RemoveSelection;
               gTorrents.Row:=i;
               RpcObj.CurTorrentId:=id;
-              gTorrents.SetFocus;
+              if not IsAppHidden and gTorrents.Enabled then
+                Self.ActiveControl:=gTorrents;
               break;
             end;
             Sleep(100);
@@ -1829,6 +1881,7 @@ begin
         TorrentAction(VarArrayOf([id]), 'torrent-remove');
     end;
   finally
+    HideWaitMsg;
     Dec(FAddingTorrent);
   end;
 end;
