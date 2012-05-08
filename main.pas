@@ -5670,9 +5670,9 @@ begin
       try
         while FPendingTorrents.Count > 0 do begin
           s:=FPendingTorrents[0];
+          FPendingTorrents.Delete(0);
           if s <> '' then
             DoAddTorrent(s);
-          FPendingTorrents.Delete(0);
         end;
       finally
         if WasHidden then
