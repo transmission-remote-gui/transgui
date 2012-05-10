@@ -69,6 +69,8 @@ begin
   ht:=0;
   for i:=0 to Form.ControlCount - 1 do begin
     C:=Form.Controls[i];
+    if not C.Visible then
+      continue;
     with C do begin
       if C is TButtonPanel then begin
         TButtonPanel(C).HandleNeeded;
@@ -84,7 +86,6 @@ begin
 {$endif LCLcarbon}
       Inc(ht, h + BorderSpacing.Top + BorderSpacing.Bottom + BorderSpacing.Around*2);
     end;
-
   end;
   ht:=ht + 2*Form.BorderWidth;
 
