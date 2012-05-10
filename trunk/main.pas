@@ -579,7 +579,7 @@ type
   end;
 
 function CheckAppParams: boolean;
-function GetHumanSize(sz: double; RoundTo: integer = 0): string;
+function GetHumanSize(sz: double; RoundTo: integer = 0; const EmptyStr: string = '-'): string;
 
 var
   MainForm: TMainForm;
@@ -730,12 +730,12 @@ const
 var
   TR_STATUS_STOPPED, TR_STATUS_CHECK_WAIT, TR_STATUS_CHECK, TR_STATUS_DOWNLOAD_WAIT, TR_STATUS_DOWNLOAD, TR_STATUS_SEED_WAIT, TR_STATUS_SEED: integer;
 
-function GetHumanSize(sz: double; RoundTo: integer = 0): string;
+function GetHumanSize(sz: double; RoundTo: integer; const EmptyStr: string): string;
 var
   i: integer;
 begin
   if sz < 0 then begin
-    Result:='-';
+    Result:=EmptyStr;
     exit;
   end;
   i:=Low(SizeNames);
@@ -1697,9 +1697,6 @@ begin
           torrent:=EncodeBase64(torrent);
         end;
 
-        Width:=Ini.ReadInteger('AddTorrent', 'Width', Width);
-        Height:=Ini.ReadInteger('AddTorrent', 'Height', Height);
-
         IniSec:='AddTorrent.' + FCurConn;
         FillDownloadDirs(cbDestFolder, 'LastDownloadDir');
 
@@ -1742,7 +1739,7 @@ begin
 
         DoRefresh(True);
 
-        args:=RpcObj.RequestInfo(id, ['files','maxConnectedPeers','name']);
+        args:=RpcObj.RequestInfo(id, ['files','maxConnectedPeers','name','metadataPercentComplete']);
         if args = nil then begin
           CheckStatus(False);
           exit;
@@ -1774,6 +1771,16 @@ begin
           i:=0;
           _AddFolders(lvFiles.Items, '', i, lvFiles.Items.Count);
           lvFiles.Items.Sort(idxAtFullPath);
+
+          Width:=Ini.ReadInteger('AddTorrent', 'Width', Width);
+          if (RpcObj.RPCVersion >= 7) and (lvFiles.Items.Count = 0) and (t.Objects[0].Floats['metadataPercentComplete'] <> 1.0) then begin
+            gbContents.Hide;
+            gbSaveAs.BorderSpacing.Bottom:=gbSaveAs.BorderSpacing.Top;
+            BorderStyle:=bsDialog;
+            AutoSizeForm(TCustomForm(gbContents.Parent));
+          end
+          else
+            Height:=Ini.ReadInteger('AddTorrent', 'Height', Height);
         finally
           args.Free;
         end;
@@ -1790,8 +1797,10 @@ begin
         else begin
           HideWaitMsg;
           ok:=ShowModal = mrOk;
-          Ini.WriteInteger('AddTorrent', 'Width', Width);
-          Ini.WriteInteger('AddTorrent', 'Height', Height);
+          if BorderStyle = bsSizeable then begin
+            Ini.WriteInteger('AddTorrent', 'Width', Width);
+            Ini.WriteInteger('AddTorrent', 'Height', Height);
+          end;
         end;
 
         if ok then begin
@@ -3048,7 +3057,7 @@ begin
       idxStatus:
         Text:=GetTorrentStatus(ARow);
       idxSize, idxDownloaded, idxUploaded, idxSizeToDowload:
-        Text:=GetHumanSize(Sender.Items[ADataCol, ARow]);
+        Text:=GetHumanSize(Sender.Items[ADataCol, ARow], 0, '?');
       idxDone:
         Text:=Format('%.1f%%', [double(Sender.Items[idxDone, ARow])]);
       idxSeeds:
@@ -4178,6 +4187,10 @@ begin
         FTorrents[idxSeedsTotal, row]:=-1;
         FTorrents[idxLeechersTotal, row]:=-1;
       end;
+      if t.Floats['metadataPercentComplete'] <> 1.0 then begin
+        FTorrents[idxSize, row]:=-1;
+        FTorrents[idxSizeToDowload, row]:=-1;
+      end;
     end
     else begin
       GetTorrentValue(idxSeedsTotal, 'seeders', vtInteger);
@@ -4837,13 +4850,22 @@ begin
   if RpcObj.RPCVersion >= 4 then
     s:=IncludeProperTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir'])) + s;
   txTorrentName.Caption:=s;
-  txCreated.Caption:=Format('%s by %s', [TorrentDateTimeToString(Trunc(t.Floats['dateCreated'])), UTF8Encode(t.Strings['creator'])]);
-  txTotalSize.Caption:=Format(sDone, [GetHumanSize(t.Floats['totalSize']), GetHumanSize(t.Floats['sizeWhenDone'] - t.Floats['leftUntilDone'])]);
-  if t.Floats['totalSize'] = t.Floats['haveValid'] then
-    i:=t.Integers['pieceCount']
-  else
-    i:=Trunc(t.Floats['haveValid']/t.Floats['pieceSize']);
-  txPieces.Caption:=Format(sHave, [t.Integers['pieceCount'], GetHumanSize(t.Floats['pieceSize']), i]);
+  s:=Trim(UTF8Encode(t.Strings['creator']));
+  if s <> '' then
+    s:=' by ' + s;
+  txCreated.Caption:=TorrentDateTimeToString(Trunc(t.Floats['dateCreated'])) + s;
+  if gTorrents.Items[idxSize, idx] >= 0 then begin
+    txTotalSize.Caption:=Format(sDone, [GetHumanSize(t.Floats['totalSize']), GetHumanSize(t.Floats['sizeWhenDone'] - t.Floats['leftUntilDone'])]);
+    if t.Floats['totalSize'] = t.Floats['haveValid'] then
+      i:=t.Integers['pieceCount']
+    else
+      i:=Trunc(t.Floats['haveValid']/t.Floats['pieceSize']);
+    txPieces.Caption:=Format(sHave, [t.Integers['pieceCount'], GetHumanSize(t.Floats['pieceSize']), i]);
+  end
+  else begin
+    txTotalSize.Caption:='?';
+    txPieces.Caption:='?';
+  end;
 
   txHash.Caption:=t.Strings['hashString'];
   txComment.Caption:=UTF8Encode(t.Strings['comment']);
