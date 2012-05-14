@@ -3,6 +3,6 @@
 [http://transmisson-remote-gui.googlecode.com/svn/wiki/donate2.png]
 <wiki:gadget url="http://transmisson-remote-gui.googlecode.com/svn/wiki/DonateGadget.xml" border="0" height="180"/>
 
-Also it is possible to transfer a donation directly to my *WebMoney* wallet: `WMR348621554817` or `WMZ425405865371`.
+Also it is possible to transfer a donation directly to my *`WebMoney`* wallet: `WMR348621554817` or `WMZ425405865371`.
 
-Также можно перевести пожертвование напрямую на мой кошелек *WebMoney*:  `WMR348621554817` или `WMZ425405865371`.
+Также можно перевести пожертвование напрямую на мой кошелек *`WebMoney`*:  `WMR348621554817` или `WMZ425405865371`.
