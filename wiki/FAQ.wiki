@@ -32,9 +32,9 @@
 
 *Q:* What is path mapping?
 
-*A:* Path mapping is used to convert a remote path (on a computer where a Transmission daemon running) to a local path (local computer where Transmission Remote GUI running). And vice versa. The mapping is used to open remote files and folders. The path mappings are configured in the Connection options on the Paths page.
+*A:* Path mappings are used to convert a remote path (on a computer where a Transmission daemon is running) to a local path (local computer where Transmission Remote GUI is running). And vice versa. The mappings are used to open remote files and folders. The path mappings are configured in the *Connection options* on the *Paths* page.
 
-For example, all your torrents are downloaded into the `/var/pub/downloads` folder by a Transmission daemon running on a NAS. You access the daemon from a Windows PC using Transmission Remote GUI. You have network access to the `/var/pub` folder on the NAS as network drive `K:`. In that case you should specify the following path mapping:
+For example, your torrents are downloaded into the `/var/pub/downloads` folder by a Transmission daemon running on a NAS. You access the daemon from a Windows PC using Transmission Remote GUI. You have network access to the `/var/pub` folder on the NAS as network drive `K:`. In that case you should specify the following path mapping:
 
 `/var/pub/downloads=K:\downloads`
 
