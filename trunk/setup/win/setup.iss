@@ -51,7 +51,7 @@ WizardSmallImageFile=compiler:\WizModernSmallImage-IS.bmp
 
 #if GetEnv("CODECERT") != ""
 #define CODECERT GetEnv("CODECERT")
-SignTool=signtool sign /d "{#AppName} Setup" /du "{#AppURL}" /f "{#CODECERT}" /t "http://timestamp.verisign.com/scripts/timestamp.dll" /v $f
+SignTool=signtool sign /d "{#AppName} Setup" /du "{#AppURL}" /f "{#CODECERT}" /v $f
 #endif
 
 [Languages]
