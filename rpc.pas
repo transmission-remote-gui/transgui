@@ -684,50 +684,46 @@ begin
         try
           try
             obj:=jp.Parse;
-          except
-            on E: Exception do
-              begin
-                Status:=e.Message;
-                break;
-              end;
+          finally
+            jp.Free;
           end;
-          try
-            if obj is TJSONObject then begin
-              res:=obj as TJSONObject;
-              s:=res.Strings['result'];
-              if AnsiCompareText(s, 'success') <> 0 then begin
-                if Trim(s) = '' then
-                  s:='Unknown error.';
-                Status:=s;
-              end
-              else begin
-                if ReturnArguments then begin
-                  res:=res.Objects['arguments'];
-                  if res = nil then
-                    Status:='Arguments object not found.'
-                  else begin
-                    FreeAndNil(jp);
-                    jp:=TJSONParser.Create(res.AsJSON);
-                    Result:=TJSONObject(jp.Parse);
-                    FreeAndNil(obj);
-                  end;
-                end
-                else
-                  Result:=res;
-                if Result <> nil then
-                  obj:=nil;
-              end;
-              break;
-            end
-            else begin
-              Status:='Invalid server response.';
+        except
+          on E: Exception do
+            begin
+              Status:=e.Message;
               break;
             end;
-          finally
-            obj.Free;
+        end;
+        try
+          if obj is TJSONObject then begin
+            res:=obj as TJSONObject;
+            s:=res.Strings['result'];
+            if AnsiCompareText(s, 'success') <> 0 then begin
+              if Trim(s) = '' then
+                s:='Unknown error.';
+              Status:=s;
+            end
+            else begin
+              if ReturnArguments then begin
+                Result:=res.Objects['arguments'];
+                if Result = nil then
+                  Status:='Arguments object not found.'
+                else begin
+                  res.Extract(Result);
+                  FreeAndNil(obj);
+                end;
+              end;
+              if Result <> nil then
+                obj:=nil;
+            end;
+            break;
+          end
+          else begin
+            Status:='Invalid server response.';
+            break;
           end;
         finally
-          jp.Free;
+          obj.Free;
         end;
       end;
     finally
