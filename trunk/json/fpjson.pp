@@ -321,6 +321,7 @@ type
     function Add(const AName: TJSONStringType; AValue : TJSONArray): Integer; overload;
     procedure Delete(Index : Integer);
     procedure Remove(Item : TJSONData);
+    procedure Extract(Item : TJSONData); // Remove child element without destroying it
 
     // Easy access properties.
     property Names[Index : Integer] : TJSONStringType read GetNameOf;
@@ -1009,14 +1010,14 @@ Var
   I : Integer;
 
 begin
-  Result:='[';
-  For I:=0 to Count-1 do
-    begin
-    Result:=Result+Items[i].AsJSON;
-    If (I<Count-1) then
-      Result:=Result+', '
-    end;
-  Result:=Result+']';
+    Result:='[';
+    For I:=0 to Count-1 do
+      begin
+      Result:=Result+Items[i].AsJSON;
+      If (I<Count-1) then
+        Result:=Result+', '
+      end;
+    Result:=Result+']';
 end;
 
 {$warnings off}
@@ -1532,6 +1533,16 @@ end;
 procedure TJSONObject.Remove(Item: TJSONData);
 begin
   FHash.Remove(Item);
+end;
+
+procedure TJSONObject.Extract(Item: TJSONData);
+begin
+  FHash.OwnsObjects:=False;
+  try
+    FHash.Remove(Item);
+  finally
+    FHash.OwnsObjects:=True;
+  end;
 end;
 
 end.
