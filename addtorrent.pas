@@ -86,6 +86,7 @@ procedure TAddTorrentForm.FormShow(Sender: TObject);
 var
   i: integer;
 begin
+  lvFiles.Items.BeginUpdate;
   btSelectAllClick(nil);
   lvFiles.Sort;
   if lvFiles.Items.Count > 0 then
@@ -94,6 +95,7 @@ begin
     if VarIsEmpty(lvFiles.Items[idxAtFileID, i]) then
       CollapseFolder(i);
   TreeChanged;
+  lvFiles.Items.EndUpdate;
 end;
 
 procedure TAddTorrentForm.lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
