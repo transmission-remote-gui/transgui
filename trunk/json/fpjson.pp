@@ -339,8 +339,8 @@ type
 
   EJSON = Class(Exception);
   
-Function StringToJSONString(S : TJSONStringType) : TJSONStringType;
-Function JSONStringToString(S : TJSONStringType) : TJSONStringType;
+Function StringToJSONString(const S : TJSONStringType) : TJSONStringType;
+Function JSONStringToString(const S : TJSONStringType) : TJSONStringType;
 
 
 
@@ -366,92 +366,106 @@ Resourcestring
   SErrElementNotFound = 'JSON element ''%s'' not found.';
   
   
-Function StringToJSONString(S : TJSONStringType) : TJSONStringType;
+Function StringToJSONString(const S : TJSONStringType) : TJSONStringType;
+var
+  ms: TMemoryStream;
+
+  procedure _Add(const s: TJSONStringType);
+  begin
+    if s <> '' then
+      ms.WriteBuffer(s[1], Length(s)*SizeOf(TJSONCharType));
+  end;
 
 Var
-  I,J,L : Integer;
+  I,L : Integer;
   P : PJSONCharType;
 
 begin
-  I:=1;
-  J:=1;
-  Result:='';
-  L:=Length(S);
-  P:=PJSONCharType(S);
-  While I<=L do
-    begin
-    if (AnsiChar(P^) in ['"','/','\',#8,#9,#10,#12,#13]) then
-      begin
-      Result:=Result+Copy(S,J,I-J);
-      Case P^ of
-        '\' : Result:=Result+'\\';
-        '/' : Result:=Result+'\/';
-        '"' : Result:=Result+'\"';
-        #8  : Result:=Result+'\b';
-        #9  : Result:=Result+'\t';
-        #10 : Result:=Result+'\n';
-        #12 : Result:=Result+'\f';
-        #13 : Result:=Result+'\r';
-      end;
-      J:=I+1;
-      end
-    else
-      if Ord(P^) >= $80 then
-        begin
-          Result:=Result+Copy(S,J,I-J);
-          Result:=Result+'\u' + hexStr(Ord(P^), 4);
-          J:=I+1;
+  ms:=TMemoryStream.Create;
+  try
+    I:=1;
+    L:=Length(S);
+    P:=PJSONCharType(S);
+    While I<=L do begin
+      if (Ord(P^) < $80) and (AnsiChar(P^) in ['"','/','\',#8,#9,#10,#12,#13]) then begin
+        Case P^ of
+          '\' : _Add('\\');
+          '/' : _Add('\/');
+          '"' : _Add('\"');
+          #8  : _Add('\b');
+          #9  : _Add('\t');
+          #10 : _Add('\n');
+          #12 : _Add('\f');
+          #13 : _Add('\r');
         end;
-    Inc(I);
-    Inc(P);
+      end
+      else
+        if Ord(P^) >= $80 then begin
+          _Add('\u');
+          _Add(hexStr(Ord(P^), 4));
+        end
+        else
+          ms.WriteBuffer(P^, SizeOf(P^));
+      Inc(I);
+      Inc(P);
     end;
-  Result:=Result+Copy(S,J,I-1);
+    SetString(Result, PJSONCharType(ms.Memory), ms.Size div SizeOf(TJSONCharType));
+  finally
+    ms.Free;
+  end;
 end;
 
-Function JSONStringToString(S : TJSONStringType) : TJSONStringType;
+Function JSONStringToString(const S : TJSONStringType) : TJSONStringType;
+var
+  ms: TMemoryStream;
+
+  procedure _Add(const c: TJSONCharType); inline;
+  begin
+    ms.Write(c, SizeOf(c));
+  end;
 
 Var
-  I,J,L : Integer;
+  I,L : Integer;
   P : PJSONCharType;
   w : String;
 
 begin
-  I:=1;
-  J:=1;
-  L:=Length(S);
-  Result:='';
-  P:=PJSONCharType(S);
-  While (I<=L) do
-    begin
-    if (P^='\') then
-      begin
-      Result:=Result+Copy(S,J,I-J);
+  ms:=TMemoryStream.Create;
+  try
+    I:=1;
+    L:=Length(S);
+    P:=PJSONCharType(S);
+    While (I<=L) do begin
+      if (P^='\') then begin
+        Inc(P);
+        If (P^<>#0) then begin
+          Inc(I);
+          Case P^ of
+            '\','"','/'
+                : _Add(P^);
+            'b' : _Add(#8);
+            't' : _Add(#9);
+            'n' : _Add(#10);
+            'f' : _Add(#12);
+            'r' : _Add(#13);
+            'u' : begin
+                    W:=Copy(S,I+1,4);
+                    Inc(I,4);
+                    Inc(P,4);
+                    _Add(WideChar(StrToInt('$'+W)));
+                  end;
+          end;
+        end;
+      end
+      else
+        _Add(P^);
+      Inc(I);
       Inc(P);
-      If (P^<>#0) then
-        begin
-        Inc(I);
-        Case AnsiChar(P^) of
-          '\','"','/'
-              : Result:=Result+P^;
-          'b' : Result:=Result+#8;
-          't' : Result:=Result+#9;
-          'n' : Result:=Result+#10;
-          'f' : Result:=Result+#12;
-          'r' : Result:=Result+#13;
-          'u' : begin
-                W:=Copy(S,I+1,4);
-                Inc(I,4);
-                Inc(P,4);
-                Result:=Result+WideChar(StrToInt('$'+W));
-                end;
-        end;
-        end;
-      J:=I+1;
-      end;
-    Inc(I);
-    Inc(P);
     end;
-  Result:=Result+Copy(S,J,I-J+1);
+    SetString(Result, PJSONCharType(ms.Memory), ms.Size div SizeOf(TJSONCharType));
+  finally
+    ms.Free;
+  end;
 end;
 
 
@@ -1005,19 +1019,32 @@ end;
 {$warnings on}
 
 function TJSONArray.GetAsJSON: TJSONStringType;
+var
+  ms: TMemoryStream;
+
+  procedure _Add(const s: TJSONStringType);
+  begin
+    if s <> '' then
+      ms.WriteBuffer(s[1], Length(s)*SizeOf(TJSONCharType));
+  end;
 
 Var
   I : Integer;
 
 begin
-    Result:='[';
-    For I:=0 to Count-1 do
-      begin
-      Result:=Result+Items[i].AsJSON;
-      If (I<Count-1) then
-        Result:=Result+', '
-      end;
-    Result:=Result+']';
+  ms:=TMemoryStream.Create;
+  try
+    _Add('[');
+    For I:=0 to Count-1 do begin
+      if I > 0 then
+        _Add(', ');
+      _Add(Items[i].AsJSON);
+    end;
+    _Add(']');
+    SetString(Result, PJSONCharType(ms.Memory), ms.Size div SizeOf(TJSONCharType));
+  finally
+    ms.Free;
+  end;
 end;
 
 {$warnings off}
@@ -1350,22 +1377,38 @@ end;
 {$warnings on}
 
 function TJSONObject.GetAsJSON: TJSONStringType;
+var
+  ms: TMemoryStream;
+
+  procedure _Add(const s: TJSONStringType);
+  begin
+    if s <> '' then
+      ms.WriteBuffer(s[1], Length(s)*SizeOf(TJSONCharType));
+  end;
 
 Var
   I : Integer;
-
 begin
-  Result:='';
-  For I:=0 to Count-1 do
-    begin
-    If (Result<>'') then
-      Result:=Result+', ';
-    Result:=Result+'"'+StringToJSONString(Names[i])+'" : '+Items[I].AsJSON;
+  ms:=TMemoryStream.Create;
+  try
+    For I:=0 to Count-1 do begin
+      If ms.Size = 0 then
+        _Add('{ ')
+      else
+        _Add(', ');
+      _Add('"');
+      _Add(StringToJSONString(Names[i]));
+      _Add('" : ');
+      _Add(Items[I].AsJSON);
     end;
-  If (Result<>'') then
-    Result:='{ '+Result+' }'
-  else
-    Result:='{}';
+    If ms.Size = 0 then
+      _Add('{}')
+    else
+      _Add(' }');
+    SetString(Result, PJSONCharType(ms.Memory), ms.Size div SizeOf(TJSONCharType));
+  finally
+    ms.Free;
+  end;
 end;
 
 {$warnings off}
