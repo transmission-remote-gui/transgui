@@ -712,7 +712,9 @@ begin
                   res.Extract(Result);
                   FreeAndNil(obj);
                 end;
-              end;
+              end
+              else
+                Result:=res;
               if Result <> nil then
                 obj:=nil;
             end;
