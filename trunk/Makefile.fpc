@@ -57,6 +57,7 @@ options_darwin=-k-macosx_version_min -k10.5 -XR/Developer/SDKs/MacOSX10.5.sdk/
 #Lazarus dirs
 unitdir=$(LAZARUS_DIR)/lcl/units/$(FULL_TARGET)
 unitdir=$(LAZARUS_DIR)/lcl/units/$(FULL_TARGET)/$(LCL_WIDGETSET)
+unitdir=$(LAZARUS_DIR)/components/lazutils/lib/$(FULL_TARGET)
 
 [rules]
 #.PHONY: extraclean
