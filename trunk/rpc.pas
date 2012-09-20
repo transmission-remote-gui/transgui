@@ -583,6 +583,7 @@ begin
       Http.Document.Clear;
       s:=req.AsJSON;
       Http.Document.Write(PChar(s)^, Length(s));
+      s:='';
       Http.Headers.Clear;
       if XTorrentSession <> '' then
         Http.Headers.Add(XTorrentSession);
@@ -684,6 +685,7 @@ begin
         try
           try
             obj:=jp.Parse;
+            Http.Document.Clear;
           finally
             jp.Free;
           end;
