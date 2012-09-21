@@ -5,6 +5,7 @@ inherited AboutForm: TAboutForm
   Width = 451
   HorzScrollBar.Page = 423
   VertScrollBar.Page = 316
+  AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   BorderWidth = 8

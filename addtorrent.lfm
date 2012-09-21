@@ -6,6 +6,7 @@ inherited AddTorrentForm: TAddTorrentForm
   HorzScrollBar.Page = 505
   VertScrollBar.Page = 404
   VertScrollBar.Range = 92
+  AutoSize = True
   BorderIcons = [biSystemMenu]
   Caption = 'Add new torrent'
   ClientHeight = 440
