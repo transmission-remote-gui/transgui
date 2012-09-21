@@ -49,7 +49,7 @@ var
 
 implementation
 
-uses LCLType, ButtonPanel, VarGrid, ComCtrls, StdCtrls, ExtCtrls;
+uses LCLType, ButtonPanel, VarGrid, ComCtrls, StdCtrls, ExtCtrls, lclversion;
 
 var
   ScaleM, ScaleD: integer;
@@ -145,8 +145,15 @@ begin
         C.Height:=h;
       end;
 {$endif darwin}
-      if C is TButtonPanel then
+      if C is TButtonPanel then begin
         TButtonPanel(C).Spacing:=ScaleInt(TButtonPanel(C).Spacing);
+        {$if lcl_major>=1}
+        with TButtonPanel(C) do begin
+          BorderSpacing.Left:=Spacing;
+          BorderSpacing.Right:=Spacing;
+        end;
+        {$endif}
+      end;
 
       if C is TVarGrid then
         with TVarGrid(C).Columns do
