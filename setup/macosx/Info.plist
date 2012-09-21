@@ -28,6 +28,8 @@
 	<string>@prog_ver@</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
