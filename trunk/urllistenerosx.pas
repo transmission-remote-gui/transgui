@@ -33,7 +33,7 @@ var
   url : NSString;
 begin
   url:=event.paramDescriptorForKeyword(keyDirectObject).stringValue;
-  callBack(url.cString);
+  callBack(url.UTF8String);
 end;
 
 procedure RegisterURLHandler(HandlerProc: THandlerProc);
