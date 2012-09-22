@@ -4267,8 +4267,13 @@ begin
     if FieldExists[idxPriority] then
       FTorrents[idxPriority, row]:=t.Integers['bandwidthPriority'];
 
-    if FieldExists[idxQueuePos] then
-      FTorrents[idxQueuePos, row]:=t.Integers['queuePosition'];
+    if FieldExists[idxQueuePos] then begin
+      j:=t.Integers['queuePosition'];
+      if FTorrents[idxStatus, row] = TR_STATUS_FINISHED then
+        FTorrents[idxQueuePos, row]:=NULL
+      else
+        FTorrents[idxQueuePos, row]:=j;
+    end;
 
     DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, row];
     UpSpeed:=UpSpeed + FTorrents[idxUpSpeed, row];
