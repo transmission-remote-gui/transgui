@@ -443,6 +443,7 @@ type
     procedure ApplicationPropertiesMinimize(Sender: TObject);
     procedure ApplicationPropertiesRestore(Sender: TObject);
     procedure edSearchChange(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
     procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
     procedure FormWindowStateChange(Sender: TObject);
     procedure gTorrentsCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
@@ -508,6 +509,8 @@ type
     FFlagsPath: string;
     FAddingTorrent: integer;
     FPendingTorrents: TStringList;
+    FLinksFromClipboard: boolean;
+    FLastClipboardLink: string;
 
     procedure DoConnect;
     procedure DoCreateOutZipStream(Sender: TObject; var AStream: TStream; AItem: TFullZipFileEntry);
@@ -562,6 +565,7 @@ type
     function MapRemoteToLocal(const RemotePath: string): string;
     procedure UpdateUIRpcVersion(RpcVersion: integer);
     procedure CheckAddTorrents;
+    procedure CheckClipboardLink;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -1122,7 +1126,9 @@ begin
 
   acFolderGrouping.Checked:=Ini.ReadBool('Interface', 'FolderGrouping', True);
   acTrackerGrouping.Checked:=Ini.ReadBool('Interface', 'TrackerGrouping', True);
+  FLinksFromClipboard:=Ini.ReadBool('Interface', 'LinksFromClipboard', True);
 
+  Application.OnActivate:=@FormActivate;
   Application.OnException:=@ApplicationPropertiesException;
 end;
 
@@ -1418,6 +1424,7 @@ begin
 
     cbShowAddTorrentWindow.Checked:=Ini.ReadBool('Interface', 'ShowAddTorrentWindow', True);
     cbDeleteTorrentFile.Checked:=Ini.ReadBool('Interface', 'DeleteTorrentFile', False);
+    cbLinksFromClipboard.Checked:=Ini.ReadBool('Interface', 'LinksFromClipboard', True);
     edIntfScale.Value:=Ini.ReadInteger('Interface', 'Scaling', 100);
     cbCheckNewVersion.Checked:=Ini.ReadBool('Interface', 'CheckNewVersion', False);
     edCheckVersionDays.Value:=Ini.ReadInteger('Interface', 'CheckNewVersionDays', 5);
@@ -1446,6 +1453,8 @@ begin
 
       Ini.WriteBool('Interface', 'ShowAddTorrentWindow', cbShowAddTorrentWindow.Checked);
       Ini.WriteBool('Interface', 'DeleteTorrentFile', cbDeleteTorrentFile.Checked);
+      Ini.WriteBool('Interface', 'LinksFromClipboard', cbLinksFromClipboard.Checked);
+      FLinksFromClipboard:=cbLinksFromClipboard.Checked;
 
       Ini.WriteInteger('Interface', 'Scaling', edIntfScale.Value);
 
@@ -3030,6 +3039,11 @@ end;
 procedure TMainForm.edSearchChange(Sender: TObject);
 begin
   DoRefresh(True);
+end;
+
+procedure TMainForm.FormActivate(Sender: TObject);
+begin
+  CheckClipboardLink;
 end;
 
 procedure TMainForm.FormDropFiles(Sender: TObject; const FileNames: array of String);
@@ -5722,6 +5736,27 @@ begin
   finally
     Dec(FAddingTorrent);
   end;
+end;
+
+procedure TMainForm.CheckClipboardLink;
+const
+  strTorrentExt = '.torrent';
+var
+  s: string;
+begin
+  if not FLinksFromClipboard then
+    exit;
+  s:=Clipboard.AsText;
+  if s = FLastClipboardLink then
+    exit;
+  FLastClipboardLink:=s;
+  if not IsProtocolSupported(s) then
+    exit;
+  if (Pos('magnet:', UTF8LowerCase(s)) <> 1) and (UTF8LowerCase(Copy(s, Length(s) - Length(strTorrentExt) + 1, MaxInt)) <> strTorrentExt) then
+    exit;
+
+  AddTorrentFile(s);
+  Clipboard.AsText:='';
 end;
 
 procedure TMainForm.FillSpeedsMenu;
