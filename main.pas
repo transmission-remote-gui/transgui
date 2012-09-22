@@ -2751,7 +2751,7 @@ begin
         cbIdleSeedLimit.Visible:=False;
         edIdleSeedLimit.Visible:=False;
         txMinutes.Visible:=False;
-        tabTrackers.TabVisible:=False;
+        tabAdvanced.TabVisible:=False;
       end;
       edPeerLimit.Value:=t.Integers['maxConnectedPeers'];
     finally
@@ -5643,6 +5643,7 @@ begin
   acAddTracker.Visible:=RPCVersion >= 10;
   acEditTracker.Visible:=acAddTracker.Visible;
   acDelTracker.Visible:=acAddTracker.Visible;
+  acAdvEditTrackers.Visible:=acAddTracker.Visible;
   sepTrackers.Visible:=acAddTracker.Visible;
 
   vc:=not sepQueue.Visible and (RPCVersion >= 14);
