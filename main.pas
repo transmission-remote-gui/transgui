@@ -1908,8 +1908,10 @@ end;
 procedure TMainForm.UpdateTray;
 begin
   TrayIcon.Visible:=not IsUnity and
-    (not Self.Visible or (WindowState = wsMinimized)
-     or Ini.ReadBool('Interface', 'TrayIconAlways', True));
+    ( Ini.ReadBool('Interface', 'TrayIconAlways', True)
+      or ( (WindowState = wsMinimized) and Ini.ReadBool('Interface', 'TrayMinimize', True) )
+      or ( not Self.Visible and Ini.ReadBool('Interface', 'TrayClose', False) )
+    );
 {$ifdef darwin}
   acShowApp.Visible:=False;
   acHideApp.Visible:=False;
