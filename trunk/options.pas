@@ -39,6 +39,7 @@ type
     cbTrayIconAlways: TCheckBox;
     cbTrayMinimize: TCheckBox;
     cbCheckNewVersion: TCheckBox;
+    cbLinksFromClipboard: TCheckBox;
     edIntfScale: TSpinEdit;
     edCheckVersionDays: TSpinEdit;
     edRefreshInterval: TSpinEdit;

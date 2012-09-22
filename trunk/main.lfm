@@ -14,6 +14,7 @@ inherited MainForm: TMainForm
   Constraints.MinHeight = 300
   Constraints.MinWidth = 300
   Menu = MainMenu
+  OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
