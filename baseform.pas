@@ -113,13 +113,8 @@ procedure TBaseForm.DoScale(C: TControl);
 var
   i: integer;
   R: TRect;
-{$ifdef darwin}
   w, h: integer;
-{$endif darwin}
 begin
-{$ifdef windows}
-  if ScaleM = ScaleD then exit;
-{$endif}
   with C do begin
 {$ifdef darwin}
     if C is TButtonPanel then
@@ -128,22 +123,46 @@ begin
     if C is TWinControl then
       TWinControl(C).DisableAlign;
     try
-      ScaleConstraints(ScaleM, ScaleD);
-      R := BaseBounds;
-      R.Left := ScaleInt(R.Left);
-      R.Top := ScaleInt(R.Top);
-      R.Right := ScaleInt(R.Right);
-      R.Bottom := ScaleInt(R.Bottom);
-      BoundsRect := R;
-      with BorderSpacing do begin
-        Top:=ScaleInt(Top);
-        Left:=ScaleInt(Left);
-        Bottom:=ScaleInt(Bottom);
-        Right:=ScaleInt(Right);
-        Around:=ScaleInt(Around);
-        InnerBorder:=ScaleInt(InnerBorder);
+      if ScaleM <> ScaleD then begin
+        ScaleConstraints(ScaleM, ScaleD);
+        R := BaseBounds;
+        R.Left := ScaleInt(R.Left);
+        R.Top := ScaleInt(R.Top);
+        R.Right := ScaleInt(R.Right);
+        R.Bottom := ScaleInt(R.Bottom);
+        BoundsRect := R;
+        with BorderSpacing do begin
+          Top:=ScaleInt(Top);
+          Left:=ScaleInt(Left);
+          Bottom:=ScaleInt(Bottom);
+          Right:=ScaleInt(Right);
+          Around:=ScaleInt(Around);
+          InnerBorder:=ScaleInt(InnerBorder);
+        end;
+        if C is TButtonPanel then
+          TButtonPanel(C).Spacing:=ScaleInt(TButtonPanel(C).Spacing);
+
+        if C is TVarGrid then
+          with TVarGrid(C).Columns do
+            for i:=0 to Count - 1 do
+               Items[i].Width:=ScaleInt(Items[i].Width);
+        if C is TStatusBar then
+          with TStatusBar(C) do
+            for i:=0 to Panels.Count - 1 do
+               Panels[i].Width:=ScaleInt(Panels[i].Width);
+      end;
+
+      // Runtime fixes
+
+      // Fix right aligned label autosize
+      if C.Visible and (C is TCustomLabel) and (C.AutoSize) and (C.Anchors*[akLeft, akRight] = [akRight]) then begin
+        w:=0;
+        h:=0;
+        THackControl(C).CalculatePreferredSize(w, h, True);
+        C.Width:=w;
       end;
 {$ifdef darwin}
+      // Always use standard button height on OS X for proper theming
       if C.Visible and (C is TCustomButton) then begin
         w:=0;
         h:=0;
@@ -151,22 +170,12 @@ begin
         C.Height:=h;
       end;
 {$endif darwin}
-      if C is TButtonPanel then
-        TButtonPanel(C).Spacing:=ScaleInt(TButtonPanel(C).Spacing);
-
-      if C is TVarGrid then
-        with TVarGrid(C).Columns do
-          for i:=0 to Count - 1 do
-             Items[i].Width:=ScaleInt(Items[i].Width);
-      if C is TStatusBar then
-        with TStatusBar(C) do
-          for i:=0 to Panels.Count - 1 do
-             Panels[i].Width:=ScaleInt(Panels[i].Width);
 {$ifdef LCLgtk2}
       // Fix panel color bug on GTK2
       if (C is TCustomPanel) and ParentColor and (Color = clDefault) then
         Color:=clForm;
 {$endif LCLgtk2}
+
       if C is TWinControl then
         with TWinControl(C) do
           for i:=0 to ControlCount - 1 do
