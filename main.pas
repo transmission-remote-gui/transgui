@@ -1207,6 +1207,7 @@ begin
     VSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
     HSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
     TickTimer.Enabled:=True;
+    MakeFullyVisible;
   end;
   UpdateTray;
 end;
