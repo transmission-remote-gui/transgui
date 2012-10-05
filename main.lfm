@@ -1857,6 +1857,18 @@ inherited MainForm: TMainForm
       object MenuItem89: TMenuItem
         Action = acTrackerGrouping
       end
+      object MenuItem93: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem94: TMenuItem
+        Action = acFilterPane
+      end
+      object MenuItem95: TMenuItem
+        Action = acInfoPane
+      end
+      object MenuItem96: TMenuItem
+        Action = acStatusBar
+      end
     end
     object miTools: TMenuItem
       Caption = 'T&ools'
@@ -2247,6 +2259,24 @@ inherited MainForm: TMainForm
       Category = 'Trackers'
       Caption = 'Modify trackers...'
       OnExecute = acAdvEditTrackersExecute
+    end
+    object acFilterPane: TAction
+      Category = 'View'
+      Caption = 'Filter pane'
+      Checked = True
+      OnExecute = acFilterPaneExecute
+    end
+    object acInfoPane: TAction
+      Category = 'View'
+      Caption = 'Info pane'
+      Checked = True
+      OnExecute = acInfoPaneExecute
+    end
+    object acStatusBar: TAction
+      Category = 'View'
+      Caption = 'Status bar'
+      Checked = True
+      OnExecute = acStatusBarExecute
     end
   end
   object TorrentsListTimer: TTimer[8]

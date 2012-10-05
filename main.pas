@@ -154,6 +154,9 @@ type
     acCheckNewVersion: TAction;
     acFolderGrouping: TAction;
     acAdvEditTrackers: TAction;
+    acFilterPane: TAction;
+    acInfoPane: TAction;
+    acStatusBar: TAction;
     acTrackerGrouping: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
@@ -166,6 +169,10 @@ type
     imgFlags: TImageList;
     ImageList16: TImageList;
     FilterTimer: TTimer;
+    MenuItem93: TMenuItem;
+    MenuItem94: TMenuItem;
+    MenuItem95: TMenuItem;
+    MenuItem96: TMenuItem;
     txGlobalStats: TLabel;
     lvFilter: TVarGrid;
     lvTrackers: TVarGrid;
@@ -408,9 +415,11 @@ type
     procedure acConnOptionsExecute(Sender: TObject);
     procedure acDelTrackerExecute(Sender: TObject);
     procedure acEditTrackerExecute(Sender: TObject);
+    procedure acFilterPaneExecute(Sender: TObject);
     procedure acFolderGroupingExecute(Sender: TObject);
     procedure acForceStartTorrentExecute(Sender: TObject);
     procedure acHideAppExecute(Sender: TObject);
+    procedure acInfoPaneExecute(Sender: TObject);
     procedure acMoveTorrentExecute(Sender: TObject);
     procedure acNewConnectionExecute(Sender: TObject);
     procedure acOpenContainingFolderExecute(Sender: TObject);
@@ -438,6 +447,7 @@ type
     procedure acShowCountryFlagExecute(Sender: TObject);
     procedure acStartAllTorrentsExecute(Sender: TObject);
     procedure acStartTorrentExecute(Sender: TObject);
+    procedure acStatusBarExecute(Sender: TObject);
     procedure acStopAllTorrentsExecute(Sender: TObject);
     procedure acStopTorrentExecute(Sender: TObject);
     procedure acTorrentPropsExecute(Sender: TObject);
@@ -1121,6 +1131,13 @@ begin
       WindowState:=wsMaximized;
   end;
 
+  if Ini.ReadBool('MainForm', 'FilterPane', acFilterPane.Checked) <> acFilterPane.Checked then
+    acFilterPane.Execute;
+  if Ini.ReadBool('MainForm', 'InfoPane', acInfoPane.Checked) <> acInfoPane.Checked then
+    acInfoPane.Execute;
+  if Ini.ReadBool('MainForm', 'StatusBar', acStatusBar.Checked) <> acStatusBar.Checked then
+    acStatusBar.Execute;
+
   LoadColumns(gTorrents, 'TorrentsList');
   TorrentColumnsChanged;
   LoadColumns(lvFiles, 'FilesList');
@@ -1268,6 +1285,16 @@ begin
   AddTracker(True);
 end;
 
+procedure TMainForm.acFilterPaneExecute(Sender: TObject);
+begin
+  acFilterPane.Checked:=not acFilterPane.Checked;
+  panFilter.Visible:=acFilterPane.Checked;
+  HSplitter.Visible:=acFilterPane.Checked;
+  HSplitter.Left:=panFilter.Width;
+  if lvFilter.Items.Count > 0 then
+    lvFilter.Row:=0;
+end;
+
 procedure TMainForm.acFolderGroupingExecute(Sender: TObject);
 begin
   acFolderGrouping.Checked:=not acFolderGrouping.Checked;
@@ -1283,6 +1310,18 @@ end;
 procedure TMainForm.acHideAppExecute(Sender: TObject);
 begin
   HideApp;
+end;
+
+procedure TMainForm.acInfoPaneExecute(Sender: TObject);
+begin
+  acInfoPane.Checked:=not acInfoPane.Checked;
+  PageInfo.Visible:=acInfoPane.Checked;
+  VSplitter.Top:=PageInfo.Top - VSplitter.Height;
+  VSplitter.Visible:=acInfoPane.Checked;
+  if VSplitter.Visible then
+    PageInfoChange(nil)
+  else
+    RpcObj.AdvInfo:=aiNone;
 end;
 
 procedure TMainForm.acMoveTorrentExecute(Sender: TObject);
@@ -2066,8 +2105,14 @@ begin
   if WindowState <> wsMinimized then
     Ini.WriteInteger('MainForm', 'State', integer(WindowState));
 
-  Ini.WriteInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition);
-  Ini.WriteInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition);
+  if VSplitter.Visible then
+    Ini.WriteInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition);
+  if HSplitter.Visible then
+    Ini.WriteInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition);
+
+  Ini.WriteBool('MainForm', 'FilterPane', acFilterPane.Checked);
+  Ini.WriteBool('MainForm', 'InfoPane', acInfoPane.Checked);
+  Ini.WriteBool('MainForm', 'StatusBar', acStatusBar.Checked);
 
   SaveColumns(gTorrents, 'TorrentsList');
   SaveColumns(lvFiles, 'FilesList');
@@ -2651,6 +2696,14 @@ end;
 procedure TMainForm.acStartTorrentExecute(Sender: TObject);
 begin
   TorrentAction(GetSelectedTorrents, 'torrent-start');
+end;
+
+procedure TMainForm.acStatusBarExecute(Sender: TObject);
+begin
+  acStatusBar.Checked:=not acStatusBar.Checked;
+  StatusBar.Visible:=acStatusBar.Checked;
+  if StatusBar.Visible then
+    StatusBar.Top:=ClientHeight;
 end;
 
 procedure TMainForm.acStopAllTorrentsExecute(Sender: TObject);
