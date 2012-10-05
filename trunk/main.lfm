@@ -317,11 +317,11 @@ inherited MainForm: TMainForm
     Height = 306
     Top = 157
     Width = 780
-    ActivePage = tabStats
+    ActivePage = tabFiles
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 4
+    TabIndex = 3
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -2278,6 +2278,11 @@ inherited MainForm: TMainForm
       Checked = True
       OnExecute = acStatusBarExecute
     end
+    object acCopyPath: TAction
+      Category = 'Files'
+      Caption = 'Copy file path to clipboard'
+      OnExecute = acCopyPathExecute
+    end
   end
   object TorrentsListTimer: TTimer[8]
     Enabled = False
@@ -2838,6 +2843,9 @@ inherited MainForm: TMainForm
         FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       }
       OnClick = acOpenContainingFolderExecute
+    end
+    object MenuItem97: TMenuItem
+      Action = acCopyPath
     end
     object pmSepOpen2: TMenuItem
       Caption = '-'

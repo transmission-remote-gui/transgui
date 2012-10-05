@@ -157,6 +157,7 @@ type
     acFilterPane: TAction;
     acInfoPane: TAction;
     acStatusBar: TAction;
+    acCopyPath: TAction;
     acTrackerGrouping: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
@@ -173,6 +174,7 @@ type
     MenuItem94: TMenuItem;
     MenuItem95: TMenuItem;
     MenuItem96: TMenuItem;
+    MenuItem97: TMenuItem;
     txGlobalStats: TLabel;
     lvFilter: TVarGrid;
     lvTrackers: TVarGrid;
@@ -413,6 +415,7 @@ type
     procedure acCheckNewVersionExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
     procedure acConnOptionsExecute(Sender: TObject);
+    procedure acCopyPathExecute(Sender: TObject);
     procedure acDelTrackerExecute(Sender: TObject);
     procedure acEditTrackerExecute(Sender: TObject);
     procedure acFilterPaneExecute(Sender: TObject);
@@ -1247,6 +1250,12 @@ end;
 procedure TMainForm.acConnOptionsExecute(Sender: TObject);
 begin
   ShowConnOptions(False);
+end;
+
+procedure TMainForm.acCopyPathExecute(Sender: TObject);
+begin
+  if lvFiles.Items.Count > 0 then
+    Clipboard.AsText:='"' + UTF8Encode(widestring(lvFiles.Items[idxFileFullPath, lvFiles.Row])) + '"';
 end;
 
 procedure TMainForm.acDelTrackerExecute(Sender: TObject);
@@ -3926,6 +3935,7 @@ begin
   acQMoveDown.Enabled:=miQueue.Enabled;
   acQMoveBottom.Enabled:=miQueue.Enabled;
   acOpenFile.Enabled:=acSetHighPriority.Enabled and (lvFiles.SelCount < 2) and (RpcObj.RPCVersion >= 4);
+  acCopyPath.Enabled:=acOpenFile.Enabled;
   acSetNotDownload.Enabled:=acSetHighPriority.Enabled;
   acSetupColumns.Enabled:=e;
   acUpdateBlocklist.Enabled:=(acUpdateBlocklist.Tag <> 0) and e and (RpcObj.RPCVersion >= 5);
