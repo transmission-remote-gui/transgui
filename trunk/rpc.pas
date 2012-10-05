@@ -30,7 +30,7 @@ resourcestring
   sTransmissionAt = 'Transmission%s at %s:%s';
 
 type
-  TAdvInfoType = (aiNone, aiGeneral, aiFiles, aiPeers, aiTrackers);
+  TAdvInfoType = (aiNone, aiGeneral, aiFiles, aiPeers, aiTrackers, aiStats);
   TRefreshTypes = (rtTorrents, rtDetails, rtSession);
   TRefreshType = set of TRefreshTypes;
 
@@ -53,6 +53,7 @@ type
     procedure GetPeers(TorrentId: integer);
     procedure GetFiles(TorrentId: integer);
     procedure GetTrackers(TorrentId: integer);
+    procedure GetStats(TorrentId: integer);
     procedure GetInfo(TorrentId: integer);
     procedure GetSessionInfo;
 
@@ -61,6 +62,7 @@ type
     procedure DoFillFilesList;
     procedure DoFillInfo;
     procedure DoFillTrackersList;
+    procedure DoFillStats;
     procedure DoFillSessionInfo;
     procedure NotifyCheckStatus;
     procedure CheckStatusHandler(Data: PtrInt);
@@ -178,6 +180,8 @@ begin
                   GetFiles(CurTorrentId);
                 aiTrackers:
                   GetTrackers(CurTorrentId);
+                aiStats:
+                  GetStats(CurTorrentId);
               end;
             end;
             Exclude(FRpc.RefreshNow, rtDetails);
@@ -256,11 +260,12 @@ end;
 
 procedure TRpcThread.DoFillTrackersList;
 begin
-  if ResultData = nil then begin
-    MainForm.ClearDetailsInfo;
-    exit;
-  end;
   MainForm.FillTrackersList(ResultData as TJSONObject);
+end;
+
+procedure TRpcThread.DoFillStats;
+begin
+  MainForm.FillStatistics(ResultData as TJSONObject);
 end;
 
 procedure TRpcThread.DoFillSessionInfo;
@@ -434,6 +439,27 @@ begin
     end;
   finally
     args.Free;
+  end;
+end;
+
+procedure TRpcThread.GetStats(TorrentId: integer);
+var
+  req, args: TJSONObject;
+begin
+  req:=TJSONObject.Create;
+  try
+    req.Add('method', 'session-stats');
+    args:=FRpc.SendRequest(req);
+    if args <> nil then
+    try
+      ResultData:=args;
+      if not Terminated then
+        Synchronize(@DoFillStats);
+    finally
+      args.Free;
+    end;
+  finally
+    req.Free;
   end;
 end;
 

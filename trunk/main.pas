@@ -102,6 +102,11 @@ resourcestring
   SAverage = 'average';
   SCheckNewVersion = 'Do you wish to enable automatic checking for a new version of %s?';
 
+  SDownloaded = 'Downloaded';
+  SUploaded = 'Uploaded';
+  SFilesAdded = 'Files added';
+  SActiveTime = 'Active time';
+
 type
 
   { TMainForm }
@@ -161,6 +166,7 @@ type
     imgFlags: TImageList;
     ImageList16: TImageList;
     FilterTimer: TTimer;
+    txGlobalStats: TLabel;
     lvFilter: TVarGrid;
     lvTrackers: TVarGrid;
     MenuItem25: TMenuItem;
@@ -240,6 +246,7 @@ type
     pbDownloaded: TPaintBox;
     pmTrackers: TPopupMenu;
     pmConnections: TPopupMenu;
+    tabStats: TTabSheet;
     tabTrackers: TTabSheet;
     AnimateTimer: TTimer;
     tbConnect: TToolButton;
@@ -384,6 +391,7 @@ type
     txTotalSize: TLabel;
     txTotalSizeLabel: TLabel;
     gTorrents: TVarGrid;
+    gStats: TVarGrid;
     VSplitter: TSplitter;
     StatusBar: TStatusBar;
     tabPeers: TTabSheet;
@@ -573,6 +581,7 @@ type
     procedure FillGeneralInfo(t: TJSONObject);
     procedure FillTrackersList(TrackersData: TJSONObject);
     procedure FillSessionInfo(s: TJSONObject);
+    procedure FillStatistics(s: TJSONObject);
     procedure CheckStatus(Fatal: boolean = True);
     function TorrentAction(const TorrentIds: variant; const AAction: string; args: TJSONObject = nil): boolean;
     function SetFilePriority(TorrentId: integer; const Files: array of integer; const APriority: string): boolean;
@@ -1068,6 +1077,18 @@ begin
   txTorrentHeader.Caption:=' ' + txTorrentHeader.Caption;
   txTransferHeader.Height:=txTransferHeader.Canvas.TextHeight(txTransferHeader.Caption) + 2;
   txTorrentHeader.Height:=txTorrentHeader.Canvas.TextHeight(txTorrentHeader.Caption) + 2;
+
+  with gStats do begin
+    BeginUpdate;
+    try
+      Items[0, 0]:=UTF8Decode(SDownloaded);
+      Items[0, 1]:=UTF8Decode(SUploaded);
+      Items[0, 2]:=UTF8Decode(SFilesAdded);
+      Items[0, 3]:=UTF8Decode(SActiveTime);
+    finally
+      EndUpdate;
+    end;
+  end;
 
   if Ini.ReadInteger('MainForm', 'State', -1) = -1 then begin
     R:=Screen.MonitorFromRect(BoundsRect).WorkareaRect;
@@ -3491,7 +3512,10 @@ begin
       RpcObj.AdvInfo:=aiFiles
     else
     if PageInfo.ActivePage = tabTrackers then
-      RpcObj.AdvInfo:=aiTrackers;
+      RpcObj.AdvInfo:=aiTrackers
+    else
+    if PageInfo.ActivePage = tabStats then
+      RpcObj.AdvInfo:=aiStats;
     DoRefresh;
   finally
     RpcObj.Unlock;
@@ -3653,6 +3677,8 @@ begin
 end;
 
 procedure TMainForm.DoDisconnect;
+var
+  i: integer;
 begin
   TorrentsListTimer.Enabled:=False;
   FilterTimer.Enabled:=False;
@@ -3681,6 +3707,20 @@ begin
   edSearch.Enabled:=False;
   edSearch.Color:=gTorrents.Color;
   edSearch.Text:='';
+
+  with gStats do begin
+    BeginUpdate;
+    try
+      for i:=0 to Items.Count - 1 do begin
+        Items[1, i]:=NULL;
+        Items[2, i]:=NULL;
+      end;
+    finally
+      EndUpdate;
+    end;
+    Enabled:=False;
+    Color:=gTorrents.Color;
+  end;
 
   RpcObj.Disconnect;
 
@@ -5091,6 +5131,36 @@ begin
 {$endif LCLcarbon}
 end;
 
+procedure TMainForm.FillStatistics(s: TJSONObject);
+
+  procedure _Fill(idx: integer; s: TJSONObject);
+  begin
+    with gStats do begin
+      Items[idx, 0]:=UTF8Decode(GetHumanSize(s.Floats['downloadedBytes']));
+      Items[idx, 1]:=UTF8Decode(GetHumanSize(s.Floats['uploadedBytes']));
+      Items[idx, 2]:=s.Integers['filesAdded'];
+      Items[idx, 3]:=UTF8Decode(SecondsToString(s.Integers['secondsActive']));
+    end;
+  end;
+
+begin
+  if RpcObj.RPCVersion < 4 then
+    exit;
+  if s = nil then begin
+    ClearDetailsInfo;
+    exit;
+  end;
+  gStats.BeginUpdate;
+  try
+    gStats.Enabled:=True;
+    gStats.Color:=clWindow;
+    _Fill(1, s.Objects['current-stats']);
+    _Fill(2, s.Objects['cumulative-stats']);
+  finally
+    gStats.EndUpdate;
+  end;
+end;
+
 procedure TMainForm.CheckStatus(Fatal: boolean);
 var
   s: string;
@@ -5679,6 +5749,7 @@ begin
     tbQMoveDown.Left:=tbQMoveUp.Left + 1;
   end;
   acForceStartTorrent.Visible:=RPCVersion >= 14;
+  tabStats.Visible:=RpcVersion >= 4;
 end;
 
 procedure TMainForm.CheckAddTorrents;
