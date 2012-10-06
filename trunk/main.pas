@@ -715,7 +715,7 @@ implementation
 
 uses
 {$ifdef linux}
-  process,
+  process, dynlibs,
 {$endif linux}
 {$ifdef darwin}
   urllistenerosx,
@@ -926,6 +926,7 @@ var
 {$ifdef linux}
   proc: TProcess;
   sr: TSearchRec;
+  hLib: TLibHandle;
 {$endif linux}
 begin
   Application.Title:=AppName;
@@ -934,8 +935,12 @@ begin
   if GetEnvironmentVariable('LIBOVERLAY_SCROLLBAR') <> '0' then begin
     i:=FindFirstUTF8('/usr/lib/liboverlay-scrollbar*', faAnyFile, sr);
     FindClose(sr);
-    if i = 0 then begin
-      // Turn off overlay scrollbars, since they are not supported yet
+    hLib:=LoadLibrary('liboverlay-scrollbar.so');
+    if hLib <> 0 then
+      FreeLibrary(hLib);
+    if (i = 0) or (hLib <> 0) then begin
+      // Turn off overlay scrollbars, since they are not supported yet.
+      // Restart the app with the LIBOVERLAY_SCROLLBAR=0 env var.
       proc:=TProcess.Create(nil);
       try
         s:='';
