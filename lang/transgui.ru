@@ -1,4 +1,4 @@
-TranslationLanguage=Русский
+﻿TranslationLanguage=Русский
 
 %dd, %dh=%dд, %dч
 %dh, %dm=%dч, %dмин
@@ -317,3 +317,15 @@ User interface scaling=Масштабирование интерфейса
 View=Вид
 Visit home page=Посетить домашнюю страницу
 days=дней
+Active time=Active time
+Automatically add torrent links from the clipboard=Automatically add torrent links from the clipboard
+Connection error occured=Connection error occured
+Copy file path to clipboard=Copy file path to clipboard
+Cumulative=Cumulative
+Current=Current
+Files added=Files added
+Filter pane=Filter pane
+Global statistics=Global statistics
+Info pane=Info pane
+Statistics=Statistics
+Status bar=Status bar

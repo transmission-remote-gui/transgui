@@ -1,4 +1,4 @@
-TranslationLanguage=Română
+﻿TranslationLanguage=Română
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Maparea căilor de la distanţă către local.~~Exemple:~/share=\\pch\share~/var/downloads/muzica=Z:\muzica"
 %d x %s (have %d)=%d x %s (complet %d)
@@ -317,3 +317,18 @@ User interface scaling=User interface scaling
 View=View
 Visit home page=Visit home page
 days=days
+Active time=Active time
+Automatically add torrent links from the clipboard=Automatically add torrent links from the clipboard
+Connection error occured=Connection error occured
+Copy file path to clipboard=Copy file path to clipboard
+Cumulative=Cumulative
+Current=Current
+Donate via PayPal,WebMoney,Credit card=Donate via PayPal,WebMoney,Credit card
+Download speed=Download speed
+Files added=Files added
+Filter pane=Filter pane
+Global statistics=Global statistics
+Info pane=Info pane
+Statistics=Statistics
+Status bar=Status bar
+Tracker did not respond=Tracker did not respond
