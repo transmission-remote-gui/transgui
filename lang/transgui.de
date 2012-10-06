@@ -1,4 +1,4 @@
-﻿TranslationLanguage=German
+TranslationLanguage=German
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Pfadzuordnung Remote zu lokal.~~Beispiel:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (noch %d)
@@ -43,7 +43,7 @@ Confirmation=Bestätigung
 Connect to daemon=Verbunden mit Server
 connected=verbunden
 Connecting to daemon=Verbinden zum Server
-Connection error occured=Verbindungsfehler
+Connection error occurred=Verbindungsfehler
 Connection=Verbindung
 Copy=Kopieren
 Country=Land

@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Suomi
+TranslationLanguage=Suomi
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Etäsijaintien määrittäminen paikallisten kanssa.~~Esimerkkejä:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (valmiina %d)
@@ -43,7 +43,7 @@ Confirmation=Vahvistus
 Connect to daemon=Yhdistä Transmissioniin
 connected=yhteydessä
 Connecting to daemon=Yhdistetään Transmissioniin
-Connection error occured=Yhteysvirhe
+Connection error occurred=Yhteysvirhe
 Connection=Yhteys
 Copy=Kopioi
 Country=Maa

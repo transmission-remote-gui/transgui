@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Portugues do Brasil
+TranslationLanguage=Portugues do Brasil
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapeamentos de caminho  remoto para local. Examplo:~/share=\\pch\share~/var/downloads/musicas=Z:\musicas"
 %d x %s (have %d)=%d x %s (have %d)
@@ -45,7 +45,7 @@ Confirmation=Confirmação
 Connect to daemon=Conectar ao daemon
 connected=conectado
 Connecting to daemon=Conectando ao daemon
-Connection error occured=Ocorreu um erro de conexão
+Connection error occurred=Ocorreu um erro de conexão
 Connection=Conexão
 Copy=Copiar
 Country=Pais

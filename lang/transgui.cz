@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Česky
+TranslationLanguage=Česky
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapování vzdálené cesty na lokalní.~~Příklady:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (hotových %d)
@@ -43,7 +43,7 @@ Confirmation=Potvrzení
 Connect to daemon=Připojit k démonovi
 connected=připojeno
 Connecting to daemon=Připojování k démonovi
-Connection error occured=Chyba připojení
+Connection error occurred=Chyba připojení
 Connection=Připojení
 Copy=Kopírovat
 Country=Stát

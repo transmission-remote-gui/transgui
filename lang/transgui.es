@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Español
+TranslationLanguage=Español
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapeado de rutas remotas a locales.~~Ejemplos:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (descargadas %d)
@@ -43,7 +43,7 @@ Confirmation=Confirmación
 Connect to daemon=Conectar con el demonio
 connected=conectados
 Connecting to daemon=Connectando con el demonio
-Connection error occured=Ocurrió un error al conectar
+Connection error occurred=Ocurrió un error al conectar
 Connection=Conexión
 Copy=Copiar
 Country=País

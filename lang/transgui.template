@@ -1,4 +1,4 @@
-﻿TranslationLanguage=???
+TranslationLanguage=???
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (have %d)
@@ -43,7 +43,7 @@ Confirmation=Confirmation
 Connect to daemon=Connect to daemon
 connected=connected
 Connecting to daemon=Connecting to daemon
-Connection error occured=Connection error occured
+Connection error occurred=Connection error occurred
 Connection=Connection
 Copy=Copy
 Country=Country

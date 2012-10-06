@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Русский
+TranslationLanguage=Русский
 
 %dd, %dh=%dд, %dч
 %dh, %dm=%dч, %dмин
@@ -40,7 +40,7 @@ Confirmation=Подтверждение
 Connect to daemon=Подключиться к Transmission
 connected=подключен
 Connecting to daemon=Подключение к Transmission
-Connection error occured=Ошибка подключения
+Connection error occurred=Ошибка подключения
 Connection=Подключение
 Copy=Копировать
 Country=Страна

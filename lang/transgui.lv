@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Latviešu
+TranslationLanguage=Latviešu
 
 %dd, %dh=%dd, %ds
 %dh, %dm=%ds, %dmin
@@ -40,7 +40,7 @@ Confirmation=Apstiprinājums
 Connect to daemon=Savienoties ar Transmission
 connected=savienoti
 Connecting to daemon=Savienojas ar Transmission
-Connection error occured=Savienošanās kļūda
+Connection error occurred=Savienošanās kļūda
 Connection=Savienošanās
 Copy=Kopēt
 Country=Valsts

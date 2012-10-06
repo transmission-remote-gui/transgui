@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Italiano
+TranslationLanguage=Italiano
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Associazione risorse locali con cartella remota.~~Esempio:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (gia' scaricati %d)
@@ -43,7 +43,7 @@ Confirmation=Conferma
 Connect to daemon=Connetti al demone
 connected=connessi
 Connecting to daemon=In connessione al demone
-Connection error occured=Avvenuto errore connessione
+Connection error occurred=Avvenuto errore connessione
 Connection=Connessione
 Copy=Copia
 Country=Nazione
