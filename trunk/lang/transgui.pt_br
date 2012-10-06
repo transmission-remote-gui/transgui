@@ -1,4 +1,4 @@
-TranslationLanguage=Portugues do Brasil
+﻿TranslationLanguage=Portugues do Brasil
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapeamentos de caminho  remoto para local. Examplo:~/share=\\pch\share~/var/downloads/musicas=Z:\musicas"
 %d x %s (have %d)=%d x %s (have %d)
@@ -318,3 +318,15 @@ User interface scaling=User interface scaling
 View=View
 Visit home page=Visit home page
 days=days
+Active time=Active time
+Automatically add torrent links from the clipboard=Automatically add torrent links from the clipboard
+Connection error occured=Connection error occured
+Copy file path to clipboard=Copy file path to clipboard
+Cumulative=Cumulative
+Current=Current
+Files added=Files added
+Filter pane=Filter pane
+Global statistics=Global statistics
+Info pane=Info pane
+Statistics=Statistics
+Status bar=Status bar

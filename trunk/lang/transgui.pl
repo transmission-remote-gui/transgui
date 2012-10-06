@@ -1,4 +1,4 @@
-TranslationLanguage=Polski
+﻿TranslationLanguage=Polski
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapowania ścieżek zdalnych do lokalnych.~~Przykłady:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (pobrano %d)
@@ -317,3 +317,15 @@ User interface scaling=Skalowanie interfejsu użytkownika
 View=Widok
 Visit home page=Odwiedź stronę domową
 days=dni
+Active time=Active time
+Automatically add torrent links from the clipboard=Automatically add torrent links from the clipboard
+Connection error occured=Connection error occured
+Copy file path to clipboard=Copy file path to clipboard
+Cumulative=Cumulative
+Current=Current
+Files added=Files added
+Filter pane=Filter pane
+Global statistics=Global statistics
+Info pane=Info pane
+Statistics=Statistics
+Status bar=Status bar
