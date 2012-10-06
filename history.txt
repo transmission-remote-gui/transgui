@@ -1,3 +1,17 @@
+4.1 (Oct 06, 2012)
+[+] Option "Automatically add torrent links from the clipboard". Issue #571.
+[+] Statistics tab. Issue #157.
+[+] Options to hide Filter pane, Info pane and status bar. Issue #98.
+[+] The "Copy file path to clipboard" command. Issue #326.
+[*] Greatly improved speed when handling large torrent and files lists. Issue #575.
+[*] Speedup adding torrents with many files (90K+). Issue #600.
+[*] Support for retina displays on OS X. Issue #594.
+[-] Reposition main window if the saved window position outside visible area. Issue #423.
+[-] Do not hide the Trackers tab when opening torrent properties if using old versions of Transmission. Issue #567.
+[-] Do not show tray icon if "Minimize to tray" and "Tray icon always visible" turned off. Issue #569.
+[-] Do not show queue position for finished (stopped) torrents. Issue #568.
+[-] Do not display tracker errors for stopped torrents.
+
 4.0.3 (May 10, 2012)
 [*] Show a wait window when adding a new torrent while the main window is hidden.
 [*] Do not show torrent contents when adding magnet links. Issue #560.
