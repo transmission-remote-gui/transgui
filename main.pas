@@ -4240,28 +4240,31 @@ begin
     if j = TR_STATUS_SEED  then StateImg:=imgSeed else
     if j = TR_STATUS_STOPPED  then StateImg:=imgDone;
 
-    if RpcObj.RPCVersion >= 7 then begin
-      if t.Arrays['trackerStats'].Count > 0 then
-        with t.Arrays['trackerStats'].Objects[0] do begin
-          s:='';
-          if integer(Integers['announceState']) in [2, 3] then
-            s:=sTrackerUpdating
-          else
-            if Booleans['hasAnnounced'] then
-              if Booleans['lastAnnounceSucceeded'] then
-                s:=sTrackerWorking
-              else
-                s:=TranslateString(UTF8Encode(Strings['lastAnnounceResult']));
-
-          if s = 'Success' then
-            s:=sTrackerWorking;
-          FTorrents[idxTrackerStatus, row]:=UTF8Decode(s);
-        end
-      else
-        FTorrents[idxTrackerStatus, row]:='';
-    end
+    if j = TR_STATUS_STOPPED then
+      FTorrents[idxTrackerStatus, row]:=''
     else
-      FTorrents[idxTrackerStatus, row]:=t.Strings['announceResponse'];
+      if RpcObj.RPCVersion >= 7 then begin
+        if t.Arrays['trackerStats'].Count > 0 then
+          with t.Arrays['trackerStats'].Objects[0] do begin
+            s:='';
+            if integer(Integers['announceState']) in [2, 3] then
+              s:=sTrackerUpdating
+            else
+              if Booleans['hasAnnounced'] then
+                if Booleans['lastAnnounceSucceeded'] then
+                  s:=sTrackerWorking
+                else
+                  s:=TranslateString(UTF8Encode(Strings['lastAnnounceResult']));
+
+            if s = 'Success' then
+              s:=sTrackerWorking;
+            FTorrents[idxTrackerStatus, row]:=UTF8Decode(s);
+          end
+        else
+          FTorrents[idxTrackerStatus, row]:='';
+      end
+      else
+        FTorrents[idxTrackerStatus, row]:=t.Strings['announceResponse'];
     if (FTorrents[idxStatus, row] <> TR_STATUS_STOPPED) and (GetTorrentError(t) <> '') then
       if t.Strings['errorString'] <> '' then
         StateImg:=imgError
@@ -4860,7 +4863,11 @@ begin
 
   panTransfer.ChildSizing.Layout:=cclNone;
   txStatus.Caption:=GetTorrentStatus(idx);
-  txError.Caption:=GetTorrentError(t);
+  i:=gTorrents.Items[idxStatus, idx];
+  if (i = TR_STATUS_STOPPED) or (i = TR_STATUS_FINISHED) then
+    txError.Caption:=''
+  else
+    txError.Caption:=GetTorrentError(t);
   txRemaining.Caption:=EtaToString(t.Integers['eta']);
   txDownloaded.Caption:=GetHumanSize(t.Floats['downloadedEver']);
   txUploaded.Caption:=GetHumanSize(t.Floats['uploadedEver']);
@@ -5030,7 +5037,7 @@ var
   f: double;
   s: string;
   Trackers, TrackerStats: TJSONArray;
-  WasEmpty: boolean;
+  WasEmpty, NoInfo: boolean;
 begin
   if TrackersData = nil then begin
     ClearDetailsInfo;
@@ -5046,6 +5053,8 @@ begin
     ClearDetailsInfo;
     exit;
   end;
+  i:=gTorrents.Items[idxStatus, tidx];
+  NoInfo:=(i = TR_STATUS_STOPPED) or (i = TR_STATUS_FINISHED);
   WasEmpty:=lvTrackers.Items.Count = 0;
   lvTrackers.Items.BeginUpdate;
   try
@@ -5067,39 +5076,45 @@ begin
         lvTrackers.Items.InsertRow(row);
       lvTrackers.Items[idxTrackerID, row]:=id;
       lvTrackers.Items[idxTrackersListName, row]:=t.Strings['announce'];
-      if TrackerStats <> nil then begin
+      if NoInfo then begin
+        lvTrackers.Items[idxTrackersListStatus, row]:=NULL;
+        lvTrackers.Items[idxTrackersListSeeds, row]:=NULL;
         f:=0;
-        if i < TrackerStats.Count then
-          with TrackerStats.Objects[i] do begin
-            s:='';
-            if integer(Integers['announceState']) in [2, 3] then
-              s:=sTrackerUpdating
-            else
-              if Booleans['hasAnnounced'] then
-                if Booleans['lastAnnounceSucceeded'] then
-                  s:=sTrackerWorking
-                else
-                  s:=TranslateString(UTF8Encode(Strings['lastAnnounceResult']));
-
-            if s = 'Success' then
-              s:=sTrackerWorking;
-
-            lvTrackers.Items[idxTrackersListStatus, row]:=UTF8Decode(s);
-            lvTrackers.Items[idxTrackersListSeeds, row]:=Integers['seederCount'];
-
-            if integer(Integers['announceState']) in [2, 3] then
-              f:=1
-            else
-              f:=Floats['nextAnnounceTime'];
-          end;
       end
-      else begin
-        if i = 0 then begin
-          lvTrackers.Items[idxTrackersListStatus, row]:=gTorrents.Items[idxTrackerStatus, tidx];
-          lvTrackers.Items[idxTrackersListSeeds, row]:=gTorrents.Items[idxSeedsTotal, tidx];
+      else
+        if TrackerStats <> nil then begin
+          f:=0;
+          if i < TrackerStats.Count then
+            with TrackerStats.Objects[i] do begin
+              s:='';
+              if integer(Integers['announceState']) in [2, 3] then
+                s:=sTrackerUpdating
+              else
+                if Booleans['hasAnnounced'] then
+                  if Booleans['lastAnnounceSucceeded'] then
+                    s:=sTrackerWorking
+                  else
+                    s:=TranslateString(UTF8Encode(Strings['lastAnnounceResult']));
+
+              if s = 'Success' then
+                s:=sTrackerWorking;
+
+              lvTrackers.Items[idxTrackersListStatus, row]:=UTF8Decode(s);
+              lvTrackers.Items[idxTrackersListSeeds, row]:=Integers['seederCount'];
+
+              if integer(Integers['announceState']) in [2, 3] then
+                f:=1
+              else
+                f:=Floats['nextAnnounceTime'];
+            end;
+        end
+        else begin
+          if i = 0 then begin
+            lvTrackers.Items[idxTrackersListStatus, row]:=gTorrents.Items[idxTrackerStatus, tidx];
+            lvTrackers.Items[idxTrackersListSeeds, row]:=gTorrents.Items[idxSeedsTotal, tidx];
+          end;
+          f:=TrackersData.Floats['nextAnnounceTime'];
         end;
-        f:=TrackersData.Floats['nextAnnounceTime'];
-      end;
 
       if f > 1 then begin
         f:=(UnixToDateTime(Trunc(f)) + GetTimeZoneDelta - Now)*SecsPerDay;
