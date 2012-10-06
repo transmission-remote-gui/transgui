@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Dansk
+TranslationLanguage=Dansk
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Fjernadgang til lokale stier og mapper.~~Eks:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (downloaded %d)
@@ -43,7 +43,7 @@ Confirmation=Bekræft
 Connect to daemon=Forbind til daemon
 connected=Forbundet
 Connecting to daemon=Forbinder til daemon
-Connection error occured=Forbindelsesfejl opstod
+Connection error occurred=Forbindelsesfejl opstod
 Connection=Forbindelse
 Copy=Kopier
 Country=Land

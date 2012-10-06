@@ -1,4 +1,4 @@
-﻿TranslationLanguage=简体中文
+TranslationLanguage=简体中文
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="远程路径映射.~~比如:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (下载了 %d)
@@ -43,7 +43,7 @@ Confirmation=认证
 Connect to daemon=连接到客户端
 connected=已连接
 Connecting to daemon=连接中
-Connection error occured=连接发生错误
+Connection error occurred=连接发生错误
 Connection=连接
 Copy=复制
 Country=国家

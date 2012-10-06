@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Svenska
+TranslationLanguage=Svenska
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mappning remote til lokala sökvägar.~~Till exempel:~/share=\\pch\share~/var/downloads/musik=Z:\musik"
 %d x %s (have %d)=%d x %s (har %d)
@@ -43,7 +43,7 @@ Confirmation=Bekräftelse
 Connect to daemon=Anslut till server
 connected=Ansluten
 Connecting to daemon=Ansluter till server
-Connection error occured=Anslutningsfel
+Connection error occurred=Anslutningsfel
 Connection=Anslutning
 Copy=Kopiera
 Country=Land

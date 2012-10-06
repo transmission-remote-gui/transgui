@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Magyar
+TranslationLanguage=Magyar
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Távoli és helyi elérési utak kapcsolata.~~Példák:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (megvan %d)
@@ -43,7 +43,7 @@ Confirmation=Megerősítés
 Connect to daemon=Csatlakozás a démonhoz
 connected=csatlakozva
 Connecting to daemon=Csatlakozás a démonhoz folyamatban
-Connection error occured=Csatlakozási hiba
+Connection error occurred=Csatlakozási hiba
 Connection=Csatlakozás
 Copy=Másolás
 Country=Ország

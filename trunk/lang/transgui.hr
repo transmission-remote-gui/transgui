@@ -1,4 +1,4 @@
-﻿TranslationLanguage=hrvatski
+TranslationLanguage=hrvatski
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Unesite put do odredišne mape.~~Primjer:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (have %d)
@@ -43,7 +43,7 @@ Confirmation=Provjera
 Connect to daemon=Poveži se s daemonom
 connected=povezano
 Connecting to daemon=Povezujem se s daemonom
-Connection error occured=Pojavila se greška prilikom povezivanja
+Connection error occurred=Pojavila se greška prilikom povezivanja
 Connection=Veza
 Copy=Kopiraj
 Country=Zemlja

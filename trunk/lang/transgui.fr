@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Français
+TranslationLanguage=Français
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Correspondances entre système de fichier distant et local.~~Exemples:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (%d obtenus)
@@ -43,7 +43,7 @@ Confirmation=Confirmation
 Connect to daemon=Connecter au démon
 connected=connecté
 Connecting to daemon=Connexion au démon
-Connection error occured=Erreur de connexion survenue
+Connection error occurred=Erreur de connexion survenue
 Connection=Connexion
 Copy=Copier
 Country=Pays

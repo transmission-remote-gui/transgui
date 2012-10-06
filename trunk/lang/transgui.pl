@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Polski
+TranslationLanguage=Polski
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapowania ścieżek zdalnych do lokalnych.~~Przykłady:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (pobrano %d)
@@ -43,7 +43,7 @@ Confirmation=Potwierdzenie
 Connect to daemon=Podłącz do demona
 connected=połączono
 Connecting to daemon=Łączenie do demona
-Connection error occured=Wystąpił błąd połączenia
+Connection error occurred=Wystąpił błąd połączenia
 Connection=Połączenie
 Copy=Kopiuj
 Country=Kraj

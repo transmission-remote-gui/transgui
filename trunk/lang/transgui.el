@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Ελληνικά
+TranslationLanguage=Ελληνικά
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Χαρτογράφηση μονοπατιού απομακρυσμένο σε τοπικό.~~Παραδείγματα:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (έχω %d)
@@ -43,7 +43,7 @@ Confirmation=Επικύρωση
 Connect to daemon=Σύνδεση στο δαίμονα
 connected=συνδεδεμένοι
 Connecting to daemon=Συνδέεται στο δαίμονα
-Connection error occured=Σφάλμα σύνδεσης
+Connection error occurred=Σφάλμα σύνδεσης
 Connection=Σύνδεση
 Copy=Αντιγραφή
 Country=Χώρα

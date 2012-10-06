@@ -1,4 +1,4 @@
-﻿TranslationLanguage=한국어
+TranslationLanguage=한국어
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="리모트와 로컬간의 경로설정.~~사용예:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (%d 소유)
@@ -43,7 +43,7 @@ Confirmation=확인
 Connect to daemon=서버에 연결
 connected=연결됨
 Connecting to daemon=서버에 연결중
-Connection error occured=연결 오류
+Connection error occurred=연결 오류
 Connection=연결
 Copy=복사
 Country=국가

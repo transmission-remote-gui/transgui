@@ -317,11 +317,11 @@ inherited MainForm: TMainForm
     Height = 306
     Top = 157
     Width = 780
-    ActivePage = tabGeneral
+    ActivePage = tabStats
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -1044,7 +1044,7 @@ inherited MainForm: TMainForm
           item
             Alignment = taRightJustify
             Title.Alignment = taCenter
-            Title.Caption = 'Cummulative'
+            Title.Caption = 'Cumulative'
             Width = 120
           end>
         FixedCols = 0
