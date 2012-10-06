@@ -1210,7 +1210,7 @@ inherited MainForm: TMainForm
       BorderSpacing.Top = 8
       BorderSpacing.Right = 16
       BorderSpacing.Bottom = 4
-      Caption = 'Connection error occured:'
+      Caption = 'Connection error occurred:'
       ParentColor = False
     end
     object txConnError: TLabel

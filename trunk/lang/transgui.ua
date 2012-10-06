@@ -319,7 +319,6 @@ Visit home page=Відвідати домашню сторінку
 days=днів
 Active time=Active time
 Automatically add torrent links from the clipboard=Automatically add torrent links from the clipboard
-Connection error occured=Connection error occured
 Copy file path to clipboard=Copy file path to clipboard
 Cumulative=Cumulative
 Current=Current
