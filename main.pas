@@ -542,7 +542,7 @@ type
     procedure ShowConnOptions(NewConnection: boolean);
     procedure SaveColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
     procedure LoadColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
-    function GetTorrentError(t: TJSONObject): string;
+    function GetTorrentError(t: TJSONObject; Status: integer): string;
     function SecondsToString(j: integer): string;
     function DoAddTorrent(const FileName: Utf8String): boolean;
     procedure UpdateTray;
@@ -4032,7 +4032,7 @@ begin
   LV.SortOrder:=TSortOrder(Ini.ReadInteger(AName, 'SortOrder', integer(LV.SortOrder)));
 end;
 
-function TMainForm.GetTorrentError(t: TJSONObject): string;
+function TMainForm.GetTorrentError(t: TJSONObject; Status: integer): string;
 var
   i: integer;
   stats: TJSONArray;
@@ -4082,7 +4082,7 @@ begin
       end;
   end;
 
-  if Result = '' then
+  if (Result = '') or (Status = TR_STATUS_STOPPED) or (Status = TR_STATUS_FINISHED) then
     Result:=UTF8Encode(gerr);
 end;
 
@@ -4245,13 +4245,26 @@ begin
     if j = TR_STATUS_SEED  then StateImg:=imgSeed else
     if j = TR_STATUS_STOPPED  then StateImg:=imgDone;
 
-    if j = TR_STATUS_STOPPED then
-      FTorrents[idxTrackerStatus, row]:=''
-    else
+    if (j <> TR_STATUS_STOPPED) and (GetTorrentError(t, j) <> '') then
+      if t.Strings['errorString'] <> '' then
+        StateImg:=imgError
+      else
+        if StateImg in [imgDown,imgSeed] then
+          Inc(StateImg, 2);
+
+    if j <> TR_STATUS_STOPPED then begin
+      s:=GetTorrentError(t, j);
+      if s <> '' then
+        if t.Strings['errorString'] <> '' then
+          StateImg:=imgError
+        else
+          if StateImg in [imgDown,imgSeed] then
+            Inc(StateImg, 2);
+
       if RpcObj.RPCVersion >= 7 then begin
+        s:='';
         if t.Arrays['trackerStats'].Count > 0 then
           with t.Arrays['trackerStats'].Objects[0] do begin
-            s:='';
             if integer(Integers['announceState']) in [2, 3] then
               s:=sTrackerUpdating
             else
@@ -4263,19 +4276,14 @@ begin
 
             if s = 'Success' then
               s:=sTrackerWorking;
-            FTorrents[idxTrackerStatus, row]:=UTF8Decode(s);
-          end
-        else
-          FTorrents[idxTrackerStatus, row]:='';
+          end;
       end
       else
-        FTorrents[idxTrackerStatus, row]:=t.Strings['announceResponse'];
-    if (FTorrents[idxStatus, row] <> TR_STATUS_STOPPED) and (GetTorrentError(t) <> '') then
-      if t.Strings['errorString'] <> '' then
-        StateImg:=imgError
-      else
-        if StateImg in [imgDown,imgSeed] then
-          Inc(StateImg, 2);
+        s:=t.Strings['announceResponse'];
+    end
+    else
+      s:='';
+    FTorrents[idxTrackerStatus, row]:=UTF8Decode(s);
 
     if FTorrents[idxStatus, row] = TR_STATUS_CHECK then
       f:=t.Floats['recheckProgress']*100.0
@@ -4868,11 +4876,7 @@ begin
 
   panTransfer.ChildSizing.Layout:=cclNone;
   txStatus.Caption:=GetTorrentStatus(idx);
-  i:=gTorrents.Items[idxStatus, idx];
-  if (i = TR_STATUS_STOPPED) or (i = TR_STATUS_FINISHED) then
-    txError.Caption:=''
-  else
-    txError.Caption:=GetTorrentError(t);
+  txError.Caption:=GetTorrentError(t, gTorrents.Items[idxStatus, idx]);
   txRemaining.Caption:=EtaToString(t.Integers['eta']);
   txDownloaded.Caption:=GetHumanSize(t.Floats['downloadedEver']);
   txUploaded.Caption:=GetHumanSize(t.Floats['uploadedEver']);
