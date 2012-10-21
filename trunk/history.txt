@@ -1,6 +1,7 @@
 4.1 (Oct 06, 2012)
 [+] Option "Automatically add torrent links from the clipboard". Issue #571.
 [+] Statistics tab. Issue #157.
+[+] SOCKS 5 proxy support. Patch by Evgeny Rex. Issue #111.
 [+] Options to hide Filter pane, Info pane and status bar. Issue #98.
 [+] The "Copy file path to clipboard" command. Issue #326.
 [*] Greatly improved speed when handling large torrent and files lists. Issue #575.
