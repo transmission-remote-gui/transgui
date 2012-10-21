@@ -44,6 +44,7 @@ type
     btRename: TButton;
     Buttons: TButtonPanel;
     cbUseProxy: TCheckBox;
+    cbUseSocks5: TCheckBox;
     edUpSpeeds: TEdit;
     edHost: TEdit;
     cbSSL: TCheckBox;
@@ -218,6 +219,7 @@ procedure TConnOptionsForm.cbUseProxyClick(Sender: TObject);
 var
   c: TColor;
 begin
+  cbUseSocks5.Enabled:=cbUseProxy.Checked;
   edProxy.Enabled:=cbUseProxy.Checked;
   edProxyPort.Enabled:=cbUseProxy.Checked;
   edProxyUserName.Enabled:=cbUseProxy.Checked;
@@ -415,6 +417,7 @@ begin
     else
       edPassword.Text:='';
     cbUseProxy.Checked:=ReadBool(Sec, 'UseProxy', False);
+    cbUseSocks5.Checked:=ReadBool(Sec, 'UseSockProxy', False);
     edProxy.Text:=ReadString(Sec, 'ProxyHost', '');
     edProxyPort.Value:=ReadInteger(Sec, 'ProxyPort', 8080);
     edProxyUserName.Text:=ReadString(Sec, 'ProxyUser', '');
@@ -457,6 +460,7 @@ begin
       WriteString(Sec, 'Password', s);
     end;
     WriteBool(Sec, 'UseProxy', cbUseProxy.Checked);
+    WriteBool(Sec, 'UseSockProxy', cbUseSocks5.Checked);
     WriteString(Sec, 'ProxyHost', Trim(edProxy.Text));
     WriteInteger(Sec, 'ProxyPort', edProxyPort.Value);
     WriteString(Sec, 'ProxyUser', edProxyUserName.Text);
