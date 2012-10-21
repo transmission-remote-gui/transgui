@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Svenska
+TranslationLanguage=Svenska
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mappning remote til lokala sökvägar.~~Till exempel:~/share=\\pch\share~/var/downloads/musik=Z:\musik"
 %d x %s (have %d)=%d x %s (har %d)
@@ -122,7 +122,7 @@ Open=Öppna
 Options=Alternativ
 Password=Lösenord
 Paths=Sökvägar
-Peek random port on daemon launch=Välj en random port vid uppstart
+Pick random port on daemon launch=Välj en random port vid uppstart
 Peer limit=Peer begränsning
 Peers=Peers
 Pieces=Delar

@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Ελληνικά
+TranslationLanguage=Ελληνικά
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Χαρτογράφηση μονοπατιού απομακρυσμένο σε τοπικό.~~Παραδείγματα:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (έχω %d)
@@ -122,7 +122,7 @@ Open=Άνοιγμα
 Options=Ρυθμίσεις
 Password=Συνθηματικό
 Paths=Μονοπάτια
-Peek random port on daemon launch=Τυχαία θύρα όταν ξεκινά ο δαίμονας
+Pick random port on daemon launch=Τυχαία θύρα όταν ξεκινά ο δαίμονας
 Peer limit=Όριο κόμβων
 Peers=Χρήστες
 Pieces=Τμήματα

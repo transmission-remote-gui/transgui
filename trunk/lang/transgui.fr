@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Français
+TranslationLanguage=Français
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Correspondances entre système de fichier distant et local.~~Exemples:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (%d obtenus)
@@ -122,7 +122,7 @@ Open=Ouvrir
 Options=Options
 Password=Mot de passe
 Paths=Chemins
-Peek random port on daemon launch=Choisir aléatoirement un port au lancement
+Pick random port on daemon launch=Choisir aléatoirement un port au lancement
 Peer limit=Limite de pairs
 Peers=Pairs
 Pieces=Parts

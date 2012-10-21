@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Română
+TranslationLanguage=Română
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Maparea căilor de la distanţă către local.~~Exemple:~/share=\\pch\share~/var/downloads/muzica=Z:\muzica"
 %d x %s (have %d)=%d x %s (complet %d)
@@ -122,7 +122,7 @@ Open=Deschide
 Options=Opţiuni
 Password=Parolă
 Paths=Căi
-Peek random port on daemon launch=Alege un port aleator în lansare
+Pick random port on daemon launch=Alege un port aleator în lansare
 Peer limit=Limită parteneri
 Peers=Parteneri
 Pieces=Părţi

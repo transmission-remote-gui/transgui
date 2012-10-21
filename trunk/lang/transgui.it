@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Italiano
+TranslationLanguage=Italiano
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Associazione risorse locali con cartella remota.~~Esempio:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (gia' scaricati %d)
@@ -122,7 +122,7 @@ Open=Apri
 Options=Opzioni
 Password=Password
 Paths=Percorsi
-Peek random port on daemon launch=Decidi una porta quando attivi il demone
+Pick random port on daemon launch=Decidi una porta quando attivi il demone
 Peer limit=Limite numero fonti
 Peers=Utenti UP
 Pieces=Parti

@@ -1,4 +1,4 @@
-﻿TranslationLanguage=한국어
+TranslationLanguage=한국어
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="리모트와 로컬간의 경로설정.~~사용예:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (%d 소유)
@@ -122,7 +122,7 @@ Open=열기
 Options=옵션
 Password=비밀번호
 Paths=경로
-Peek random port on daemon launch=데몬 구동시 무작위 포트사용
+Pick random port on daemon launch=데몬 구동시 무작위 포트사용
 Peer limit=피어 제한
 Peers=피어
 Pieces=조각
