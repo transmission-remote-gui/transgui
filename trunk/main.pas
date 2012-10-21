@@ -532,6 +532,9 @@ type
     FPendingTorrents: TStringList;
     FLinksFromClipboard: boolean;
     FLastClipboardLink: string;
+{$ifdef LCLcarbon}
+    FFormActive: boolean;
+{$endif LCLcarbon}
 
     procedure DoConnect;
     procedure DoCreateOutZipStream(Sender: TObject; var AStream: TStream; AItem: TFullZipFileEntry);
@@ -3124,6 +3127,7 @@ end;
 procedure TMainForm.ApplicationPropertiesRestore(Sender: TObject);
 begin
   UpdateTray;
+  CheckClipboardLink;
 end;
 
 procedure TMainForm.edSearchChange(Sender: TObject);
@@ -3541,6 +3545,14 @@ begin
     end;
 {$ifdef LCLcarbon}
      THackApplication(Application).ProcessAsyncCallQueue;
+     if Active and (WindowState <> wsMinimized) then begin
+       if not FFormActive then begin
+         FFormActive:=True;
+         CheckClipboardLink;
+       end;
+     end
+     else
+       FFormActive:=False;
 {$endif LCLcarbon}
   finally
     TickTimer.Enabled:=True;
