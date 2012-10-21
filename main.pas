@@ -1072,6 +1072,7 @@ begin
   lvFiles.AlternateColor:=FAlterColor;
   lvPeers.AlternateColor:=FAlterColor;
   lvTrackers.AlternateColor:=FAlterColor;
+  gStats.AlternateColor:=FAlterColor;
   FStatusImgIndex:=30;
   FPendingTorrents:=TStringList.Create;
 
