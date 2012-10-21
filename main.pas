@@ -839,8 +839,8 @@ const
       ('fpjson','jsonparser','jsonscanner','lclstrconsts','math',
        'rtlconsts','sysconst','variants','zbase','zipper','zstream', 'xmlcfg');
 
-  IgnoreControls: array[0..1] of string =
-    ('AboutForm.txAuthor', 'MainForm.miLn');
+  IgnoreControls: array[0..2] of string =
+    ('AboutForm.txAuthor', 'MainForm.miLn', 'ConnOptionsForm.cbUseSocks5');
 
 var
   i: integer;
@@ -3698,17 +3698,27 @@ begin
     RpcObj.Url:='http';
   RpcObj.Http.UserName:=Ini.ReadString(Sec, 'UserName', '');
   RpcObj.Http.Password:=DecodeBase64(Ini.ReadString(Sec, 'Password', ''));
+  RpcObj.Http.ProxyHost:='';
+  RpcObj.Http.ProxyPort:='';
+  RpcObj.Http.ProxyUser:='';
+  RpcObj.Http.ProxyPass:='';
+  RpcObj.Http.Sock.SocksIP:='';
+  RpcObj.Http.Sock.SocksPort:='';
+  RpcObj.Http.Sock.SocksUsername:='';
+  RpcObj.Http.Sock.SocksPassword:='';
   if Ini.ReadBool(Sec, 'UseProxy', False) then begin
-    RpcObj.Http.ProxyHost:=Ini.ReadString(Sec, 'ProxyHost', '');
-    RpcObj.Http.ProxyPort:=IntToStr(Ini.ReadInteger(Sec, 'ProxyPort', 8080));
-    RpcObj.Http.ProxyUser:=Ini.ReadString(Sec, 'ProxyUser', '');
-    RpcObj.Http.ProxyPass:=DecodeBase64(Ini.ReadString(Sec, 'ProxyPass', ''));
-  end
-  else begin
-    RpcObj.Http.ProxyHost:='';
-    RpcObj.Http.ProxyPort:='';
-    RpcObj.Http.ProxyUser:='';
-    RpcObj.Http.ProxyPass:='';
+    if Ini.ReadBool(Sec, 'UseSockProxy', False) then begin
+      RpcObj.Http.Sock.SocksIP := Ini.ReadString(Sec, 'ProxyHost', '');
+      RpcObj.Http.Sock.SocksPort := IntToStr(Ini.ReadInteger(Sec, 'ProxyPort', 8080));
+      RpcObj.Http.Sock.SocksUsername := Ini.ReadString(Sec, 'ProxyUser', '');
+      RpcObj.Http.Sock.SocksPassword := DecodeBase64(Ini.ReadString(Sec, 'ProxyPass', ''));
+    end
+    else begin
+      RpcObj.Http.ProxyHost:=Ini.ReadString(Sec, 'ProxyHost', '');
+      RpcObj.Http.ProxyPort:=IntToStr(Ini.ReadInteger(Sec, 'ProxyPort', 8080));
+      RpcObj.Http.ProxyUser:=Ini.ReadString(Sec, 'ProxyUser', '');
+      RpcObj.Http.ProxyPass:=DecodeBase64(Ini.ReadString(Sec, 'ProxyPass', ''));
+    end;
   end;
   RpcObj.Url:=Format('%s://%s:%d', [RpcObj.Url, Ini.ReadString(Sec, 'Host', ''), Ini.ReadInteger(Sec, 'Port', 9091)]);
   SetRefreshInterval;

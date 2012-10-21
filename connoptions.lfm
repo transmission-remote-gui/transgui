@@ -21,11 +21,11 @@ inherited ConnOptionsForm: TConnOptionsForm
     Height = 202
     Top = 69
     Width = 455
-    ActivePage = tabMisc
+    ActivePage = tabProxy
     Align = alClient
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
-    TabIndex = 3
+    TabIndex = 1
     TabOrder = 1
     object tabConnection: TTabSheet
       Caption = 'Connection'
@@ -154,6 +154,15 @@ inherited ConnOptionsForm: TConnOptionsForm
         OnClick = cbUseProxyClick
         TabOrder = 0
       end
+      object cbUseSocks5: TCheckBox
+        Left = 260
+        Height = 17
+        Top = 64
+        Width = 60
+        Caption = 'SOCKS 5'
+        OnClick = cbUseProxyClick
+        TabOrder = 3
+      end
       object edProxy: TEdit
         Left = 180
         Height = 21
@@ -178,7 +187,7 @@ inherited ConnOptionsForm: TConnOptionsForm
         Top = 90
         Width = 258
         Anchors = [akTop, akLeft, akRight]
-        TabOrder = 3
+        TabOrder = 4
       end
       object edProxyPassword: TEdit
         Left = 180
@@ -188,7 +197,7 @@ inherited ConnOptionsForm: TConnOptionsForm
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword
         PasswordChar = '*'
-        TabOrder = 4
+        TabOrder = 5
       end
     end
     object tabPaths: TTabSheet
