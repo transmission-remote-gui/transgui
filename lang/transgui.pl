@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Polski
+TranslationLanguage=Polski
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapowanie ścieżek zdalnych do lokalnych.~~Przykłady:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (pobrano %d)
@@ -122,7 +122,7 @@ Open=Otwórz
 Options=Opcje
 Password=Hasło
 Paths=Ścieżki
-Peek random port on daemon launch=Losuj port przy uruchamianiu demona
+Pick random port on daemon launch=Losuj port przy uruchamianiu demona
 Peer limit=Limit peerów
 Peers=Peery
 Pieces=Części

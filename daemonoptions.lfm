@@ -21,10 +21,10 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
     Height = 295
     Top = 8
     Width = 570
-    ActivePage = tabQueue
+    ActivePage = tabNetwork
     Align = alClient
     BorderSpacing.Around = 8
-    TabIndex = 3
+    TabIndex = 1
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
@@ -234,8 +234,8 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 292
         Height = 17
         Top = 13
-        Width = 193
-        Caption = 'Peek random port on daemon launch'
+        Width = 188
+        Caption = 'Pick random port on daemon launch'
         OnClick = cbRandomPortClick
         TabOrder = 1
       end

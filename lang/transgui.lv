@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Latviešu
+TranslationLanguage=Latviešu
 
 %dd, %dh=%dd, %ds
 %dh, %dm=%ds, %dmin
@@ -107,7 +107,7 @@ Open=Atvērt
 Options=Konfigurācija
 Password=Parole
 Paths=Ceļi
-Peek random port on daemon launch=Mainīt portu pie katras palaišanas
+Pick random port on daemon launch=Mainīt portu pie katras palaišanas
 Peer limit=Iesaistīto skaits
 Peers=Iesastītie
 Pieces=Daļiņas

@@ -1,4 +1,4 @@
-﻿TranslationLanguage=German
+TranslationLanguage=German
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Pfadzuordnung Remote zu lokal.~~Beispiel:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (noch %d)
@@ -122,7 +122,7 @@ Open=Öffnen
 Options=Optionen
 Password=Passwort
 Paths=Pfade
-Peek random port on daemon launch=zufälligen Port benutzen
+Pick random port on daemon launch=zufälligen Port benutzen
 Peer limit=Peer Grenze
 Peers=Peers
 Pieces=Teile

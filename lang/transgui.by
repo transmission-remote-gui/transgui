@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Беларуская
+TranslationLanguage=Беларуская
 
 %dd, %dh=%dд, %dг
 %dh, %dm=%dг, %dхв
@@ -107,7 +107,7 @@ Open=Адчыніць
 Options=Парамэтры
 Password=Пароль
 Paths=Шляхі
-Peek random port on daemon launch=Кожным разам выпадковы порт
+Pick random port on daemon launch=Кожным разам выпадковы порт
 Peer limit=Ліміт піраў
 Peers=Піры
 Pieces=Частак

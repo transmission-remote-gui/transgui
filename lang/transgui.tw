@@ -1,4 +1,4 @@
-﻿TranslationLanguage=繁體中文
+TranslationLanguage=繁體中文
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="遠端路徑映射.~~例如:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (下載了 %d)
@@ -122,7 +122,7 @@ Open=開啟
 Options=Transmission Remote GUI選項
 Password=密碼
 Paths=路徑
-Peek random port on daemon launch=在Deamon啟動時窺探隨機連結埠
+Pick random port on daemon launch=在Deamon啟動時窺探隨機連結埠
 Peer limit=Peers連接數限制
 Peers=Peers
 Pieces=分塊
