@@ -515,7 +515,7 @@ end;
 procedure TVarGrid.DrawCell(aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
 var
   ca: TCellAttributes;
-  ts: TTextStyle;
+//  ts: TTextStyle;
   dd, IsHeader: boolean;
   R: TRect;
   det: TThemedElementDetails;
@@ -604,13 +604,45 @@ begin
           FImages.Draw(Canvas, aRect.Left + 2, (aRect.Bottom + aRect.Top - FImages.Height) div 2, ca.ImageIndex, gdeNormal);
           Inc(aRect.Left, FImages.Width + 2);
         end;
-        if (Canvas.TextStyle.Alignment <> taLeftJustify) and (ca.Text <> '') then
-          if (aRect.Right <= aRect.Left) or (aRect.Right - aRect.Left < Canvas.TextWidth(ca.Text) + 9) then begin
-            ts:=Canvas.TextStyle;
-            ts.Alignment:=taLeftJustify;
-            Canvas.TextStyle:=ts;
+        if ca.Text <> '' then begin
+{
+          if Canvas.TextStyle.Alignment <> taLeftJustify then
+            if (aRect.Right <= aRect.Left) or (aRect.Right - aRect.Left < Canvas.TextWidth(ca.Text) + 9) then begin
+              ts:=Canvas.TextStyle;
+              ts.Alignment:=taLeftJustify;
+              Canvas.TextStyle:=ts;
+            end;
+          DrawCellText(aCol, aRow, aRect, aState, ca.Text);
+}
+          with aRect do begin
+            Inc(Top, 2);
+            Inc(Left, constCellPadding);
+            Dec(Right, constCellPadding);
+            if Right<Left then
+              Right:=Left;
+            if Left>Right then
+              Left:=Right;
+            if Bottom<Top then
+              Bottom:=Top;
+            if Top>Bottom then
+              Top:=Bottom;
+
+            if (Left <> Right) and (Top <> Bottom) then begin
+              if Canvas.TextStyle.Alignment <> taLeftJustify then begin
+                i:=Canvas.TextWidth(ca.Text);
+                if i < Right - Left then
+                  case Canvas.TextStyle.Alignment of
+                    taRightJustify:
+                      Left:=Right - i;
+                    taCenter:
+                      Left:=(Left + Right - i) div 2;
+                  end;
+              end;
+              ExtUTF8Out(Canvas.Handle, Left, Top, ETO_OPAQUE or ETO_CLIPPED, @aRect, PChar(ca.Text), Length(ca.Text), nil);
+            end;
           end;
-        DrawCellText(aCol, aRow, aRect, aState, ca.Text);
+
+        end;
       end;
     end;
   end;
