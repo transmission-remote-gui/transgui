@@ -662,9 +662,11 @@ procedure TVarGrid.PrepareCanvas(aCol, aRow: Integer; aState: TGridDrawState);
 var
   F: TCustomForm;
 begin
-  F:=GetParentForm(Self);
-  if FHideSelection and (FSelCount = 0) and (F <> nil) and (F.ActiveControl <> Self) then
-    aState:=aState - [gdSelected];
+  if FHideSelection and (FSelCount = 0) then begin
+    F:=GetParentForm(Self);
+    if (F <> nil) and (F.ActiveControl <> Self) then
+      aState:=aState - [gdSelected];
+  end;
   inherited PrepareCanvas(aCol, aRow, aState);
   with Canvas do
     if (Font.Color = clWindow) and (Brush.Color = clHighlight) then begin
@@ -672,7 +674,7 @@ begin
 {$ifdef LCLgtk2}
       Brush.Color:=ColorToRGB(Brush.Color); // Workaround for LCL bug
 {$endif LCLgtk2}
-    end;
+  end;
 end;
 
 procedure TVarGrid.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
