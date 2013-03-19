@@ -318,14 +318,15 @@ inherited MainForm: TMainForm
     Height = 306
     Top = 157
     Width = 780
-    ActivePage = tabStats
+    ActivePage = tabTrackers
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 4
+    TabIndex = 1
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
+    OnResize = PageInfoResize
     object tabGeneral: TTabSheet
       Caption = 'General'
       ClientHeight = 279
@@ -1140,15 +1141,6 @@ inherited MainForm: TMainForm
       Top = 2
       Action = acAddLink
     end
-    object pbStatus: TPaintBox
-      Left = 756
-      Height = 22
-      Top = 2
-      Width = 24
-      Align = alRight
-      Visible = False
-      OnPaint = pbStatusPaint
-    end
     object tbConnect: TToolButton
       Left = 4
       Top = 2
@@ -1188,11 +1180,11 @@ inherited MainForm: TMainForm
   end
   object panReconnect: TPanel[5]
     Left = 532
-    Height = 71
-    Top = 64
+    Height = 44
+    Top = 56
     Width = 161
     BevelOuter = bvNone
-    ClientHeight = 71
+    ClientHeight = 44
     ClientWidth = 161
     Color = clInfoBk
     Font.Color = clInfoText
@@ -1243,15 +1235,24 @@ inherited MainForm: TMainForm
       ParentColor = False
     end
     object panReconnectFrame: TShape
-      Left = 8
+      Left = 4
       Height = 19
-      Top = 32
+      Top = 24
       Width = 24
       Brush.Style = bsClear
       Pen.Color = clBtnShadow
     end
   end
-  object MainMenu: TMainMenu[6]
+  object panDetailsWait: TPanel[6]
+    Left = 495
+    Height = 33
+    Top = 56
+    Width = 27
+    BevelOuter = bvNone
+    TabOrder = 3
+    Visible = False
+  end
+  object MainMenu: TMainMenu[7]
     Images = ImageList16
     left = 8
     top = 28
@@ -1996,7 +1997,7 @@ inherited MainForm: TMainForm
       end
     end
   end
-  object ActionList: TActionList[7]
+  object ActionList: TActionList[8]
     left = 40
     top = 28
     object acConnect: TAction
@@ -2286,21 +2287,21 @@ inherited MainForm: TMainForm
       OnExecute = acCopyPathExecute
     end
   end
-  object TorrentsListTimer: TTimer[8]
+  object TorrentsListTimer: TTimer[9]
     Enabled = False
     Interval = 100
     OnTimer = TorrentsListTimerTimer
     left = 253
     top = 55
   end
-  object OpenTorrentDlg: TOpenDialog[9]
+  object OpenTorrentDlg: TOpenDialog[10]
     Title = 'Select a .torrent to open'
     Filter = 'Torrents (*.torrent)|*.torrent|All files (*.*)|*.*'
     Options = [ofAllowMultiSelect, ofEnableSizing, ofViewDetail]
     left = 213
     top = 55
   end
-  object pmTorrents: TPopupMenu[10]
+  object pmTorrents: TPopupMenu[11]
     Images = ImageList16
     OnPopup = pmTorrentsPopup
     left = 149
@@ -2752,7 +2753,7 @@ inherited MainForm: TMainForm
       OnClick = acSetupColumnsExecute
     end
   end
-  object ApplicationProperties: TApplicationProperties[11]
+  object ApplicationProperties: TApplicationProperties[12]
     ShowButtonGlyphs = sbgSystem
     OnIdle = ApplicationPropertiesIdle
     OnMinimize = ApplicationPropertiesMinimize
@@ -2760,7 +2761,7 @@ inherited MainForm: TMainForm
     left = 348
     top = 56
   end
-  object pmFiles: TPopupMenu[12]
+  object pmFiles: TPopupMenu[13]
     Images = ImageList16
     OnPopup = pmFilesPopup
     left = 304
@@ -3023,14 +3024,14 @@ inherited MainForm: TMainForm
       OnClick = acSetupColumnsExecute
     end
   end
-  object TickTimer: TTimer[13]
+  object TickTimer: TTimer[14]
     Enabled = False
-    Interval = 300
+    Interval = 200
     OnTimer = TickTimerTimer
     left = 408
     top = 55
   end
-  object ImageList16: TImageList[14]
+  object ImageList16: TImageList[15]
     left = 412
     top = 92
     Bitmap = {
@@ -4413,7 +4414,7 @@ inherited MainForm: TMainForm
       FF000000FF000000FF000000FF00
     }
   end
-  object pmLabels: TPopupMenu[15]
+  object pmLabels: TPopupMenu[16]
     left = 268
     top = 92
     object miCopyLabel: TMenuItem
@@ -4421,7 +4422,7 @@ inherited MainForm: TMainForm
       OnClick = miCopyLabelClick
     end
   end
-  object TrayIcon: TTrayIcon[16]
+  object TrayIcon: TTrayIcon[17]
     BalloonFlags = bfInfo
     BalloonTimeout = 10000
     PopUpMenu = pmTray
@@ -4430,7 +4431,7 @@ inherited MainForm: TMainForm
     left = 456
     top = 56
   end
-  object pmTray: TPopupMenu[17]
+  object pmTray: TPopupMenu[18]
     Images = ImageList16
     left = 460
     top = 88
@@ -4511,7 +4512,7 @@ inherited MainForm: TMainForm
       OnClick = acExitExecute
     end
   end
-  object imgFlags: TImageList[18]
+  object imgFlags: TImageList[19]
     Height = 12
     Width = 18
     left = 144
@@ -4547,7 +4548,7 @@ inherited MainForm: TMainForm
       FF00FFFFFF00FFFFFF00FFFFFF00
     }
   end
-  object pmPeers: TPopupMenu[19]
+  object pmPeers: TPopupMenu[20]
     left = 340
     top = 92
     object MenuItem29: TMenuItem
@@ -4570,13 +4571,13 @@ inherited MainForm: TMainForm
       OnClick = acSetupColumnsExecute
     end
   end
-  object FilterTimer: TTimer[20]
+  object FilterTimer: TTimer[21]
     Interval = 100
     OnTimer = FilterTimerTimer
     left = 76
     top = 28
   end
-  object pmTrackers: TPopupMenu[21]
+  object pmTrackers: TPopupMenu[22]
     Images = ImageList16
     left = 376
     top = 92
@@ -4602,13 +4603,6 @@ inherited MainForm: TMainForm
       Action = acSetupColumns
       OnClick = acSetupColumnsExecute
     end
-  end
-  object AnimateTimer: TTimer[22]
-    Enabled = False
-    Interval = 100
-    OnTimer = AnimateTimerTimer
-    left = 732
-    top = 60
   end
   object pmConnections: TPopupMenu[23]
     left = 12

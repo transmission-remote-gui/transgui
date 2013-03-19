@@ -108,6 +108,39 @@ resourcestring
   SActiveTime = 'Active time';
 
 type
+  { TProgressImage }
+
+  TProgressImage = class(TGraphicControl)
+  private
+    FBmp: TBitmap;
+    FBorderColor: TColor;
+    FEndIndex: integer;
+    FImageIndex: integer;
+    FImages: TImageList;
+    FStartIndex: integer;
+    FTimer: TTimer;
+    function GetFrameDelay: integer;
+    procedure SetBorderColor(const AValue: TColor);
+    procedure SetEndIndex(const AValue: integer);
+    procedure SetFrameDelay(const AValue: integer);
+    procedure SetImageIndex(const AValue: integer);
+    procedure SetImages(const AValue: TImageList);
+    procedure SetStartIndex(const AValue: integer);
+    procedure UpdateIndex;
+    procedure DoTimer(Sender: TObject);
+  protected
+    procedure Paint; override;
+    procedure VisibleChanged; override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    property Images: TImageList read FImages write SetImages;
+    property ImageIndex: integer read FImageIndex write SetImageIndex;
+    property StartIndex: integer read FStartIndex write SetStartIndex;
+    property EndIndex: integer read FEndIndex write SetEndIndex;
+    property FrameDelay: integer read GetFrameDelay write SetFrameDelay;
+    property BorderColor: TColor read FBorderColor write SetBorderColor;
+  end;
 
   { TMainForm }
 
@@ -175,6 +208,7 @@ type
     MenuItem95: TMenuItem;
     MenuItem96: TMenuItem;
     MenuItem97: TMenuItem;
+    panDetailsWait: TPanel;
     txGlobalStats: TLabel;
     lvFilter: TVarGrid;
     lvTrackers: TVarGrid;
@@ -227,7 +261,6 @@ type
     MenuItem73: TMenuItem;
     MenuItem74: TMenuItem;
     MenuItem75: TMenuItem;
-    pbStatus: TPaintBox;
     pmSepOpen2: TMenuItem;
     MenuItem42: TMenuItem;
     pmSepOpen1: TMenuItem;
@@ -257,7 +290,6 @@ type
     pmConnections: TPopupMenu;
     tabStats: TTabSheet;
     tabTrackers: TTabSheet;
-    AnimateTimer: TTimer;
     tbConnect: TToolButton;
     tbtAltSpeed: TToolButton;
     sepAltSpeed: TToolButton;
@@ -458,7 +490,6 @@ type
     procedure acUpdateBlocklistExecute(Sender: TObject);
     procedure acUpdateGeoIPExecute(Sender: TObject);
     procedure acVerifyTorrentExecute(Sender: TObject);
-    procedure AnimateTimerTimer(Sender: TObject);
     procedure ApplicationPropertiesException(Sender: TObject; E: Exception);
     procedure ApplicationPropertiesIdle(Sender: TObject; var Done: Boolean);
     procedure ApplicationPropertiesMinimize(Sender: TObject);
@@ -488,7 +519,7 @@ type
     procedure lvTrackersKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure miDonateClick(Sender: TObject);
     procedure miHomePageClick(Sender: TObject);
-    procedure pbStatusPaint(Sender: TObject);
+    procedure PageInfoResize(Sender: TObject);
     procedure panReconnectResize(Sender: TObject);
     procedure pbDownloadedPaint(Sender: TObject);
     procedure StatusBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -525,8 +556,6 @@ type
     FPathMap: TStringList;
     FLastFilerIndex: integer;
     FFilterChanged: boolean;
-    FStatusBmp: TBitmap;
-    FStatusImgIndex: integer;
     FCurDownSpeedLimit: integer;
     FCurUpSpeedLimit: integer;
     FFlagsPath: string;
@@ -537,6 +566,9 @@ type
 {$ifdef LCLcarbon}
     FFormActive: boolean;
 {$endif LCLcarbon}
+    FSlowResponse: TProgressImage;
+    FDetailsWait: TProgressImage;
+    FDetailsWaitStart: TDateTime;
 
     procedure DoConnect;
     procedure DoCreateOutZipStream(Sender: TObject; var AStream: TStream; AItem: TFullZipFileEntry);
@@ -592,6 +624,9 @@ type
     procedure UpdateUIRpcVersion(RpcVersion: integer);
     procedure CheckAddTorrents;
     procedure CheckClipboardLink;
+    procedure CenterDetailsWait;
+    function GetPageInfoType(pg: TTabSheet): TAdvInfoType;
+    procedure DetailsUpdated;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -605,7 +640,7 @@ type
     function SetFilePriority(TorrentId: integer; const Files: array of integer; const APriority: string): boolean;
     function SetCurrentFilePriority(const APriority: string): boolean;
     procedure SetTorrentPriority(APriority: integer);
-    procedure ClearDetailsInfo;
+    procedure ClearDetailsInfo(Skip: TAdvInfoType = aiNone);
     function SelectRemoteFolder(const CurFolder, DialogTitle: string): string;
   end;
 
@@ -1024,6 +1059,114 @@ begin
   Result:=True;
 end;
 
+{ TProgressImage }
+
+procedure TProgressImage.SetImages(const AValue: TImageList);
+begin
+  if FImages=AValue then exit;
+  FImages:=AValue;
+  Width:=FImages.Width;
+  Height:=FImages.Height;
+end;
+
+procedure TProgressImage.SetStartIndex(const AValue: integer);
+begin
+  if FStartIndex=AValue then exit;
+  FStartIndex:=AValue;
+  UpdateIndex;
+end;
+
+procedure TProgressImage.UpdateIndex;
+begin
+  if (FImageIndex < FStartIndex) or (FImageIndex > FEndIndex) then
+    FImageIndex:=FStartIndex;
+  Invalidate;
+end;
+
+procedure TProgressImage.DoTimer(Sender: TObject);
+begin
+  ImageIndex:=ImageIndex + 1;
+end;
+
+procedure TProgressImage.SetImageIndex(const AValue: integer);
+begin
+  if FImageIndex=AValue then exit;
+  FImageIndex:=AValue;
+  UpdateIndex;
+end;
+
+procedure TProgressImage.SetEndIndex(const AValue: integer);
+begin
+  if FEndIndex=AValue then exit;
+  FEndIndex:=AValue;
+  UpdateIndex;
+end;
+
+function TProgressImage.GetFrameDelay: integer;
+begin
+  Result:=FTimer.Interval;
+end;
+
+procedure TProgressImage.SetBorderColor(const AValue: TColor);
+begin
+  if FBorderColor=AValue then exit;
+  FBorderColor:=AValue;
+end;
+
+procedure TProgressImage.SetFrameDelay(const AValue: integer);
+begin
+  FTimer.Interval:=AValue;
+end;
+
+procedure TProgressImage.Paint;
+begin
+  if FBmp = nil then begin
+    FBmp:=TBitmap.Create;
+    FBmp.Width:=Width;
+    FBmp.Height:=Height;
+  end;
+  with FBmp.Canvas do begin
+    Brush.Color:=clBtnFace;
+    if FBorderColor <> clNone then begin
+      Pen.Color:=FBorderColor;
+      Rectangle(0, 0, FBmp.Width, FBmp.Height);
+    end
+    else
+      FillRect(0, 0, FBmp.Width, FBmp.Height);
+    if FImages <> nil then
+      FImages.Draw(FBmp.Canvas, (Self.Width - FImages.Width) div 2, (Self.Height - FImages.Height) div 2, ImageIndex);
+  end;
+  Canvas.Draw(0, 0, FBmp);
+end;
+
+procedure TProgressImage.VisibleChanged;
+begin
+  inherited VisibleChanged;
+  if Visible then begin
+    ImageIndex:=StartIndex;
+    FTimer.Enabled:=True;
+  end
+  else
+    FTimer.Enabled:=False;
+end;
+
+constructor TProgressImage.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FTimer:=TTimer.Create(Self);
+  FTimer.Enabled:=False;
+  FTimer.Interval:=100;
+  FTimer.OnTimer:=@DoTimer;
+  FBorderColor:=clNone;
+  Visible:=False;
+end;
+
+destructor TProgressImage.Destroy;
+begin
+  FBmp.Free;
+  inherited Destroy;
+end;
+
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -1078,8 +1221,30 @@ begin
   lvPeers.AlternateColor:=FAlterColor;
   lvTrackers.AlternateColor:=FAlterColor;
   gStats.AlternateColor:=FAlterColor;
-  FStatusImgIndex:=30;
   FPendingTorrents:=TStringList.Create;
+
+  FSlowResponse:=TProgressImage.Create(MainToolBar);
+  with FSlowResponse do begin
+    Align:=alRight;
+    Images:=ImageList16;
+    StartIndex:=30;
+    EndIndex:=37;
+    Width:=ScaleInt(24);
+    Left:=MainToolBar.ClientWidth;
+    Parent:=MainToolBar;
+  end;
+  FDetailsWait:=TProgressImage.Create(panDetailsWait);
+  with FDetailsWait do begin
+    Images:=ImageList16;
+    StartIndex:=FSlowResponse.StartIndex;
+    EndIndex:=FSlowResponse.EndIndex;
+    Width:=Images.Width*2;
+    Height:=Width;
+    BorderColor:=clBtnShadow;
+    panDetailsWait.Width:=Width;
+    panDetailsWait.Height:=Height;
+    Parent:=panDetailsWait;
+  end;
 
   DoDisconnect;
   PageInfo.ActivePageIndex:=0;
@@ -1192,7 +1357,6 @@ begin
   FUnZip.Free;
   RpcObj.Free;
   FTorrentProgress.Free;
-  FStatusBmp.Free;
   FPathMap.Free;
   FTorrents.Free;
   FPendingTorrents.Free;
@@ -3062,19 +3226,6 @@ begin
   TorrentAction(ids, 'torrent-verify');
 end;
 
-procedure TMainForm.AnimateTimerTimer(Sender: TObject);
-begin
-  if RpcObj.RequestStartTime = 0 then begin
-    pbStatus.Visible:=False;
-    AnimateTimer.Enabled:=False;
-    exit;
-  end;
-  Inc(FStatusImgIndex);
-  if FStatusImgIndex > 37 then
-    FStatusImgIndex:=30;
-  pbStatus.Invalidate;
-end;
-
 procedure TMainForm.ApplicationPropertiesException(Sender: TObject; E: Exception);
 var
   msg: string;
@@ -3220,7 +3371,7 @@ begin
     RpcObj.Unlock;
   end;
 
-  ClearDetailsInfo;
+  ClearDetailsInfo(GetPageInfoType(PageInfo.ActivePage));
 
   TorrentsListTimer.Enabled:=False;
   TorrentsListTimer.Enabled:=True;
@@ -3450,19 +3601,10 @@ begin
   GoHomePage;
 end;
 
-procedure TMainForm.pbStatusPaint(Sender: TObject);
+procedure TMainForm.PageInfoResize(Sender: TObject);
 begin
-  if FStatusBmp = nil then begin
-    FStatusBmp:=TBitmap.Create;
-    FStatusBmp.Width:=pbStatus.Width;
-    FStatusBmp.Height:=pbStatus.Height;
-  end;
-  with FStatusBmp.Canvas do begin
-    Brush.Color:=clBtnFace;
-    FillRect(pbStatus.ClientRect);
-    ImageList16.Draw(FStatusBmp.Canvas, (pbStatus.Width - ImageList16.Width) div 2, (pbStatus.Height - ImageList16.Height) div 2, FStatusImgIndex);
-  end;
-  pbStatus.Canvas.Draw(0, 0, FStatusBmp);
+  if FDetailsWait.Visible then
+    CenterDetailsWait;
 end;
 
 procedure TMainForm.panReconnectResize(Sender: TObject);
@@ -3548,10 +3690,28 @@ begin
         else
           txReconnectSecs.Caption:=Format(sReconnect, [FReconnectTimeOut - Round(SecsPerDay*(Now - FReconnectWaitStart))]);
 
-    if not pbStatus.Visible and (RpcObj.RequestStartTime <> 0) and (Now - RpcObj.RequestStartTime >= 1/SecsPerDay) then begin
-      pbStatus.Visible:=True;
-      AnimateTimer.Enabled:=True;
-    end;
+    if FSlowResponse.Visible then begin
+      if RpcObj.RequestStartTime = 0 then
+        FSlowResponse.Visible:=False;
+    end
+    else
+      if (RpcObj.RequestStartTime <> 0) and (Now - RpcObj.RequestStartTime >= 1/SecsPerDay) then
+        FSlowResponse.Visible:=True;
+
+    if FDetailsWait.Visible then begin
+      if FDetailsWaitStart = 0 then begin
+        FDetailsWait.Visible:=False;
+        panDetailsWait.Visible:=False;
+      end;
+    end
+    else
+      if (FDetailsWaitStart <> 0) and (Now - FDetailsWaitStart >= 300/MSecsPerDay) then begin
+        CenterDetailsWait;
+        FDetailsWait.Visible:=True;
+        panDetailsWait.Visible:=True;
+        panDetailsWait.BringToFront;
+      end;
+
 {$ifdef LCLcarbon}
      THackApplication(Application).ProcessAsyncCallQueue;
      if Active and (WindowState <> wsMinimized) then begin
@@ -3590,22 +3750,11 @@ end;
 
 procedure TMainForm.PageInfoChange(Sender: TObject);
 begin
+  if PageInfo.ActivePage.Tag <> 0 then
+    FDetailsWaitStart:=Now;
   RpcObj.Lock;
   try
-    if PageInfo.ActivePage = tabGeneral then
-      RpcObj.AdvInfo:=aiGeneral
-    else
-    if PageInfo.ActivePage = tabPeers then
-      RpcObj.AdvInfo:=aiPeers
-    else
-    if PageInfo.ActivePage = tabFiles then
-      RpcObj.AdvInfo:=aiFiles
-    else
-    if PageInfo.ActivePage = tabTrackers then
-      RpcObj.AdvInfo:=aiTrackers
-    else
-    if PageInfo.ActivePage = tabStats then
-      RpcObj.AdvInfo:=aiStats;
+    RpcObj.AdvInfo:=GetPageInfoType(PageInfo.ActivePage);
     DoRefresh;
   finally
     RpcObj.Unlock;
@@ -3615,6 +3764,7 @@ end;
 procedure TMainForm.TorrentsListTimerTimer(Sender: TObject);
 begin
   TorrentsListTimer.Enabled:=False;
+  FDetailsWaitStart:=Now;
   DoRefresh;
 end;
 
@@ -3651,8 +3801,7 @@ end;
 
 procedure TMainForm.CenterReconnectWindow;
 begin
-  panReconnect.Left:=(ClientWidth - panReconnect.Width) div 2;
-  panReconnect.Top:=(ClientHeight - panReconnect.Height) div 2;
+  CenterOnParent(panReconnect);
 end;
 
 procedure TMainForm.DrawProgressCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const ACellRect: TRect);
@@ -3847,7 +3996,7 @@ begin
   FillSpeedsMenu;
 end;
 
-procedure TMainForm.ClearDetailsInfo;
+procedure TMainForm.ClearDetailsInfo(Skip: TAdvInfoType);
 
   procedure ClearChildren(AParent: TPanel);
   var
@@ -3865,15 +4014,25 @@ procedure TMainForm.ClearDetailsInfo;
     end;
   end;
 
+var
+  i: integer;
 begin
-  FFiles.Clear;
-  lvPeers.Items.Clear;
-  lvTrackers.Items.Clear;
-  ClearChildren(panGeneralInfo);
-  ClearChildren(panTransfer);
-  ProcessPieces('', 0, 0);
-  txDownProgress.AutoSize:=False;
-  txDownProgress.Caption:='';
+  FDetailsWaitStart:=0;
+  if Skip <> aiFiles then
+    FFiles.Clear;
+  if Skip <> aiPeers then
+    lvPeers.Items.Clear;
+  if Skip <> aiTrackers then
+    lvTrackers.Items.Clear;
+  if Skip <> aiGeneral then begin
+    ClearChildren(panGeneralInfo);
+    ClearChildren(panTransfer);
+    ProcessPieces('', 0, 0);
+    txDownProgress.AutoSize:=False;
+    txDownProgress.Caption:='';
+  end;
+  for i:=0 to PageInfo.PageCount - 1 do
+    PageInfo.Pages[i].Tag:=1;
 end;
 
 function TMainForm.SelectRemoteFolder(const CurFolder, DialogTitle: string): string;
@@ -4642,6 +4801,7 @@ begin
   finally
     Paths.Free;
   end;
+  DetailsUpdated;
 end;
 
 procedure TMainForm.FillPeersList(list: TJSONArray);
@@ -4740,6 +4900,7 @@ begin
   finally
     lvPeers.Items.EndUpdate;
   end;
+  DetailsUpdated;
 end;
 
 function TMainForm.GetFilesCommonPath(files: TJSONArray): string;
@@ -4886,6 +5047,7 @@ begin
   finally
     FFiles.EndUpdate;
   end;
+  DetailsUpdated;
 end;
 
 procedure TMainForm.FillGeneralInfo(t: TJSONObject);
@@ -5073,6 +5235,7 @@ begin
   txAddedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['addedDate']));
   txCompletedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['doneDate']));
   panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
+  DetailsUpdated;
 end;
 
 procedure TMainForm.FillTrackersList(TrackersData: TJSONObject);
@@ -5187,6 +5350,7 @@ begin
   finally
     lvTrackers.Items.EndUpdate;
   end;
+  DetailsUpdated;
 end;
 
 procedure TMainForm.FillSessionInfo(s: TJSONObject);
@@ -5285,6 +5449,7 @@ begin
   finally
     gStats.EndUpdate;
   end;
+  DetailsUpdated;
 end;
 
 procedure TMainForm.CheckStatus(Fatal: boolean);
@@ -5954,6 +6119,38 @@ begin
 
   AddTorrentFile(s);
   Clipboard.AsText:='';
+end;
+
+procedure TMainForm.CenterDetailsWait;
+begin
+  panDetailsWait.Left:=PageInfo.Left + (PageInfo.Width - panDetailsWait.Width) div 2;
+  panDetailsWait.Top:=PageInfo.Top + (PageInfo.Height - panDetailsWait.Height) div 2;
+end;
+
+function TMainForm.GetPageInfoType(pg: TTabSheet): TAdvInfoType;
+begin
+  if pg = tabGeneral then
+    Result:=aiGeneral
+  else
+  if pg = tabPeers then
+    Result:=aiPeers
+  else
+  if pg = tabFiles then
+    Result:=aiFiles
+  else
+  if pg = tabTrackers then
+    Result:=aiTrackers
+  else
+  if pg = tabStats then
+    Result:=aiStats
+  else
+    Result:=aiNone;
+end;
+
+procedure TMainForm.DetailsUpdated;
+begin
+  FDetailsWaitStart:=0;
+  PageInfo.ActivePage.Tag:=0;
 end;
 
 procedure TMainForm.FillSpeedsMenu;
