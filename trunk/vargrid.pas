@@ -518,13 +518,14 @@ var
   ca: TCellAttributes;
 //  ts: TTextStyle;
   dd, IsHeader: boolean;
-  R: TRect;
+  R, RR: TRect;
   det: TThemedElementDetails;
   sz: TSize;
   i: integer;
 begin
   if RowHeights[aRow] = 0 then
     exit;
+  RR:=aRect;
   IsHeader:=(gdFixed in aState) and (aRow=0) and (aCol>=FirstGridColumn);
   if not IsHeader and MultiSelect and (FSelCount > 0) then
     if (aRow >= FixedRows) and (aCol >= FixedCols) and RowSelected[aRow - FixedRows] then
@@ -648,9 +649,9 @@ begin
     end;
   end;
   if gdFixed in aState then
-    DefaultDrawCell(aCol, aRow, aRect, aState)
+    DefaultDrawCell(aCol, aRow, RR, aState)
   else
-    DrawCellGrid(aCol,aRow,aRect,aState);
+    DrawCellGrid(aCol, aRow, RR, aState);
 end;
 
 procedure TVarGrid.ColRowMoved(IsColumn: Boolean; FromIndex, ToIndex: Integer);
