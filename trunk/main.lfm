@@ -40,6 +40,7 @@ inherited MainForm: TMainForm
       Width = 5
       AutoSnap = False
       MinSize = 50
+      OnChangeBounds = HSplitterChangeBounds
     end
     object panFilter: TPanel
       Left = 0
@@ -1072,6 +1073,7 @@ inherited MainForm: TMainForm
     Align = alBottom
     AutoSnap = False
     MinSize = 80
+    OnChangeBounds = VSplitterChangeBounds
     ResizeAnchor = akBottom
   end
   object MainToolBar: TToolBar[4]
