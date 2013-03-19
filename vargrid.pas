@@ -1186,6 +1186,9 @@ var
   Rs: Boolean;
   R: TRect;
   ClipArea: Trect;
+{$ifdef LCLgtk2}
+  Rgn: HRGN;
+{$endif LCLgtk2}
 
   procedure DoDrawCell;
   begin
@@ -1198,7 +1201,11 @@ var
         Include(gds, gdPushed);
        end;
     end;
-
+{$ifdef LCLgtk2}
+    Rgn := CreateRectRgn(R.Left, R.Top, R.Right, R.Bottom);
+    SelectClipRgn(Canvas.Handle, Rgn);
+    DeleteObject(Rgn);
+{$endif LCLgtk2}
     DrawCell(aCol, aRow, R, gds);
   end;
 
@@ -1236,6 +1243,22 @@ begin
       DoDrawCell;
     end;
 
+    // Draw Fixed Columns
+    For aCol:=0 to FixedCols-1 do begin
+      gds:=[gdFixed];
+      ColRowToOffset(True, True, aCol, R.Left, R.Right);
+      // is this column within the ClipRect?
+      if HorizontalIntersect(R, ClipArea) then
+        DoDrawCell;
+    end;
+
+{$ifdef LCLgtk2}
+    with ClipArea do
+      Rgn := CreateRectRgn(Left, Top, Right, Bottom);
+    SelectClipRgn(Canvas.Handle, Rgn);
+    DeleteObject(Rgn);
+{$endif LCLgtk2}
+
     // Draw the focus Rect
     if FocusRectVisible and (ARow=inherited Row) and
        ((Rs and (ARow>=Top) and (ARow<=Bottom)) or IsCellVisible(Col,ARow))
@@ -1250,15 +1273,6 @@ begin
           DrawFocusRect(Col,inherited Row, R);
       end;
     end;
-  end;
-
-  // Draw Fixed Columns
-  For aCol:=0 to FixedCols-1 do begin
-    gds:=[gdFixed];
-    ColRowToOffset(True, True, aCol, R.Left, R.Right);
-    // is this column within the ClipRect?
-    if HorizontalIntersect(R, ClipArea) then
-      DoDrawCell;
   end;
 end;
 
