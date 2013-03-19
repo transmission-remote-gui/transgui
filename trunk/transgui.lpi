@@ -20,8 +20,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="4"/>
-      <MinorVersionNr Value="1"/>
-      <StringTable CompanyName="Yury Sidorov" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2012 by Yury Sidorov" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion=""/>
+      <MinorVersionNr Value="2"/>
+      <StringTable CompanyName="Yury Sidorov" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2013 by Yury Sidorov" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion="4.2"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="default" Default="True"/>
@@ -35,6 +35,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="--home=home"/>
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
