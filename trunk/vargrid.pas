@@ -116,6 +116,7 @@ type
     function  DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean; override;
     function  DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean; override;
     function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
+    procedure DrawRow(aRow: Integer); override;
 
   public
     constructor Create(AOwner: TComponent); override;
@@ -1176,6 +1177,89 @@ procedure TVarGrid.EndUpdate(aRefresh: boolean);
 begin
   inherited EndUpdate(aRefresh);
   Items.EndUpdate;
+end;
+
+procedure TVarGrid.DrawRow(aRow: Integer);
+var
+  Gds: TGridDrawState;
+  aCol: Integer;
+  Rs: Boolean;
+  R: TRect;
+  ClipArea: Trect;
+
+  procedure DoDrawCell;
+  begin
+    with GCache do begin
+      if (aCol=HotCell.x) and (aRow=HotCell.y) and not ((PushedCell.X<>-1) and (PushedCell.Y<>-1)) then begin
+        Include(gds, gdHot);
+        HotCellPainted:=True;
+      end;
+      if ClickCellPushed and (aCol=PushedCell.x) and (aRow=PushedCell.y) then begin
+        Include(gds, gdPushed);
+       end;
+    end;
+
+    DrawCell(aCol, aRow, R, gds);
+  end;
+
+  function HorizontalIntersect(const aRect,bRect: TRect): boolean;
+  begin
+    result := (aRect.Left < bRect.Right) and (aRect.Right > bRect.Left);
+  end;
+
+begin
+  // Upper and Lower bounds for this row
+  R.Left:=0;
+  ColRowToOffSet(False, True, aRow, R.Top, R.Bottom);
+  // is this row within the ClipRect?
+  ClipArea := Canvas.ClipRect;
+  if (R.Top >= ClipArea.Bottom) or (R.Bottom < ClipArea.Top) then
+    exit;
+  // Draw columns in this row
+  with GCache.VisibleGrid do begin
+    for aCol:=left to Right do begin
+      ColRowToOffset(True, True, aCol, R.Left, R.Right);
+      if not HorizontalIntersect(R, ClipArea) then
+        continue;
+      gds := [];
+      Rs := (goRowSelect in Options);
+      if ARow<FixedRows then
+        include(gds, gdFixed)
+      else begin
+        if (aCol=Col)and(aRow=inherited Row) then
+          gds := gds + [gdFocused, gdSelected]
+        else
+        if IsCellSelected[aCol, aRow] then
+          include(gds, gdSelected);
+      end;
+
+      DoDrawCell;
+    end;
+
+    // Draw the focus Rect
+    if FocusRectVisible and (ARow=inherited Row) and
+       ((Rs and (ARow>=Top) and (ARow<=Bottom)) or IsCellVisible(Col,ARow))
+    then begin
+      if EditorMode then begin
+      //if EditorAlwaysShown and (FEditor<>nil) and FEditor.Visible then begin
+        //DebugLn('No Draw Focus Rect');
+      end else begin
+        ColRowToOffset(True, True, Col, R.Left, R.Right);
+        // is this column within the ClipRect?
+        if HorizontalIntersect(R, ClipArea) then
+          DrawFocusRect(Col,inherited Row, R);
+      end;
+    end;
+  end;
+
+  // Draw Fixed Columns
+  For aCol:=0 to FixedCols-1 do begin
+    gds:=[gdFixed];
+    ColRowToOffset(True, True, aCol, R.Left, R.Right);
+    // is this column within the ClipRect?
+    if HorizontalIntersect(R, ClipArea) then
+      DoDrawCell;
+  end;
 end;
 
 end.
