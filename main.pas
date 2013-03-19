@@ -3276,7 +3276,9 @@ end;
 
 procedure TMainForm.HSplitterChangeBounds(Sender: TObject);
 begin
+{$ifdef windows}
   Update;
+{$endif windows}
 end;
 
 procedure TMainForm.lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
@@ -3635,7 +3637,9 @@ end;
 
 procedure TMainForm.VSplitterChangeBounds(Sender: TObject);
 begin
+{$ifdef windows}
   Update;
+{$endif windows}
 end;
 
 procedure TMainForm.UrlLabelClick(Sender: TObject);
