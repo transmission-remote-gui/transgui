@@ -69,6 +69,8 @@ procedure ShowTaskbarButton;
 procedure HideTaskbarButton;
 function IsTaskbarButtonVisible: boolean;
 
+procedure CenterOnParent(C: TControl);
+
 function OpenURL(const URL: string; const Params: string = ''): boolean;
 
 function CompareFilePath(const p1, p2: string): integer;
@@ -538,6 +540,16 @@ begin
     Result := Result + LineEnding + GetAddrInfo(Frames[I]);
 end;
 {$endif CALLSTACK}
+
+procedure CenterOnParent(C: TControl);
+var
+  R: TRect;
+begin
+  R:=C.BoundsRect;
+  R.Left:=(C.Parent.ClientWidth - C.Width) div 2;
+  R.Top:=(C.Parent.ClientHeight - C.Height) div 2;
+  C.BoundsRect:=R;
+end;
 
 finalization
 {$ifdef windows}
