@@ -685,7 +685,8 @@ const
   idxSeedsTotal = -2;
   idxLeechersTotal = -3;
   idxStateImg = -4;
-  TorrentsExtraColumns = 4;
+  idxDeleted = -5;
+  TorrentsExtraColumns = 5;
 
   // Peers list
   idxPeerHost = 0;
@@ -3321,6 +3322,9 @@ begin
     if ACol = gTorrents.FirstVisibleColumn then
       ImageIndex:=integer(Sender.Items[idxStateImg, ARow]);
     if Text = '' then exit;
+    if not VarIsEmpty(Sender.Items[idxDeleted, ARow]) then
+      with Sender.Canvas.Font do
+        Style:=Style + [fsStrikeOut];
     case ADataCol of
       idxStatus:
         Text:=GetTorrentStatus(ARow);
@@ -4938,6 +4942,7 @@ var
   args: TJSONObject;
   ids: variant;
   s: string;
+  i, j, id: integer;
 begin
   if gTorrents.Items.Count = 0 then exit;
   gTorrents.Tag:=1;
@@ -4955,9 +4960,29 @@ begin
   args:=TJSONObject.Create;
   if RemoveLocalData then
     args.Add('delete-local-data', TJSONIntegerNumber.Create(1));
-  TorrentAction(ids, 'torrent-remove', args);
-  if RemoveLocalData then
-    RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
+
+  if TorrentAction(ids, 'torrent-remove', args) then begin
+    with gTorrents do begin
+      BeginUpdate;
+      try
+        i:=0;
+        while i < Items.Count do begin
+          id:=Items[idxTorrentId, i];
+          for j:=0 to VarArrayHighBound(ids, 1) do
+            if id = ids[j] then begin
+              Items.Items[idxDeleted, i]:=1;
+              break;
+            end;
+          Inc(i);
+        end;
+      finally
+        EndUpdate;
+      end;
+    end;
+
+    if RemoveLocalData then
+      RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
+  end;
 end;
 
 function TMainForm.IncludeProperTrailingPathDelimiter(const s: string): string;
