@@ -474,6 +474,7 @@ type
     procedure gTorrentsQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer);
     procedure gTorrentsResize(Sender: TObject);
     procedure gTorrentsSortColumn(Sender: TVarGrid; var ASortCol: integer);
+    procedure HSplitterChangeBounds(Sender: TObject);
     procedure lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure lvFilesDblClick(Sender: TObject);
     procedure lvFilesDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
@@ -506,6 +507,7 @@ type
     procedure pmFilesPopup(Sender: TObject);
     procedure pmTorrentsPopup(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
+    procedure VSplitterChangeBounds(Sender: TObject);
   private
     FStarted: boolean;
     FTorrents: TVarList;
@@ -3272,6 +3274,11 @@ begin
     ASortCol:=idxLeechersTotal;
 end;
 
+procedure TMainForm.HSplitterChangeBounds(Sender: TObject);
+begin
+  Update;
+end;
+
 procedure TMainForm.lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
 begin
   if ARow < 0 then exit;
@@ -3626,6 +3633,11 @@ begin
 {$endif darwin}
 end;
 
+procedure TMainForm.VSplitterChangeBounds(Sender: TObject);
+begin
+  Update;
+end;
+
 procedure TMainForm.UrlLabelClick(Sender: TObject);
 begin
   AppBusy;
@@ -3652,8 +3664,7 @@ begin
   Progress:=double(Sender.Items[ADataCol, ARow]);
   with Sender.Canvas do begin
     R:=ACellRect;
-    Pen.Color:=Brush.Color;
-    Rectangle(R);
+    FrameRect(R);
     s:=Format('%.1f%%', [Progress]);
     sz:=TextExtent(s);
     InflateRect(R, -1, -1);
@@ -3663,8 +3674,7 @@ begin
 
     i:=R.Left + Round(Progress*(R.Right - R.Left)/100.0);
     j:=(R.Top + R.Bottom) div 2;
-    h:=TextHeight(s);
-    h:=(R.Top + R.Bottom - h) div 2;
+    h:=(R.Top + R.Bottom - sz.cy) div 2;
     cl:=GetLikeColor(clHighlight, 70);
     GradientFill(Rect(R.Left, R.Top, i, j), cl, clHighlight, gdVertical);
     GradientFill(Rect(R.Left, j, i, R.Bottom), clHighlight, cl, gdVertical);
@@ -3672,6 +3682,7 @@ begin
     ts:=TextStyle;
     ts.Layout:=tlTop;
     ts.Alignment:=taLeftJustify;
+    ts.Wordbreak:=False;
     TextStyle:=ts;
     j:=(R.Left + R.Right - sz.cx) div 2;
     if i > R.Left then begin
