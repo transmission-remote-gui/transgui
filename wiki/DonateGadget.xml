@@ -24,8 +24,8 @@ function DonateClick()
     if (document.getElementById("donate_webmoney").checked)
       u=uShareIt.replace("{P}", "WMO");
     else
-    if (document.getElementById("donate_plimus").checked)
-      u=uPlimus;
+    if (document.getElementById("donate_cc").checked)
+      u=uShareIt.replace("{P}", "CCA,CHK,WTR");
     else {
       alert("Please choose a payment option.");
       return;
@@ -61,8 +61,8 @@ Donate using:
   <label for="donate_paypal"><img src="http://transmisson-remote-gui.googlecode.com/svn/wiki/pp-ico.png" width=16 height=16 align=texttop> <b>PayPal</b> via ShareIt</label><br>
 <input type="radio" name="donate_type" value="webmoney" id="donate_webmoney">
   <label for="donate_webmoney"><img src="http://transmisson-remote-gui.googlecode.com/svn/wiki/wm-ico.png" width=16 height=16 align=texttop> <b>WebMoney</b> via ShareIt</label><br>
-<input type="radio" name="donate_type" value="plimus" id="donate_plimus">
-  <label for="donate_plimus"><img src="http://transmisson-remote-gui.googlecode.com/svn/wiki/cc-ico.png" width=16 height=16 align=texttop> <b>Credit card/Wire transfer</b> via Plimus</label><br>
+<input type="radio" name="donate_type" value="plimus" id="donate_cc">
+  <label for="donate_cc"><img src="http://transmisson-remote-gui.googlecode.com/svn/wiki/cc-ico.png" width=16 height=16 align=texttop> <b>Credit card/Wire transfer</b> via ShareIt</label><br>
 <div>
 <br>
 Donation amount:
