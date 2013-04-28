@@ -320,6 +320,7 @@ begin
   THandle(pointer(@FStream.Handle)^):=h;
   try
     inherited UpdateFile;
+    FStream.Size:=FStream.Position;
   finally
     FileClose(FStream.Handle);
     THandle(pointer(@FStream.Handle)^):=0;
