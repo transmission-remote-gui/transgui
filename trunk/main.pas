@@ -6131,19 +6131,24 @@ const
 var
   s: string;
 begin
-  if not FLinksFromClipboard then
-    exit;
-  s:=Clipboard.AsText;
-  if s = FLastClipboardLink then
-    exit;
-  FLastClipboardLink:=s;
-  if not IsProtocolSupported(s) then
-    exit;
-  if (Pos('magnet:', UTF8LowerCase(s)) <> 1) and (UTF8LowerCase(Copy(s, Length(s) - Length(strTorrentExt) + 1, MaxInt)) <> strTorrentExt) then
-    exit;
+  try
+    if not FLinksFromClipboard then
+      exit;
+    s:=Clipboard.AsText;
+    if s = FLastClipboardLink then
+      exit;
+    FLastClipboardLink:=s;
+    if not IsProtocolSupported(s) then
+      exit;
+    if (Pos('magnet:', UTF8LowerCase(s)) <> 1) and (UTF8LowerCase(Copy(s, Length(s) - Length(strTorrentExt) + 1, MaxInt)) <> strTorrentExt) then
+      exit;
 
-  AddTorrentFile(s);
-  Clipboard.AsText:='';
+    AddTorrentFile(s);
+    Clipboard.AsText:='';
+  except
+    // Turn off this function if an error occurs
+    FLinksFromClipboard:=False;
+  end;
 end;
 
 procedure TMainForm.CenterDetailsWait;
