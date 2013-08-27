@@ -29,6 +29,7 @@ uses
 resourcestring
   SSize = 'Size';
   SSelectDownloadFolder = 'Select a folder for download';
+  SInvalidName = 'Invalid name specified.';
 
 type
 
@@ -41,9 +42,11 @@ type
     Buttons: TButtonPanel;
     cbStartTorrent: TCheckBox;
     cbDestFolder: TComboBox;
+    edSaveAs: TEdit;
     gbSaveAs: TGroupBox;
     gbContents: TGroupBox;
     edPeerLimit: TSpinEdit;
+    txSaveAs: TLabel;
     txSize: TLabel;
     txDiskSpace: TLabel;
     txPeerLimit: TLabel;
@@ -52,9 +55,11 @@ type
     procedure btBrowseClick(Sender: TObject);
     procedure btSelectAllClick(Sender: TObject);
     procedure btSelectNoneClick(Sender: TObject);
+    procedure edSaveAsChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
+    procedure OKButtonClick(Sender: TObject);
   private
     procedure lvFilesCheckBoxClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);
     procedure lvFilesTreeButtonClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);
@@ -63,6 +68,7 @@ type
     procedure TreeChanged;
     procedure UpdateSize;
   public
+    OrigCaption: string;
     HasFolders: boolean;
   end;
 
@@ -138,6 +144,19 @@ begin
         Text:=GetHumanSize(double(Sender.Items[ADataCol, ARow]));
     end;
   end;
+end;
+
+procedure TAddTorrentForm.OKButtonClick(Sender: TObject);
+begin
+  if edSaveAs.Enabled then begin
+    edSaveAs.Text:=Trim(edSaveAs.Text);
+    if edSaveAs.Text = '' then begin
+      edSaveAs.SetFocus;
+      MessageDlg(SInvalidName, mtError, [mbOK], 0);
+      exit;
+    end;
+  end;
+  ModalResult:=mrOK;
 end;
 
 procedure TAddTorrentForm.lvFilesCheckBoxClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);
@@ -299,11 +318,18 @@ begin
   UpdateSize;
 end;
 
+procedure TAddTorrentForm.edSaveAsChange(Sender: TObject);
+begin
+  Caption:=OrigCaption + ' - ' + edSaveAs.Text;
+end;
+
 procedure TAddTorrentForm.FormCreate(Sender: TObject);
 begin
+  OrigCaption:=Caption;
   lvFiles.Items.ExtraColumns:=5;
   lvFiles.OnCheckBoxClick:=@lvFilesCheckBoxClick;
   lvFiles.OnTreeButtonClick:=@lvFilesTreeButtonClick;
+  Buttons.OKButton.ModalResult:=mrNone;
 {$ifdef windows}
   gbSaveAs.Caption:='';
 {$endif windows}
