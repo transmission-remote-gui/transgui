@@ -18,7 +18,7 @@ inherited AddTorrentForm: TAddTorrentForm
   Position = poMainFormCenter
   object gbSaveAs: TGroupBox[0]
     Left = 8
-    Height = 92
+    Height = 132
     Top = 8
     Width = 481
     Align = alTop
@@ -26,7 +26,7 @@ inherited AddTorrentForm: TAddTorrentForm
     BorderSpacing.Top = 8
     BorderSpacing.Right = 8
     Caption = ' '
-    ClientHeight = 74
+    ClientHeight = 114
     ClientWidth = 477
     TabOrder = 0
     object txDestFolder: TLabel
@@ -40,7 +40,7 @@ inherited AddTorrentForm: TAddTorrentForm
     object txPeerLimit: TLabel
       Left = 340
       Height = 14
-      Top = 49
+      Top = 87
       Width = 48
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
@@ -59,22 +59,22 @@ inherited AddTorrentForm: TAddTorrentForm
     object cbStartTorrent: TCheckBox
       Left = 10
       Height = 17
-      Top = 47
+      Top = 85
       Width = 79
       Caption = 'Start torrent'
       Checked = True
       State = cbChecked
-      TabOrder = 2
+      TabOrder = 3
     end
     object edPeerLimit: TSpinEdit
       Left = 404
       Height = 21
-      Top = 46
+      Top = 84
       Width = 62
       Anchors = [akTop, akRight]
       MaxValue = 999
       MinValue = 1
-      TabOrder = 3
+      TabOrder = 4
       Value = 1
     end
     object btBrowse: TButton
@@ -87,11 +87,28 @@ inherited AddTorrentForm: TAddTorrentForm
       OnClick = btBrowseClick
       TabOrder = 1
     end
+    object txSaveAs: TLabel
+      Left = 10
+      Height = 14
+      Top = 40
+      Width = 43
+      Caption = 'Save as:'
+      ParentColor = False
+    end
+    object edSaveAs: TEdit
+      Left = 10
+      Height = 21
+      Top = 56
+      Width = 456
+      Anchors = [akTop, akLeft, akRight]
+      OnChange = edSaveAsChange
+      TabOrder = 2
+    end
   end
   object gbContents: TGroupBox[1]
     Left = 8
-    Height = 294
-    Top = 104
+    Height = 254
+    Top = 144
     Width = 481
     Align = alClient
     BorderSpacing.Left = 8
@@ -99,7 +116,7 @@ inherited AddTorrentForm: TAddTorrentForm
     BorderSpacing.Right = 8
     BorderSpacing.Bottom = 8
     Caption = 'Torrent contents'
-    ClientHeight = 276
+    ClientHeight = 236
     ClientWidth = 477
     TabOrder = 1
     object txDiskSpace: TLabel
@@ -119,7 +136,7 @@ inherited AddTorrentForm: TAddTorrentForm
     end
     object lvFiles: TVarGrid
       Left = 10
-      Height = 223
+      Height = 183
       Top = 40
       Width = 456
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -179,6 +196,7 @@ inherited AddTorrentForm: TAddTorrentForm
     BorderSpacing.Around = 0
     OKButton.Name = 'OKButton'
     OKButton.Caption = '&OK'
+    OKButton.OnClick = OKButtonClick
     HelpButton.Name = 'HelpButton'
     HelpButton.Caption = '&Help'
     CloseButton.Name = 'CloseButton'

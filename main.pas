@@ -1918,7 +1918,7 @@ var
   t, files: TJSONArray;
   i: integer;
   fs: TFileStreamUTF8;
-  s, ss, OldDownloadDir, IniSec, path: string;
+  s, ss, OldDownloadDir, IniSec, path, OldName: string;
   tt: TDateTime;
   ok: boolean;
 begin
@@ -2003,10 +2003,24 @@ begin
           t:=args.Arrays['torrents'];
           if t.Count = 0 then
             raise Exception.Create(sUnableGetFilesList);
-          Caption:=Caption + ' - ' + UTF8Encode(t.Objects[0].Strings['name']);
+          OldName:=UTF8Encode(t.Objects[0].Strings['name']);
+          edSaveAs.Caption:=OldName;
+          if RpcObj.RPCVersion < 15 then begin
+            edSaveAs.Enabled:=False;
+            edSaveAs.ParentColor:=True;
+          end;
           edPeerLimit.Value:=t.Objects[0].Integers['maxConnectedPeers'];
+          // Filling files list
           files:=t.Objects[0].Arrays['files'];
-          path:=GetFilesCommonPath(files);
+          path:='';
+          if files.Count > 0 then begin
+            s:=UTF8Encode(files.Objects[0].Strings['name']);
+            i:=Pos('/', s);
+            if i = 0 then
+              i:=Pos('\', s);
+            if i > 0 then
+              path:=Copy(s, 1, i);
+          end;
           lvFiles.Items.BeginUpdate;
           try
             lvFiles.Items.RowCnt:=files.Count;
@@ -2034,12 +2048,14 @@ begin
 
           Width:=Ini.ReadInteger('AddTorrent', 'Width', Width);
           if (RpcObj.RPCVersion >= 7) and (lvFiles.Items.Count = 0) and (t.Objects[0].Floats['metadataPercentComplete'] <> 1.0) then begin
+            // Magnet link
             gbContents.Hide;
             gbSaveAs.BorderSpacing.Bottom:=gbSaveAs.BorderSpacing.Top;
             BorderStyle:=bsDialog;
             AutoSizeForm(TCustomForm(gbContents.Parent));
           end
           else
+            // Torrent file
             Height:=Ini.ReadInteger('AddTorrent', 'Height', Height);
         finally
           args.Free;
@@ -2116,6 +2132,26 @@ begin
               exit;
             end;
             args.Free;
+
+            edSaveAs.Text:=Trim(edSaveAs.Text);
+            if OldName <> edSaveAs.Text then begin
+              // Changing torrent name
+              req.Free;
+              req:=TJSONObject.Create;
+              req.Add('method', 'torrent-rename-path');
+              args:=TJSONObject.Create;
+              args.Add('ids', TJSONArray.Create([id]));
+              args.Add('path', UTF8Decode(OldName));
+              args.Add('name', UTF8Decode(edSaveAs.Text));
+              req.Add('arguments', args);
+              args:=nil;
+              args:=RpcObj.SendRequest(req, False);
+              if args = nil then begin
+                CheckStatus(False);
+                exit;
+              end;
+              args.Free;
+            end;
           finally
             req.Free;
           end;
