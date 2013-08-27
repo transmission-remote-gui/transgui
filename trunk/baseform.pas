@@ -155,7 +155,7 @@ begin
       // Runtime fixes
 
       // Fix right aligned label autosize
-      if C.Visible and (C is TCustomLabel) and (C.AutoSize) and (C.Anchors*[akLeft, akRight] = [akRight]) then begin
+      if C.Visible and (C is TCustomLabel) and C.AutoSize and (TLabel(C).Alignment = taLeftJustify) and (C.Anchors*[akLeft, akRight] = [akRight]) then begin
         w:=0;
         h:=0;
         THackControl(C).CalculatePreferredSize(w, h, True);
