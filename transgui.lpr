@@ -27,7 +27,7 @@ program transgui;
 
 uses
   {$IFDEF UNIX}
-  cthreads,
+  cthreads, clocale,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms
