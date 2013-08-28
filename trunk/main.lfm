@@ -205,6 +205,7 @@ inherited MainForm: TMainForm
           Width = 80
         end      
         item
+          Alignment = taRightJustify
           Title.Caption = 'Ratio'
         end      
         item
