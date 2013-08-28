@@ -494,6 +494,7 @@ type
     procedure acUpdateBlocklistExecute(Sender: TObject);
     procedure acUpdateGeoIPExecute(Sender: TObject);
     procedure acVerifyTorrentExecute(Sender: TObject);
+    procedure ApplicationPropertiesEndSession(Sender: TObject);
     procedure ApplicationPropertiesException(Sender: TObject; E: Exception);
     procedure ApplicationPropertiesIdle(Sender: TObject; var Done: Boolean);
     procedure ApplicationPropertiesMinimize(Sender: TObject);
@@ -576,6 +577,7 @@ type
     FSlowResponse: TProgressImage;
     FDetailsWait: TProgressImage;
     FDetailsWaitStart: TDateTime;
+    FMainFormShown: boolean;
 
     procedure UpdateUI;
     procedure UpdateUIRpcVersion(RpcVersion: integer);
@@ -1033,6 +1035,7 @@ begin
   end;
 
   if FileExistsUTF8(FRunFileName) then begin
+    // Another process is running
     h:=FileOpenUTF8(FRunFileName, fmOpenRead or fmShareDenyNone);
     if FileRead(h, pid, SizeOf(pid)) = SizeOf(pid) then begin
 {$ifdef mswindows}
@@ -1050,13 +1053,17 @@ begin
       end
       else
         Sleep(200);
-  end
-  else begin
-    h:=FileCreateUTF8(FRunFileName);
-    pid:=GetProcessID;
-    FileWrite(h, pid, SizeOf(pid));
-    FileClose(h);
+    // A running process is not responding
+    DeleteFileUTF8(FRunFileName);
   end;
+
+  // Create a new run file
+  h:=FileCreateUTF8(FRunFileName);
+  pid:=GetProcessID;
+  FileWrite(h, pid, SizeOf(pid));
+  FileClose(h);
+  DeleteFileUTF8(FIPCFileName);
+
   LoadTranslation;
 
   SizeNames[1]:=sByte;
@@ -1344,7 +1351,8 @@ begin
   FPathMap:=TStringList.Create;
   if Application.HasOption('hidden') then begin
     ApplicationProperties.ShowMainForm:=False;
-    FormShow(nil);
+    TickTimer.Enabled:=True;
+    UpdateTray;
   end;
   UpdateConnections;
 
@@ -1389,12 +1397,14 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  if not FStarted then begin
+  if not FMainFormShown then begin
+    FMainFormShown:=True;
     VSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
     HSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
-    TickTimer.Enabled:=True;
     MakeFullyVisible;
   end;
+  if not FStarted then
+    TickTimer.Enabled:=True;
   UpdateTray;
 end;
 
@@ -3280,6 +3290,12 @@ begin
     gTorrents.Tag:=0;
   end;
   TorrentAction(ids, 'torrent-verify');
+end;
+
+procedure TMainForm.ApplicationPropertiesEndSession(Sender: TObject);
+begin
+  DeleteFileUTF8(FRunFileName);
+  BeforeCloseApp;
 end;
 
 procedure TMainForm.ApplicationPropertiesException(Sender: TObject; E: Exception);

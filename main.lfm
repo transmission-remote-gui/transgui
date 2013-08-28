@@ -322,11 +322,11 @@ inherited MainForm: TMainForm
     Height = 306
     Top = 157
     Width = 780
-    ActivePage = tabStats
+    ActivePage = tabGeneral
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 4
+    TabIndex = 0
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -2775,6 +2775,7 @@ inherited MainForm: TMainForm
   object ApplicationProperties: TApplicationProperties[12]
     ShowButtonGlyphs = sbgSystem
     OnIdle = ApplicationPropertiesIdle
+    OnEndSession = ApplicationPropertiesEndSession
     OnMinimize = ApplicationPropertiesMinimize
     OnRestore = ApplicationPropertiesRestore
     left = 348
