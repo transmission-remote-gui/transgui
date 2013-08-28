@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2012 by Yury Sidorov.
+  Copyright (c) 2008-2013 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -61,6 +61,8 @@ type
     FOnCellAttributes: TOnCellAttributes;
     FOnCheckBoxClick: TCellNotifyEvent;
     FOnDrawCell: TOnDrawCellEvent;
+    FOnEditorHide: TNotifyEvent;
+    FOnEditorShow: TNotifyEvent;
     FOnQuickSearch: TOnQuickSearch;
     FOnTreeButtonClick: TCellNotifyEvent;
     FSelCount: integer;
@@ -71,6 +73,7 @@ type
     FHintCell: TPoint;
     FCurSearch: string;
     FSearchTimer: TTimer;
+    FOldOpt: TGridOptions;
 
     function GetRow: integer;
     function GetRowSelected(RowIndex: integer): boolean;
@@ -115,8 +118,13 @@ type
     procedure DoOnTreeButtonClick(ACol, ARow: integer);
     function  DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean; override;
     function  DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean; override;
-    function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
+    function  DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
     procedure DrawRow(aRow: Integer); override;
+    function  GetCells(ACol, ARow: Integer): string; override;
+    function  GetEditText(ACol, ARow: Longint): string; override;
+    procedure SetEditText(ACol, ARow: Longint; const Value: string); override;
+    procedure DoEditorShow; override;
+    procedure DoEditorHide; override;
 
   public
     constructor Create(AOwner: TComponent); override;
@@ -125,9 +133,11 @@ type
     procedure SelectAll;
     procedure Sort; reintroduce;
     function ColToDataCol(ACol: integer): integer;
+    function DataColToCol(ADataCol: integer): integer;
     procedure EnsureSelectionVisible;
     procedure BeginUpdate; reintroduce;
     procedure EndUpdate(aRefresh: boolean = true); reintroduce;
+    procedure EditCell(ACol, ARow: integer);
 
     property Items: TVarList read FItems;
     property RowSelected[RowIndex: integer]: boolean read GetRowSelected write SetRowSelected;
@@ -190,6 +200,8 @@ type
     property OnStartDrag;
     property OnUTF8KeyPress;
     property OnResize;
+    property OnGetEditText;
+    property OnSetEditText;
 
     property Images: TImageList read FImages write FImages;
     property MultiSelect: boolean read FMultiSelect write FMultiSelect default False;
@@ -203,6 +215,8 @@ type
     property OnCheckBoxClick: TCellNotifyEvent read FOnCheckBoxClick write FOnCheckBoxClick;
     property OnTreeButtonClick: TCellNotifyEvent read FOnTreeButtonClick write FOnTreeButtonClick;
     property OnQuickSearch: TOnQuickSearch read FOnQuickSearch write FOnQuickSearch;
+    property OnEditorShow: TNotifyEvent read FOnEditorShow write FOnEditorShow;
+    property OnEditorHide: TNotifyEvent read FOnEditorHide write FOnEditorHide;
   end;
 
 procedure Register;
@@ -523,8 +537,6 @@ var
   sz: TSize;
   i: integer;
 begin
-  if RowHeights[aRow] = 0 then
-    exit;
   RR:=aRect;
   IsHeader:=(gdFixed in aState) and (aRow=0) and (aCol>=FirstGridColumn);
   if not IsHeader and MultiSelect and (FSelCount > 0) then
@@ -765,6 +777,14 @@ var
   r, k: integer;
   ca: TCellAttributes;
 begin
+  if EditorMode then begin
+    if Key = VK_ESCAPE then begin
+      EditorHide;
+      SetFocus;
+    end;
+    exit;
+  end;
+
   r:=Row;
   k:=Key;
 
@@ -1094,6 +1114,7 @@ begin
     Interval:=1500;
     OnTimer:=@DoSearchTimer;
   end;
+  FastEditing:=False;
 end;
 
 destructor TVarGrid.Destroy;
@@ -1150,6 +1171,18 @@ begin
     Result:=-1;
 end;
 
+function TVarGrid.DataColToCol(ADataCol: integer): integer;
+var
+  i: integer;
+begin
+  for i:=FixedCols to High(FColumnsMap) do
+    if FColumnsMap[i] = ADataCol then begin
+      Result:=i;
+      exit;
+    end;
+  Result:=-1;
+end;
+
 procedure TVarGrid.EnsureSelectionVisible;
 var
   i: integer;
@@ -1178,6 +1211,14 @@ procedure TVarGrid.EndUpdate(aRefresh: boolean);
 begin
   inherited EndUpdate(aRefresh);
   Items.EndUpdate;
+end;
+
+procedure TVarGrid.EditCell(ACol, ARow: integer);
+begin
+  SetFocus;
+  FOldOpt:=Options;
+  Options:=Options + [goEditing];
+  EditorShowInCell(DataColToCol(ACol), ARow + FixedRows);
 end;
 
 procedure TVarGrid.DrawRow(aRow: Integer);
@@ -1219,6 +1260,8 @@ begin
   // Upper and Lower bounds for this row
   R.Left:=0;
   ColRowToOffSet(False, True, aRow, R.Top, R.Bottom);
+  if R.Bottom <= R.Top then
+    exit;
   // is this row within the ClipRect?
   ClipArea := Canvas.ClipRect;
   if (R.Top >= ClipArea.Bottom) or (R.Bottom < ClipArea.Top) then
@@ -1227,7 +1270,7 @@ begin
   with GCache.VisibleGrid do begin
     for aCol:=left to Right do begin
       ColRowToOffset(True, True, aCol, R.Left, R.Right);
-      if not HorizontalIntersect(R, ClipArea) then
+      if (R.Right <= R.Left) or not HorizontalIntersect(R, ClipArea) then
         continue;
       gds := [];
       Rs := (goRowSelect in Options);
@@ -1249,7 +1292,7 @@ begin
       gds:=[gdFixed];
       ColRowToOffset(True, True, aCol, R.Left, R.Right);
       // is this column within the ClipRect?
-      if HorizontalIntersect(R, ClipArea) then
+      if (R.Right > R.Left) and HorizontalIntersect(R, ClipArea) then
         DoDrawCell;
     end;
 
@@ -1275,6 +1318,60 @@ begin
       end;
     end;
   end;
+end;
+
+function TVarGrid.GetCells(ACol, ARow: Integer): string;
+var
+  dc: integer;
+  v: variant;
+begin
+  Result:='';
+  dc:=ColToDataCol(ACol);
+  if ARow >= FixedRows then begin
+    v:=Items[dc, ARow - FixedRows];
+    if not VarIsNull(v) and not VarIsEmpty(v) then
+      Result:=UTF8Encode(WideString(v));
+  end;
+end;
+
+function TVarGrid.GetEditText(ACol, ARow: Longint): string;
+begin
+  Result:=GetCells(ACol, ARow);
+  if Assigned(OnGetEditText) then
+    OnGetEditText(self, aCol - FixedCols, aRow - FixedRows, Result);
+end;
+
+procedure TVarGrid.SetEditText(ACol, ARow: Longint; const Value: string);
+var
+  dc: integer;
+begin
+  if not (gfEditingDone in GridFlags) then
+    exit;
+  if Assigned(OnSetEditText) then
+    OnSetEditText(Self, aCol - FixedCols, aRow - FixedRows, Value)
+  else begin
+    dc:=ColToDataCol(ACol);
+    if ARow >= FixedRows then
+      Items[dc, ARow - FixedRows]:=UTF8Decode(Value);
+  end;
+end;
+
+procedure TVarGrid.DoEditorShow;
+begin
+  inherited DoEditorShow;
+  if Assigned(OnEditorShow) then
+    OnEditorShow(Self);
+end;
+
+procedure TVarGrid.DoEditorHide;
+begin
+  try
+    inherited DoEditorHide;
+  finally
+    Options:=FOldOpt;
+  end;
+  if Assigned(OnEditorHide) then
+    OnEditorHide(Self);
 end;
 
 end.
