@@ -3837,7 +3837,8 @@ end;
 procedure TMainForm.TorrentsListTimerTimer(Sender: TObject);
 begin
   TorrentsListTimer.Enabled:=False;
-  FDetailsWaitStart:=Now;
+  if RpcObj.CurTorrentId <> 0 then
+    FDetailsWaitStart:=Now;
   DoRefresh;
 end;
 
@@ -4088,8 +4089,14 @@ procedure TMainForm.ClearDetailsInfo(Skip: TAdvInfoType);
   end;
 
 var
-  i: integer;
+  i, t: integer;
 begin
+  if RpcObj.CurTorrentId = 0 then begin
+    Skip:=aiNone;
+    t:=0;
+  end
+  else
+    t:=1;
   FDetailsWaitStart:=0;
   if Skip <> aiFiles then
     FFiles.Clear;
@@ -4105,7 +4112,7 @@ begin
     txDownProgress.Caption:='';
   end;
   for i:=0 to PageInfo.PageCount - 1 do
-    PageInfo.Pages[i].Tag:=1;
+    PageInfo.Pages[i].Tag:=t;
 end;
 
 function TMainForm.SelectRemoteFolder(const CurFolder, DialogTitle: string): string;

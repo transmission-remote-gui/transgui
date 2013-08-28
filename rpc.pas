@@ -180,10 +180,14 @@ begin
                   GetFiles(CurTorrentId);
                 aiTrackers:
                   GetTrackers(CurTorrentId);
-                aiStats:
-                  GetStats(CurTorrentId);
               end;
             end;
+
+            case AdvInfo of
+              aiStats:
+                GetStats(CurTorrentId);
+            end;
+
             Exclude(FRpc.RefreshNow, rtDetails);
           end
           else
