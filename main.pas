@@ -760,6 +760,8 @@ const
      'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority',
      '', '', 'queuePosition');
 
+  FinishedQueue = 1000000;
+
 implementation
 
 uses
@@ -3406,6 +3408,13 @@ begin
         Text:=TorrentDateTimeToString(Sender.Items[ADataCol, ARow]);
       idxPriority:
         Text:=PriorityToStr(Sender.Items[ADataCol, ARow], ImageIndex);
+      idxQueuePos:
+        begin
+          j:=Sender.Items[ADataCol, ARow];
+          if j >= FinishedQueue then
+            Dec(j, FinishedQueue);
+          Text:=IntToStr(j);
+        end;
     end;
   end;
 end;
@@ -4683,9 +4692,8 @@ begin
     if FieldExists[idxQueuePos] then begin
       j:=t.Integers['queuePosition'];
       if FTorrents[idxStatus, row] = TR_STATUS_FINISHED then
-        FTorrents[idxQueuePos, row]:=NULL
-      else
-        FTorrents[idxQueuePos, row]:=j;
+        Inc(j, FinishedQueue);
+      FTorrents[idxQueuePos, row]:=j;
     end;
 
     DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, row];
