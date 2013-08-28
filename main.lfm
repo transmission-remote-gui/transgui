@@ -280,6 +280,7 @@ inherited MainForm: TMainForm
       OnClick = gTorrentsClick
       OnDblClick = gTorrentsDblClick
       OnResize = gTorrentsResize
+      OnSetEditText = gTorrentsSetEditText
       Images = ImageList16
       MultiSelect = True
       SortColumn = 0
@@ -287,6 +288,8 @@ inherited MainForm: TMainForm
       OnDrawCell = gTorrentsDrawCell
       OnSortColumn = gTorrentsSortColumn
       OnQuickSearch = gTorrentsQuickSearch
+      OnEditorShow = gTorrentsEditorShow
+      OnEditorHide = gTorrentsEditorHide
     end
   end
   object StatusBar: TStatusBar[1]
@@ -318,11 +321,11 @@ inherited MainForm: TMainForm
     Height = 306
     Top = 157
     Width = 780
-    ActivePage = tabTrackers
+    ActivePage = tabFiles
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 1
+    TabIndex = 3
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange
@@ -1019,6 +1022,8 @@ inherited MainForm: TMainForm
         HideSelection = True
         OnCellAttributes = lvFilesCellAttributes
         OnDrawCell = lvFilesDrawCell
+        OnEditorShow = gTorrentsEditorShow
+        OnEditorHide = gTorrentsEditorHide
       end
     end
     object tabStats: TTabSheet
@@ -1831,6 +1836,9 @@ inherited MainForm: TMainForm
         Action = acMoveTorrent
         OnClick = acMoveTorrentExecute
       end
+      object MenuItem98: TMenuItem
+        Action = acRename
+      end
       object MenuItem21: TMenuItem
         Action = acTorrentProps
         OnClick = acTorrentPropsExecute
@@ -2286,6 +2294,13 @@ inherited MainForm: TMainForm
       Caption = 'Copy file path to clipboard'
       OnExecute = acCopyPathExecute
     end
+    object acRename: TAction
+      Category = 'Torrent'
+      Caption = 'Rename'
+      OnExecute = acRenameExecute
+      ShortCut = 113
+      Visible = False
+    end
   end
   object TorrentsListTimer: TTimer[9]
     Enabled = False
@@ -2736,6 +2751,9 @@ inherited MainForm: TMainForm
     object MenuItem53: TMenuItem
       Action = acMoveTorrent
       OnClick = acMoveTorrentExecute
+    end
+    object MenuItem99: TMenuItem
+      Action = acRename
     end
     object MenuItem19: TMenuItem
       Caption = '-'

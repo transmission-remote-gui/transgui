@@ -191,6 +191,7 @@ type
     acInfoPane: TAction;
     acStatusBar: TAction;
     acCopyPath: TAction;
+    acRename: TAction;
     acTrackerGrouping: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
@@ -208,6 +209,8 @@ type
     MenuItem95: TMenuItem;
     MenuItem96: TMenuItem;
     MenuItem97: TMenuItem;
+    MenuItem98: TMenuItem;
+    MenuItem99: TMenuItem;
     panDetailsWait: TPanel;
     txGlobalStats: TLabel;
     lvFilter: TVarGrid;
@@ -470,6 +473,7 @@ type
     procedure acReannounceTorrentExecute(Sender: TObject);
     procedure acRemoveTorrentAndDataExecute(Sender: TObject);
     procedure acRemoveTorrentExecute(Sender: TObject);
+    procedure acRenameExecute(Sender: TObject);
     procedure acResolveCountryExecute(Sender: TObject);
     procedure acResolveHostExecute(Sender: TObject);
     procedure acSelectAllExecute(Sender: TObject);
@@ -502,8 +506,11 @@ type
     procedure gTorrentsClick(Sender: TObject);
     procedure gTorrentsDblClick(Sender: TObject);
     procedure gTorrentsDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
+    procedure gTorrentsEditorHide(Sender: TObject);
+    procedure gTorrentsEditorShow(Sender: TObject);
     procedure gTorrentsQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer);
     procedure gTorrentsResize(Sender: TObject);
+    procedure gTorrentsSetEditText(Sender: TObject; ACol, ARow: Integer; const Value: string);
     procedure gTorrentsSortColumn(Sender: TVarGrid; var ASortCol: integer);
     procedure HSplitterChangeBounds(Sender: TObject);
     procedure lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
@@ -570,12 +577,13 @@ type
     FDetailsWait: TProgressImage;
     FDetailsWaitStart: TDateTime;
 
+    procedure UpdateUI;
+    procedure UpdateUIRpcVersion(RpcVersion: integer);
     procedure DoConnect;
     procedure DoCreateOutZipStream(Sender: TObject; var AStream: TStream; AItem: TFullZipFileEntry);
     procedure DoDisconnect;
     procedure DoOpenFlagsZip(Sender: TObject; var AStream: TStream);
     procedure TorrentProps(PageNo: integer);
-    procedure UpdateUI;
     procedure ShowConnOptions(NewConnection: boolean);
     procedure SaveColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
     procedure LoadColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
@@ -621,12 +629,12 @@ type
     procedure SetSpeedLimit(const Dir: string; Speed: integer);
     function FixSeparators(const p: string): string;
     function MapRemoteToLocal(const RemotePath: string): string;
-    procedure UpdateUIRpcVersion(RpcVersion: integer);
     procedure CheckAddTorrents;
     procedure CheckClipboardLink;
     procedure CenterDetailsWait;
     function GetPageInfoType(pg: TTabSheet): TAdvInfoType;
     procedure DetailsUpdated;
+    function RenameTorrent(TorrentId: integer; const OldPath, NewPath: string): boolean;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -1803,6 +1811,7 @@ var
       args:=RpcObj.SendRequest(req);
       if args <> nil then
       try
+        // TODO: Check duplicate torrent
         Result:=args.Objects['torrent-added'].Integers['id'];
       finally
         args.Free;
@@ -2086,7 +2095,7 @@ begin
           Self.Update;
 
           if OldDownloadDir <> cbDestFolder.Text then begin
-            TorrentAction(VarArrayOf([id]), 'torrent-remove');
+            TorrentAction(id, 'torrent-remove');
             id:=0;
             args:=TJSONObject.Create;
             args.Add('paused', TJSONIntegerNumber.Create(1));
@@ -2157,7 +2166,7 @@ begin
           end;
 
           if cbStartTorrent.Checked then
-            TorrentAction(VarArrayOf([id]), 'torrent-start');
+            TorrentAction(id, 'torrent-start');
 
           tt:=Now;
           while (Now - tt < 2/SecsPerDay) and (id <> 0) do begin
@@ -2188,7 +2197,7 @@ begin
       end;
     finally
       if id <> 0 then
-        TorrentAction(VarArrayOf([id]), 'torrent-remove');
+        TorrentAction(id, 'torrent-remove');
     end;
   finally
     HideWaitMsg;
@@ -2802,6 +2811,14 @@ end;
 procedure TMainForm.acRemoveTorrentExecute(Sender: TObject);
 begin
   InternalRemoveTorrent(sRemoveTorrent, sRemoveTorrentMulti, False);
+end;
+
+procedure TMainForm.acRenameExecute(Sender: TObject);
+begin
+  if lvFiles.Focused then
+    lvFiles.EditCell(idxFileName, lvFiles.Row)
+  else
+    gTorrents.EditCell(idxName, gTorrents.Row);
 end;
 
 procedure TMainForm.acResolveCountryExecute(Sender: TObject);
@@ -3431,6 +3448,16 @@ begin
   end;
 end;
 
+procedure TMainForm.gTorrentsEditorHide(Sender: TObject);
+begin
+  gTorrents.Tag:=0;
+end;
+
+procedure TMainForm.gTorrentsEditorShow(Sender: TObject);
+begin
+  gTorrents.Tag:=1;
+end;
+
 procedure TMainForm.gTorrentsQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer);
 var
   i: integer;
@@ -3455,6 +3482,12 @@ begin
     VSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
     HSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
   end;
+end;
+
+procedure TMainForm.gTorrentsSetEditText(Sender: TObject; ACol, ARow: Integer; const Value: string);
+begin
+  if RenameTorrent(gTorrents.Items[idxTorrentId, ARow], UTF8Encode(gTorrents.Items[idxName, ARow]), Trim(Value)) then
+    gTorrents.Items[idxName, ARow]:=UTF8Decode(Trim(Value));
 end;
 
 procedure TMainForm.gTorrentsSortColumn(Sender: TVarGrid; var ASortCol: integer);
@@ -4142,7 +4175,8 @@ procedure TMainForm.UpdateUI;
 var
   e: boolean;
 begin
-  e:=((Screen.ActiveForm = Self) or not Visible or (WindowState = wsMinimized));
+  e:=((Screen.ActiveForm = Self) or not Visible or (WindowState = wsMinimized))
+     and not gTorrents.EditorMode and not lvFiles.EditorMode;
   acConnect.Enabled:=e;
   acOptions.Enabled:=e;
   acConnOptions.Enabled:=e;
@@ -4167,7 +4201,7 @@ begin
   pmiPriority.Enabled:=e and (gTorrents.Items.Count > 0);
   miPriority.Enabled:=pmiPriority.Enabled;
   acSetHighPriority.Enabled:=e and (gTorrents.Items.Count > 0) and
-                      ( ( not lvFiles.Focused and (RpcObj.RPCVersion >=5) ) or
+                      ( ( not lvFiles.Focused and (RpcObj.RPCVersion >= 5) ) or
                         ((lvFiles.Items.Count > 0) and (PageInfo.ActivePage = tabFiles)) );
   acSetNormalPriority.Enabled:=acSetHighPriority.Enabled;
   acSetLowPriority.Enabled:=acSetHighPriority.Enabled;
@@ -4180,6 +4214,7 @@ begin
   acOpenFile.Enabled:=acSetHighPriority.Enabled and (lvFiles.SelCount < 2) and (RpcObj.RPCVersion >= 4);
   acCopyPath.Enabled:=acOpenFile.Enabled;
   acSetNotDownload.Enabled:=acSetHighPriority.Enabled;
+  acRename.Enabled:=(RpcObj.RPCVersion >= 15) and acSetHighPriority.Enabled;
   acSetupColumns.Enabled:=e;
   acUpdateBlocklist.Enabled:=(acUpdateBlocklist.Tag <> 0) and e and (RpcObj.RPCVersion >= 5);
   acAddTracker.Enabled:=acTorrentProps.Enabled and (RpcObj.RPCVersion >= 10);
@@ -5574,8 +5609,12 @@ begin
       args:=TJSONObject.Create;
     if not VarIsNull(TorrentIds) then begin
       ids:=TJSONArray.Create;
-      for i:=VarArrayLowBound(TorrentIds, 1) to VarArrayHighBound(TorrentIds, 1) do
-        ids.Add(integer(TorrentIds[i]));
+      if VarIsArray(TorrentIds) then begin
+        for i:=VarArrayLowBound(TorrentIds, 1) to VarArrayHighBound(TorrentIds, 1) do
+          ids.Add(integer(TorrentIds[i]));
+      end
+      else
+        ids.Add(integer(TorrentIds));
       args.Add('ids', ids);
     end;
     req.Add('arguments', args);
@@ -6102,6 +6141,7 @@ begin
   end;
   acForceStartTorrent.Visible:=RPCVersion >= 14;
   tabStats.Visible:=RpcVersion >= 4;
+  acRename.Visible:=RpcVersion >= 15;
 end;
 
 procedure TMainForm.CheckAddTorrents;
@@ -6217,6 +6257,19 @@ procedure TMainForm.DetailsUpdated;
 begin
   FDetailsWaitStart:=0;
   PageInfo.ActivePage.Tag:=0;
+end;
+
+function TMainForm.RenameTorrent(TorrentId: integer; const OldPath, NewPath: string): boolean;
+var
+  args: TJSONObject;
+begin
+  Result:=False;
+  if OldPath = NewPath then
+    exit;
+  args:=TJSONObject.Create;
+  args.Add('path', UTF8Decode(OldPath));
+  args.Add('name', UTF8Decode(NewPath));
+  Result:=TorrentAction(TorrentId, 'torrent-rename-path', args);
 end;
 
 procedure TMainForm.FillSpeedsMenu;
