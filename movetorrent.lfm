@@ -58,6 +58,7 @@ inherited MoveTorrentForm: TMoveTorrentForm
       Top = 20
       Width = 449
       Anchors = [akTop, akLeft, akRight]
+      DropDownCount = 20
       ItemHeight = 13
       TabOrder = 0
     end
