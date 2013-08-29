@@ -6286,6 +6286,7 @@ end;
 
 procedure TMainForm.DetailsUpdated;
 begin
+  TorrentsListTimer.Enabled:=False;
   FDetailsWaitStart:=0;
   PageInfo.ActivePage.Tag:=0;
 end;
