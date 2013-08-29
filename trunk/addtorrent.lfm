@@ -55,6 +55,7 @@ inherited AddTorrentForm: TAddTorrentForm
       Anchors = [akTop, akLeft, akRight]
       DropDownCount = 20
       ItemHeight = 13
+      OnChange = cbDestFolderChange
       TabOrder = 0
     end
     object cbStartTorrent: TCheckBox
@@ -208,5 +209,11 @@ inherited AddTorrentForm: TAddTorrentForm
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]
     ShowBevel = False
+  end
+  object DiskSpaceTimer: TTimer[3]
+    Enabled = False
+    OnTimer = DiskSpaceTimerTimer
+    left = 44
+    top = 248
   end
 end
