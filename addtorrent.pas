@@ -46,6 +46,7 @@ type
     gbSaveAs: TGroupBox;
     gbContents: TGroupBox;
     edPeerLimit: TSpinEdit;
+    DiskSpaceTimer: TTimer;
     txSaveAs: TLabel;
     txSize: TLabel;
     txDiskSpace: TLabel;
@@ -55,12 +56,15 @@ type
     procedure btBrowseClick(Sender: TObject);
     procedure btSelectAllClick(Sender: TObject);
     procedure btSelectNoneClick(Sender: TObject);
+    procedure cbDestFolderChange(Sender: TObject);
+    procedure DiskSpaceTimerTimer(Sender: TObject);
     procedure edSaveAsChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure OKButtonClick(Sender: TObject);
   private
+    FDiskSpaceCaption: string;
     procedure lvFilesCheckBoxClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);
     procedure lvFilesTreeButtonClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);
     procedure CollapseFolder(ARow: integer);
@@ -84,7 +88,7 @@ const
 
 implementation
 
-uses lclintf, lcltype, main, variants, Utils;
+uses lclintf, lcltype, main, variants, Utils, fpjson;
 
 { TAddTorrentForm }
 
@@ -106,6 +110,7 @@ begin
   end;
   TreeChanged;
   lvFiles.EndUpdate;
+  DiskSpaceTimerTimer(nil);
   AppNormal;
 end;
 
@@ -318,6 +323,43 @@ begin
   UpdateSize;
 end;
 
+procedure TAddTorrentForm.cbDestFolderChange(Sender: TObject);
+begin
+  DiskSpaceTimer.Enabled:=True;
+end;
+
+procedure TAddTorrentForm.DiskSpaceTimerTimer(Sender: TObject);
+var
+  f: double;
+  req, args: TJSONObject;
+begin
+  DiskSpaceTimer.Enabled:=False;
+  if RpcObj.RPCVersion < 15 then
+    exit;
+  AppBusy;
+  f:=-1;
+  try
+    req:=TJSONObject.Create;
+    args:=TJSONObject.Create;
+    try
+      req.Add('method', 'free-space');
+      args.Add('path', UTF8Decode(cbDestFolder.Text));
+      req.Add('arguments', args);
+      args:=RpcObj.SendRequest(req);
+      if args <> nil then
+        f:=args.Floats['size-bytes'];
+      RpcObj.Status:='';
+    finally
+      args.Free;
+      req.Free;
+    end;
+  except
+    f:=-1;
+  end;
+  txDiskSpace.Caption:=FDiskSpaceCaption + ' ' + GetHumanSize(f);
+  AppNormal;
+end;
+
 procedure TAddTorrentForm.edSaveAsChange(Sender: TObject);
 begin
   Caption:=OrigCaption + ' - ' + edSaveAs.Text;
@@ -326,6 +368,7 @@ end;
 procedure TAddTorrentForm.FormCreate(Sender: TObject);
 begin
   OrigCaption:=Caption;
+  FDiskSpaceCaption:=txDiskSpace.Caption;
   lvFiles.Items.ExtraColumns:=5;
   lvFiles.OnCheckBoxClick:=@lvFilesCheckBoxClick;
   lvFiles.OnTreeButtonClick:=@lvFilesTreeButtonClick;

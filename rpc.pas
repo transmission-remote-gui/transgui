@@ -291,7 +291,7 @@ end;
 
 procedure TRpcThread.GetSessionInfo;
 var
-  req, args: TJSONObject;
+  req, args, args2: TJSONObject;
   s: string;
 begin
   req:=TJSONObject.Create;
@@ -310,7 +310,22 @@ begin
       else
         s:='';
       FRpc.InfoStatus:=Format(sTransmissionAt, [s, FRpc.Http.TargetHost, FRpc.Http.TargetPort]);
-
+      if FRpc.RPCVersion >= 15 then begin
+        // Requesting free space in download dir
+        req.Free;
+        req:=TJSONObject.Create;
+        req.Add('method', 'free-space');
+        args2:=TJSONObject.Create;
+        try
+          args2.Add('path', args.Strings['download-dir']);
+          req.Add('arguments', args2);
+          args2:=FRpc.SendRequest(req);
+          if args2 <> nil then
+            args.Floats['download-dir-free-space']:=args2.Floats['size-bytes'];
+        finally
+          args2.Free;
+        end;
+      end;
       ResultData:=args;
       if not Terminated then
         Synchronize(@DoFillSessionInfo);

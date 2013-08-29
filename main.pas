@@ -1990,12 +1990,13 @@ begin
             cbDestFolder.ItemIndex:=0;
           end;
 
-          if args.IndexOfName('download-dir-free-space') >= 0 then
-            txDiskSpace.Caption:=txDiskSpace.Caption + ' ' + GetHumanSize(args.Floats['download-dir-free-space'])
-          else begin
-            txDiskSpace.Hide;
-            txSize.Top:=(txSize.Top + txDiskSpace.Top) div 2;
-          end;
+          if RpcObj.RPCVersion < 15 then
+            if args.IndexOfName('download-dir-free-space') >= 0 then
+              txDiskSpace.Caption:=txDiskSpace.Caption + ' ' + GetHumanSize(args.Floats['download-dir-free-space'])
+            else begin
+              txDiskSpace.Hide;
+              txSize.Top:=(txSize.Top + txDiskSpace.Top) div 2;
+            end;
           args.Free;
         finally
           req.Free;
