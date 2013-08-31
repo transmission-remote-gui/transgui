@@ -322,11 +322,11 @@ inherited MainForm: TMainForm
     Height = 306
     Top = 157
     Width = 780
-    ActivePage = tabGeneral
+    ActivePage = tabFiles
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange

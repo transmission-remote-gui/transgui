@@ -152,19 +152,15 @@ inherited AddTorrentForm: TAddTorrentForm
           ReadOnly = True
           Title.Caption = 'Size'
           Width = 80
-        end      
-        item
-          Title.Caption = ' '
-          Visible = False
         end>
       FixedCols = 0
-      Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goEditing, goRowSelect, goThumbTracking, goDblClickAutoSize]
+      Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goEditing, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
       RowCount = 1
       TabOrder = 0
       Images = MainForm.ImageList16
       MultiSelect = True
+      SortColumn = 0
       HideSelection = True
-      OnCellAttributes = lvFilesCellAttributes
     end
     object btSelectAll: TButton
       Left = 206

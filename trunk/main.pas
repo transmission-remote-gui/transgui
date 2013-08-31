@@ -620,7 +620,6 @@ type
     function GetSelectedTorrents: variant;
     procedure FillDownloadDirs(CB: TComboBox; const CurFolderParam: string);
     procedure SaveDownloadDirs(CB: TComboBox; const CurFolderParam: string);
-    function PriorityToStr(p: integer; var ImageIndex: integer): string;
     procedure SetRefreshInterval;
     procedure AddTracker(EditMode: boolean);
     procedure UpdateConnections;
@@ -656,6 +655,7 @@ type
 
 function CheckAppParams: boolean;
 function GetHumanSize(sz: double; RoundTo: integer = 0; const EmptyStr: string = '-'): string;
+function PriorityToStr(p: integer; var ImageIndex: integer): string;
 
 var
   MainForm: TMainForm;
@@ -712,17 +712,6 @@ const
   idxPeerCountryImage = -3;
   PeersExtraColumns = 3;
 
-  // Files list
-  idxFileName = 0;
-  idxFileSize = 1;
-  idxFileDone = 2;
-  idxFileProgress = 3;
-  idxFilePriority = 4;
-  idxFileId = -1;
-  idxFileTag = -2;
-  idxFileFullPath = -3;
-  FilesExtraColumns = 3;
-
   // Trackers list
   idxTrackersListName = 0;
   idxTrackersListStatus = 1;
@@ -764,6 +753,11 @@ const
 
   FinishedQueue = 1000000;
 
+  TR_PRI_SKIP   = -1000;  // psedudo priority
+  TR_PRI_LOW    = -1;
+  TR_PRI_NORMAL =  0;
+  TR_PRI_HIGH   =  1;
+
 implementation
 
 uses
@@ -797,11 +791,6 @@ const
   TR_SPEEDLIMIT_GLOBAL    = 0;    // only follow the overall speed limit
   TR_SPEEDLIMIT_SINGLE    = 1;    // only follow the per-torrent limit
   TR_SPEEDLIMIT_UNLIMITED = 2;    // no limits at all
-
-  TR_PRI_SKIP   = -1000;  // psedudo priority
-  TR_PRI_LOW    = -1;
-  TR_PRI_NORMAL =  0;
-  TR_PRI_HIGH   =  1;
 
 const
   SizeNames: array[1..5] of string = (sByte, sKByte, sMByte, sGByte, sTByte);
@@ -1075,6 +1064,17 @@ begin
   IntfScale:=Ini.ReadInteger('Interface', 'Scaling', 100);
 
   Result:=True;
+end;
+
+function PriorityToStr(p: integer; var ImageIndex: integer): string;
+begin
+  case p of
+    TR_PRI_SKIP:   begin Result:=sSkip; ImageIndex:=23; end;
+    TR_PRI_LOW:    begin Result:=sLow; ImageIndex:=24; end;
+    TR_PRI_NORMAL: begin Result:=sNormal; ImageIndex:=25; end;
+    TR_PRI_HIGH:   begin Result:=sHigh; ImageIndex:=26; end;
+    else           Result:='???';
+  end;
 end;
 
 { TProgressImage }
@@ -1835,7 +1835,7 @@ var
     if Result = 0 then
       CheckStatus(False);
   end;
-
+{
   function _GetLevel(const s: string): integer;
   var
     p: PChar;
@@ -1849,7 +1849,7 @@ var
     end
   end;
 
-  function _AddFolders(list: TVarList; const path: string; var idx: integer; cnt: integer): double;
+  function _AddFolders(list: TVarList; const path: string; var idx: integer; cnt, level: integer): double;
   var
     s, ss: string;
     j: integer;
@@ -1867,6 +1867,7 @@ var
         break;
       if s = path then begin
         Result:=Result + list[idxAtSize, idx];
+        list[idxAtLevel, idx]:=level;
         Inc(idx);
       end
       else begin
@@ -1877,9 +1878,9 @@ var
         if p^ <> #0 then begin
           SetLength(ss, p - PChar(ss) + 1);
           j:=list.Count;
-          list[idxAtLevel, j]:=_GetLevel(path);
+          list[idxAtLevel, j]:=level;//_GetLevel(path);
           list[idxAtFullPath, j]:=UTF8Decode(path + ss);
-          d:=_AddFolders(list, path + ss, idx, cnt);
+          d:=_AddFolders(list, path + ss, idx, cnt, level + 1);
           list[idxAtSize, j]:=d;
           ss:=ExcludeTrailingPathDelimiter(ss);
           list[idxAtName, j]:=UTF8Decode(ExtractFileName(ss));
@@ -1888,7 +1889,7 @@ var
       end;
     end;
   end;
-
+}
   procedure ShowWaitMsg(const AText: string);
   begin
     if WaitForm = nil then begin
@@ -2032,6 +2033,8 @@ begin
             edSaveAs.ParentColor:=True;
           end;
           edPeerLimit.Value:=t.Objects[0].Integers['maxConnectedPeers'];
+          FilesTree.FillTree(id, t.Objects[0].Arrays['files'], nil, nil);
+{
           // Filling files list
           files:=t.Objects[0].Arrays['files'];
           path:='';
@@ -2058,16 +2061,16 @@ begin
               lvFiles.Items[idxAtSize, i]:=res.Floats['length'];
               lvFiles.Items[idxAtFullPath, i]:=UTF8Decode(s);
               lvFiles.Items[idxAtFileID, i]:=i;
-              lvFiles.Items[idxAtLevel, i]:=_GetLevel(s);
+              lvFiles.Items[idxAtLevel, i]:=0;//_GetLevel(s);
             end;
             lvFiles.Items.Sort(idxAtFullPath);
             i:=0;
-            _AddFolders(lvFiles.Items, '', i, lvFiles.Items.Count);
+            _AddFolders(lvFiles.Items, '', i, lvFiles.Items.Count, 0);
             lvFiles.Items.Sort(idxAtFullPath);
           finally
             lvFiles.Items.EndUpdate;
           end;
-
+}
           Width:=Ini.ReadInteger('AddTorrent', 'Width', Width);
           if (RpcObj.RPCVersion >= 7) and (lvFiles.Items.Count = 0) and (t.Objects[0].Floats['metadataPercentComplete'] <> 1.0) then begin
             // Magnet link
@@ -2082,10 +2085,10 @@ begin
         finally
           args.Free;
         end;
-
+{
         if not HasFolders then
           lvFiles.SortColumn:=0;
-
+}
         OldDownloadDir:=cbDestFolder.Text;
         AppNormal;
 
@@ -2130,8 +2133,8 @@ begin
 
             files:=TJSONArray.Create;
             for i:=0 to lvFiles.Items.Count - 1 do
-              if not VarIsEmpty(lvFiles.Items[idxAtFileID, i]) and (integer(lvFiles.Items[idxAtChecked, i]) = 1) then
-                files.Add(integer(lvFiles.Items[idxAtFileID, i]));
+              if not FilesTree.IsFolder(i) and (FilesTree.Checked[i] = cbChecked) then
+                files.Add(integer(lvFiles.Items[idxFileId, i]));
             if files.Count > 0 then
               args.Add('files-wanted', files)
             else
@@ -2139,8 +2142,8 @@ begin
 
             files:=TJSONArray.Create;
             for i:=0 to lvFiles.Items.Count - 1 do
-              if not VarIsEmpty(lvFiles.Items[idxAtFileID, i]) and (integer(lvFiles.Items[idxAtChecked, i]) <> 1) then
-                files.Add(integer(lvFiles.Items[idxAtFileID, i]));
+              if not FilesTree.IsFolder(i) and (FilesTree.Checked[i] <> cbChecked) then
+                files.Add(integer(lvFiles.Items[idxFileId, i]));
             if files.Count > 0 then
               args.Add('files-unwanted', files)
             else
@@ -5940,17 +5943,6 @@ begin
     Ini.WriteString(IniSec, Format('Folder%d', [i]), CB.Items[i]);
   Ini.WriteString(IniSec, CurFolderParam, CB.Items[0]);
   Ini.UpdateFile;
-end;
-
-function TMainForm.PriorityToStr(p: integer; var ImageIndex: integer): string;
-begin
-  case p of
-    TR_PRI_SKIP:   begin Result:=sSkip; ImageIndex:=23; end;
-    TR_PRI_LOW:    begin Result:=sLow; ImageIndex:=24; end;
-    TR_PRI_NORMAL: begin Result:=sNormal; ImageIndex:=25; end;
-    TR_PRI_HIGH:   begin Result:=sHigh; ImageIndex:=26; end;
-    else           Result:='???';
-  end;
 end;
 
 procedure TMainForm.SetRefreshInterval;
