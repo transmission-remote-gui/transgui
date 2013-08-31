@@ -134,6 +134,9 @@ type
     property RPCVersion: integer read FRPCVersion;
   end;
 
+var
+  RemotePathDelimiter: char = '/';
+
 implementation
 
 uses Main, ssl_openssl_lib, synafpc, blcksock;
