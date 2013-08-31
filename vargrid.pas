@@ -58,6 +58,7 @@ type
     FItemsChanging: boolean;
     FColumnsMap: array of integer;
     FMultiSelect: boolean;
+    FOnAfterSort: TNotifyEvent;
     FOnCellAttributes: TOnCellAttributes;
     FOnCheckBoxClick: TCellNotifyEvent;
     FOnDrawCell: TOnDrawCellEvent;
@@ -212,6 +213,7 @@ type
     property OnCellAttributes: TOnCellAttributes read FOnCellAttributes write FOnCellAttributes;
     property OnDrawCell: TOnDrawCellEvent read FOnDrawCell write FOnDrawCell;
     property OnSortColumn: TOnSortColumnEvent read FOnSortColumn write FOnSortColumn;
+    property OnAfterSort: TNotifyEvent read FOnAfterSort write FOnAfterSort;
     property OnCheckBoxClick: TCellNotifyEvent read FOnCheckBoxClick write FOnCheckBoxClick;
     property OnTreeButtonClick: TCellNotifyEvent read FOnTreeButtonClick write FOnTreeButtonClick;
     property OnQuickSearch: TOnQuickSearch read FOnQuickSearch write FOnQuickSearch;
@@ -1152,6 +1154,8 @@ begin
       FItems.RowOptions[Row]:=FItems.RowOptions[Row] or roCurRow;
     FItems.Sort(c, SortOrder = soDescending);
     if not FItems.IsUpdating then begin
+      if Assigned(FOnAfterSort) then
+        FOnAfterSort(Self);
       for i:=0 to FItems.Count - 1 do
         if LongBool(FItems.RowOptions[i] and roCurRow) then begin
           FItems.RowOptions[i]:=FItems.RowOptions[i] and not roCurRow;
