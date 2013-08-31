@@ -27,6 +27,9 @@ uses
   Classes, SysUtils, variants;
 
 type
+  TVarList = class;
+
+  TCompareVarRowsEvent = function(Sender: TVarList; const Row1, Row2: variant; DescendingSort: boolean): integer of object;
 
   { TVarList }
 
@@ -34,6 +37,7 @@ type
   private
     FColCnt: integer;
     FExtraColumns: integer;
+    FOnCompareVarRows: TCompareVarRowsEvent;
     FOnDataChanged: TNotifyEvent;
     FUpdateLockCnt: integer;
     function GetItems(ACol, ARow: integer): variant;
@@ -56,7 +60,7 @@ type
     destructor Destroy; override;
     procedure Clear; override;
     procedure Delete(Index: Integer);
-    procedure Sort(ACol: integer; Descending: boolean = False);
+    procedure Sort(ACol: integer; Descending: boolean = False); reintroduce;
     function IndexOf(ACol: integer; const Value: variant): integer;
     function SortedIndexOf(ACol: integer; const Value: variant): integer;
     function Find(ACol: integer; const Value: variant; var Index: Integer): Boolean;
@@ -64,6 +68,7 @@ type
     procedure EndUpdate;
     procedure InsertRow(ARow: integer);
     function IsUpdating: boolean;
+    function GetRowItem(const ARow: variant; ACol: integer): variant;
     property Items[ACol, ARow: integer]: variant read GetItems write SetItems; default;
     property Rows[ARow: integer]: variant read GetRows;
     property RowOptions[ARow: integer]: integer read GetRowOptions write SetRowOptions;
@@ -71,8 +76,11 @@ type
     property RowCnt: integer read GetRowCnt write SetRowCnt;
     property Count: integer read GetRowCnt;
     property OnDataChanged: TNotifyEvent read FOnDataChanged write FOnDataChanged;
+    property OnCompareVarRows: TCompareVarRowsEvent read FOnCompareVarRows write FOnCompareVarRows;
     property ExtraColumns: integer read FExtraColumns write SetExtraColumns;
   end;
+
+function CompareVariants(const v1, v2: variant): integer;
 
 implementation
 
@@ -240,6 +248,7 @@ var
   _SortColumn: integer;
   _SortDesc: boolean;
   _IntCols: integer;
+  _List: TVarList;
 
 function CompareItems(Item1, Item2: Pointer): Integer;
 var
@@ -252,15 +261,21 @@ begin
   end;
   v1:=Item1;
   v2:=Item2;
-  Result:=CompareVariants(v1^[_SortColumn], v2^[_SortColumn]);
-  i:=_IntCols;
-  while (Result = 0) and (i <= VarArrayHighBound(v1^, 1)) do begin
-    if i <> _SortColumn then
-      Result:=CompareVariants(v1^[i], v2^[i]);
-    Inc(i);
+  if Assigned(_List.OnCompareVarRows) then
+    Result:=_List.OnCompareVarRows(_List, v1^, v2^, _SortDesc)
+  else
+    Result:=0;
+  if Result = 0 then begin
+    Result:=CompareVariants(v1^[_SortColumn], v2^[_SortColumn]);
+    i:=_IntCols;
+    while (Result = 0) and (i <= VarArrayHighBound(v1^, 1)) do begin
+      if i <> _SortColumn then
+        Result:=CompareVariants(v1^[i], v2^[i]);
+      Inc(i);
+    end;
+    if _SortDesc then
+      Result:=-Result;
   end;
-  if _SortDesc then
-    Result:=-Result;
 end;
 
 procedure TVarList.Sort(ACol: integer; Descending: boolean);
@@ -268,6 +283,7 @@ begin
   _SortColumn:=ACol + IntCols;
   _SortDesc:=Descending;
   _IntCols:=IntCols;
+  _List:=Self;
   inherited Sort(@CompareItems);
   DoDataChanged;
 end;
@@ -336,6 +352,11 @@ end;
 function TVarList.IsUpdating: boolean;
 begin
   Result:=FUpdateLockCnt > 0;
+end;
+
+function TVarList.GetRowItem(const ARow: variant; ACol: integer): variant;
+begin
+  Result:=ARow[ACol + IntCols];
 end;
 
 end.
