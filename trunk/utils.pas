@@ -193,6 +193,14 @@ begin
         s:=Copy(s, 2, Length(s) - 2);
     FParams.Add(UTF8Encode(s));
   end;
+  // Getting real executable name
+  SetLength(s, 1000);
+  SetLength(s, GetModuleFileNameW(HINSTANCE, PWideChar(s), Length(s) + 1));
+  if s <> '' then
+    if FParams.Count > 0 then
+      FParams[0]:=UTF8Encode(s)
+    else
+      FParams.Add(UTF8Encode(s));
 end;
 
 function ParamCount: integer;
