@@ -262,7 +262,7 @@ begin
     dir:=t.Strings['downloadDir']
   else
     dir:='';
-  MainForm.FillFilesList(t.Arrays['files'], t.Arrays['priorities'], t.Arrays['wanted'], dir);
+  MainForm.FillFilesList(t.Integers['id'], t.Arrays['files'], t.Arrays['priorities'], t.Arrays['wanted'], dir);
 end;
 
 procedure TRpcThread.DoFillInfo;
@@ -432,7 +432,7 @@ var
   args: TJSONObject;
   t: TJSONArray;
 begin
-  args:=FRpc.RequestInfo(TorrentId, ['files','priorities','wanted','downloadDir']);
+  args:=FRpc.RequestInfo(TorrentId, ['id', 'files','priorities','wanted','downloadDir']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];

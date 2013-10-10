@@ -1016,13 +1016,10 @@ inherited MainForm: TMainForm
         RowCount = 1
         TabOrder = 0
         OnDblClick = lvFilesDblClick
-        OnKeyPress = lvFilesKeyPress
         Images = ImageList16
         MultiSelect = True
         SortColumn = 0
         HideSelection = True
-        OnCellAttributes = lvFilesCellAttributes
-        OnDrawCell = lvFilesDrawCell
         OnEditorShow = gTorrentsEditorShow
         OnEditorHide = gTorrentsEditorHide
       end

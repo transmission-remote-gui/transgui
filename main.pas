@@ -26,7 +26,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
   httpsend, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
-  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils;
+  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -514,10 +514,7 @@ type
     procedure gTorrentsSetEditText(Sender: TObject; ACol, ARow: Integer; const Value: string);
     procedure gTorrentsSortColumn(Sender: TVarGrid; var ASortCol: integer);
     procedure HSplitterChangeBounds(Sender: TObject);
-    procedure lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure lvFilesDblClick(Sender: TObject);
-    procedure lvFilesDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
-    procedure lvFilesKeyPress(Sender: TObject; var Key: char);
     procedure lvFilterCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure lvFilterClick(Sender: TObject);
     procedure lvFilterDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
@@ -578,6 +575,7 @@ type
     FDetailsWait: TProgressImage;
     FDetailsWaitStart: TDateTime;
     FMainFormShown: boolean;
+    FFilesTree: TFilesTree;
 
     procedure UpdateUI;
     procedure UpdateUIRpcVersion(RpcVersion: integer);
@@ -614,7 +612,6 @@ type
     function IncludeProperTrailingPathDelimiter(const s: string): string;
     procedure UrlLabelClick(Sender: TObject);
     procedure CenterReconnectWindow;
-    procedure DrawProgressCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const ACellRect: TRect);
     procedure ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
     function ExecRemoteFile(const FileName: string; SelectFile: boolean): boolean;
     function GetSelectedTorrents: variant;
@@ -639,7 +636,7 @@ type
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
-    procedure FillFilesList(list, priorities, wanted: TJSONArray; const DownloadDir: WideString);
+    procedure FillFilesList(ATorrentId: integer; list, priorities, wanted: TJSONArray; const DownloadDir: WideString);
     procedure FillGeneralInfo(t: TJSONObject);
     procedure FillTrackersList(TrackersData: TJSONObject);
     procedure FillSessionInfo(s: TJSONObject);
@@ -656,6 +653,7 @@ type
 function CheckAppParams: boolean;
 function GetHumanSize(sz: double; RoundTo: integer = 0; const EmptyStr: string = '-'): string;
 function PriorityToStr(p: integer; var ImageIndex: integer): string;
+procedure DrawProgressCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const ACellRect: TRect);
 
 var
   MainForm: TMainForm;
@@ -767,7 +765,7 @@ uses
 {$ifdef darwin}
   urllistenerosx,
 {$endif darwin}
-  AddTorrent, synacode, ConnOptions, clipbrd, DateUtils, TorrProps, DaemonOptions, About,
+  synacode, ConnOptions, clipbrd, DateUtils, TorrProps, DaemonOptions, About,
   ToolWin, download, ColSetup, types, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
   Options, ButtonPanel;
 
@@ -1077,6 +1075,55 @@ begin
   end;
 end;
 
+procedure DrawProgressCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const ACellRect: TRect);
+var
+  R, RR: TRect;
+  i, j, h: integer;
+  s: string;
+  cl: TColor;
+  Progress: double;
+  sz: TSize;
+  ts: TTextStyle;
+begin
+  Progress:=double(Sender.Items[ADataCol, ARow]);
+  with Sender.Canvas do begin
+    R:=ACellRect;
+    FrameRect(R);
+    s:=Format('%.1f%%', [Progress]);
+    sz:=TextExtent(s);
+    InflateRect(R, -1, -1);
+    Pen.Color:=clBtnFace;
+    Rectangle(R);
+    InflateRect(R, -1, -1);
+
+    i:=R.Left + Round(Progress*(R.Right - R.Left)/100.0);
+    j:=(R.Top + R.Bottom) div 2;
+    h:=(R.Top + R.Bottom - sz.cy) div 2;
+    cl:=GetLikeColor(clHighlight, 70);
+    GradientFill(Rect(R.Left, R.Top, i, j), cl, clHighlight, gdVertical);
+    GradientFill(Rect(R.Left, j, i, R.Bottom), clHighlight, cl, gdVertical);
+
+    ts:=TextStyle;
+    ts.Layout:=tlTop;
+    ts.Alignment:=taLeftJustify;
+    ts.Wordbreak:=False;
+    TextStyle:=ts;
+    j:=(R.Left + R.Right - sz.cx) div 2;
+    if i > R.Left then begin
+      RR:=Rect(R.Left, R.Top, i, R.Bottom);
+      Font.Color:=clHighlightText;
+      TextRect(RR, j, h, s);
+    end;
+    if i < R.Right then begin
+      RR:=Rect(i, R.Top, R.Right, R.Bottom);
+      Brush.Color:=Sender.Color;
+      FillRect(RR);
+      Font.Color:=clWindowText;
+      TextRect(RR, j, h, s);
+    end;
+  end;
+end;
+
 { TProgressImage }
 
 procedure TProgressImage.SetImages(const AValue: TImageList);
@@ -1227,6 +1274,7 @@ begin
   gTorrents.Items.ExtraColumns:=TorrentsExtraColumns;
   lvFiles.Items.ExtraColumns:=FilesExtraColumns;
   FFiles:=lvFiles.Items;
+  FFilesTree:=TFilesTree.Create(lvFiles);
   lvPeers.Items.ExtraColumns:=PeersExtraColumns;
   lvTrackers.Items.ExtraColumns:=TrackersExtraColumns;
   FTrackers:=TStringList.Create;
@@ -1235,7 +1283,6 @@ begin
   FAlterColor:=GetLikeColor(gTorrents.Color, -$10);
   lvFilter.Items.ExtraColumns:=1;
   gTorrents.AlternateColor:=FAlterColor;
-  lvFiles.AlternateColor:=FAlterColor;
   lvPeers.AlternateColor:=FAlterColor;
   lvTrackers.AlternateColor:=FAlterColor;
   gStats.AlternateColor:=FAlterColor;
@@ -1935,12 +1982,12 @@ var
   end;
 
 var
-  req, res, args: TJSONObject;
+  req, args: TJSONObject;
   id: integer;
   t, files: TJSONArray;
   i: integer;
   fs: TFileStreamUTF8;
-  s, ss, OldDownloadDir, IniSec, path, OldName: string;
+  s, OldDownloadDir, IniSec, OldName: string;
   tt: TDateTime;
   ok: boolean;
 begin
@@ -3498,7 +3545,7 @@ begin
     v:=gTorrents.Items[idxName, i];
     if VarIsEmpty(v) or VarIsNull(v) then
       continue;
-    if Pos(s, Trim(UTF8UpperCase(UTF8Encode(widestring(v))))) = 1 then begin
+    if Pos(s, Trim(UTF8UpperCase(UTF8Encode(widestring(v))))) > 0 then begin
       ARow:=i;
       break;
     end;
@@ -3534,41 +3581,9 @@ begin
 {$endif windows}
 end;
 
-procedure TMainForm.lvFilesCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
-begin
-  if ARow < 0 then exit;
-  with CellAttribs do begin
-    if Text = '' then exit;
-    case ADataCol of
-      idxFilePriority:
-        Text:=PriorityToStr(FFiles[idxFilePriority, ARow], ImageIndex);
-      idxFileSize, idxFileDone:
-        Text:=GetHumanSize(FFiles[ADataCol, ARow]);
-      idxFileProgress:
-        Text:=Format('%.1f%%', [double(FFiles[ADataCol, ARow])]);
-    end;
-  end;
-end;
-
 procedure TMainForm.lvFilesDblClick(Sender: TObject);
 begin
   acOpenFile.Execute;
-end;
-
-procedure TMainForm.lvFilesDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect;
-  var ADefaultDrawing: boolean);
-begin
-  if ARow < 0 then exit;
-  if ADataCol = idxFileProgress then begin
-    ADefaultDrawing:=False;
-    DrawProgressCell(Sender, ACol, ARow, ADataCol, AState, R);
-  end;
-end;
-
-procedure TMainForm.lvFilesKeyPress(Sender: TObject; var Key: char);
-begin
-  if Key = #13 then
-    acOpenFile.Execute;
 end;
 
 procedure TMainForm.lvFilterCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
@@ -3906,55 +3921,6 @@ end;
 procedure TMainForm.CenterReconnectWindow;
 begin
   CenterOnParent(panReconnect);
-end;
-
-procedure TMainForm.DrawProgressCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const ACellRect: TRect);
-var
-  R, RR: TRect;
-  i, j, h: integer;
-  s: string;
-  cl: TColor;
-  Progress: double;
-  sz: TSize;
-  ts: TTextStyle;
-begin
-  Progress:=double(Sender.Items[ADataCol, ARow]);
-  with Sender.Canvas do begin
-    R:=ACellRect;
-    FrameRect(R);
-    s:=Format('%.1f%%', [Progress]);
-    sz:=TextExtent(s);
-    InflateRect(R, -1, -1);
-    Pen.Color:=clBtnFace;
-    Rectangle(R);
-    InflateRect(R, -1, -1);
-
-    i:=R.Left + Round(Progress*(R.Right - R.Left)/100.0);
-    j:=(R.Top + R.Bottom) div 2;
-    h:=(R.Top + R.Bottom - sz.cy) div 2;
-    cl:=GetLikeColor(clHighlight, 70);
-    GradientFill(Rect(R.Left, R.Top, i, j), cl, clHighlight, gdVertical);
-    GradientFill(Rect(R.Left, j, i, R.Bottom), clHighlight, cl, gdVertical);
-
-    ts:=TextStyle;
-    ts.Layout:=tlTop;
-    ts.Alignment:=taLeftJustify;
-    ts.Wordbreak:=False;
-    TextStyle:=ts;
-    j:=(R.Left + R.Right - sz.cx) div 2;
-    if i > R.Left then begin
-      RR:=Rect(R.Left, R.Top, i, R.Bottom);
-      Font.Color:=clHighlightText;
-      TextRect(RR, j, h, s);
-    end;
-    if i < R.Right then begin
-      RR:=Rect(i, R.Top, R.Right, R.Bottom);
-      Brush.Color:=Sender.Color;
-      FillRect(RR);
-      Font.Color:=clWindowText;
-      TextRect(RR, j, h, s);
-    end;
-  end;
 end;
 
 procedure TMainForm.DoConnect;
@@ -5110,7 +5076,8 @@ begin
     Result:=Result + d;
 end;
 
-procedure TMainForm.FillFilesList(list, priorities, wanted: TJSONArray; const DownloadDir: WideString);
+procedure TMainForm.FillFilesList(ATorrentId: integer; list, priorities, wanted: TJSONArray; const DownloadDir: WideString);
+{
 var
   i, row: integer;
   d: TJSONData;
@@ -5118,6 +5085,7 @@ var
   s, path, dir: string;
   ff: double;
   WasEmpty: boolean;
+}
 begin
   if (list = nil) or (priorities = nil) or (wanted = nil) then begin
     ClearDetailsInfo;
@@ -5126,6 +5094,8 @@ begin
 
   lvFiles.Enabled:=True;
   lvFiles.Color:=clWindow;
+  FFilesTree.FillTree(ATorrentId, list, priorities, wanted);
+{
   dir:=UTF8Encode(DownloadDir);
   path:=GetFilesCommonPath(list);
   WasEmpty:=FFiles.Count = 0;
@@ -5179,6 +5149,7 @@ begin
   finally
     FFiles.EndUpdate;
   end;
+}
   DetailsUpdated;
 end;
 
