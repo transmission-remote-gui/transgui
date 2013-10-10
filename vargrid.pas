@@ -75,6 +75,7 @@ type
     FCurSearch: string;
     FSearchTimer: TTimer;
     FOldOpt: TGridOptions;
+    FNoDblClick: boolean;
 
     function GetRow: integer;
     function GetRowSelected(RowIndex: integer): boolean;
@@ -719,6 +720,8 @@ begin
       if PtInRect(R, Point(X,Y)) then begin
         DoOnTreeButtonClick(pt.x, pt.y);
         InvalidateCell(pt.x, pt.y);
+        if Assigned(OnDblClick) then
+          FNoDblClick:=True;
       end;
       Inc(RR.Left, RR.Bottom - RR.Top);
     end;
@@ -959,6 +962,10 @@ procedure TVarGrid.DblClick;
 var
   pt: TPoint;
 begin
+  if FNoDblClick then begin
+    FNoDblClick:=False;
+    exit;
+  end;
   pt:=MouseToCell(ScreenToClient(Mouse.CursorPos));
   if (pt.y < FixedRows) and (pt.y = 0) and (Cursor <> crHSplit) then
     exit;
