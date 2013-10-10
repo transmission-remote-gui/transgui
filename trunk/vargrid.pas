@@ -137,6 +137,7 @@ type
     function ColToDataCol(ACol: integer): integer;
     function DataColToCol(ADataCol: integer): integer;
     procedure EnsureSelectionVisible;
+    procedure EnsureRowVisible(ARow: integer);
     procedure BeginUpdate; reintroduce;
     procedure EndUpdate(aRefresh: boolean = true); reintroduce;
     procedure EditCell(ACol, ARow: integer);
@@ -799,16 +800,19 @@ begin
       VK_SPACE:
         if coDrawCheckBox in ca.Options then begin
           DoOnCheckBoxClick(FixedCols, inherited Row);
+          Key:=0;
           exit;
         end;
       VK_LEFT, VK_SUBTRACT:
         if (coDrawTreeButton in ca.Options) and ca.Expanded then begin
           DoOnTreeButtonClick(FixedCols, inherited Row);
+          Key:=0;
           exit;
         end;
       VK_RIGHT, VK_ADD:
         if (coDrawTreeButton in ca.Options) and not ca.Expanded then begin
           DoOnTreeButtonClick(FixedCols, inherited Row);
+          Key:=0;
           exit;
         end;
     end;
@@ -1205,12 +1209,17 @@ begin
         Row:=i;
         break;
       end;
+  EnsureRowVisible(Row);
+end;
 
-  if inherited Row < TopRow then
-    TopRow:=inherited Row
+procedure TVarGrid.EnsureRowVisible(ARow: integer);
+begin
+  ARow:=ARow + FixedRows;
+  if ARow < TopRow then
+    TopRow:=ARow
   else
-    if inherited Row > GCache.FullVisibleGrid.Bottom then
-      TopRow:=inherited Row - (GCache.FullVisibleGrid.Bottom - GCache.FullVisibleGrid.Top);
+    if ARow > GCache.FullVisibleGrid.Bottom then
+      TopRow:=ARow - (GCache.FullVisibleGrid.Bottom - GCache.FullVisibleGrid.Top);
 end;
 
 procedure TVarGrid.BeginUpdate;
