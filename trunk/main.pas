@@ -3801,7 +3801,8 @@ begin
         FSlowResponse.Visible:=True;
 
     if FDetailsWait.Visible then begin
-      if FDetailsWaitStart = 0 then begin
+      if (FDetailsWaitStart = 0) or not (rtDetails in RpcObj.RefreshNow) then begin
+        FDetailsWaitStart:=0;
         FDetailsWait.Visible:=False;
         panDetailsWait.Visible:=False;
       end;
@@ -6279,7 +6280,6 @@ end;
 
 procedure TMainForm.DetailsUpdated;
 begin
-  TorrentsListTimer.Enabled:=False;
   FDetailsWaitStart:=0;
   PageInfo.ActivePage.Tag:=0;
 end;

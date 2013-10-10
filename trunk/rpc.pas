@@ -53,7 +53,7 @@ type
     procedure GetPeers(TorrentId: integer);
     procedure GetFiles(TorrentId: integer);
     procedure GetTrackers(TorrentId: integer);
-    procedure GetStats(TorrentId: integer);
+    procedure GetStats;
     procedure GetInfo(TorrentId: integer);
     procedure GetSessionInfo;
 
@@ -146,6 +146,8 @@ uses Main, ssl_openssl_lib, synafpc, blcksock;
 procedure TRpcThread.Execute;
 var
   t, tt: TDateTime;
+  i: integer;
+  ai: TAdvInfoType;
 begin
   try
     GetSessionInfo;
@@ -173,25 +175,28 @@ begin
         end
         else
           if rtDetails in FRpc.RefreshNow then begin
-            if CurTorrentId <> 0 then begin
-              case AdvInfo of
+            i:=CurTorrentId;
+            ai:=AdvInfo;
+            if i <> 0 then begin
+              case ai of
                 aiGeneral:
-                  GetInfo(CurTorrentId);
+                  GetInfo(i);
                 aiPeers:
-                  GetPeers(CurTorrentId);
+                  GetPeers(i);
                 aiFiles:
-                  GetFiles(CurTorrentId);
+                  GetFiles(i);
                 aiTrackers:
-                  GetTrackers(CurTorrentId);
+                  GetTrackers(i);
               end;
             end;
 
-            case AdvInfo of
+            case ai of
               aiStats:
-                GetStats(CurTorrentId);
+                GetStats;
             end;
 
-            Exclude(FRpc.RefreshNow, rtDetails);
+            if (i = CurTorrentId) and (ai = AdvInfo) then
+              Exclude(FRpc.RefreshNow, rtDetails);
           end
           else
             if rtSession in FRpc.RefreshNow then begin
@@ -464,7 +469,7 @@ begin
   end;
 end;
 
-procedure TRpcThread.GetStats(TorrentId: integer);
+procedure TRpcThread.GetStats;
 var
   req, args: TJSONObject;
 begin
