@@ -892,14 +892,15 @@ end;
 
 procedure TVarGrid.AutoAdjustColumn(aCol: Integer);
 var
-  i, j, wd, h: integer;
+  i, j, wd, h, fr: integer;
   ca: TCellAttributes;
 begin
   wd:=4;
+  fr:=FixedRows;
   for i:=0 to FItems.Count - 1 do begin
-    h:=RowHeights[i + FixedRows];
+    h:=RowHeights[i + fr];
     if h > 0 then begin
-      SetupCell(aCol, i, [], ca);
+      SetupCell(aCol, i + fr, [], ca);
       j:=Canvas.TextWidth(ca.Text) + 6;
       Inc(j, ca.Indent);
       if coDrawTreeButton in ca.Options then
