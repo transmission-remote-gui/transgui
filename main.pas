@@ -101,6 +101,7 @@ resourcestring
   SUnlimited = 'Unlimited';
   SAverage = 'average';
   SCheckNewVersion = 'Do you wish to enable automatic checking for a new version of %s?';
+  SDuplicateTorrent = 'Torrent already exists';
 
   SDownloaded = 'Downloaded';
   SUploaded = 'Uploaded';
@@ -635,6 +636,7 @@ type
     procedure DetailsUpdated;
     function RenameTorrent(TorrentId: integer; const OldPath, NewPath: string): boolean;
     procedure FilesTreeStateChanged(Sender: TObject);
+    function SelectTorrent(TorrentId, TimeOut: integer): integer;
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -1863,6 +1865,8 @@ var
   function _AddTorrent(args: TJSONObject): integer;
   var
     req: TJSONObject;
+    id, i: integer;
+    s: string;
   begin
     Result:=0;
     req:=TJSONObject.Create;
@@ -1876,7 +1880,17 @@ var
       args:=RpcObj.SendRequest(req);
       if args <> nil then
       try
-        // TODO: Check duplicate torrent
+        if args.IndexOfName('torrent-duplicate') >= 0 then begin
+          id:=args.Objects['torrent-duplicate'].Integers['id'];
+          i:=SelectTorrent(id, 2000);
+          if i >= 0 then
+            s:=Format(': %s', [UTF8Encode(widestring(FTorrents[idxName, i]))])
+          else
+            s:='';
+          ForceAppNormal;
+          MessageDlg(SDuplicateTorrent + s + '.', mtError, [mbOK], 0);
+          exit;
+        end;
         Result:=args.Objects['torrent-added'].Integers['id'];
       finally
         args.Free;
@@ -1940,7 +1954,6 @@ var
   i: integer;
   fs: TFileStreamUTF8;
   s, OldDownloadDir, IniSec, OldName: string;
-  tt: TDateTime;
   ok: boolean;
 begin
   Result:=False;
@@ -2003,6 +2016,7 @@ begin
         end;
 
         lvFilter.Row:=0;
+        edSearch.Text:='';
 
         args:=TJSONObject.Create;
         args.Add('paused', TJSONIntegerNumber.Create(1));
@@ -2047,10 +2061,6 @@ begin
         finally
           args.Free;
         end;
-{
-        if not HasFolders then
-          lvFiles.SortColumn:=0;
-}
         OldDownloadDir:=cbDestFolder.Text;
         AppNormal;
 
@@ -2146,20 +2156,7 @@ begin
           if cbStartTorrent.Checked then
             TorrentAction(id, 'torrent-start');
 
-          tt:=Now;
-          while (Now - tt < 2/SecsPerDay) and (id <> 0) do begin
-            Application.ProcessMessages;
-            i:=gTorrents.Items.IndexOf(idxTorrentId, id);
-            if i >= 0 then begin
-              gTorrents.RemoveSelection;
-              gTorrents.Row:=i;
-              RpcObj.CurTorrentId:=id;
-              if not IsAppHidden and gTorrents.Enabled then
-                Self.ActiveControl:=gTorrents;
-              break;
-            end;
-            Sleep(100);
-          end;
+          SelectTorrent(id, 2000);
 
           id:=0;
           if Ini.ReadBool('Interface', 'DeleteTorrentFile', False) and not IsProtocolSupported(FileName) then
@@ -6159,6 +6156,35 @@ end;
 procedure TMainForm.FilesTreeStateChanged(Sender: TObject);
 begin
   SetCurrentFilePriority('');
+end;
+
+function TMainForm.SelectTorrent(TorrentId, TimeOut: integer): integer;
+var
+  tt: TDateTime;
+  br: boolean;
+begin
+  Result:=-1;
+  if TorrentId = 0 then
+    exit;
+  br:=False;
+  tt:=Now;
+  while True do begin
+    Application.ProcessMessages;
+    Result:=FTorrents.IndexOf(idxTorrentId, TorrentId);
+    if Result >= 0 then begin
+      gTorrents.RemoveSelection;
+      gTorrents.Row:=Result;
+      RpcObj.CurTorrentId:=TorrentId;
+      if Self.Visible and (Self.WindowState <> wsMinimized) and gTorrents.Enabled then
+        Self.ActiveControl:=gTorrents;
+      break;
+    end;
+    if br then
+      break;
+    Sleep(100);
+    if Now - tt >= TimeOut/MSecsPerDay then
+      br:=True;
+  end;
 end;
 
 procedure TMainForm.FillSpeedsMenu;
