@@ -329,7 +329,11 @@ begin
           req.Add('arguments', args2);
           args2:=FRpc.SendRequest(req);
           if args2 <> nil then
-            args.Floats['download-dir-free-space']:=args2.Floats['size-bytes'];
+            args.Floats['download-dir-free-space']:=args2.Floats['size-bytes']
+          else begin
+            args.Floats['download-dir-free-space']:=-1;
+            FRpc.Status:='';
+          end;
         finally
           args2.Free;
         end;
