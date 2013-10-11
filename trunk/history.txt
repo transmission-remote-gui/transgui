@@ -1,3 +1,25 @@
+5.0 (Oct ?, 2013)
+[+] Option to change torrent file/folder name during addition (Transmission 2.80+ only). Issue #498.
+[+] Renaming of existing torrents. Issue #498.
+[+] Display files list as a tree in the Files tab. Issue #572.
+[+] Show check boxes in the Files tree to allow more user friendly selection of files to be downloaded.
+[+] Free disk space is updated when changing a destination folder in the Add torrent window (Transmission 2.80+ only). Issue #665.
+[+] Display the number of files in the title of the Files tab.
+[+] Strike out torrents in the list during deletion while waiting for action to complete.
+[*] Removed flickering of torrent details while changing current torrent.
+[*] Speed up rendering of torrent and file lists.
+[*] Update window contents while splitters are moving.
+[*] Restore display of a queue position for finished torrents. Issue #568.
+[*] Align the Ratio column to the right. Issue #668.
+[*] Increased drop down count for the folders combo box to 20.
+[-] Fixed garbage at the end of transgui.ini file. Issue #609.
+[-] Crash when the "Automatically add torrent links from the clipboard" is enabled in some cases. Issue #613.
+[-] Update statistics even if no torrents are selected. Issue #664.
+[-] Use system default date/time format on Linux and OS X. Issue #624.
+[-] Properly close the application on Windows log off. Issue #680.
+[-] Proper handling of the case when the previous application run has been terminated unexpectedly. Issue #680.
+[-] Fixed current UI language detection on Windows.
+
 4.1 (Oct 06, 2012)
 [+] Option "Automatically add torrent links from the clipboard". Issue #571.
 [+] Statistics tab. Issue #157.
