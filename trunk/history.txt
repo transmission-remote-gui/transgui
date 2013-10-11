@@ -20,6 +20,7 @@
 [-] Properly close the application on Windows log off. Issue #680.
 [-] Proper handling of the case when the previous application run has been terminated unexpectedly. Issue #680.
 [-] Fixed current UI language detection on Windows.
+[-] The "Invalid argument" error or tracker URLs corruption when editing trackers in the torrent properties windows on Mac OS X. Issue #666.
 
 4.1 (Oct 06, 2012)
 [+] Option "Automatically add torrent links from the clipboard". Issue #571.
