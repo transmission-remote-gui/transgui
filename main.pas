@@ -576,6 +576,7 @@ type
     FDetailsWaitStart: TDateTime;
     FMainFormShown: boolean;
     FFilesTree: TFilesTree;
+    FFilesCapt: string;
 
     procedure UpdateUI;
     procedure UpdateUIRpcVersion(RpcVersion: integer);
@@ -1288,6 +1289,8 @@ begin
   gStats.AlternateColor:=FAlterColor;
   FPendingTorrents:=TStringList.Create;
 
+  FFilesCapt:=tabFiles.Caption;
+
   FSlowResponse:=TProgressImage.Create(MainToolBar);
   with FSlowResponse do begin
     Align:=alRight;
@@ -1499,7 +1502,7 @@ end;
 procedure TMainForm.acCopyPathExecute(Sender: TObject);
 begin
   if lvFiles.Items.Count > 0 then
-    Clipboard.AsText:='"' + UTF8Encode(widestring(lvFiles.Items[idxFileFullPath, lvFiles.Row])) + '"';
+    Clipboard.AsText:='"' + FFilesTree.GetFullPath(lvFiles.Row) + '"';
 end;
 
 procedure TMainForm.acDelTrackerExecute(Sender: TObject);
@@ -1676,7 +1679,7 @@ begin
   Application.ProcessMessages;
   AppBusy;
   if lvFiles.Focused and (lvFiles.Items.Count > 0) then begin
-    p:=UTF8Encode(widestring(lvFiles.Items[idxFileFullPath, lvFiles.Row]));
+    p:=FFilesTree.GetFullPath(lvFiles.Row);
     sel:=True;
   end
   else begin
@@ -1714,7 +1717,7 @@ end;
 procedure TMainForm.acOpenFileExecute(Sender: TObject);
 begin
   if lvFiles.Items.Count = 0 then exit;
-  ExecRemoteFile(UTF8Encode(widestring(FFiles[idxFileFullPath, lvFiles.Row])), False);
+  ExecRemoteFile(FFilesTree.GetFullPath(lvFiles.Row), False);
 end;
 
 procedure TMainForm.acOptionsExecute(Sender: TObject);
@@ -1882,61 +1885,7 @@ var
     if Result = 0 then
       CheckStatus(False);
   end;
-{
-  function _GetLevel(const s: string): integer;
-  var
-    p: PChar;
-  begin
-    Result:=0;
-    p:=PChar(s);
-    while p^ <> #0 do begin
-      if p^ in ['/', '\'] then
-        Inc(Result);
-      Inc(p);
-    end
-  end;
 
-  function _AddFolders(list: TVarList; const path: string; var idx: integer; cnt, level: integer): double;
-  var
-    s, ss: string;
-    j: integer;
-    d: double;
-    p: PChar;
-  begin
-    Result:=0;
-    while idx < cnt do begin
-      s:=ExtractFilePath(UTF8Encode(widestring(list[idxAtFullPath, idx])));
-      if s = '' then begin
-        Inc(idx);
-        continue;
-      end;
-      if (path <> '') and (Pos(path, s) <> 1)  then
-        break;
-      if s = path then begin
-        Result:=Result + list[idxAtSize, idx];
-        list[idxAtLevel, idx]:=level;
-        Inc(idx);
-      end
-      else begin
-        ss:=Copy(s, Length(path) + 1, MaxInt);
-        p:=PChar(ss);
-        while (p^ <> #0) and not (p^ in ['/','\']) do
-          Inc(p);
-        if p^ <> #0 then begin
-          SetLength(ss, p - PChar(ss) + 1);
-          j:=list.Count;
-          list[idxAtLevel, j]:=level;//_GetLevel(path);
-          list[idxAtFullPath, j]:=UTF8Decode(path + ss);
-          d:=_AddFolders(list, path + ss, idx, cnt, level + 1);
-          list[idxAtSize, j]:=d;
-          ss:=ExcludeTrailingPathDelimiter(ss);
-          list[idxAtName, j]:=UTF8Decode(ExtractFileName(ss));
-          Result:=Result + d;
-        end;
-      end;
-    end;
-  end;
-}
   procedure ShowWaitMsg(const AText: string);
   begin
     if WaitForm = nil then begin
@@ -2081,43 +2030,6 @@ begin
           end;
           edPeerLimit.Value:=t.Objects[0].Integers['maxConnectedPeers'];
           FilesTree.FillTree(id, t.Objects[0].Arrays['files'], nil, nil);
-{
-          // Filling files list
-          files:=t.Objects[0].Arrays['files'];
-          path:='';
-          if files.Count > 0 then begin
-            s:=UTF8Encode(files.Objects[0].Strings['name']);
-            i:=Pos('/', s);
-            if i = 0 then
-              i:=Pos('\', s);
-            if i > 0 then
-              path:=Copy(s, 1, i);
-          end;
-          lvFiles.Items.BeginUpdate;
-          try
-            lvFiles.Items.RowCnt:=files.Count;
-            for i:=0 to files.Count - 1 do begin
-              res:=files.Objects[i];
-              s:=UTF8Encode(res.Strings['name']);
-              if (path <> '') and (Copy(s, 1, Length(path)) = path) then
-                s:=Copy(s, Length(path) + 1, MaxInt);
-              ss:=ExtractFileName(s);
-              if ss <> s then
-                HasFolders:=True;
-              lvFiles.Items[idxAtName, i]:=UTF8Decode(ss);
-              lvFiles.Items[idxAtSize, i]:=res.Floats['length'];
-              lvFiles.Items[idxAtFullPath, i]:=UTF8Decode(s);
-              lvFiles.Items[idxAtFileID, i]:=i;
-              lvFiles.Items[idxAtLevel, i]:=0;//_GetLevel(s);
-            end;
-            lvFiles.Items.Sort(idxAtFullPath);
-            i:=0;
-            _AddFolders(lvFiles.Items, '', i, lvFiles.Items.Count, 0);
-            lvFiles.Items.Sort(idxAtFullPath);
-          finally
-            lvFiles.Items.EndUpdate;
-          end;
-}
           Width:=Ini.ReadInteger('AddTorrent', 'Width', Width);
           if (RpcObj.RPCVersion >= 7) and (lvFiles.Items.Count = 0) and (t.Objects[0].Floats['metadataPercentComplete'] <> 1.0) then begin
             // Magnet link
@@ -4094,8 +4006,10 @@ begin
   else
     t:=1;
   FDetailsWaitStart:=0;
-  if Skip <> aiFiles then
+  if Skip <> aiFiles then begin
     FFiles.Clear;
+    tabFiles.Caption:=FFilesCapt;
+  end;
   if Skip <> aiPeers then
     lvPeers.Items.Clear;
   if Skip <> aiTrackers then
@@ -5077,15 +4991,6 @@ begin
 end;
 
 procedure TMainForm.FillFilesList(ATorrentId: integer; list, priorities, wanted: TJSONArray; const DownloadDir: WideString);
-{
-var
-  i, row: integer;
-  d: TJSONData;
-  f: TJSONObject;
-  s, path, dir: string;
-  ff: double;
-  WasEmpty: boolean;
-}
 begin
   if (list = nil) or (priorities = nil) or (wanted = nil) then begin
     ClearDetailsInfo;
@@ -5094,62 +4999,9 @@ begin
 
   lvFiles.Enabled:=True;
   lvFiles.Color:=clWindow;
+  FFilesTree.DownloadDir:=UTF8Encode(DownloadDir);
   FFilesTree.FillTree(ATorrentId, list, priorities, wanted);
-{
-  dir:=UTF8Encode(DownloadDir);
-  path:=GetFilesCommonPath(list);
-  WasEmpty:=FFiles.Count = 0;
-
-  FFiles.BeginUpdate;
-  try
-    for i:=0 to FFiles.Count - 1 do
-      FFiles[idxFileTag, i]:=0;
-
-    FFiles.Sort(idxFileId);
-
-    for i:=0 to list.Count - 1 do begin
-      d:=list[i];
-      f:=d as TJSONObject;
-      if not FFiles.Find(idxFileId, i, row) then
-        FFiles.InsertRow(row);
-      FFiles[idxFileTag, row]:=1;
-      FFiles[idxFileId, row]:=i;
-
-      s:=UTF8Encode(f.Strings['name']);
-      FFiles[idxFileFullPath, row]:=UTF8Decode(IncludeProperTrailingPathDelimiter(dir) + s);
-      if (path <> '') and (Copy(s, 1, Length(path)) = path) then
-        s:=Copy(s, Length(path) + 1, MaxInt);
-
-      FFiles[idxFileName, row]:=UTF8Decode(s);
-      ff:=f.Floats['length'];
-      FFiles[idxFileSize, row]:=ff;
-      FFiles[idxFileDone, row]:=f.Floats['bytesCompleted'];
-      if ff = 0 then
-        ff:=100.0
-      else
-        ff:=double(FFiles[idxFileDone, row])*100.0/ff;
-      FFiles[idxFileProgress, row]:=Int(ff*10.0)/10.0;
-
-      if wanted.Integers[i] = 0 then
-        FFiles[idxFilePriority, row]:=TR_PRI_SKIP
-      else
-        FFiles[idxFilePriority, row]:=priorities.Integers[i];
-    end;
-
-    i:=0;
-    while i < FFiles.Count do
-      if FFiles[idxFileTag, i] = 0 then
-        FFiles.Delete(i)
-      else
-        Inc(i);
-
-    lvFiles.Sort;
-    if WasEmpty and (FFiles.Count > 0) then
-      lvFiles.Row:=0;
-  finally
-    FFiles.EndUpdate;
-  end;
-}
+  tabFiles.Caption:=Format('%s (%d)', [FFilesCapt, list.Count]);
   DetailsUpdated;
 end;
 
@@ -5682,18 +5534,29 @@ end;
 function TMainForm.SetCurrentFilePriority(const APriority: string): boolean;
 var
   Files: array of integer;
-  i, j: integer;
+  i, j, k, level: integer;
 begin
   if (gTorrents.Items.Count = 0) or (PageInfo.ActivePage <> tabFiles) then exit;
   if lvFiles.SelCount = 0 then
     lvFiles.RowSelected[lvFiles.Row]:=True;
   SetLength(Files, lvFiles.Items.Count);
   j:=0;
-  for i:=0 to lvFiles.Items.Count - 1 do
-    if lvFiles.RowSelected[i] then begin
-      Files[j]:=FFiles[idxFileId, i];
-      Inc(j);
+  level:=-1;
+  for i:=0 to lvFiles.Items.Count - 1 do begin
+    k:=FFilesTree.RowLevel[i];
+    if k <= level then
+      level:=-1;
+    if lvFiles.RowSelected[i] or ( (level <> -1) and (k > level) ) then begin
+      if FFilesTree.IsFolder(i) then begin
+        if level = -1 then
+          level:=k;
+      end
+      else begin
+        Files[j]:=FFiles[idxFileId, i];
+        Inc(j);
+      end;
     end;
+  end;
   if j = 0 then exit;
   SetLength(Files, j);
   Result:=SetFilePriority(RpcObj.CurTorrentId, Files, APriority);
