@@ -47,6 +47,14 @@ type
   TCellNotifyEvent = procedure (Sender: TVarGrid; ACol, ARow, ADataCol: integer) of object;
   TOnQuickSearch = procedure (Sender: TVarGrid; var SearchText: string; var ARow: integer) of object;
 
+  { TVarGridStringEditor }
+
+  TVarGridStringEditor = class(TStringCellEditor)
+  protected
+    procedure msg_SetGrid(var Msg: TGridMessage); message GM_SETGRID;
+    procedure msg_SetBounds(var Msg: TGridMessage); message GM_SETBOUNDS;
+  end;
+
   { TVarGrid }
 
   TVarGrid = class(TCustomDrawGrid)
@@ -76,6 +84,7 @@ type
     FSearchTimer: TTimer;
     FOldOpt: TGridOptions;
     FNoDblClick: boolean;
+    FStrEditor: TVarGridStringEditor;
 
     function GetRow: integer;
     function GetRowSelected(RowIndex: integer): boolean;
@@ -131,6 +140,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    function EditorByStyle(Style: TColumnButtonStyle): TWinControl; override;
     procedure RemoveSelection;
     procedure SelectAll;
     procedure Sort; reintroduce;
@@ -237,6 +247,35 @@ const
 procedure Register;
 begin
   RegisterComponents('TransGUI', [TVarGrid]);
+end;
+
+{ TVarGridStringEditor }
+
+procedure TVarGridStringEditor.msg_SetGrid(var Msg: TGridMessage);
+begin
+  inherited;
+  Msg.Options:=Msg.Options and not EO_AUTOSIZE;
+end;
+
+procedure TVarGridStringEditor.msg_SetBounds(var Msg: TGridMessage);
+var
+  ca: TCellAttributes;
+begin
+  with Msg do begin
+    TVarGrid(Grid).SetupCell(Col, Row, [], ca);
+    with CellRect do begin
+      Inc(Left, ca.Indent);
+      if coDrawTreeButton in ca.Options then
+        Inc(Left, Bottom - Top);
+      if coDrawCheckBox in ca.Options then
+        Inc(Left, Bottom - Top);
+      if (ca.ImageIndex <> -1) and Assigned(TVarGrid(Grid).Images) then
+        Inc(Left, TVarGrid(Grid).Images.Width + 2);
+      Dec(Left, 3);
+      Dec(Top, 1);
+      SetBounds(Left, Top, Right-Left, Bottom-Top);
+    end;
+  end;
 end;
 
 { TVarGrid }
@@ -1132,12 +1171,30 @@ begin
     OnTimer:=@DoSearchTimer;
   end;
   FastEditing:=False;
+  EditorBorderStyle:=bsSingle;
 end;
 
 destructor TVarGrid.Destroy;
 begin
   inherited Destroy;
   FItems.Free;
+end;
+
+function TVarGrid.EditorByStyle(Style: TColumnButtonStyle): TWinControl;
+begin
+  if Style = cbsAuto then begin
+    if FStrEditor = nil then begin
+      FStrEditor:=TVarGridStringEditor.Create(Self);
+      FStrEditor.Name :='VGStringEditor';
+      FStrEditor.Text:='';
+      FStrEditor.Visible:=False;
+      FStrEditor.Align:=alNone;
+      FStrEditor.BorderStyle:=bsSingle;
+    end;
+    Result:=FStrEditor;
+  end
+  else
+    Result:=inherited EditorByStyle(Style);
 end;
 
 procedure TVarGrid.RemoveSelection;
