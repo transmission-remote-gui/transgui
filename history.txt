@@ -12,6 +12,7 @@
 [*] Restore display of a queue position for finished torrents. Issue #568.
 [*] Align the Ratio column to the right. Issue #668.
 [*] Increased drop down count for the folders combo box to 20.
+[-] Show the error state for stopped torrents. Issue #659.
 [-] Fixed garbage at the end of transgui.ini file. Issue #609.
 [-] Crash when the "Automatically add torrent links from the clipboard" is enabled in some cases. Issue #613.
 [-] Update statistics even if no torrents are selected. Issue #664.
