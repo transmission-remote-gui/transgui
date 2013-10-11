@@ -205,6 +205,7 @@ type
     imgFlags: TImageList;
     ImageList16: TImageList;
     FilterTimer: TTimer;
+    MenuItem100: TMenuItem;
     MenuItem93: TMenuItem;
     MenuItem94: TMenuItem;
     MenuItem95: TMenuItem;
@@ -516,6 +517,9 @@ type
     procedure gTorrentsSortColumn(Sender: TVarGrid; var ASortCol: integer);
     procedure HSplitterChangeBounds(Sender: TObject);
     procedure lvFilesDblClick(Sender: TObject);
+    procedure lvFilesEditorHide(Sender: TObject);
+    procedure lvFilesEditorShow(Sender: TObject);
+    procedure lvFilesSetEditText(Sender: TObject; ACol, ARow: Integer; const Value: string);
     procedure lvFilterCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure lvFilterClick(Sender: TObject);
     procedure lvFilterDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
@@ -634,7 +638,7 @@ type
     procedure CenterDetailsWait;
     function GetPageInfoType(pg: TTabSheet): TAdvInfoType;
     procedure DetailsUpdated;
-    function RenameTorrent(TorrentId: integer; const OldPath, NewPath: string): boolean;
+    function RenameTorrent(TorrentId: integer; const OldPath, NewName: string): boolean;
     procedure FilesTreeStateChanged(Sender: TObject);
     function SelectTorrent(TorrentId, TimeOut: integer): integer;
   public
@@ -1685,7 +1689,7 @@ begin
   AppBusy;
   if lvFiles.Focused and (lvFiles.Items.Count > 0) then begin
     p:=FFilesTree.GetFullPath(lvFiles.Row);
-    sel:=True;
+    sel:=not FFilesTree.IsFolder(lvFiles.Row);
   end
   else begin
     sel:=False;
@@ -3444,6 +3448,7 @@ end;
 procedure TMainForm.gTorrentsEditorShow(Sender: TObject);
 begin
   gTorrents.Tag:=1;
+  gTorrents.RemoveSelection;
 end;
 
 procedure TMainForm.gTorrentsQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer);
@@ -3474,8 +3479,10 @@ end;
 
 procedure TMainForm.gTorrentsSetEditText(Sender: TObject; ACol, ARow: Integer; const Value: string);
 begin
-  if RenameTorrent(gTorrents.Items[idxTorrentId, ARow], UTF8Encode(gTorrents.Items[idxName, ARow]), Trim(Value)) then
+  if RenameTorrent(gTorrents.Items[idxTorrentId, ARow], UTF8Encode(gTorrents.Items[idxName, ARow]), Trim(Value)) then begin
     gTorrents.Items[idxName, ARow]:=UTF8Decode(Trim(Value));
+    FFilesTree.Clear;
+  end;
 end;
 
 procedure TMainForm.gTorrentsSortColumn(Sender: TVarGrid; var ASortCol: integer);
@@ -3496,6 +3503,49 @@ end;
 procedure TMainForm.lvFilesDblClick(Sender: TObject);
 begin
   acOpenFile.Execute;
+end;
+
+procedure TMainForm.lvFilesEditorHide(Sender: TObject);
+begin
+  gTorrents.Tag:=0;
+  lvFiles.Tag:=0;
+  lvFiles.HideSelection:=True;
+end;
+
+procedure TMainForm.lvFilesEditorShow(Sender: TObject);
+begin
+  gTorrents.Tag:=1;
+  lvFiles.Tag:=1;
+  lvFiles.RemoveSelection;
+  lvFiles.HideSelection:=False;
+end;
+
+procedure TMainForm.lvFilesSetEditText(Sender: TObject; ACol, ARow: Integer; const Value: string);
+var
+  p: string;
+  i, lvl, len: integer;
+begin
+  p:=FFilesTree.GetFullPath(ARow, False);
+  if RenameTorrent(gTorrents.Items[idxTorrentId, gTorrents.Row], p, Trim(Value)) then begin
+    FFiles[idxFileName, ARow]:=UTF8Decode(Trim(Value));
+    if FFilesTree.IsFolder(ARow) then begin
+      // Updating path for child elements
+      len:=Length(p);
+      p:=ExtractFilePath(p) + Trim(Value);
+      lvl:=FFilesTree.RowLevel[ARow];
+      FFiles.BeginUpdate;
+      try
+        FFiles[idxFileFullPath, ARow]:=UTF8Decode(p + RemotePathDelimiter);
+        for i:=ARow + 1 to FFiles.Count - 1 do
+          if FFilesTree.RowLevel[i] > lvl then
+            FFiles[idxFileFullPath, i]:=UTF8Decode(p + Copy(UTF8Encode(widestring(FFiles[idxFileFullPath, i])), len + 1, MaxInt))
+          else
+            break;
+      finally
+        FFiles.EndUpdate;
+      end;
+    end;
+  end;
 end;
 
 procedure TMainForm.lvFilterCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
@@ -4992,6 +5042,7 @@ end;
 
 procedure TMainForm.FillFilesList(ATorrentId: integer; list, priorities, wanted: TJSONArray; const DownloadDir: WideString);
 begin
+  if lvFiles.Tag <> 0 then exit;
   if (list = nil) or (priorities = nil) or (wanted = nil) then begin
     ClearDetailsInfo;
     exit;
@@ -6140,16 +6191,16 @@ begin
   PageInfo.ActivePage.Tag:=0;
 end;
 
-function TMainForm.RenameTorrent(TorrentId: integer; const OldPath, NewPath: string): boolean;
+function TMainForm.RenameTorrent(TorrentId: integer; const OldPath, NewName: string): boolean;
 var
   args: TJSONObject;
 begin
   Result:=False;
-  if OldPath = NewPath then
+  if ExtractFileName(OldPath) = NewName then
     exit;
   args:=TJSONObject.Create;
   args.Add('path', UTF8Decode(OldPath));
-  args.Add('name', UTF8Decode(NewPath));
+  args.Add('name', UTF8Decode(NewName));
   Result:=TorrentAction(TorrentId, 'torrent-rename-path', args);
 end;
 

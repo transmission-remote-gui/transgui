@@ -126,8 +126,9 @@ type
     procedure FillTree(ATorrentId: integer; files, priorities, wanted: TJSONArray);
     procedure SetStateAll(AState: TCheckBoxState);
     procedure EnsureRowVisible(ARow: integer);
-    function GetFullPath(ARow: integer): string;
+    function GetFullPath(ARow: integer; AbsolutePath: boolean = True): string;
     function UpdateSummary: TFolderInfo;
+    procedure Clear;
     property Grid: TVarGrid read FGrid;
     property HasFolders: boolean read FHasFolders;
     property Checkboxes: boolean read FCheckboxes write SetCheckboxes;
@@ -408,11 +409,15 @@ begin
   FGrid.EnsureRowVisible(ARow);
 end;
 
-function TFilesTree.GetFullPath(ARow: integer): string;
+function TFilesTree.GetFullPath(ARow: integer; AbsolutePath: boolean): string;
 begin
-  Result:=FDownloadDir;
-  if Copy(Result, Length(Result), 1) <> RemotePathDelimiter then
-    Result:=Result + RemotePathDelimiter;
+  if AbsolutePath then begin
+    Result:=FDownloadDir;
+    if Copy(Result, Length(Result), 1) <> RemotePathDelimiter then
+      Result:=Result + RemotePathDelimiter;
+  end
+  else
+    Result:='';
   Result:=Result + UTF8Encode(widestring(FFiles[idxFileFullPath, ARow]));
   if IsFolder(ARow) then
     Result:=Copy(Result, 1, Length(Result) - 1)
@@ -485,6 +490,13 @@ begin
   finally
     FFiles.EndUpdate;
   end;
+end;
+
+procedure TFilesTree.Clear;
+begin
+  FLastFileCount:=0;
+  FTorrentId:=0;
+  FFiles.Clear;
 end;
 
 procedure TFilesTree.DoCheckBoxClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);

@@ -1016,12 +1016,13 @@ inherited MainForm: TMainForm
         RowCount = 1
         TabOrder = 0
         OnDblClick = lvFilesDblClick
+        OnSetEditText = lvFilesSetEditText
         Images = ImageList16
         MultiSelect = True
         SortColumn = 0
         HideSelection = True
-        OnEditorShow = gTorrentsEditorShow
-        OnEditorHide = gTorrentsEditorHide
+        OnEditorShow = lvFilesEditorShow
+        OnEditorHide = lvFilesEditorHide
       end
     end
     object tabStats: TTabSheet
@@ -2863,6 +2864,9 @@ inherited MainForm: TMainForm
         FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       }
       OnClick = acOpenContainingFolderExecute
+    end
+    object MenuItem100: TMenuItem
+      Action = acRename
     end
     object MenuItem97: TMenuItem
       Action = acCopyPath

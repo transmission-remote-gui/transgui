@@ -1,6 +1,6 @@
 5.0 (Oct ?, 2013)
-[+] Option to change torrent file/folder name during addition (Transmission 2.80+ only). Issue #498.
-[+] Renaming of existing torrents. Issue #498.
+[+] An option to change a torrent's file/folder name during addition (Transmission 2.80+ only). Issue #498.
+[+] Renaming of existing torrents, files and folders (Transmission 2.80+ only). Issue #498.
 [+] Display files list as a tree in the Files tab. Issue #572.
 [+] Show check boxes in the Files tree to allow more user friendly selection of files to be downloaded.
 [+] Free disk space is updated when changing a destination folder in the Add torrent window (Transmission 2.80+ only). Issue #665.
