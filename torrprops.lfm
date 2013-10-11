@@ -2,7 +2,7 @@ inherited TorrPropsForm: TTorrPropsForm
   Left = 364
   Height = 270
   Top = 185
-  Width = 469
+  Width = 517
   HorzScrollBar.Page = 349
   HorzScrollBar.Range = 40
   VertScrollBar.Page = 155
@@ -12,7 +12,7 @@ inherited TorrPropsForm: TTorrPropsForm
   BorderStyle = bsDialog
   Caption = 'Torrent properties'
   ClientHeight = 270
-  ClientWidth = 469
+  ClientWidth = 517
   Constraints.MinHeight = 186
   Constraints.MinWidth = 350
   OnCreate = FormCreate
@@ -21,7 +21,7 @@ inherited TorrPropsForm: TTorrPropsForm
     Left = 0
     Height = 26
     Top = 236
-    Width = 469
+    Width = 517
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
     OKButton.Name = 'OKButton'
@@ -41,7 +41,7 @@ inherited TorrPropsForm: TTorrPropsForm
     Left = 8
     Height = 220
     Top = 8
-    Width = 453
+    Width = 501
     ActivePage = tabGeneral
     Align = alClient
     BorderSpacing.Around = 8
@@ -50,9 +50,9 @@ inherited TorrPropsForm: TTorrPropsForm
     object tabGeneral: TTabSheet
       Caption = 'General'
       ClientHeight = 194
-      ClientWidth = 445
+      ClientWidth = 493
       object txKbs1: TLabel
-        Left = 372
+        Left = 420
         Height = 14
         Top = 37
         Width = 22
@@ -61,7 +61,7 @@ inherited TorrPropsForm: TTorrPropsForm
         ParentColor = False
       end
       object txKbs2: TLabel
-        Left = 372
+        Left = 420
         Height = 14
         Top = 69
         Width = 22
@@ -87,7 +87,7 @@ inherited TorrPropsForm: TTorrPropsForm
         ParentColor = False
       end
       object txMinutes: TLabel
-        Left = 372
+        Left = 420
         Height = 14
         Top = 163
         Width = 38
@@ -105,7 +105,7 @@ inherited TorrPropsForm: TTorrPropsForm
         TabOrder = 0
       end
       object edMaxDown: TSpinEdit
-        Left = 292
+        Left = 340
         Height = 21
         Top = 34
         Width = 66
@@ -124,7 +124,7 @@ inherited TorrPropsForm: TTorrPropsForm
         TabOrder = 2
       end
       object edMaxUp: TSpinEdit
-        Left = 292
+        Left = 340
         Height = 21
         Top = 66
         Width = 66
@@ -134,7 +134,7 @@ inherited TorrPropsForm: TTorrPropsForm
         TabOrder = 3
       end
       object edPeerLimit: TSpinEdit
-        Left = 292
+        Left = 340
         Height = 21
         Top = 98
         Width = 66
@@ -155,7 +155,7 @@ inherited TorrPropsForm: TTorrPropsForm
         TabOrder = 5
       end
       object edSeedRatio: TFloatSpinEdit
-        Left = 292
+        Left = 340
         Height = 21
         Top = 129
         Width = 66
@@ -177,7 +177,7 @@ inherited TorrPropsForm: TTorrPropsForm
         TabOrder = 7
       end
       object edIdleSeedLimit: TSpinEdit
-        Left = 292
+        Left = 340
         Height = 21
         Top = 160
         Width = 66
@@ -191,15 +191,16 @@ inherited TorrPropsForm: TTorrPropsForm
     object tabAdvanced: TTabSheet
       Caption = 'Advanced'
       ClientHeight = 194
-      ClientWidth = 445
+      ClientWidth = 488
       object edTrackers: TMemo
         Left = 8
         Height = 153
         Top = 30
-        Width = 428
+        Width = 471
         Anchors = [akTop, akLeft, akRight, akBottom]
-        ScrollBars = ssAutoVertical
+        ScrollBars = ssAutoBoth
         TabOrder = 0
+        WordWrap = False
       end
       object txTrackers: TLabel
         Left = 8
