@@ -4437,7 +4437,7 @@ begin
     if j = TR_STATUS_SEED  then StateImg:=imgSeed else
     if j = TR_STATUS_STOPPED  then StateImg:=imgDone;
 
-    if (j <> TR_STATUS_STOPPED) and (GetTorrentError(t, j) <> '') then
+    if GetTorrentError(t, j) <> '' then
       if t.Strings['errorString'] <> '' then
         StateImg:=imgError
       else
