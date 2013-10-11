@@ -880,6 +880,7 @@ var
 begin
   inherited HeaderClick(IsColumn, index);
   if IsColumn and (FSortColumn >= 0) then begin
+    fGridState:=gsNormal;
     i:=ColToDataCol(index);
     if FSortColumn = i then begin
       if SortOrder = soAscending then
