@@ -79,6 +79,7 @@ type
   TFilesTree = class(TComponent)
   private
     FCheckboxes: boolean;
+    FDownloadDir: string;
     FGrid: TVarGrid;
     FHasFolders: boolean;
     FIsPlain: boolean;
@@ -98,6 +99,7 @@ type
     procedure ExpandFolder(ARow: integer);
     function GetChecked(ARow: integer): TCheckBoxState;
     function GetExpanded(ARow: integer): boolean;
+    function GetLevel(ARow: integer): integer;
     procedure SetCheckboxes(const AValue: boolean);
     procedure IntSetChecked(ARow: integer; const AValue: TCheckBoxState);
     procedure SetChecked(ARow: integer; const AValue: TCheckBoxState);
@@ -115,12 +117,15 @@ type
     procedure FillTree(ATorrentId: integer; files, priorities, wanted: TJSONArray);
     procedure SetStateAll(AState: TCheckBoxState);
     procedure EnsureRowVisible(ARow: integer);
+    function GetFullPath(ARow: integer): string;
     property Grid: TVarGrid read FGrid;
     property HasFolders: boolean read FHasFolders;
     property Checkboxes: boolean read FCheckboxes write SetCheckboxes;
     property IsPlain: boolean read FIsPlain write SetIsPlain;
+    property DownloadDir: string read FDownloadDir write FDownloadDir;
     property Expanded[ARow: integer]: boolean read GetExpanded write SetExpanded;
     property Checked[ARow: integer]: TCheckBoxState read GetChecked write SetChecked;
+    property RowLevel[ARow: integer]: integer read GetLevel;
     property OnStateChange: TNotifyEvent read FOnStateChange write FOnStateChange;
   end;
 
@@ -181,7 +186,6 @@ procedure TFilesTree.CollapseAll;
 var
   i: integer;
 begin
-  AppBusy;
   FGrid.BeginUpdate;
   try
     for i:=0 to FGrid.Items.Count - 1 do begin
@@ -189,6 +193,7 @@ begin
         SetRowOption(i, roCollapsed, True);
       if integer(FGrid.Items[idxFileLevel, i]) > 0 then begin
         FGrid.RowVisible[i]:=False;
+        FGrid.RowSelected[i]:=False;
         SetRowOption(i, roHidden, True);
       end;
     end;
@@ -196,7 +201,6 @@ begin
   finally
     FGrid.EndUpdate;
   end;
-  AppNormal;
 end;
 
 procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJSONArray);
@@ -211,15 +215,12 @@ type
 var
   HasDone, HasPriority: boolean;
 
-  function _AddFolders(list: TVarList; const path: string; var idx: integer; cnt, level: integer): TFolderInfo;
+  procedure _AddFolders(list: TVarList; const path: string; var idx: integer; cnt, level: integer);
   var
     s, ss: string;
     j: integer;
-    d: double;
     p: PChar;
   begin
-    FillChar(Result, SizeOf(Result), 0);
-    Result.Priority:=MaxInt;
     while idx < cnt do begin
       s:=ExtractFilePath(UTF8Encode(widestring(list[idxFileFullPath, idx])));
       if s = '' then begin
@@ -229,19 +230,6 @@ var
       if (path <> '') and (Pos(path, s) <> 1)  then
         break;
       if s = path then begin
-        with Result do begin
-          Size:=Size + list[idxFileSize, idx];
-          if HasDone then
-            DoneSize:=DoneSize + list[idxFileDone, idx];
-          if HasPriority then begin
-            j:=list[idxFilePriority, idx];
-            if Priority = MaxInt then
-              Priority:=j
-            else
-              if Priority <> j then
-                Priority:=TR_PRI_MIXED;
-          end;
-        end;
         list[idxFileLevel, idx]:=level;
         Inc(idx);
       end
@@ -255,29 +243,53 @@ var
           j:=list.Count;
           list[idxFileLevel, j]:=level;
           list[idxFileFullPath, j]:=UTF8Decode(path + ss);
-          with _AddFolders(list, path + ss, idx, cnt, level + 1) do begin
-            list[idxFileSize, j]:=Size;
-            Result.Size:=Result.Size + Size;
-            if HasDone then begin
-              list[idxFileDone, j]:=DoneSize;
-              if Size = 0 then
-                d:=100.0
-              else
-                d:=DoneSize*100.0/Size;
-              list[idxFileProgress, j]:=Int(d*10.0)/10.0;
-              Result.DoneSize:=Result.DoneSize + DoneSize;
-            end;
-            if HasPriority then begin
-              list[idxFilePriority, j]:=Priority;
-              if Result.Priority = MaxInt then
-                Result.Priority:=Priority
-              else
-                if Result.Priority <> Priority then
-                  Result.Priority:=TR_PRI_MIXED;
-            end;
-          end;
+          _AddFolders(list, path + ss, idx, cnt, level + 1);
           ss:=ExcludeTrailingPathDelimiter(ss);
           list[idxFileName, j]:=UTF8Decode(ExtractFileName(ss));
+        end;
+      end;
+    end;
+  end;
+
+  function _UpdateSummary(var idx: integer; cnt, level: integer): TFolderInfo;
+  var
+    i, j: integer;
+  begin
+    FillChar(Result, SizeOf(Result), 0);
+    Result.Priority:=MaxInt;
+    while idx < cnt do begin
+      if FFiles[idxFileLevel, idx] <> level then
+        break;
+      i:=idx;
+      Inc(idx);
+
+      if IsFolder(i) then begin
+        with _UpdateSummary(idx, cnt, level + 1) do begin
+          FFiles[idxFileSize, i]:=Size;
+          if HasDone then begin
+            FFiles[idxFileDone, i]:=DoneSize;
+            if Size = 0 then
+              DoneSize:=100.0
+            else
+              DoneSize:=DoneSize*100.0/Size;
+            FFiles[idxFileProgress, i]:=Int(DoneSize*10.0)/10.0;
+          end;
+          if HasPriority then
+            FFiles[idxFilePriority, i]:=Priority;
+        end;
+      end;
+
+      with Result do begin
+        Size:=Size + FFiles[idxFileSize, i];
+        if HasDone then
+          DoneSize:=DoneSize + FFiles[idxFileDone, i];
+        if HasPriority then begin
+          j:=FFiles[idxFilePriority, i];
+          if Priority = MaxInt then
+            Priority:=j
+          else
+            if Priority <> j then
+              Priority:=TR_PRI_MIXED;
         end;
       end;
     end;
@@ -388,9 +400,12 @@ begin
         if FGrid.RowCount <> i then
           FGrid.RowCount:=i;
         CollapseAll;
-      end;
+      end
+      else
+        TreeChanged;
     end;
-    DoAfterSort(FGrid);
+    i:=0;
+    _UpdateSummary(i, FFiles.Count, 0);
   finally
     FFiles.EndUpdate;
   end;
@@ -433,6 +448,18 @@ begin
   FGrid.EnsureRowVisible(ARow);
 end;
 
+function TFilesTree.GetFullPath(ARow: integer): string;
+begin
+  Result:=FDownloadDir;
+  if Copy(Result, Length(Result), 1) <> RemotePathDelimiter then
+    Result:=Result + RemotePathDelimiter;
+  Result:=Result + UTF8Encode(widestring(FFiles[idxFileFullPath, ARow]));
+  if IsFolder(ARow) then
+    Result:=Copy(Result, 1, Length(Result) - 1)
+  else
+    Result:=Result + UTF8Encode(widestring(FFiles[idxFileName, ARow]));
+end;
+
 procedure TFilesTree.DoCheckBoxClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);
 begin
   if Checked[ARow] = cbChecked then
@@ -469,6 +496,7 @@ begin
     for i:=ARow + 1 to FGrid.Items.Count - 1 do
       if integer(FGrid.Items[idxFileLevel, i]) > lev then begin
         FGrid.RowVisible[i]:=False;
+        FGrid.RowSelected[i]:=False;
         SetRowOption(i, roHidden, True);
       end
       else
@@ -516,6 +544,11 @@ end;
 function TFilesTree.GetExpanded(ARow: integer): boolean;
 begin
   Result:=not LongBool(FFiles.RowOptions[ARow] and roCollapsed);
+end;
+
+function TFilesTree.GetLevel(ARow: integer): integer;
+begin
+  Result:=FFiles[idxFileLevel, ARow];
 end;
 
 procedure TFilesTree.SetCheckboxes(const AValue: boolean);
@@ -629,6 +662,7 @@ begin
     Result:=(integer(VarIsEmpty(Sender.GetRowItem(Row1, idxFileId))) and 1) - (integer(VarIsEmpty(Sender.GetRowItem(Row2, idxFileId))) and 1);
     exit;
   end;
+
   Result:=CompareVariants(Sender.GetRowItem(Row1, idxFileFullPath), Sender.GetRowItem(Row2, idxFileFullPath));
   if Result <> 0 then
     exit;
