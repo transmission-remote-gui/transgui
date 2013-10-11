@@ -721,7 +721,7 @@ begin
       if PtInRect(R, Point(X,Y)) then begin
         DoOnTreeButtonClick(pt.x, pt.y);
         InvalidateCell(pt.x, pt.y);
-        if Assigned(OnDblClick) then
+        if Assigned(OnDblClick) and (ssDouble in Shift) then
           FNoDblClick:=True;
       end;
       Inc(RR.Left, RR.Bottom - RR.Top);
@@ -735,6 +735,8 @@ begin
         DoOnCheckBoxClick(pt.x, pt.y);
         InvalidateCell(pt.x, pt.y);
         CheckBoxClicked:=True;
+        if Assigned(OnDblClick) and (ssDouble in Shift) then
+          FNoDblClick:=True;
       end;
     end;
   end;

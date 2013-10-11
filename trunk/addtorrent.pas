@@ -74,6 +74,13 @@ type
     property FilesTree: TFilesTree read FTree;
   end;
 
+  TFolderInfo = record
+    Size: double;
+    DoneSize: double;
+    Priority: integer;
+    chk: TCheckBoxState;
+  end;
+
   { TFilesTree }
 
   TFilesTree = class(TComponent)
@@ -88,6 +95,8 @@ type
     FTorrentId: integer;
     FLastFileCount: integer;
     FCommonPathLen: integer;
+    FHasDone: boolean;
+    FHasPriority: boolean;
 
     procedure CollapseFolder(ARow: integer);
     procedure DoCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
@@ -118,6 +127,7 @@ type
     procedure SetStateAll(AState: TCheckBoxState);
     procedure EnsureRowVisible(ARow: integer);
     function GetFullPath(ARow: integer): string;
+    function UpdateSummary: TFolderInfo;
     property Grid: TVarGrid read FGrid;
     property HasFolders: boolean read FHasFolders;
     property Checkboxes: boolean read FCheckboxes write SetCheckboxes;
@@ -204,16 +214,6 @@ begin
 end;
 
 procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJSONArray);
-type
-  PFolderInfo = ^TFolderInfo;
-  TFolderInfo = record
-    Size: double;
-    DoneSize: double;
-    Priority: integer;
-  end;
-
-var
-  HasDone, HasPriority: boolean;
 
   procedure _AddFolders(list: TVarList; const path: string; var idx: integer; cnt, level: integer);
   var
@@ -251,50 +251,6 @@ var
     end;
   end;
 
-  function _UpdateSummary(var idx: integer; cnt, level: integer): TFolderInfo;
-  var
-    i, j: integer;
-  begin
-    FillChar(Result, SizeOf(Result), 0);
-    Result.Priority:=MaxInt;
-    while idx < cnt do begin
-      if FFiles[idxFileLevel, idx] <> level then
-        break;
-      i:=idx;
-      Inc(idx);
-
-      if IsFolder(i) then begin
-        with _UpdateSummary(idx, cnt, level + 1) do begin
-          FFiles[idxFileSize, i]:=Size;
-          if HasDone then begin
-            FFiles[idxFileDone, i]:=DoneSize;
-            if Size = 0 then
-              DoneSize:=100.0
-            else
-              DoneSize:=DoneSize*100.0/Size;
-            FFiles[idxFileProgress, i]:=Int(DoneSize*10.0)/10.0;
-          end;
-          if HasPriority then
-            FFiles[idxFilePriority, i]:=Priority;
-        end;
-      end;
-
-      with Result do begin
-        Size:=Size + FFiles[idxFileSize, i];
-        if HasDone then
-          DoneSize:=DoneSize + FFiles[idxFileDone, i];
-        if HasPriority then begin
-          j:=FFiles[idxFilePriority, i];
-          if Priority = MaxInt then
-            Priority:=j
-          else
-            if Priority <> j then
-              Priority:=TR_PRI_MIXED;
-        end;
-      end;
-    end;
-  end;
-
 var
   i, row: integer;
   FullRefresh: boolean;
@@ -306,8 +262,8 @@ begin
     FGrid.Items.Clear;
     exit;
   end;
-  HasDone:=FGrid.Columns.Count > idxFileDone;
-  HasPriority:=HasDone and (priorities <> nil) and (wanted <> nil);
+  FHasDone:=FGrid.Columns.Count > idxFileDone;
+  FHasPriority:=FHasDone and (priorities <> nil) and (wanted <> nil);
   FullRefresh:=(FTorrentId <> ATorrentId) or (FLastFileCount <> files.Count);
   FLastFileCount:=files.Count;
   FTorrentId:=ATorrentId;
@@ -359,7 +315,7 @@ begin
       ff:=f.Floats['length'];
       FFiles[idxFileSize, row]:=ff;
 
-      if HasDone then begin
+      if FHasDone then begin
         FFiles[idxFileDone, row]:=f.Floats['bytesCompleted'];
         if ff = 0 then
           ff:=100.0
@@ -367,11 +323,15 @@ begin
           ff:=double(FFiles[idxFileDone, row])*100.0/ff;
         FFiles[idxFileProgress, row]:=Int(ff*10.0)/10.0;
 
-        if HasPriority then begin
-          if wanted.Integers[i] = 0 then
-            FFiles[idxFilePriority, row]:=TR_PRI_SKIP
-          else
+        if FHasPriority then begin
+          if wanted.Integers[i] = 0 then begin
+            FFiles[idxFilePriority, row]:=TR_PRI_SKIP;
+            IntSetChecked(row, cbUnchecked);
+          end
+          else begin
             FFiles[idxFilePriority, row]:=priorities.Integers[i];
+            IntSetChecked(row, cbChecked);
+          end;
         end;
       end;
     end;
@@ -404,8 +364,8 @@ begin
       else
         TreeChanged;
     end;
-    i:=0;
-    _UpdateSummary(i, FFiles.Count, 0);
+    if not IsPlain then
+      UpdateSummary;
   finally
     FFiles.EndUpdate;
   end;
@@ -458,6 +418,73 @@ begin
     Result:=Copy(Result, 1, Length(Result) - 1)
   else
     Result:=Result + UTF8Encode(widestring(FFiles[idxFileName, ARow]));
+end;
+
+function TFilesTree.UpdateSummary: TFolderInfo;
+
+  function _UpdateSummary(var idx: integer; cnt, level: integer): TFolderInfo;
+  var
+    i, j: integer;
+    IsFirst: boolean;
+  begin
+    FillChar(Result, SizeOf(Result), 0);
+    IsFirst:=True;
+    while idx < cnt do begin
+      if FFiles[idxFileLevel, idx] <> level then
+        break;
+      i:=idx;
+      Inc(idx);
+
+      if IsFolder(i) then begin
+        with _UpdateSummary(idx, cnt, level + 1) do begin
+          FFiles[idxFileSize, i]:=Size;
+          if FHasDone then begin
+            FFiles[idxFileDone, i]:=DoneSize;
+            if Size = 0 then
+              DoneSize:=100.0
+            else
+              DoneSize:=DoneSize*100.0/Size;
+            FFiles[idxFileProgress, i]:=Int(DoneSize*10.0)/10.0;
+          end;
+          if FHasPriority then begin
+            FFiles[idxFilePriority, i]:=Priority;
+            IntSetChecked(i, chk);
+          end;
+        end;
+      end;
+
+      with Result do begin
+        Size:=Size + FFiles[idxFileSize, i];
+        if FHasDone then
+          DoneSize:=DoneSize + FFiles[idxFileDone, i];
+        if FHasPriority then begin
+          j:=FFiles[idxFilePriority, i];
+          if IsFirst then begin
+            IsFirst:=False;
+            Priority:=j;
+            chk:=Checked[i];
+          end
+          else begin
+            if Priority <> j then
+              Priority:=TR_PRI_MIXED;
+            if chk <> Checked[i] then
+              chk:=cbGrayed;
+          end;
+        end;
+      end;
+    end;
+  end;
+
+var
+  i: integer;
+begin
+  FFiles.BeginUpdate;
+  try
+    i:=0;
+    Result:=_UpdateSummary(i, FFiles.Count, 0);
+  finally
+    FFiles.EndUpdate;
+  end;
 end;
 
 procedure TFilesTree.DoCheckBoxClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);
@@ -574,34 +601,37 @@ begin
     exit;
   IntSetChecked(ARow, st);
   FGrid.InvalidateRow(ARow + FGrid.FixedRows);
-  lev:=integer(FFiles[idxFileLevel, ARow]);
 
-  if IsFolder(ARow) then begin
-    FFiles.BeginUpdate;
-    for i:=ARow + 1 to FFiles.Count - 1 do
-      if integer(FFiles[idxFileLevel, i]) <= lev then
-        break
-      else
-        IntSetChecked(i, st);
-    FFiles.EndUpdate;
-  end;
+  if not IsPlain then begin
+    lev:=integer(FFiles[idxFileLevel, ARow]);
 
-  if lev > 0 then begin
-    i:=ARow + 1;
-    while (i < FFiles.Count) and (integer(FFiles[idxFileLevel, i]) >= lev) do
-      Inc(i);
+    if IsFolder(ARow) then begin
+      FFiles.BeginUpdate;
+      for i:=ARow + 1 to FFiles.Count - 1 do
+        if integer(FFiles[idxFileLevel, i]) <= lev then
+          break
+        else
+          IntSetChecked(i, st);
+      FFiles.EndUpdate;
+    end;
 
-    for i:=i - 1 downto 0 do begin
-      if IsFolder(i) and (integer(FFiles[idxFileLevel, i]) < lev) then begin
-        IntSetChecked(i, st);
-        FGrid.InvalidateRow(i + FGrid.FixedRows);
-        Dec(lev);
-        if lev = 0 then
-          break;
-      end
-      else
-        if Checked[i] <> st then
-          st:=cbGrayed;
+    if lev > 0 then begin
+      i:=ARow + 1;
+      while (i < FFiles.Count) and (integer(FFiles[idxFileLevel, i]) >= lev) do
+        Inc(i);
+
+      for i:=i - 1 downto 0 do begin
+        if IsFolder(i) and (integer(FFiles[idxFileLevel, i]) < lev) then begin
+          IntSetChecked(i, st);
+          FGrid.InvalidateRow(i + FGrid.FixedRows);
+          Dec(lev);
+          if lev = 0 then
+            break;
+        end
+        else
+          if Checked[i] <> st then
+            st:=cbGrayed;
+      end;
     end;
   end;
   DoOnStateChange;
@@ -620,7 +650,14 @@ procedure TFilesTree.SetIsPlain(const AValue: boolean);
 begin
   if FIsPlain = AValue then exit;
   FIsPlain:=AValue;
-  TreeChanged;
+  FFiles.BeginUpdate;
+  try
+    TreeChanged;
+    if not FIsPlain then
+      UpdateSummary;
+  finally
+    FFiles.EndUpdate;
+  end;
   if FFiles.Count > 0 then
     FGrid.Row:=0;
 end;

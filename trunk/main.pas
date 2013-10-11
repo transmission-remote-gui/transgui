@@ -634,6 +634,7 @@ type
     function GetPageInfoType(pg: TTabSheet): TAdvInfoType;
     procedure DetailsUpdated;
     function RenameTorrent(TorrentId: integer; const OldPath, NewPath: string): boolean;
+    procedure FilesTreeStateChanged(Sender: TObject);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -1276,6 +1277,8 @@ begin
   lvFiles.Items.ExtraColumns:=FilesExtraColumns;
   FFiles:=lvFiles.Items;
   FFilesTree:=TFilesTree.Create(lvFiles);
+  FFilesTree.Checkboxes:=True;
+  FFilesTree.OnStateChange:=@FilesTreeStateChanged;
   lvPeers.Items.ExtraColumns:=PeersExtraColumns;
   lvTrackers.Items.ExtraColumns:=TrackersExtraColumns;
   FTrackers:=TStringList.Create;
@@ -5535,31 +5538,53 @@ function TMainForm.SetCurrentFilePriority(const APriority: string): boolean;
 var
   Files: array of integer;
   i, j, k, level: integer;
+  pri: string;
 begin
   if (gTorrents.Items.Count = 0) or (PageInfo.ActivePage <> tabFiles) then exit;
-  if lvFiles.SelCount = 0 then
-    lvFiles.RowSelected[lvFiles.Row]:=True;
   SetLength(Files, lvFiles.Items.Count);
+  pri:=APriority;
   j:=0;
-  level:=-1;
-  for i:=0 to lvFiles.Items.Count - 1 do begin
-    k:=FFilesTree.RowLevel[i];
-    if k <= level then
-      level:=-1;
-    if lvFiles.RowSelected[i] or ( (level <> -1) and (k > level) ) then begin
-      if FFilesTree.IsFolder(i) then begin
-        if level = -1 then
-          level:=k;
-      end
-      else begin
-        Files[j]:=FFiles[idxFileId, i];
-        Inc(j);
+  if APriority <> '' then begin
+    // Priority for currently selected rows
+    if lvFiles.SelCount = 0 then
+      lvFiles.RowSelected[lvFiles.Row]:=True;
+    level:=-1;
+    for i:=0 to lvFiles.Items.Count - 1 do begin
+      k:=FFilesTree.RowLevel[i];
+      if k <= level then
+        level:=-1;
+      if lvFiles.RowSelected[i] or ( (level <> -1) and (k > level) ) then begin
+        if FFilesTree.IsFolder(i) then begin
+          if level = -1 then
+            level:=k;
+        end
+        else begin
+          Files[j]:=FFiles[idxFileId, i];
+          Inc(j);
+        end;
       end;
     end;
+  end
+  else begin
+    // Priority based on checkbox state
+    for i:=0 to FFiles.Count - 1 do
+      if not FFilesTree.IsFolder(i) then begin
+        k:=FFiles[idxFilePriority, i];
+        if (k <> TR_PRI_SKIP) <> (FFilesTree.Checked[i] = cbChecked) then begin
+          if pri = '' then
+            if FFilesTree.Checked[i] = cbChecked then
+              pri:='normal'
+            else
+              pri:='skip';
+          Files[j]:=FFiles[idxFileId, i];
+          Inc(j);
+        end;
+      end;
   end;
+
   if j = 0 then exit;
   SetLength(Files, j);
-  Result:=SetFilePriority(RpcObj.CurTorrentId, Files, APriority);
+  Result:=SetFilePriority(RpcObj.CurTorrentId, Files, pri);
 end;
 
 procedure TMainForm.SetTorrentPriority(APriority: integer);
@@ -6129,6 +6154,11 @@ begin
   args.Add('path', UTF8Decode(OldPath));
   args.Add('name', UTF8Decode(NewPath));
   Result:=TorrentAction(TorrentId, 'torrent-rename-path', args);
+end;
+
+procedure TMainForm.FilesTreeStateChanged(Sender: TObject);
+begin
+  SetCurrentFilePriority('');
 end;
 
 procedure TMainForm.FillSpeedsMenu;
