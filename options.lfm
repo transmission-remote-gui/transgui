@@ -6,7 +6,7 @@ inherited OptionsForm: TOptionsForm
   AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  Caption = 'Options'
+  Caption = 'Application options'
   ClientHeight = 280
   ClientWidth = 525
   OnCreate = FormCreate
@@ -26,85 +26,107 @@ inherited OptionsForm: TOptionsForm
       Caption = 'General'
       ClientHeight = 204
       ClientWidth = 501
-      object txSeconds: TLabel
-        Left = 396
-        Height = 14
-        Top = 14
-        Width = 40
-        Caption = 'seconds'
-        ParentColor = False
-      end
-      object txRefreshInterval: TLabel
-        Left = 8
-        Height = 14
-        Top = 13
-        Width = 82
-        Caption = 'Refresh interval:'
-        ParentColor = False
-      end
-      object txRefreshIntervalMin: TLabel
-        Left = 8
-        Height = 14
-        Top = 41
-        Width = 159
-        Caption = 'Refresh interval when minimized:'
-        ParentColor = False
-      end
-      object txSeconds2: TLabel
-        Left = 396
-        Height = 14
-        Top = 42
-        Width = 40
-        Caption = 'seconds'
-        ParentColor = False
-      end
-      object edRefreshInterval: TSpinEdit
-        Left = 316
-        Height = 21
-        Top = 10
-        Width = 70
-        MaxValue = 999
-        MinValue = 1
-        TabOrder = 0
-        Value = 1
-      end
-      object edRefreshIntervalMin: TSpinEdit
-        Left = 316
-        Height = 21
-        Top = 38
-        Width = 70
-        MaxValue = 999
-        MinValue = 1
+      object gbNewTorrent: TGroupBox
+        Left = 4
+        Height = 95
+        Top = 86
+        Width = 484
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Add torrent'
+        ClientHeight = 77
+        ClientWidth = 480
         TabOrder = 1
-        Value = 1
+        object cbShowAddTorrentWindow: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 4
+          Width = 289
+          Caption = 'Prompt for download options when adding a new torrent'
+          TabOrder = 0
+        end
+        object cbDeleteTorrentFile: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 28
+          Width = 272
+          Caption = 'Delete a .torrent file after after a successful addition'
+          TabOrder = 1
+        end
+        object cbLinksFromClipboard: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 52
+          Width = 253
+          Caption = 'Automatically add torrent links from the clipboard'
+          TabOrder = 2
+        end
       end
-      object cbShowAddTorrentWindow: TCheckBox
-        Left = 8
-        Height = 17
-        Top = 66
-        Width = 274
-        Caption = 'Show parameters window when adding a new torrent'
-        TabOrder = 2
-      end
-      object cbDeleteTorrentFile: TCheckBox
-        Left = 8
-        Height = 17
-        Top = 90
-        Width = 272
-        Caption = 'Delete a .torrent file after after a successful addition'
-        TabOrder = 3
-      end
-      object cbLinksFromClipboard: TCheckBox
-        Left = 8
-        Height = 17
-        Top = 114
-        Width = 253
-        Caption = 'Automatically add torrent links from the clipboard'
-        TabOrder = 4
+      object gbRefresh: TGroupBox
+        Left = 4
+        Height = 76
+        Top = 6
+        Width = 484
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Data refresh'
+        ClientHeight = 58
+        ClientWidth = 480
+        TabOrder = 0
+        object txSeconds: TLabel
+          Left = 396
+          Height = 14
+          Top = 4
+          Width = 40
+          Caption = 'seconds'
+          ParentColor = False
+        end
+        object txRefreshInterval: TLabel
+          Left = 8
+          Height = 14
+          Top = 3
+          Width = 82
+          Caption = 'Refresh interval:'
+          ParentColor = False
+        end
+        object txRefreshIntervalMin: TLabel
+          Left = 8
+          Height = 14
+          Top = 31
+          Width = 159
+          Caption = 'Refresh interval when minimized:'
+          ParentColor = False
+        end
+        object txSeconds2: TLabel
+          Left = 396
+          Height = 14
+          Top = 32
+          Width = 40
+          Caption = 'seconds'
+          ParentColor = False
+        end
+        object edRefreshInterval: TSpinEdit
+          Left = 316
+          Height = 21
+          Top = 0
+          Width = 70
+          MaxValue = 999
+          MinValue = 1
+          TabOrder = 0
+          Value = 1
+        end
+        object edRefreshIntervalMin: TSpinEdit
+          Left = 316
+          Height = 21
+          Top = 28
+          Width = 70
+          MaxValue = 999
+          MinValue = 1
+          TabOrder = 1
+          Value = 1
+        end
       end
     end
-    object tabInterface: TTabSheet
-      Caption = 'Interface'
+    object tabAdvanced: TTabSheet
+      Caption = 'Advanced'
       ClientHeight = 204
       ClientWidth = 501
       object txLanguage: TLabel
@@ -166,8 +188,8 @@ inherited OptionsForm: TOptionsForm
         Left = 8
         Height = 14
         Top = 141
-        Width = 108
-        Caption = 'User interface scaling:'
+        Width = 48
+        Caption = 'Font size:'
         ParentColor = False
       end
       object edIntfScale: TSpinEdit

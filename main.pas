@@ -251,7 +251,6 @@ type
     MenuItem65: TMenuItem;
     MenuItem66: TMenuItem;
     MenuItem67: TMenuItem;
-    MenuItem68: TMenuItem;
     MenuItem69: TMenuItem;
     MenuItem70: TMenuItem;
     MenuItem72: TMenuItem;
@@ -2880,7 +2879,10 @@ begin
   if g = gTorrents then
     s:=sTorrents
   else
-    s:=PageInfo.ActivePage.Caption;
+    if PageInfo.ActivePage = tabFiles then
+      s:=FFilesCapt
+    else
+      s:=PageInfo.ActivePage.Caption;
   if not SetupColumns(g, 0, s) then exit;
   if g = gTorrents then
     TorrentColumnsChanged;
@@ -3700,13 +3702,17 @@ end;
 procedure TMainForm.StatusBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   pt: TPoint;
+  rb: boolean;
 begin
-  if (Button = mbRight) and RpcObj.Connected then begin
-    pt:=StatusBar.ClientToScreen(Point(X, Y));
-    case StatusBar.GetPanelIndexAt(X, Y) of
-      1: pmDownSpeeds.PopUp(pt.X, pt.Y);
-      2: pmUpSpeeds.PopUp(pt.X, pt.Y);
-    end;
+  rb:=(Button = mbRight) and RpcObj.Connected;
+  pt:=StatusBar.ClientToScreen(Point(X, Y));
+  case StatusBar.GetPanelIndexAt(X, Y) of
+    0: if Button = mbLeft then
+         acConnOptions.Execute;
+    1: if rb then
+         pmDownSpeeds.PopUp(pt.X, pt.Y);
+    2: if rb then
+         pmUpSpeeds.PopUp(pt.X, pt.Y);
   end;
 end;
 
@@ -4203,11 +4209,21 @@ begin
   try
     ActiveConnection:=FCurConn;
     if NewConnection then begin
+      Caption:=SNewConnection;
       btNewClick(nil);
-      btNew.Hide;
-      btRename.Hide;
-      btDel.Hide;
-      panTop.ClientHeight:=btNew.Top;
+      if Ini.ReadInteger('Hosts', 'Count', 0) = 0 then begin
+        panTop.Visible:=False;
+        with Page.BorderSpacing do
+          Top:=Left;
+        tabPaths.TabVisible:=False;
+        tabMisc.TabVisible:=False;
+      end
+      else begin
+        btNew.Hide;
+        btRename.Hide;
+        btDel.Hide;
+        panTop.ClientHeight:=btNew.Top;
+      end;
       AutoSizeForm(frm);
     end;
     AppNormal;

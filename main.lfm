@@ -1263,7 +1263,7 @@ inherited MainForm: TMainForm
     object miTorrent: TMenuItem
       Caption = '&Torrent'
       object miConnect: TMenuItem
-        Caption = 'Connect to daemon'
+        Caption = 'Connect to Transmission'
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000000000000000
@@ -1922,10 +1922,6 @@ inherited MainForm: TMainForm
         }
         OnClick = acDaemonOptionsExecute
       end
-      object MenuItem68: TMenuItem
-        Action = acConnOptions
-        OnClick = acConnOptionsExecute
-      end
       object MenuItem17: TMenuItem
         Action = acOptions
         OnClick = acOptionsExecute
@@ -2008,8 +2004,8 @@ inherited MainForm: TMainForm
     left = 40
     top = 28
     object acConnect: TAction
-      Caption = 'Connect to daemon'
-      Hint = 'Connect to daemon'
+      Caption = 'Connect to Transmission'
+      Hint = 'Connect to Transmission'
       ImageIndex = 18
       OnExecute = acConnectExecute
     end
@@ -2054,7 +2050,7 @@ inherited MainForm: TMainForm
     end
     object acOptions: TAction
       Category = 'Tools'
-      Caption = 'Options...'
+      Caption = 'Application options...'
       OnExecute = acOptionsExecute
     end
     object acDaemonOptions: TAction
@@ -2136,7 +2132,7 @@ inherited MainForm: TMainForm
     end
     object acConnOptions: TAction
       Category = 'Tools'
-      Caption = 'Connection options...'
+      Caption = 'Manage connections...'
       OnExecute = acConnOptionsExecute
     end
     object acNewConnection: TAction
@@ -2144,7 +2140,7 @@ inherited MainForm: TMainForm
       OnExecute = acNewConnectionExecute
     end
     object acDisconnect: TAction
-      Caption = 'Disconnect'
+      Caption = 'Disconnect from Transmission'
       ImageIndex = 27
       OnExecute = acDisconnectExecute
     end

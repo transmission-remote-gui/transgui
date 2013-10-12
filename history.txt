@@ -9,17 +9,17 @@
 [*] Removed flickering of torrent details while changing current torrent.
 [*] Speed up rendering of torrent and file lists.
 [*] Update window contents while splitters are moving.
+[*] Use system default date/time format on Linux and OS X. Issue #624.
 [*] Restore display of a queue position for finished torrents. Issue #568.
 [*] Align the Ratio column to the right. Issue #668.
 [*] Increased drop down count for the folders combo box to 20.
-[-] Show the error state for stopped torrents. Issue #659.
+[-] The error state for stopped torrents was ignored. Issue #659.
 [-] Fixed garbage at the end of transgui.ini file. Issue #609.
 [-] Crash when the "Automatically add torrent links from the clipboard" is enabled in some cases. Issue #613.
 [-] Update statistics even if no torrents are selected. Issue #664.
-[-] Use system default date/time format on Linux and OS X. Issue #624.
 [-] Properly close the application on Windows log off. Issue #680.
 [-] Proper handling of the case when the previous application run has been terminated unexpectedly. Issue #680.
-[-] Fixed current UI language detection on Windows.
+[-] Incorrect current UI language detection on Windows.
 [-] The "Invalid argument" error or tracker URLs corruption when editing trackers in the torrent properties windows on Mac OS X. Issue #666.
 [-] Error "JSON element 'torrent-added' not found" when adding a duplicate torrent to Transmission 2.80+. Issue #683.
 

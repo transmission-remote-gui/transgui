@@ -33,6 +33,7 @@ resourcestring
   sNoHost = 'No host name specified.';
   sNoProxy = 'No proxy server specified.';
   SDelConnection = 'Are you sure to delete connection ''%s''?';
+  SNewConnection = 'New connection to Transmission';
 
 type
 
@@ -58,7 +59,8 @@ type
     edPassword: TEdit;
     edPaths: TMemo;
     gbSpeed: TGroupBox;
-    Label1: TLabel;
+    txConName: TLabel;
+    txConnHelp: TLabel;
     txDownSpeeds: TLabel;
     panTop: TPanel;
     tabProxy: TTabSheet;
@@ -250,6 +252,7 @@ var
   i, cnt: integer;
   s: string;
 begin
+  txConnHelp.Caption:=Format(txConnHelp.Caption, [AppName]);
   Page.ActivePageIndex:=0;
   ActiveControl:=edHost;
   Buttons.OKButton.ModalResult:=mrNone;
