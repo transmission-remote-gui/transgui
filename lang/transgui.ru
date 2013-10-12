@@ -122,7 +122,7 @@ Ratio=Коэффициент
 Reconnect in %d seconds=Повтор подключения через %d секунд
 Refresh interval=Период обновления
 Remaining=Осталось
-Remote host=Узел
+Remote host=Удаленный узел
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Сопоставление локальных путей удаленным.~~Например:~/share=\\pch\share~/var/downloads/music=Z:\music"
 Remove torrent and Data=Удалить торрент и файлы
 Remove torrent=Удалить торрент
@@ -165,7 +165,7 @@ Tracker=Трекер
 Trackers=Трекеры
 Transfer=Передача
 Transmission options=Параметры Transmission
-Tray icon always visible=Отображать значок в трее
+Tray icon always visible=Всегда отображать значок в трее
 Tray icon=Системный трей
 U: %s/s=Разд: %s/с
 Unable to extract flag image=Невозможно извлечь изображение флага
