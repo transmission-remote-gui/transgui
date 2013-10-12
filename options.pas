@@ -24,7 +24,8 @@ unit Options;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, Spin, Buttons, ButtonPanel, BaseForm;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, Spin, Buttons, ButtonPanel, BaseForm,
+  ConnOptions;
 
 type
 
@@ -64,14 +65,15 @@ type
     procedure cbLanguageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
   private
     FLangList: TStringList;
 
     procedure FillLanguageItems;
   public
-    { public declarations }
-  end; 
+    ConnForm: TConnOptionsForm;
+  end;
 
 implementation
 
@@ -82,7 +84,17 @@ uses main, utils, ResTranslator;
 procedure TOptionsForm.FormCreate(Sender: TObject);
 var
   i: integer;
+  pg: TTabSheet;
 begin
+  ConnForm:=TConnOptionsForm.Create(Self);
+  while ConnForm.Page.ControlCount > 0 do begin
+    pg:=ConnForm.Page.Pages[0];
+    pg.Parent:=Page;
+    pg.TabVisible:=True;
+  end;
+  ConnForm.Page.Free;
+  ConnForm.Page:=Page;
+
   Page.ActivePageIndex:=0;
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@OKButtonClick;
@@ -148,11 +160,24 @@ begin
   FLangList.Free;
 end;
 
+procedure TOptionsForm.FormShow(Sender: TObject);
+begin
+  ConnForm.FormShow(nil);
+  if ConnForm.edHost.Text = '' then begin
+    tabGeneral.Hide;
+    ActiveControl:=ConnForm.edHost;
+  end;
+end;
+
 procedure TOptionsForm.OKButtonClick(Sender: TObject);
 var
   s: string;
   restart: boolean;
 begin
+  ConnForm.ModalResult:=mrNone;
+  ConnForm.btOKClick(nil);
+  if ConnForm.ModalResult = mrNone then
+    exit;
   restart:=False;
   if cbLanguage.Text <> FTranslationLanguage then begin
     if cbLanguage.Text = 'English' then

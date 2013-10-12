@@ -21,11 +21,11 @@ inherited ConnOptionsForm: TConnOptionsForm
     Height = 202
     Top = 69
     Width = 513
-    ActivePage = tabConnection
+    ActivePage = tabMisc
     Align = alClient
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 1
     object tabConnection: TTabSheet
       Caption = 'Transmission'
@@ -160,8 +160,8 @@ inherited ConnOptionsForm: TConnOptionsForm
         Left = 8
         Height = 17
         Top = 10
-        Width = 101
-        Caption = 'Use proxy server'
+        Width = 228
+        Caption = 'Connect to Transmission using proxy server'
         OnClick = cbUseProxyClick
         TabOrder = 0
       end

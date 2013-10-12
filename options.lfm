@@ -11,6 +11,7 @@ inherited OptionsForm: TOptionsForm
   ClientWidth = 525
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   Position = poMainFormCenter
   object Page: TPageControl[0]
     Left = 8
@@ -27,14 +28,14 @@ inherited OptionsForm: TOptionsForm
       ClientHeight = 204
       ClientWidth = 501
       object gbNewTorrent: TGroupBox
-        Left = 4
+        Left = 8
         Height = 95
-        Top = 86
-        Width = 484
+        Top = 88
+        Width = 480
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Add torrent'
         ClientHeight = 77
-        ClientWidth = 480
+        ClientWidth = 476
         TabOrder = 1
         object cbShowAddTorrentWindow: TCheckBox
           Left = 10
@@ -62,19 +63,19 @@ inherited OptionsForm: TOptionsForm
         end
       end
       object gbRefresh: TGroupBox
-        Left = 4
-        Height = 76
+        Left = 8
+        Height = 78
         Top = 6
-        Width = 484
+        Width = 480
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Data refresh'
-        ClientHeight = 58
-        ClientWidth = 480
+        ClientHeight = 60
+        ClientWidth = 476
         TabOrder = 0
         object txSeconds: TLabel
           Left = 396
           Height = 14
-          Top = 4
+          Top = 6
           Width = 40
           Caption = 'seconds'
           ParentColor = False
@@ -82,7 +83,7 @@ inherited OptionsForm: TOptionsForm
         object txRefreshInterval: TLabel
           Left = 8
           Height = 14
-          Top = 3
+          Top = 5
           Width = 82
           Caption = 'Refresh interval:'
           ParentColor = False
@@ -90,7 +91,7 @@ inherited OptionsForm: TOptionsForm
         object txRefreshIntervalMin: TLabel
           Left = 8
           Height = 14
-          Top = 31
+          Top = 33
           Width = 159
           Caption = 'Refresh interval when minimized:'
           ParentColor = False
@@ -98,7 +99,7 @@ inherited OptionsForm: TOptionsForm
         object txSeconds2: TLabel
           Left = 396
           Height = 14
-          Top = 32
+          Top = 34
           Width = 40
           Caption = 'seconds'
           ParentColor = False
@@ -106,7 +107,7 @@ inherited OptionsForm: TOptionsForm
         object edRefreshInterval: TSpinEdit
           Left = 316
           Height = 21
-          Top = 0
+          Top = 2
           Width = 70
           MaxValue = 999
           MinValue = 1
@@ -116,7 +117,7 @@ inherited OptionsForm: TOptionsForm
         object edRefreshIntervalMin: TSpinEdit
           Left = 316
           Height = 21
-          Top = 28
+          Top = 30
           Width = 70
           MaxValue = 999
           MinValue = 1

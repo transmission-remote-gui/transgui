@@ -21,10 +21,10 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
     Height = 295
     Top = 8
     Width = 601
-    ActivePage = tabQueue
+    ActivePage = tabNetwork
     Align = alClient
     BorderSpacing.Around = 8
-    TabIndex = 3
+    TabIndex = 1
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
