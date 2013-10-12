@@ -63,7 +63,7 @@ resourcestring
   sDownSpeed = 'D: %s/s';
   sUpSpeed = 'U: %s/s';
   SFreeSpace = 'Free: %s';
-  sNoPathMapping = 'Unable to find path mapping.'+LineEnding+'Use program''s options to setup path mappings.';
+  sNoPathMapping = 'Unable to find path mapping.'+LineEnding+'Use the application''s options to setup path mappings.';
   sGeoIPConfirm = 'Geo IP database is needed to resolve country by IP address.' + LineEnding + 'Download this database now?';
   sFlagArchiveConfirm = 'Flag images archive is needed to display country flags.' + LineEnding + 'Download this archive now?';
   sInSwarm = 'in swarm';
@@ -73,7 +73,7 @@ resourcestring
   sUnableExtractFlag = 'Unable to extract flag image.';
   sTrackerWorking = 'Working';
   sTrackerUpdating = 'Updating';
-  sRestartRequired = 'You should restart the application to apply changes.';
+  sRestartRequired = 'You need to restart the application to apply changes.';
   sRemoveTorrentData = 'Are you sure to remove torrent ''%s'' and all associated DATA?';
   sRemoveTorrentDataMulti = 'Are you sure to remove %d selected torrents and all their associated DATA?';
   sRemoveTorrent = 'Are you sure to remove torrent ''%s''?';
@@ -655,6 +655,7 @@ type
     procedure SetTorrentPriority(APriority: integer);
     procedure ClearDetailsInfo(Skip: TAdvInfoType = aiNone);
     function SelectRemoteFolder(const CurFolder, DialogTitle: string): string;
+    procedure ConnectionSettingsChanged(const ActiveConnection: string; ForceReconnect: boolean);
   end;
 
 function CheckAppParams: boolean;
@@ -1735,6 +1736,7 @@ begin
   AppBusy;
   with TOptionsForm.Create(Self) do
   try
+    ConnForm.ActiveConnection:=FCurConn;
     edRefreshInterval.Value:=Ini.ReadInteger('Interface', 'RefreshInterval', 5);
     edRefreshIntervalMin.Value:=Ini.ReadInteger('Interface', 'RefreshIntervalMin', 20);
 {$ifndef darwin}
@@ -1790,6 +1792,8 @@ begin
       Ini.UpdateFile;
       UpdateTray;
       AppNormal;
+      with ConnForm do
+        ConnectionSettingsChanged(ActiveConnection, ActiveSettingChanged);
     end;
   finally
     Free;
@@ -4144,6 +4148,18 @@ begin
     MessageDlg(sNoPathMapping, mtError, [mbOK], 0);
 end;
 
+procedure TMainForm.ConnectionSettingsChanged(const ActiveConnection: string; ForceReconnect: boolean);
+begin
+  UpdateConnections;
+  if (FCurConn <> ActiveConnection) or ForceReconnect then begin
+    DoDisconnect;
+    FReconnectTimeOut:=-1;
+    FCurConn:=ActiveConnection;
+    if FCurConn <> '' then
+      DoConnect;
+  end;
+end;
+
 procedure TMainForm.UpdateUI;
 var
   e: boolean;
@@ -4228,14 +4244,7 @@ begin
     end;
     AppNormal;
     ShowModal;
-    UpdateConnections;
-    if (FCurConn <> ActiveConnection) or ActiveSettingChanged then begin
-      DoDisconnect;
-      FReconnectTimeOut:=-1;
-      FCurConn:=ActiveConnection;
-      if FCurConn <> '' then
-        DoConnect;
-    end;
+    ConnectionSettingsChanged(ActiveConnection, ActiveSettingChanged);
   finally
     Free;
   end;
