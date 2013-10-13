@@ -101,7 +101,7 @@ resourcestring
   SUnlimited = 'Unlimited';
   SAverage = 'average';
   SCheckNewVersion = 'Do you wish to enable automatic checking for a new version of %s?';
-  SDuplicateTorrent = 'Torrent already exists';
+  SDuplicateTorrent = 'Torrent already exists in the list';
   SUpdateTrackers = 'Update trackers for the existing torrent?';
 
   SDownloaded = 'Downloaded';
@@ -1870,119 +1870,140 @@ var
   WaitForm: TBaseForm;
   IsAppHidden: boolean;
 
-  Procedure _AddTrackers;
-  var req,req2, args: TJSONObject;
-        fs: TFileStreamUTF8;
-   TorData, InfoData, LData, LLData: TBEncoded;
-   OutStr, Sha1Hash: Ansistring;
-   ResArgs, ResArgs2: TJSONObject;
-   t: TJSONArray;
-   tt: TJSONObject;
-   trackers: TJSONArray;
-   TrackerReplace: TJSONArray;
-   i,j: Integer;
-   s:String;
-   TrackersList, TrackersAddList:TStringList;
-   AnnData: TBEncoded;
-
+  Procedure _AddTrackers(TorrentId: integer);
+  var
+    req, args: TJSONObject;
+    fs: TFileStreamUTF8;
+    TorData, AnnData, LData, LLData: TBEncoded;
+    Sha1Hash: Ansistring;
+    t: TJSONArray;
+    tt: TJSONObject;
+    trackers: TJSONArray;
+    i, j: Integer;
+    s: string;
+    TrackersList, TrackersAddList: TStringList;
   begin
-    // ShowMessage('Torrent duplicated');
-   RpcObj.Status:='';
-   AppNormal;
-   if MessageDlg(SDuplicateTorrent, SUpdateTrackers, mtConfirmation, mbYesNo, 0) = mrNo then
-     exit;
-     if   IsProtocolSupported(FileName) then
-       //TODO: Need download torrent file...
-     else
-     begin
-       AppBusy;
-       fs:=TFileStreamUTF8.Create(UTF8Decode(FileName), fmOpenRead or fmShareDenyNone);
-       try
-         TorData:=TBEncoded.Create(fs);
-         InfoData:=(TorData.ListData.FindElement('info')as TBEncoded);
-         InfoData.Encode(InfoData,OutStr);
-         sha1hash:=SHA1Print(SHA1String(OutStr));
-  //       ShowMessage('SHA1 hash:'+sha1hash);
-         if Sha1Hash <> '' then
-         begin
+    RpcObj.Status:='';
+    s:='';
+    if TorrentId <> 0 then begin
+      i:=SelectTorrent(TorrentId, 2000);
+      if i >= 0 then
+        s:=Format(': %s', [UTF8Encode(widestring(gTorrents.Items[idxName, i]))]);
+    end;
+    ForceAppNormal;
+    if MessageDlg(SDuplicateTorrent + s + '.' + LineEnding + LineEnding + SUpdateTrackers, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+      exit;
+    Application.ProcessMessages;
+    if IsProtocolSupported(FileName) then
+      //TODO: Need download torrent file...
+    else
+    begin
+      AppBusy;
+      TrackersList:=nil;
+      TrackersAddList:=nil;
+      TorData:=nil;
+      try
+        fs:=TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyNone);
+        try
+          TorData:=TBEncoded.Create(fs);
+        finally
+          fs.Free;
+        end;
+        // Get trackers from the existing torrent
+        req:=TJSONObject.Create;
+        try
+          req.Add('method', 'torrent-get');
+          args:=TJSONObject.Create;
+          if TorrentId = 0 then begin
+            LData:=(TorData.ListData.FindElement('info') as TBEncoded);
+            LData.Encode(LData, s);
+            Sha1Hash:=SHA1Print(SHA1String(s));
+            args.Add('ids', TJSONArray.Create([Sha1Hash]));
+          end
+          else
+            args.Add('ids', TJSONArray.Create([TorrentId]));
+          args.Add('fields', TJSONArray.Create(['id', 'trackers']));
+          req.Add('arguments', args);
+          args:=RpcObj.SendRequest(req);
+          if args = nil then begin
+            CheckStatus(False);
+            exit;
+          end;
+          try
+            t:=args.Arrays['torrents'];
+            if t.Count = 0 then
+              raise Exception.Create('Torrent not found.');
+            tt:=t.Objects[0] as TJSONObject;
+            i:=tt.Integers['id'];
+            if TorrentId = 0 then
+              SelectTorrent(i, 2000);
+            TorrentId:=i;
+            trackers:=tt.Arrays['trackers'];
+            TrackersList:=TStringList.Create;
+            for i:=0 to trackers.Count - 1 do begin
+              s:=UTF8Encode((Trackers.Items[i] as TJSONObject).Strings['announce']);
+              TrackersList.Add(s);
+            end;
+          finally
+            args.Free;
+          end;
+        finally
+          req.Free;
+        end;
+
+        // Read trackers from the torrent file...
+        TrackersAddList:=TStringList.Create;
+        AnnData:=(TorData.ListData.FindElement('announce-list', False) as TBEncoded);
+        if AnnData <> nil then
+          for i:=0 to AnnData.ListData.Count - 1 do begin
+            LData:=AnnData.ListData.Items[i].Data as TBEncoded;
+            for j:=0 to LData.ListData.Count - 1 do begin
+               LLData:=LData.ListData.Items[j].Data as TBEncoded;
+               s:=LLData.StringData;
+               if TrackersList.IndexOf(s) < 0 then
+                 TrackersAddList.Add(s);
+             end;
+          end
+        else begin
+          AnnData:=(TorData.ListData.FindElement('announce', False) as TBEncoded);
+          if (AnnData <> nil) and (TrackersList.IndexOf(AnnData.StringData) < 0) then
+            TrackersAddList.Add(AnnData.StringData);
+        end;
+
+        if TrackersAddList.Count > 0 then begin
+          trackers:=TJSONArray.Create;
+          for i:=0 to TrackersAddList.Count - 1 do
+            trackers.Add(TrackersAddList[i]);
+          args:=TJSONObject.Create;
+          args.Add('ids', TJSONArray.Create([TorrentId]));
+          args.Add('trackerAdd', trackers);
           req:=TJSONObject.Create;
           try
-            req.Add('method', 'torrent-get');
-            args:=TJSONObject.Create;
-            args.Add('ids', TJSONArray.Create([Sha1Hash]));
-            args.Add('fields', TJSONArray.Create(['trackers']));
+            req.Add('method', 'torrent-set');
             req.Add('arguments', args);
-            ResArgs:=RpcObj.SendRequest(req);
+            args:=RpcObj.SendRequest(req, False);
+            if args = nil then begin
+              CheckStatus(False);
+              exit;
+            end;
+            args.Free;
           finally
             req.Free;
           end;
-            t:=ResArgs.Arrays['torrents'];
-            if t.Count = 0 then
-              raise Exception.Create('No torrents in result');
-            tt:=t.Objects[0] as TJSONObject;
-            TrackersList:=TStringList.Create;
-            if tt.Count>0 then
-            begin
-             trackers:=tt.Arrays['trackers'];
-             for i:=0 to trackers.Count-1 do
-               begin
-                  s:=(Trackers.Items[i] as TJSONObject).Strings['announce'];
-                  TrackersList.Add(s);
-               end;
-             end;
-          // ShowMessage(TrackersList.Text);
-
-          //Read Bencoded data from torrent file...
-          TrackersAddList:=TStringList.Create;
-          AnnData:=(TorData.ListData.FindElement('announce-list')as TBEncoded);
-          for i:=0 to AnnData.ListData.Count-1 do
-          begin
-            LData:=AnnData.ListData.Items[i].Data as TBEncoded;
-            for j:=0 to LData.ListData.Count-1 do
-             begin
-               LLData:=LData.ListData.Items[j].Data as TBEncoded;
-               s:=LLData.StringData;
-               if TrackersList.IndexOf(s) = -1 then  TrackersAddList.Add(s);
-             end;
-          end;
-          //=======================================
-          //ShowMessage(TrackersAddList.Text);
-          if TrackersAddList.Count>0 then
-          begin
-           TrackerReplace:=TJSONArray.Create;
-           for s in TrackersAddList do
-            begin
-              TrackerReplace.Add(s);
-            end;
-           args:=TJSONObject.Create;
-           args.Add('ids', TJSONArray.Create([Sha1Hash]));
-           args.Add('trackerAdd',TrackerReplace);
-           req:=TJSONObject.Create;
-           try
-             req.Add('method', 'torrent-set');
-             req.Add('arguments', args);
-             ResArgs:=RpcObj.SendRequest(req,False);
-           finally
-              req.Free;
-           end;
-
-          end;
-          TrackersList.Free;
-          TrackersAddList.Free;
+          DoRefresh;
         end;
-
-       finally
-         fs.Free;
-         AppNormal;
-       end;
-     end;
+      finally
+        TorData.Free;
+        TrackersList.Free;
+        TrackersAddList.Free;
+        AppNormal;
+      end;
+    end;
   end;
 
   function _AddTorrent(args: TJSONObject): integer;
   var
     req: TJSONObject;
-    id, i: integer;
-    s: string;
   begin
     Result:=0;
     req:=TJSONObject.Create;
@@ -1997,30 +2018,21 @@ var
       if args <> nil then
       try
         if args.IndexOfName('torrent-duplicate') >= 0 then begin
-          id:=args.Objects['torrent-duplicate'].Integers['id'];
-          i:=SelectTorrent(id, 2000);
-          if i >= 0 then
-            s:=Format(': %s', [UTF8Encode(widestring(FTorrents[idxName, i]))])
-          else
-            s:='';
-          ForceAppNormal;
-          MessageDlg(SDuplicateTorrent + s + '.', mtError, [mbOK], 0);
+          _AddTrackers(args.Objects['torrent-duplicate'].Integers['id']);
           exit;
         end;
         Result:=args.Objects['torrent-added'].Integers['id'];
       finally
         args.Free;
-      end;
+      end
+      else
+        if RpcObj.Status='duplicate torrent' then begin
+          _AddTrackers(0);
+          exit;
+        end;
     finally
       req.Free;
     end;
-{
-    if (Result=0) and (RpcObj.Status='duplicate torrent') then
-    begin
-      _AddTrackers;
-      Result:=0;
-    end else
-}
     if Result = 0 then
       CheckStatus(False);
   end;
@@ -6361,7 +6373,7 @@ begin
   tt:=Now;
   while True do begin
     Application.ProcessMessages;
-    Result:=FTorrents.IndexOf(idxTorrentId, TorrentId);
+    Result:=gTorrents.Items.IndexOf(idxTorrentId, TorrentId);
     if Result >= 0 then begin
       gTorrents.RemoveSelection;
       gTorrents.Row:=Result;
