@@ -1875,7 +1875,6 @@ var
     req, args: TJSONObject;
     fs: TFileStreamUTF8;
     TorData, AnnData, LData, LLData: TBEncoded;
-    Sha1Hash: Ansistring;
     t: TJSONArray;
     tt: TJSONObject;
     trackers: TJSONArray;
@@ -1891,7 +1890,12 @@ var
         s:=Format(': %s', [UTF8Encode(widestring(gTorrents.Items[idxName, i]))]);
     end;
     ForceAppNormal;
-    if MessageDlg(SDuplicateTorrent + s + '.' + LineEnding + LineEnding + SUpdateTrackers, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    s:=SDuplicateTorrent + s + '.';
+    if RpcObj.RPCVersion < 10 then begin
+      MessageDlg(s, mtError, [mbOK], 0);
+      exit;
+    end;
+    if MessageDlg(s + LineEnding + LineEnding + SUpdateTrackers, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
       exit;
     Application.ProcessMessages;
     if IsProtocolSupported(FileName) then
@@ -1916,9 +1920,9 @@ var
           args:=TJSONObject.Create;
           if TorrentId = 0 then begin
             LData:=(TorData.ListData.FindElement('info') as TBEncoded);
+            s:='';
             LData.Encode(LData, s);
-            Sha1Hash:=SHA1Print(SHA1String(s));
-            args.Add('ids', TJSONArray.Create([Sha1Hash]));
+            args.Add('ids', TJSONArray.Create([SHA1Print(SHA1String(s))]));
           end
           else
             args.Add('ids', TJSONArray.Create([TorrentId]));
