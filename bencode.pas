@@ -7,20 +7,23 @@ uses
 
 type
   TBEncodedFormat = (befEmpty, befString, befInteger, befList, befDictionary);
+
   TBEncodedData = class(TObject)
   public
     Header: AnsiString;
     Data: TObject; // actually TBEncoded
     destructor Destroy; override;
-//  published
     constructor Create(bData: TObject);
   end;
+
+  { TBEncodedDataList }
+
   TBEncodedDataList = class(TObjectList)
   protected
     function GetItems(Index: Integer): TBEncodedData;
     procedure SetItems(Index: Integer; AClass: TBEncodedData);
   public
-    function FindElement(Header: AnsiString): TObject;
+    function FindElement(Header: AnsiString; RaiseException: boolean = True): TObject;
     function Add(AClass: TBEncodedData): Integer;
     function Extract(Item: TBEncodedData): TBEncodedData;
     function Remove(AClass: TBEncodedData): Integer;
@@ -31,6 +34,7 @@ type
     property Items[Index: Integer]: TBEncodedData read GetItems write SetItems;
       default;
   end;
+
   TBEncoded = class(TObject)
   private
     FFormat: TBEncodedFormat;
@@ -42,7 +46,6 @@ type
     property Format: TBEncodedFormat read FFormat write SetFormat;
     class procedure Encode(Encoded: TObject; var Output: AnsiString);
     destructor Destroy; override;
-  //published
     constructor Create(Stream: TStream);
   end;
 
@@ -72,6 +75,11 @@ end;
 
 constructor TBEncoded.Create(Stream: TStream);
 
+  procedure InvalidInput;
+  begin
+    raise Exception.Create('Invalid torrent file.');
+  end;
+
   function GetString(Buffer: AnsiString): AnsiString;
   var
     X: char;
@@ -79,20 +87,18 @@ constructor TBEncoded.Create(Stream: TStream);
   begin
     // loop until we come across it
     repeat
-      if Stream.Read(X, 1) <> 1 then
-        raise Exception.Create('');
+      Stream.ReadBuffer(X, 1);
       if not ((X in ['0'..'9']) or (x = ':')) then
-        raise Exception.Create('');
+        InvalidInput;
       if X = ':' then
       begin
         if Buffer = '' then
-          raise Exception.Create('');
+          InvalidInput;
         if Length(Buffer) > 6 then
-          raise Exception.Create('');
+          InvalidInput;
         lngth:=StrToInt(Buffer);
         SetLength(Result, lngth);
-        if Stream.Read(Result[1], lngth) <> lngth then
-          raise Exception.Create('');
+        Stream.ReadBuffer(Result[1], lngth);
         Break;
       end
       else
@@ -110,8 +116,7 @@ begin
   inherited Create;
 
   // get first character to determine the format of the proceeding data
-  if Stream.Read(X, 1) <> 1 then
-    raise Exception.Create('');
+  Stream.ReadBuffer(X, 1);
 
   // is it an integer?
   if X = 'i' then
@@ -119,14 +124,13 @@ begin
     // yes it is, let's read until we come across e
     Buffer := '';
     repeat
-      if Stream.Read(X, 1) <> 1 then
-        raise Exception.Create('');
+      Stream.ReadBuffer(X, 1);
       if not ((X in ['0'..'9']) or (X = 'e')) then
-        raise Exception.Create('');
+        InvalidInput;
       if X = 'e' then
       begin
         if Buffer = '' then
-          raise Exception.Create('')
+          InvalidInput
         else
         begin
           Format := befInteger;
@@ -147,8 +151,7 @@ begin
     // loop until we come across e
     repeat
       // have a peek around and see if theres an e
-      if Stream.Read(X, 1) <> 1 then
-        raise Exception.Create('');
+      Stream.ReadBuffer(X, 1);
       // is it an e?
       if X = 'e' then
         Break;
@@ -169,15 +172,14 @@ begin
     // loop until we come across e
     repeat
       // have a peek around and see if theres an e
-      if Stream.Read(X, 1) <> 1 then
-        raise Exception.Create('');
+      Stream.ReadBuffer(X, 1);
       // is it an e?
       if X = 'e' then
         Break;
       // if it isnt an e it has to be numerical!
       if not (X in ['0'..'9']) then
       begin
-        raise Exception.Create('');
+        InvalidInput;
       end;
       // now read the string data
       Buffer := GetString(AnsiString(X));
@@ -198,7 +200,7 @@ begin
     Format := befString;
   end
   else
-    raise Exception.Create('');
+    InvalidInput;
 end;
 
 class procedure TBEncoded.Encode(Encoded: TObject; var Output: AnsiString);
@@ -241,7 +243,7 @@ begin
   FFormat := Format;
 end;
 
-function TBEncodedDataList.FindElement(Header: AnsiString): TObject;
+function TBEncodedDataList.FindElement(Header: AnsiString; RaiseException: boolean): TObject;
 var
   i: integer;
 begin
@@ -253,7 +255,10 @@ begin
       Exit;
     end;
 
-  Result := nil;
+  if RaiseException then
+    raise Exception.CreateFmt('Element ''%s'' not found.', [Header])
+  else
+    Result:=nil;
 end;
 
 function TBEncodedDataList.Add(AClass: TBEncodedData): Integer;
