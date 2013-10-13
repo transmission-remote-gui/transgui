@@ -8,7 +8,7 @@ inherited ConnOptionsForm: TConnOptionsForm
   AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  Caption = 'Transmission connections management'
+  Caption = 'Manage connections to Transmission'
   ClientHeight = 313
   ClientWidth = 529
   Constraints.MinHeight = 280
