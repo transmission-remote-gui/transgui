@@ -5,6 +5,7 @@ inherited ColSetupForm: TColSetupForm
   Width = 355
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
+  AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Columns setup'
@@ -56,7 +57,7 @@ inherited ColSetupForm: TColSetupForm
       TabOrder = 0
     end
     object btUp: TButton
-      Left = 264
+      Left = 263
       Height = 23
       Top = 0
       Width = 75
@@ -68,7 +69,7 @@ inherited ColSetupForm: TColSetupForm
       TabOrder = 1
     end
     object btDown: TButton
-      Left = 264
+      Left = 263
       Height = 23
       Top = 28
       Width = 75
