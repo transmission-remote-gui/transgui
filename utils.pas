@@ -83,6 +83,8 @@ function ParamStrUTF8(Param: Integer): utf8string;
 function ParamCount: integer;
 function GetCmdSwitchValue(const Switch: string): string;
 
+function Base32Decode(const s: ansistring): ansistring;
+
 {$ifdef CALLSTACK}
 function GetLastExceptionCallStack: string;
 {$endif CALLSTACK}
@@ -559,6 +561,55 @@ begin
   R.Top:=(C.Parent.ClientHeight - C.Height) div 2;
   C.BoundsRect:=R;
 end;
+
+{$PUSH}
+{$RANGECHECKS OFF}
+function Base32Decode(const s: ansistring): ansistring;
+var
+  optr, len, bcnt: integer;
+  Output: PByteArray;
+  Input: PAnsiChar;
+  w: word;
+  c: ansichar;
+  b: byte;
+begin
+  len:=Length(s);
+  Input:=PAnsiChar(s);
+  SetLength(Result, len);
+  Output:=PByteArray(PAnsiChar(Result));
+  optr:=0;
+  w:=0;
+  bcnt:=0;
+  while len > 0 do begin
+    repeat
+      c:=Input^;
+      if c = '=' then begin
+        len:=0;
+        break;
+      end;
+      if c in ['A'..'Z'] then
+        b:=Ord(c) - Ord('A')
+      else
+        if c in ['2'..'7'] then
+          b:=Ord(c) - 24
+        else
+          raise Exception.Create('Invalid base32 string.');
+      w:=(w shl 5) or b;
+      Inc(bcnt, 5);
+      Inc(Input);
+      Dec(len);
+    until (bcnt >= 8) or (len <= 0);
+    if bcnt < 8 then
+      Output^[optr]:=w shl (8 - bcnt)
+    else begin
+      Dec(bcnt, 8);
+      Output^[optr]:=w shr bcnt;
+    end;
+    Inc(optr);
+  end;
+  SetLength(Result, optr);
+end;
+{$POP}
 
 finalization
 {$ifdef windows}
