@@ -3,6 +3,7 @@
 [+] Renaming of existing torrents, files and folders (Transmission 2.80+ only). Issue #498.
 [+] Display files list as a tree in the Files tab. Issue #572.
 [+] Show check boxes in the Files tree to allow more user friendly selection of files to be downloaded.
+[+] Import trackers from a duplicate torrent. Issue #522.
 [+] Free disk space is updated when changing a destination folder in the Add torrent window (Transmission 2.80+ only). Issue #665.
 [+] Display the number of files in the title of the Files tab.
 [+] Strike out torrents in the list during deletion while waiting for action to complete.

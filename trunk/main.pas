@@ -777,7 +777,7 @@ uses
 {$endif darwin}
   synacode, ConnOptions, clipbrd, DateUtils, TorrProps, DaemonOptions, About,
   ToolWin, download, ColSetup, types, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
-  Options, ButtonPanel, BEncode, sha1;
+  Options, ButtonPanel, BEncode, synautil;
 
 const
   TR_STATUS_CHECK_WAIT_1   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -1901,8 +1901,33 @@ var
     Application.ProcessMessages;
     TrackersList:=TStringList.Create;
     try
-      if AnsiCompareText('magnet:', Copy(FileName, 1, 7)) = 0 then begin
+      TorrentHash:='';
+      if AnsiCompareText('magnet:?', Copy(FileName, 1, 8)) = 0 then begin
         // Get trackers from the magnet link
+        TrackersList.Delimiter:='&';
+        TrackersList.DelimitedText:=Copy(FileName, 9, MaxInt);
+        i:=0;
+        while i < TrackersList.Count do begin
+          s:=TrackersList.Names[i];
+          if (TorrentId = 0) and (CompareText(s, 'xt') = 0) then begin
+            s:=LowerCase(TrackersList.ValueFromIndex[i]);
+            if (TorrentHash = '') and (Pos('urn:btih:', s) = 1) then begin
+              s:=Copy(s, 10, MaxInt);
+              if Length(s) = 32 then
+                // base32 encoded hash
+                TorrentHash:=StrToHex(Base32Decode(UpperCase(s)))
+              else
+                TorrentHash:=s;
+            end;
+          end
+          else
+            if CompareText(s, 'tr') = 0 then begin
+              TrackersList[i]:=DecodeURL(TrackersList.ValueFromIndex[i]);
+              Inc(i);
+              continue;
+            end;
+          TrackersList.Delete(i);
+        end;
       end
       else
       try
@@ -1925,7 +1950,7 @@ var
             LData:=(TorData.ListData.FindElement('info') as TBEncoded);
             s:='';
             LData.Encode(LData, s);
-            TorrentHash:=SHA1Print(SHA1String(s));
+            TorrentHash:=StrToHex(SHA1(s));
           end;
           AnnData:=(TorData.ListData.FindElement('announce-list', False) as TBEncoded);
           if AnnData <> nil then
