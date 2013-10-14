@@ -21,11 +21,11 @@ inherited ConnOptionsForm: TConnOptionsForm
     Height = 202
     Top = 69
     Width = 513
-    ActivePage = tabMisc
+    ActivePage = tabConnection
     Align = alClient
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 1
     object tabConnection: TTabSheet
       Caption = 'Transmission'
@@ -330,7 +330,7 @@ inherited ConnOptionsForm: TConnOptionsForm
       Left = 170
       Height = 21
       Top = 1
-      Width = 343
+      Width = 342
       Anchors = [akTop, akLeft, akRight]
       ItemHeight = 13
       OnSelect = cbConnectionSelect
