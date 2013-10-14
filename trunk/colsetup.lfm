@@ -62,7 +62,6 @@ inherited ColSetupForm: TColSetupForm
       Top = 0
       Width = 75
       Anchors = [akTop, akRight]
-      AutoSize = True
       Caption = 'Up'
       Constraints.MinWidth = 75
       OnClick = btUpClick
@@ -74,7 +73,6 @@ inherited ColSetupForm: TColSetupForm
       Top = 28
       Width = 75
       Anchors = [akTop, akRight]
-      AutoSize = True
       Caption = 'Down'
       Constraints.MinWidth = 75
       OnClick = btDownClick
