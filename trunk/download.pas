@@ -77,20 +77,23 @@ type
     procedure Execute; override;
   end;
 
-function DownloadFile(const URL, DestFolder: string; const DestFileName: string = ''): boolean;
+function DownloadFile(const URL, DestFolder: string; const DestFileName: string = ''; const DisplayName: string = ''): boolean;
 
 implementation
 
 uses Main, rpc;
 
-function DownloadFile(const URL, DestFolder: string; const DestFileName: string): boolean;
+function DownloadFile(const URL, DestFolder: string; const DestFileName, DisplayName: string): boolean;
 var
   s: string;
 begin
   with TDownloadForm.Create(Application) do
   try
     s:=ExtractFileName(StringReplace(URL, '/', DirectorySeparator, [rfReplaceAll]));
-    txFileName.Caption:=s;
+    if DisplayName <> '' then
+      txFileName.Caption:=DisplayName
+    else
+      txFileName.Caption:=s;
     if DestFileName <> '' then
       s:=DestFileName;
     FThread.FUrl:=URL;

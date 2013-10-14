@@ -1,4 +1,4 @@
-object DownloadForm: TDownloadForm
+inherited DownloadForm: TDownloadForm
   Left = 390
   Height = 106
   Top = 278
@@ -18,8 +18,7 @@ object DownloadForm: TDownloadForm
   OnResize = FormResize
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '0.9.30.1'
-  object txFileName: TLabel
+  object txFileName: TLabel[0]
     Left = 12
     Height = 14
     Top = 8
@@ -27,7 +26,7 @@ object DownloadForm: TDownloadForm
     Caption = 'txFileName'
     ParentColor = False
   end
-  object txBytes: TLabel
+  object txBytes: TLabel[1]
     Left = 12
     Height = 14
     Top = 28
@@ -35,7 +34,7 @@ object DownloadForm: TDownloadForm
     Caption = 'txBytes'
     ParentColor = False
   end
-  object txPercent: TLabel
+  object txPercent: TLabel[2]
     Left = 344
     Height = 14
     Top = 28
@@ -45,7 +44,7 @@ object DownloadForm: TDownloadForm
     Caption = 'txPercent'
     ParentColor = False
   end
-  object btCancel: TButton
+  object btCancel: TButton[3]
     Left = 160
     Height = 23
     Top = 72
@@ -58,7 +57,7 @@ object DownloadForm: TDownloadForm
     OnClick = btCancelClick
     TabOrder = 0
   end
-  object pbDownload: TProgressBar
+  object pbDownload: TProgressBar[4]
     Left = 12
     Height = 16
     Top = 44
@@ -68,7 +67,7 @@ object DownloadForm: TDownloadForm
     Step = 1
     TabOrder = 1
   end
-  object UpdateTimer: TTimer
+  object UpdateTimer: TTimer[5]
     Interval = 300
     OnTimer = UpdateTimerTimer
     left = 36

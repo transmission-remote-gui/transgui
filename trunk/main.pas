@@ -103,6 +103,7 @@ resourcestring
   SCheckNewVersion = 'Do you wish to enable automatic checking for a new version of %s?';
   SDuplicateTorrent = 'Torrent already exists in the list';
   SUpdateTrackers = 'Update trackers for the existing torrent?';
+  SDownloadingTorrent = 'Downloading torrent file...';
 
   SDownloaded = 'Downloaded';
   SUploaded = 'Uploaded';
@@ -1879,8 +1880,8 @@ var
     tt: TJSONObject;
     trackers: TJSONArray;
     i, j: Integer;
-    s: string;
-    TrackersList, TrackersAddList: TStringList;
+    s, tfn, TorrentHash: string;
+    TrackersList: TStringList;
   begin
     RpcObj.Status:='';
     s:='';
@@ -1898,110 +1899,123 @@ var
     if MessageDlg(s + LineEnding + LineEnding + SUpdateTrackers, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
       exit;
     Application.ProcessMessages;
-    if IsProtocolSupported(FileName) then
-      //TODO: Need download torrent file...
-    else
-    begin
-      AppBusy;
-      TrackersList:=nil;
-      TrackersAddList:=nil;
-      TorData:=nil;
+    TrackersList:=TStringList.Create;
+    try
+      if AnsiCompareText('magnet:', Copy(FileName, 1, 7)) = 0 then begin
+        // Get trackers from the magnet link
+      end
+      else
       try
-        fs:=TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyNone);
+        if IsProtocolSupported(FileName) then begin
+          // Downloading torrent file
+          tfn:=SysToUTF8(GetTempDir(True)) + 'remote-torrent.torrent';
+          if not DownloadFile(FileName, ExtractFilePath(tfn), ExtractFileName(tfn), SDownloadingTorrent) then
+            exit;
+        end
+        else
+          tfn:=FileName;
+        // Read trackers from the torrent file...
+        AppBusy;
+        TorData:=nil;
+        fs:=TFileStreamUTF8.Create(tfn, fmOpenRead or fmShareDenyNone);
         try
           TorData:=TBEncoded.Create(fs);
-        finally
-          fs.Free;
-        end;
-        // Get trackers from the existing torrent
-        req:=TJSONObject.Create;
-        try
-          req.Add('method', 'torrent-get');
-          args:=TJSONObject.Create;
           if TorrentId = 0 then begin
+            // Calculate torrent hash
             LData:=(TorData.ListData.FindElement('info') as TBEncoded);
             s:='';
             LData.Encode(LData, s);
-            args.Add('ids', TJSONArray.Create([SHA1Print(SHA1String(s))]));
-          end
-          else
-            args.Add('ids', TJSONArray.Create([TorrentId]));
-          args.Add('fields', TJSONArray.Create(['id', 'trackers']));
+            TorrentHash:=SHA1Print(SHA1String(s));
+          end;
+          AnnData:=(TorData.ListData.FindElement('announce-list', False) as TBEncoded);
+          if AnnData <> nil then
+            for i:=0 to AnnData.ListData.Count - 1 do begin
+              LData:=AnnData.ListData.Items[i].Data as TBEncoded;
+              for j:=0 to LData.ListData.Count - 1 do begin
+                LLData:=LData.ListData.Items[j].Data as TBEncoded;
+                TrackersList.Add(LLData.StringData);
+              end;
+            end
+          else begin
+            AnnData:=(TorData.ListData.FindElement('announce', False) as TBEncoded);
+            if AnnData <> nil then
+              TrackersList.Add(AnnData.StringData);
+          end;
+        finally
+          TorData.Free;
+          fs.Free;
+        end;
+      finally
+        // Delete temp file
+        if (tfn <> '') and (tfn <> FileName) then
+          DeleteFileUTF8(tfn);
+      end;
+
+      // Request trackers from the existing torrent
+      req:=TJSONObject.Create;
+      try
+        req.Add('method', 'torrent-get');
+        args:=TJSONObject.Create;
+        if TorrentId = 0 then
+          args.Add('ids', TJSONArray.Create([TorrentHash]))
+        else
+          args.Add('ids', TJSONArray.Create([TorrentId]));
+        args.Add('fields', TJSONArray.Create(['id', 'trackers']));
+        req.Add('arguments', args);
+        args:=RpcObj.SendRequest(req);
+        if args = nil then begin
+          CheckStatus(False);
+          exit;
+        end;
+        try
+          t:=args.Arrays['torrents'];
+          if t.Count = 0 then
+            raise Exception.Create('Torrent not found.');
+          tt:=t.Objects[0] as TJSONObject;
+          i:=tt.Integers['id'];
+          if TorrentId = 0 then
+            SelectTorrent(i, 2000);
+          TorrentId:=i;
+          trackers:=tt.Arrays['trackers'];
+          // Deleting existing trackers from the list
+          for i:=0 to trackers.Count - 1 do begin
+            s:=UTF8Encode((Trackers.Items[i] as TJSONObject).Strings['announce']);
+            j:=TrackersList.IndexOf(s);
+            if j >= 0 then
+              TrackersList.Delete(j);
+          end;
+        finally
+          args.Free;
+        end;
+      finally
+        req.Free;
+      end;
+
+      if TrackersList.Count > 0 then begin
+        trackers:=TJSONArray.Create;
+        for i:=0 to TrackersList.Count - 1 do
+          trackers.Add(TrackersList[i]);
+        args:=TJSONObject.Create;
+        args.Add('ids', TJSONArray.Create([TorrentId]));
+        args.Add('trackerAdd', trackers);
+        req:=TJSONObject.Create;
+        try
+          req.Add('method', 'torrent-set');
           req.Add('arguments', args);
-          args:=RpcObj.SendRequest(req);
+          args:=RpcObj.SendRequest(req, False);
           if args = nil then begin
             CheckStatus(False);
             exit;
           end;
-          try
-            t:=args.Arrays['torrents'];
-            if t.Count = 0 then
-              raise Exception.Create('Torrent not found.');
-            tt:=t.Objects[0] as TJSONObject;
-            i:=tt.Integers['id'];
-            if TorrentId = 0 then
-              SelectTorrent(i, 2000);
-            TorrentId:=i;
-            trackers:=tt.Arrays['trackers'];
-            TrackersList:=TStringList.Create;
-            for i:=0 to trackers.Count - 1 do begin
-              s:=UTF8Encode((Trackers.Items[i] as TJSONObject).Strings['announce']);
-              TrackersList.Add(s);
-            end;
-          finally
-            args.Free;
-          end;
+          args.Free;
         finally
           req.Free;
         end;
-
-        // Read trackers from the torrent file...
-        TrackersAddList:=TStringList.Create;
-        AnnData:=(TorData.ListData.FindElement('announce-list', False) as TBEncoded);
-        if AnnData <> nil then
-          for i:=0 to AnnData.ListData.Count - 1 do begin
-            LData:=AnnData.ListData.Items[i].Data as TBEncoded;
-            for j:=0 to LData.ListData.Count - 1 do begin
-               LLData:=LData.ListData.Items[j].Data as TBEncoded;
-               s:=LLData.StringData;
-               if TrackersList.IndexOf(s) < 0 then
-                 TrackersAddList.Add(s);
-             end;
-          end
-        else begin
-          AnnData:=(TorData.ListData.FindElement('announce', False) as TBEncoded);
-          if (AnnData <> nil) and (TrackersList.IndexOf(AnnData.StringData) < 0) then
-            TrackersAddList.Add(AnnData.StringData);
-        end;
-
-        if TrackersAddList.Count > 0 then begin
-          trackers:=TJSONArray.Create;
-          for i:=0 to TrackersAddList.Count - 1 do
-            trackers.Add(TrackersAddList[i]);
-          args:=TJSONObject.Create;
-          args.Add('ids', TJSONArray.Create([TorrentId]));
-          args.Add('trackerAdd', trackers);
-          req:=TJSONObject.Create;
-          try
-            req.Add('method', 'torrent-set');
-            req.Add('arguments', args);
-            args:=RpcObj.SendRequest(req, False);
-            if args = nil then begin
-              CheckStatus(False);
-              exit;
-            end;
-            args.Free;
-          finally
-            req.Free;
-          end;
-          DoRefresh;
-        end;
-      finally
-        TorData.Free;
-        TrackersList.Free;
-        TrackersAddList.Free;
-        AppNormal;
+        DoRefresh;
       end;
+    finally
+      TrackersList.Free;
+      AppNormal;
     end;
   end;
 
@@ -2111,6 +2125,7 @@ begin
 {$endif windows}
         end;
 
+        Application.ProcessMessages;
         if IsProtocolSupported(FileName) then
           torrent:='-'
         else begin
