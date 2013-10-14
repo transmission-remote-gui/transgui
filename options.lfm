@@ -31,11 +31,11 @@ inherited OptionsForm: TOptionsForm
         Left = 8
         Height = 95
         Top = 88
-        Width = 480
+        Width = 484
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Add torrent'
         ClientHeight = 77
-        ClientWidth = 476
+        ClientWidth = 480
         TabOrder = 1
         object cbShowAddTorrentWindow: TCheckBox
           Left = 10
@@ -66,11 +66,11 @@ inherited OptionsForm: TOptionsForm
         Left = 8
         Height = 78
         Top = 6
-        Width = 480
+        Width = 484
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Data refresh'
         ClientHeight = 60
-        ClientWidth = 476
+        ClientWidth = 480
         TabOrder = 0
         object txSeconds: TLabel
           Left = 396
