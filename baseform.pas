@@ -130,6 +130,12 @@ begin
         R.Top := ScaleInt(R.Top);
         R.Right := ScaleInt(R.Right);
         R.Bottom := ScaleInt(R.Bottom);
+        if (Parent <> nil) and (Align = alNone) then begin
+          if akRight in Anchors then
+            Inc(R.Right, C.Parent.ClientWidth - ScaleInt(C.BaseParentClientSize.cx));
+          if akBottom in Anchors then
+            Inc(R.Bottom, C.Parent.ClientHeight - ScaleInt(C.BaseParentClientSize.cy));
+        end;
         BoundsRect := R;
         with BorderSpacing do begin
           Top:=ScaleInt(Top);
@@ -201,8 +207,8 @@ var
   {$endif LCLcarbon}
 begin
   InitScale;
-  Font.Height:=ScaleInt(-11);
   HandleNeeded;
+  Font.Height:=ScaleInt(-11);
   DoScale(Self);
   if FNeedAutoSize then
     AutoSizeForm(Self);
