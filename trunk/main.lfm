@@ -201,6 +201,7 @@ inherited MainForm: TMainForm
           Width = 75
         end      
         item
+          Alignment = taRightJustify
           Title.Caption = 'ETA'
           Width = 80
         end      
@@ -272,6 +273,13 @@ inherited MainForm: TMainForm
           Title.Caption = 'Queue position'
           Width = 0
           Visible = False
+        end      
+        item
+          Alignment = taRightJustify
+          SizePriority = 0
+          Title.Caption = 'Seeding time'
+          Width = 0
+          Visible = False
         end>
       FixedCols = 0
       Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
@@ -322,11 +330,11 @@ inherited MainForm: TMainForm
     Height = 306
     Top = 157
     Width = 780
-    ActivePage = tabFiles
+    ActivePage = tabGeneral
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 1
     OnChange = PageInfoChange
     OnPageChanged = PageInfoChange

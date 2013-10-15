@@ -505,7 +505,7 @@ begin
                                      'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
                                      'seeders','peersGettingFromUs','leechers', 'uploadRatio', 'addedDate', 'doneDate',
                                      'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id', 'pieces',
-                                     'trackerStats', 'secondsDownloading']);
+                                     'trackerStats', 'secondsDownloading', 'secondsSeeding']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
