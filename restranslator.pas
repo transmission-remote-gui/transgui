@@ -302,10 +302,28 @@ end;
 
 function LoadDefaultTranslationFile(const TranslationFilesPath: AnsiString; const OnTranslate: TTranslateStringEvent): TFileName;
 var
-  lLang, sLang: string;
+  lLang, sLang, s: string;
+  i: integer;
 begin
   LCLGetLanguageIDs(lLang, sLang);
-  Result := IncludeTrailingPathDelimiter(TranslationFilesPath) + ExtractFileNameOnly(ParamStrUtf8(0))+ '.' + AnsiLowerCase(sLang);
+  i:=Pos('.', lLang);
+  if i > 0 then
+    SetLength(lLang, i - 1);
+  lLang:=LowerCase(lLang);
+  s:=IncludeTrailingPathDelimiter(TranslationFilesPath) + ExtractFileNameOnly(ParamStrUtf8(0))+ '.';
+  Result := s + lLang;
+  // First check full language name (uk_ua)
+  if not FileExistsUTF8(Result) then begin
+    Result := s + AnsiLowerCase(sLang);
+    // Check fallback language name (uk)
+    if not FileExistsUTF8(Result) then begin
+      // Finally use country name (ua)
+      i:=Pos('_', lLang);
+      if i > 0 then
+        lLang:=Copy(lLang, i + 1, MaxInt);
+      Result := s + lLang;
+    end;
+  end;
   Result := LoadTranslationFile(Result, OnTranslate);
 end;
 
