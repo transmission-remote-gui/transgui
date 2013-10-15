@@ -95,6 +95,7 @@ function GetAvailableTranslations: TStringList;
 function GetAvailableTranslations(const SearchPath: AnsiString): TStringList;
 function GetTranslationFileName(const Language: AnsiString; AvailableTranslations: TStringList): AnsiString;
 function DefaultLangDir: AnsiString;
+function IsTranslationFileValid(const TranslationFile: AnsiString): boolean;
 
 const
   sLanguageIDName = 'TranslationLanguage';
@@ -143,7 +144,7 @@ end;
 function GetAvailableTranslations(const SearchPath: AnsiString): TStringList;
 var
   Sr: TSearchRec;
-  LangName: AnsiString;
+  LangName, s: AnsiString;
 begin
   Result:= TStringList.Create;
   if FindFirstUTF8(IncludeTrailingPathDelimiter(SearchPath) + '*', faArchive or faReadOnly, Sr) = 0 then
@@ -153,9 +154,12 @@ begin
       repeat
         if ExtractFileExt(Sr.Name) = '.template' then
           continue;
-        LangName:= ExtractLangName(IncludeTrailingPathDelimiter(ExtractFilePath(SearchPath)) + Sr.Name);
-        if LangName <> '' then
-          Add(LangName + NameValueSeparator + Sr.Name);
+        s:=IncludeTrailingPathDelimiter(ExtractFilePath(SearchPath)) + Sr.Name;
+        if IsTranslationFileValid(s) then begin
+          LangName:= ExtractLangName(s);
+          if LangName <> '' then
+            Add(LangName + NameValueSeparator + Sr.Name);
+        end;
       until FindNextUTF8(Sr) <> 0;
       FindClose(Sr);
     end;
@@ -295,6 +299,26 @@ begin
   end;
 end;
 
+const
+  InvalidLangExt: array[1..6] of string = ('ua', 'by', 'cn', 'cz', 'se', 'tw');
+
+function IsTranslationFileValid(const TranslationFile: AnsiString): boolean;
+var
+  s: string;
+  i: integer;
+begin
+  Result:=FileExistsUTF8(TranslationFile);
+  if not Result then
+    exit;
+  s:=LowerCase(ExtractFileExt(TranslationFile));
+  Delete(s, 1, 1);
+  for i:=Low(InvalidLangExt) to High(InvalidLangExt) do
+    if s = InvalidLangExt[i] then begin
+      Result:=False;
+      exit;
+    end;
+end;
+
 function LoadDefaultTranslationFile(const OnTranslate: TTranslateStringEvent): TFileName;
 begin
   Result := LoadDefaultTranslationFile(DefaultLangDir, OnTranslate);
@@ -320,15 +344,19 @@ begin
   s:=IncludeTrailingPathDelimiter(TranslationFilesPath) + ExtractFileNameOnly(ParamStrUtf8(0))+ '.';
   Result := s + lLang;
   // First check full language name (uk_ua)
-  if not FileExistsUTF8(Result) then begin
+  if not IsTranslationFileValid(Result) then begin
     Result := s + sLang;
     // Check fallback language name (uk)
-    if not FileExistsUTF8(Result) then begin
+    if not IsTranslationFileValid(Result) then begin
       // Finally use country name (ua)
       i:=Pos('_', lLang);
       if i > 0 then
         lLang:=Copy(lLang, i + 1, MaxInt);
       Result := s + lLang;
+      if not IsTranslationFileValid(Result) then begin
+        Result:='';
+        exit;
+      end;
     end;
   end;
   Result := LoadTranslationFile(Result, OnTranslate);

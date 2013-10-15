@@ -20,7 +20,7 @@
 [-] Update statistics even if no torrents are selected. Issue #664.
 [-] Properly close the application on Windows log off. Issue #680.
 [-] Proper handling of the case when the previous application run has been terminated unexpectedly. Issue #680.
-[-] Incorrect current UI language detection on Windows.
+[-] Incorrect current UI language detection.
 [-] The "Invalid argument" error or tracker URLs corruption when editing trackers in the torrent properties windows on Mac OS X. Issue #666.
 [-] Error "JSON element 'torrent-added' not found" when adding a duplicate torrent to Transmission 2.80+. Issue #683.
 
