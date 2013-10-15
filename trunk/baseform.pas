@@ -213,7 +213,7 @@ begin
   if FNeedAutoSize then
     AutoSizeForm(Self);
 {$ifdef LCLcarbon}
-  // Destroy handles of chuld controls to fix the LCL Carbon bug.
+  // Destroy handles of child controls to fix the LCL Carbon bug.
   // Without this hack, it will not be possible to hide form's controls.
   for i:=0 to ControlCount - 1 do
     if Controls[i] is TWinControl then

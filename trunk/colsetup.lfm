@@ -1,7 +1,7 @@
 inherited ColSetupForm: TColSetupForm
-  Left = 404
+  Left = 401
   Height = 326
-  Top = 194
+  Top = 193
   Width = 355
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
@@ -57,24 +57,22 @@ inherited ColSetupForm: TColSetupForm
       TabOrder = 0
     end
     object btUp: TButton
-      Left = 263
+      Left = 264
       Height = 23
       Top = 0
       Width = 75
       Anchors = [akTop, akRight]
       Caption = 'Up'
-      Constraints.MinWidth = 75
       OnClick = btUpClick
       TabOrder = 1
     end
     object btDown: TButton
-      Left = 263
+      Left = 264
       Height = 23
       Top = 28
       Width = 75
       Anchors = [akTop, akRight]
       Caption = 'Down'
-      Constraints.MinWidth = 75
       OnClick = btDownClick
       TabOrder = 2
     end
