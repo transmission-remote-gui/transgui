@@ -958,10 +958,10 @@ end;
 procedure LoadTranslation;
 begin
   FTranslationFileName := Ini.ReadString('Interface', 'TranslationFile', '');
-  if FTranslationFileName = '' then
-    FTranslationLanguage := LoadDefaultTranslationFile(@OnTranslate)
-  else
-    if FTranslationFileName <> '-' then
+  if FTranslationFileName <> '-' then
+    if (FTranslationFileName = '') or not IsTranslationFileValid(DefaultLangDir + FTranslationFileName) then
+      FTranslationLanguage := LoadDefaultTranslationFile(@OnTranslate)
+    else
       FTranslationLanguage := LoadTranslationFile(DefaultLangDir + FTranslationFileName, @OnTranslate);
   if FTranslationLanguage = '' then
     FTranslationLanguage := 'English'
