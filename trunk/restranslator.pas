@@ -306,15 +306,22 @@ var
   i: integer;
 begin
   LCLGetLanguageIDs(lLang, sLang);
+  lLang:=LowerCase(lLang);
+  sLang:=LowerCase(sLang);
+{$ifdef windows}
+  if sLang = 'ch' then begin
+    sLang:='zh';
+    lLang:=StringReplace(lLang, 'ch_', 'zh_', []);
+  end;
+{$endif windows}
   i:=Pos('.', lLang);
   if i > 0 then
     SetLength(lLang, i - 1);
-  lLang:=LowerCase(lLang);
   s:=IncludeTrailingPathDelimiter(TranslationFilesPath) + ExtractFileNameOnly(ParamStrUtf8(0))+ '.';
   Result := s + lLang;
   // First check full language name (uk_ua)
   if not FileExistsUTF8(Result) then begin
-    Result := s + AnsiLowerCase(sLang);
+    Result := s + sLang;
     // Check fallback language name (uk)
     if not FileExistsUTF8(Result) then begin
       // Finally use country name (ua)
