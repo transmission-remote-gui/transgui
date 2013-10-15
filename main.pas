@@ -698,6 +698,7 @@ const
   idxSizeToDowload = 19;
   idxTorrentId = 20;
   idxQueuePos = 21;
+  idxSeedingTime = 22;
 
   idxTag = -1;
   idxSeedsTotal = -2;
@@ -753,11 +754,11 @@ const
 
   StatusFiltersCount = 7;
 
-  TorrentFieldsMap: array[idxName..idxQueuePos] of string =
+  TorrentFieldsMap: array[idxName..idxSeedingTime] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
      'peersGettingFromUs,leechers', 'rateDownload', 'rateUpload', 'eta', 'uploadRatio',
      'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority',
-     '', '', 'queuePosition');
+     '', '', 'queuePosition', 'secondsSeeding');
 
   FinishedQueue = 1000000;
 
@@ -3575,6 +3576,14 @@ begin
             Dec(j, FinishedQueue);
           Text:=IntToStr(j);
         end;
+      idxSeedingTime:
+        begin
+          j:=Sender.Items[idxSeedingTime, ARow];
+          if j > 0 then
+            Text:=EtaToString(j)
+          else
+            Text:='';
+        end;
     end;
   end;
 end;
@@ -4624,6 +4633,7 @@ begin
     FieldExists[idxPath]:=t.IndexOfName('downloadDir') >= 0;
     FieldExists[idxPriority]:=t.IndexOfName('bandwidthPriority') >= 0;
     FieldExists[idxQueuePos]:=t.IndexOfName('queuePosition') >= 0;
+    FieldExists[idxSeedingTime]:=t.IndexOfName('secondsSeeding') >= 0;
   end;
 
   UpSpeed:=0;
@@ -4780,6 +4790,10 @@ begin
     end
     else
       FTorrents[idxRatio, row]:=NULL;
+    if FieldExists[idxSeedingTime] then
+      FTorrents[idxSeedingTime, row]:=t.Integers['secondsSeeding']
+    else
+      FTorrents[idxSeedingTime, row]:=NULL;
 
     if RpcObj.RPCVersion >= 7 then begin
       if t.Arrays['trackerStats'].Count > 0 then
@@ -5296,7 +5310,13 @@ begin
   end;
   txDownSpeed.Caption:=s;
   txUpSpeed.Caption:=GetHumanSize(gTorrents.Items[idxUpSpeed, idx], 1)+sPerSecond;
-  txRatio.Caption:=RatioToString(t.Floats['uploadRatio']);
+  s:=RatioToString(t.Floats['uploadRatio']);
+  if t.IndexOfName('secondsSeeding') >= 0 then begin
+    i:=t.Integers['secondsSeeding'];
+    if i > 0 then
+      s:=Format('%s (%s)', [s, EtaToString(i)]);
+  end;
+  txRatio.Caption:=s;
 
   if RpcObj.RPCVersion < 5 then
   begin
