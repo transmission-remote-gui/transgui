@@ -1,13 +1,13 @@
 inherited OptionsForm: TOptionsForm
   Left = 313
-  Height = 345
+  Height = 349
   Top = 230
   Width = 525
   AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Application options'
-  ClientHeight = 345
+  ClientHeight = 349
   ClientWidth = 525
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,17 +15,17 @@ inherited OptionsForm: TOptionsForm
   Position = poMainFormCenter
   object Page: TPageControl[0]
     Left = 8
-    Height = 295
+    Height = 299
     Top = 8
     Width = 509
-    ActivePage = tabGeneral
+    ActivePage = tabAdvanced
     Align = alClient
     BorderSpacing.Around = 8
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 269
+      ClientHeight = 271
       ClientWidth = 501
       object gbNewTorrent: TGroupBox
         Left = 8
@@ -136,7 +136,7 @@ inherited OptionsForm: TOptionsForm
     end
     object tabAdvanced: TTabSheet
       Caption = 'Advanced'
-      ClientHeight = 269
+      ClientHeight = 273
       ClientWidth = 501
       object txLanguage: TLabel
         Left = 8
@@ -247,12 +247,40 @@ inherited OptionsForm: TOptionsForm
         Caption = 'days'
         ParentColor = False
       end
+      object gbSysInt: TGroupBox
+        Left = 8
+        Height = 69
+        Top = 192
+        Width = 484
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'System integration'
+        ClientHeight = 51
+        ClientWidth = 480
+        TabOrder = 5
+        Visible = False
+        object cbRegExt: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 4
+          Width = 148
+          Caption = 'Handle .torrent files by %s'
+          TabOrder = 0
+        end
+        object cbRegMagnet: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 28
+          Width = 147
+          Caption = 'Handle magnet links by %s'
+          TabOrder = 1
+        end
+      end
     end
   end
   object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
-    Top = 311
+    Top = 315
     Width = 525
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
