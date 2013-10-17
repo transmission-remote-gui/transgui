@@ -173,36 +173,35 @@ begin
     exit;
   end;
 
-  if FParams <> nil then begin
-    if Param >= FParams.Count then
-      Result:=''
-    else
-      Result:=FParams[Param];
-    exit;
+  if FParams = nil then begin
+    FParams:=TStringList.Create;
+    P := GetCommandLineW;
+    while True do begin
+      P := SkipSpaces( P );
+      P1 := P;
+      P := SkipParam(P);
+      if P = P1 then
+        break;
+      s := Copy( P1, 1, P - P1 );
+      if Length(s) >= 2 then
+        if (s[1] = '"') and (s[Length(s)] = '"') then
+          s:=Copy(s, 2, Length(s) - 2);
+      FParams.Add(UTF8Encode(s));
+    end;
+    // Getting real executable name
+    SetLength(s, 1000);
+    SetLength(s, GetModuleFileNameW(HINSTANCE, PWideChar(s), Length(s) + 1));
+    if s <> '' then
+      if FParams.Count > 0 then
+        FParams[0]:=UTF8Encode(s)
+      else
+        FParams.Add(UTF8Encode(s));
   end;
 
-  FParams:=TStringList.Create;
-  P := GetCommandLineW;
-  while True do begin
-    P := SkipSpaces( P );
-    P1 := P;
-    P := SkipParam(P);
-    if P = P1 then
-      break;
-    s := Copy( P1, 1, P - P1 );
-    if Length(s) >= 2 then
-      if (s[1] = '"') and (s[Length(s)] = '"') then
-        s:=Copy(s, 2, Length(s) - 2);
-    FParams.Add(UTF8Encode(s));
-  end;
-  // Getting real executable name
-  SetLength(s, 1000);
-  SetLength(s, GetModuleFileNameW(HINSTANCE, PWideChar(s), Length(s) + 1));
-  if s <> '' then
-    if FParams.Count > 0 then
-      FParams[0]:=UTF8Encode(s)
-    else
-      FParams.Add(UTF8Encode(s));
+  if Param >= FParams.Count then
+    Result:=''
+  else
+    Result:=FParams[Param];
 end;
 
 function ParamCount: integer;
