@@ -42,6 +42,8 @@ type
     cbTrayMinimize: TCheckBox;
     cbCheckNewVersion: TCheckBox;
     cbCalcAvg: TCheckBox;
+    cbRegExt: TCheckBox;
+    cbRegMagnet: TCheckBox;
     edIntfScale: TSpinEdit;
     edCheckVersionDays: TSpinEdit;
     edRefreshInterval: TSpinEdit;
@@ -49,6 +51,7 @@ type
     gbTray: TGroupBox;
     gbNewTorrent: TGroupBox;
     gbData: TGroupBox;
+    gbSysInt: TGroupBox;
     txDays: TLabel;
     tabGeneral: TTabSheet;
     txPerc: TLabel;
@@ -70,6 +73,10 @@ type
     procedure OKButtonClick(Sender: TObject);
   private
     FLangList: TStringList;
+{$ifdef mswindows}
+    FRegExt: boolean;
+    FRegMagnet: boolean;
+{$endif mswindows}
 
     procedure FillLanguageItems;
   public
@@ -78,7 +85,11 @@ type
 
 implementation
 
-uses main, utils, ResTranslator;
+uses
+  {$ifdef mswindows}
+  registry,
+  {$endif mswindows}
+  main, utils, ResTranslator;
 
 { TOptionsForm }
 
@@ -86,7 +97,14 @@ procedure TOptionsForm.FormCreate(Sender: TObject);
 var
   i: integer;
   pg: TTabSheet;
+{$ifdef mswindows}
+  reg: TRegistry;
+  s: string;
+{$endif mswindows}
 begin
+  cbRegExt.Caption:=Format(cbRegExt.Caption, [AppName]);
+  cbRegMagnet.Caption:=Format(cbRegMagnet.Caption, [AppName]);
+
   ConnForm:=TConnOptionsForm.Create(Self);
   while ConnForm.Page.ControlCount > 0 do begin
     pg:=ConnForm.Page.Pages[0];
@@ -111,6 +129,31 @@ begin
   cbLanguage.OnDropDown:=@cbLanguageEnter;
   cbLanguage.OnMouseMove:=@cbLanguageMouseMove;
 {$endif LCLgtk2}
+
+{$ifdef mswindows}
+  gbSysInt.Visible:=True;
+  reg:=TRegistry.Create;
+  try
+    if reg.OpenKeyReadOnly('Software\Classes\.torrent') then begin
+      if reg.ReadString('') = AppName then begin
+        reg.CloseKey;
+        if reg.OpenKeyReadOnly(Format('Software\Classes\%s\shell\open\command', [AppName])) then begin
+          s:=reg.ReadString('');
+          FRegExt:=CompareFilePath(s, Format('"%s" "%%1"', [ParamStr(0)])) = 0;
+        end;
+      end;
+    end;
+    reg.CloseKey;
+    if reg.OpenKeyReadOnly('Software\Classes\Magnet\shell\open\command') then begin
+      s:=reg.ReadString('');
+      FRegMagnet:=CompareFilePath(s, Format('"%s" "%%1"', [ParamStr(0)])) = 0;
+    end;
+  finally
+    reg.Free;
+  end;
+  cbRegExt.Checked:=FRegExt;
+  cbRegMagnet.Checked:=FRegMagnet;
+{$endif mswindows}
 end;
 
 procedure TOptionsForm.cbLanguageEnter(Sender: TObject);
@@ -174,6 +217,9 @@ procedure TOptionsForm.OKButtonClick(Sender: TObject);
 var
   s: string;
   restart: boolean;
+{$ifdef mswindows}
+  reg: TRegistry;
+{$endif mswindows}
 begin
   ConnForm.ModalResult:=mrNone;
   ConnForm.btOKClick(nil);
@@ -188,6 +234,68 @@ begin
     Ini.WriteString('Interface', 'TranslationFile', s);
     restart:=True;
   end;
+
+{$ifdef mswindows}
+  reg:=TRegistry.Create;
+  try
+    if cbRegExt.Checked <> FRegExt then
+      if cbRegExt.Checked then begin
+        if reg.OpenKey('Software\Classes\.torrent', True) then begin
+          reg.WriteString('', AppName);
+          reg.CloseKey;
+          if reg.OpenKey(Format('Software\Classes\%s\DefaultIcon', [AppName]), True) then begin
+            reg.WriteString('', Format('"%s",0', [ParamStr(0)]));
+            reg.CloseKey;
+            if reg.OpenKey(Format('Software\Classes\%s\shell\open\command', [AppName]), True) then begin
+              reg.WriteString('', Format('"%s" "%%1"', [ParamStr(0)]));
+              reg.CloseKey;
+            end;
+          end;
+        end;
+      end
+      else begin
+        if reg.OpenKey('Software\Classes\.torrent', False) then begin
+          reg.DeleteValue('');
+          reg.CloseKey;
+        end;
+        s:=Format('Software\Classes\%s', [AppName]);
+        reg.DeleteKey(s + '\DefaultIcon');
+        reg.DeleteKey(s + '\shell\open\command');
+        reg.DeleteKey(s + '\shell\open');
+        reg.DeleteKey(s + '\shell');
+        reg.DeleteKey(s);
+      end;
+
+    if cbRegMagnet.Checked <> FRegMagnet then
+      if cbRegMagnet.Checked then begin
+        if reg.OpenKey('Software\Classes\Magnet', True) then begin
+          if not reg.ValueExists('') then
+            reg.WriteString('', 'Magnet URI');
+          reg.WriteString('Content Type', 'application/x-magnet');
+          reg.WriteString('URL Protocol', '');
+          reg.CloseKey;
+          if reg.OpenKey('Software\Classes\Magnet\DefaultIcon', True) then begin
+            reg.WriteString('', Format('"%s",0', [ParamStr(0)]));
+            reg.CloseKey;
+            if reg.OpenKey('Software\Classes\Magnet\shell', True) then begin
+              reg.WriteString('', 'open');
+              reg.CloseKey;
+              if reg.OpenKey('Software\Classes\Magnet\shell\open\command', True) then begin
+                reg.WriteString('', Format('"%s" "%%1"', [ParamStr(0)]));
+                reg.CloseKey;
+              end;
+            end;
+          end;
+        end;
+      end
+      else begin
+        reg.DeleteKey('Software\Classes\Magnet\DefaultIcon');
+        reg.DeleteKey('Software\Classes\Magnet\shell\open\command');
+      end;
+  finally
+    reg.Free;
+  end;
+{$endif mswindows}
 
   if edIntfScale.Value <> IntfScale then
     restart:=True;
