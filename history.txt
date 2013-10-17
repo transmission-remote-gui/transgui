@@ -4,6 +4,7 @@
 [+] Display files list as a tree in the Files tab. Issue #572.
 [+] Show check boxes in the Files tree to allow more user friendly selection of files to be downloaded.
 [+] Import trackers from a duplicate torrent. Issue #522.
+[+] Option "Average out transfer speeds to eliminate fluctuations". ETA is much more reliable now. Issue #193.
 [+] Free disk space is updated when changing a destination folder in the Add torrent window (Transmission 2.80+ only). Issue #665.
 [+] Added column "Seeding time". Also display seeding time in the "Share ratio" field in the torrent info pane. Issue #591.
 [+] Display the number of files in the title of the Files tab.
@@ -15,6 +16,7 @@
 [*] Restore display of a queue position for finished torrents. Issue #568.
 [*] Align the Ratio column to the right. Issue #668.
 [*] Increased drop down count for the folders combo box to 20.
+[*] Display ETA in more vague way.
 [-] The error state for stopped torrents was ignored. Issue #659.
 [-] Fixed garbage at the end of transgui.ini file. Issue #609.
 [-] Crash when the "Automatically add torrent links from the clipboard" is enabled in some cases. Issue #613.

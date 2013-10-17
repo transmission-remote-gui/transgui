@@ -33,7 +33,7 @@ const
   AppVersion = '5.0';
 
 resourcestring
-  sAll = 'All';
+  sAll = 'All torrents';
   sWaiting = 'Waiting';
   sVerifying = 'Verifying';
   sDownloading = 'Downloading';
@@ -55,10 +55,10 @@ resourcestring
   sReconnect = 'Reconnect in %d seconds.';
   sDisconnected = 'Disconnected';
   sConnectingToDaemon = 'Connecting to daemon...';
-  sSec = '%ds';
-  sMinSec = '%dm, %ds';
-  sHourMin = '%dh, %dm';
-  sDayHour = '%dd, %dh';
+  sSecs = '%ds';
+  sMins = '%dm';
+  sHours = '%dh';
+  sDays = '%dd';
   sDownloadingSeeding = '%s%s%d downloading, %d seeding%s%s, %s';
   sDownSpeed = 'D: %s/s';
   sUpSpeed = 'U: %s/s';
@@ -583,6 +583,7 @@ type
     FMainFormShown: boolean;
     FFilesTree: TFilesTree;
     FFilesCapt: string;
+    FCalcAvg: boolean;
 
     procedure UpdateUI;
     procedure UpdateUIRpcVersion(RpcVersion: integer);
@@ -705,7 +706,9 @@ const
   idxLeechersTotal = -3;
   idxStateImg = -4;
   idxDeleted = -5;
-  TorrentsExtraColumns = 5;
+  idxDownSpeedHistory = -6;
+  idxUpSpeedHistory = -7;
+  TorrentsExtraColumns = 7;
 
   // Peers list
   idxPeerHost = 0;
@@ -756,7 +759,7 @@ const
 
   TorrentFieldsMap: array[idxName..idxSeedingTime] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
-     'peersGettingFromUs,leechers', 'rateDownload', 'rateUpload', 'eta', 'uploadRatio',
+     'peersGettingFromUs,leechers', '', '', 'eta', 'uploadRatio',
      'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority',
      '', '', 'queuePosition', 'secondsSeeding');
 
@@ -800,6 +803,8 @@ const
   TR_SPEEDLIMIT_GLOBAL    = 0;    // only follow the overall speed limit
   TR_SPEEDLIMIT_SINGLE    = 1;    // only follow the per-torrent limit
   TR_SPEEDLIMIT_UNLIMITED = 2;    // no limits at all
+
+  SpeedHistorySize = 20;
 
 const
   SizeNames: array[1..5] of string = (sByte, sKByte, sMByte, sGByte, sTByte);
@@ -1742,6 +1747,7 @@ begin
     ConnForm.ActiveConnection:=FCurConn;
     edRefreshInterval.Value:=Ini.ReadInteger('Interface', 'RefreshInterval', 5);
     edRefreshIntervalMin.Value:=Ini.ReadInteger('Interface', 'RefreshIntervalMin', 20);
+    cbCalcAvg.Checked:=FCalcAvg;
 {$ifndef darwin}
     cbTrayClose.Checked:=Ini.ReadBool('Interface', 'TrayClose', False);
     cbTrayMinimize.Checked:=Ini.ReadBool('Interface', 'TrayMinimize', True);
@@ -1774,6 +1780,7 @@ begin
       AppBusy;
       Ini.WriteInteger('Interface', 'RefreshInterval', edRefreshInterval.Value);
       Ini.WriteInteger('Interface', 'RefreshIntervalMin', edRefreshIntervalMin.Value);
+      Ini.WriteBool('Interface', 'CalcAvg', cbCalcAvg.Checked);
 {$ifndef darwin}
       Ini.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
       Ini.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
@@ -2374,6 +2381,7 @@ begin
   acHideApp.Visible:=Visible and (WindowState <> wsMinimized);
 {$endif darwin}
   SetRefreshInterval;
+  FCalcAvg:=Ini.ReadBool('Interface', 'CalcAvg', True);
 end;
 
 procedure TMainForm.HideApp;
@@ -2594,11 +2602,29 @@ begin
 end;
 
 function TMainForm.EtaToString(ETA: integer): string;
+const
+  r1 = 60;
+  r2 = 5*60;
+  r3 = 30*60;
+  r4 = 60*60;
+
 begin
   if (ETA < 0) or (ETA = MaxInt) then
     Result:=''
-  else
+  else begin
+    if ETA > 2*60*60 then  // > 5 hours - round to 1 hour
+      ETA:=(ETA + r4 div 2) div r4 * r4
+    else
+    if ETA > 2*60*60 then  // > 2 hours - round to 30 mins
+      ETA:=(ETA + r3 div 2) div r3 * r3
+    else
+    if ETA > 30*60 then  // > 30 mins - round to 5 mins
+      ETA:=(ETA + r2 div 2) div r2 * r2
+    else
+    if ETA > 2*60 then   // > 2 mins - round to 1 min
+    ETA:=(ETA + r1 div 2) div r1 * r1;
     Result:=SecondsToString(ETA);
+  end;
 end;
 
 function TMainForm.GetTorrentStatus(TorrentIdx: integer): string;
@@ -4533,20 +4559,30 @@ end;
 function TMainForm.SecondsToString(j: integer): string;
 begin
   if j < 60 then
-    Result:=Format(sSec, [j])
+    Result:=Format(sSecs, [j])
   else
-  if j < 60*60 then
-    Result:=Format(sMinSec, [j div 60, j mod 60])
+  if j < 60*60 then begin
+    Result:=Format(sMins, [j div 60]);
+    j:=j mod 60;
+    if j > 0 then
+      Result:=Format('%s, %s', [Result, Format(sSecs, [j])]);
+  end
   else begin
     j:=(j + 30) div 60;
-    if j < 60*24 then
-      Result:=Format(sHourMin, [j div 60, j mod 60])
+    if j < 60*24 then begin
+      Result:=Format(sHours, [j div 60]);
+      j:=j mod 60;
+      if j > 0 then
+        Result:=Format('%s, %s', [Result, Format(sMins, [j])]);
+    end
     else begin
       j:=(j + 30) div 60;
-      Result:=Format(sDayHour, [j div 24, j mod 24])
+      Result:=Format(sDays, [j div 24]);
+      j:=j mod 24;
+      if j > 0 then
+        Result:=Format('%s, %s', [Result, Format(sHours, [j])]);
     end;
   end;
-
 end;
 
 procedure TMainForm.FillTorrentsList(list: TJSONArray);
@@ -4560,21 +4596,80 @@ var
   function GetTorrentValue(AIndex: integer; const AName: string; AType: integer): boolean;
   var
     res: variant;
+    i: integer;
   begin
-    Result:=t.IndexOfName(AName) >= 0;
+    i:=t.IndexOfName(AName);
+    Result:=i >= 0;
     if Result then
       case AType of
         vtInteger:
-          res:=t.Integers[AName];
+          res:=t.Items[i].AsInteger;
         vtExtended:
-          res:=t.Floats[AName];
+          res:=t.Items[i].AsFloat;
         else
-          res:=t.Strings[AName];
+          res:=t.Items[i].AsString;
       end
     else
       res:=NULL;
 
     FTorrents[AIndex, row]:=res;
+  end;
+
+  function StoreSpeed(var History: variant; Speed: integer): integer;
+  var
+    j, cnt: integer;
+    p: PInteger;
+    IsNew: boolean;
+    res: Int64;
+  begin
+    IsNew:=VarIsEmpty(History);
+    if IsNew then begin
+      if Speed = 0 then begin
+        Result:=0;
+        exit;
+      end;
+      History:=VarArrayCreate([0, SpeedHistorySize], varInteger);
+    end;
+    p:=VarArrayLock(History);
+    try
+      if IsNew then begin
+        for j:=1 to SpeedHistorySize do
+          p[j]:=-1;
+        j:=1;
+      end
+      else begin
+        j:=Round((Now - cardinal(p[0])/SecsPerDay)/RpcObj.RefreshInterval);
+        if j = 0 then
+          j:=1;
+      end;
+      p[0]:=integer(cardinal(Round(Now*SecsPerDay)));
+      // Shift speed array
+      if j < SpeedHistorySize then
+        Move(p[1], p[j + 1], (SpeedHistorySize - j)*SizeOf(integer))
+      else
+        j:=SpeedHistorySize;
+
+      while j > 0 do begin
+        p[j]:=Speed;
+        Dec(j);
+      end;
+      // Calc average speed
+      res:=Speed;
+      cnt:=1;
+      for j:=2 to SpeedHistorySize do
+        if p[j] < 0 then
+          break
+        else begin
+          Inc(res, p[j]);
+          Inc(cnt);
+        end;
+
+      Result:=res div cnt;
+    finally
+      VarArrayUnlock(History);
+    end;
+    if Result = 0 then
+      VarClear(History);
   end;
 
 var
@@ -4747,7 +4842,13 @@ begin
     FTorrents[idxDone, row]:=Int(f*10.0)/10.0;
     FTorrents[idxStateImg, row]:=StateImg;
     GetTorrentValue(idxDownSpeed, 'rateDownload', vtInteger);
+    j:=StoreSpeed(FTorrents.ItemPtrs[idxDownSpeedHistory, row]^, FTorrents[idxDownSpeed, row]);
+    if FCalcAvg and (StateImg in [imgDown, imgDownError]) then
+      FTorrents[idxDownSpeed, row]:=j;
     GetTorrentValue(idxUpSpeed, 'rateUpload', vtInteger);
+    j:=StoreSpeed(FTorrents.ItemPtrs[idxUpSpeedHistory, row]^, FTorrents[idxUpSpeed, row]);
+    if FCalcAvg and (StateImg in [imgSeed, imgSeedError]) then
+      FTorrents[idxUpSpeed, row]:=j;
 
     GetTorrentValue(idxSize, 'totalSize', vtExtended);
     GetTorrentValue(idxSizeToDowload, 'sizeWhenDone', vtExtended);
@@ -4755,8 +4856,14 @@ begin
     GetTorrentValue(idxPeers, 'peersGettingFromUs', vtInteger);
     GetTorrentValue(idxETA, 'eta', vtInteger);
     v:=FTorrents[idxETA, row];
-    if not VarIsNull(v) and (v < 0) then
-      FTorrents[idxETA, row]:=MaxInt;
+    if not VarIsNull(v) then
+      if v < 0 then
+        FTorrents[idxETA, row]:=MaxInt
+      else begin
+        f:=FTorrents[idxDownSpeed, row];
+        if f > 0 then
+          FTorrents[idxETA, row]:=Round(t.Floats['leftUntilDone']/f);
+      end;
     GetTorrentValue(idxDownloaded, 'downloadedEver', vtExtended);
     GetTorrentValue(idxUploaded, 'uploadedEver', vtExtended);
     GetTorrentValue(idxAddedOn, 'addedDate', vtExtended);
@@ -4942,7 +5049,8 @@ begin
       if not gTorrents.Items.Find(idxTorrentId, FTorrents[idxTorrentId, i], row) then
         gTorrents.Items.InsertRow(row);
       for j:=-TorrentsExtraColumns to FTorrents.ColCnt - 1 do
-        gTorrents.Items[j, row]:=FTorrents[j, i];
+        if (j <> idxDownSpeedHistory) and (j <> idxUpSpeedHistory) then
+          gTorrents.Items[j, row]:=FTorrents[j, i];
       gTorrents.Items[idxTag, row]:=1;
     end;
 
@@ -5293,7 +5401,11 @@ begin
   panTransfer.ChildSizing.Layout:=cclNone;
   txStatus.Caption:=GetTorrentStatus(idx);
   txError.Caption:=GetTorrentError(t, gTorrents.Items[idxStatus, idx]);
-  txRemaining.Caption:=EtaToString(t.Integers['eta']);
+  i:=t.Integers['eta'];
+  f:=gTorrents.Items[idxDownSpeed, idx];
+  if f > 0 then
+    i:=Round(t.Floats['leftUntilDone']/f);
+  txRemaining.Caption:=EtaToString(i);
   txDownloaded.Caption:=GetHumanSize(t.Floats['downloadedEver']);
   txUploaded.Caption:=GetHumanSize(t.Floats['uploadedEver']);
   f:=t.Floats['pieceSize'];

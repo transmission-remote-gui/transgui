@@ -1,13 +1,13 @@
 inherited OptionsForm: TOptionsForm
   Left = 313
-  Height = 280
+  Height = 345
   Top = 230
   Width = 525
   AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Application options'
-  ClientHeight = 280
+  ClientHeight = 345
   ClientWidth = 525
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,7 +15,7 @@ inherited OptionsForm: TOptionsForm
   Position = poMainFormCenter
   object Page: TPageControl[0]
     Left = 8
-    Height = 230
+    Height = 295
     Top = 8
     Width = 509
     ActivePage = tabGeneral
@@ -25,12 +25,12 @@ inherited OptionsForm: TOptionsForm
     TabOrder = 0
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 204
+      ClientHeight = 269
       ClientWidth = 501
       object gbNewTorrent: TGroupBox
         Left = 8
         Height = 95
-        Top = 88
+        Top = 126
         Width = 484
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Add torrent'
@@ -62,14 +62,14 @@ inherited OptionsForm: TOptionsForm
           TabOrder = 2
         end
       end
-      object gbRefresh: TGroupBox
+      object gbData: TGroupBox
         Left = 8
-        Height = 78
+        Height = 106
         Top = 6
         Width = 484
         Anchors = [akTop, akLeft, akRight]
-        Caption = 'Data refresh'
-        ClientHeight = 60
+        Caption = 'Data display'
+        ClientHeight = 88
         ClientWidth = 480
         TabOrder = 0
         object txSeconds: TLabel
@@ -81,19 +81,19 @@ inherited OptionsForm: TOptionsForm
           ParentColor = False
         end
         object txRefreshInterval: TLabel
-          Left = 8
+          Left = 10
           Height = 14
           Top = 5
-          Width = 82
-          Caption = 'Refresh interval:'
+          Width = 105
+          Caption = 'Data refresh interval:'
           ParentColor = False
         end
         object txRefreshIntervalMin: TLabel
-          Left = 8
+          Left = 10
           Height = 14
           Top = 33
-          Width = 159
-          Caption = 'Refresh interval when minimized:'
+          Width = 182
+          Caption = 'Data refresh interval when minimized:'
           ParentColor = False
         end
         object txSeconds2: TLabel
@@ -124,11 +124,19 @@ inherited OptionsForm: TOptionsForm
           TabOrder = 1
           Value = 1
         end
+        object cbCalcAvg: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 60
+          Width = 274
+          Caption = 'Average out transfer speeds to eliminate fluctuations'
+          TabOrder = 2
+        end
       end
     end
     object tabAdvanced: TTabSheet
       Caption = 'Advanced'
-      ClientHeight = 204
+      ClientHeight = 269
       ClientWidth = 501
       object txLanguage: TLabel
         Left = 8
@@ -244,7 +252,7 @@ inherited OptionsForm: TOptionsForm
   object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
-    Top = 246
+    Top = 311
     Width = 525
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0

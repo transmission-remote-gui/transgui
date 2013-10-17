@@ -116,7 +116,7 @@ type
     procedure SetIsPlain(const AValue: boolean);
     procedure TreeChanged;
     procedure DoOnStateChange;
-    function DoCompareVarRows(Sender: TVarList; const Row1, Row2: variant; DescendingSort: boolean): integer;
+    function DoCompareVarRows(Sender: TVarList; Row1, Row2: PVariant; DescendingSort: boolean): integer;
     procedure SetRowOption(ARow, AOption: integer; DoSet: boolean);
   public
     constructor Create(AGrid: TVarGrid); reintroduce;
@@ -705,7 +705,7 @@ begin
     FOnStateChange(Self);
 end;
 
-function TFilesTree.DoCompareVarRows(Sender: TVarList; const Row1, Row2: variant; DescendingSort: boolean): integer;
+function TFilesTree.DoCompareVarRows(Sender: TVarList; Row1, Row2: PVariant; DescendingSort: boolean): integer;
 begin
   if FGrid.SortColumn <> idxFileName then begin
     Result:=(integer(VarIsEmpty(Sender.GetRowItem(Row1, idxFileId))) and 1) - (integer(VarIsEmpty(Sender.GetRowItem(Row2, idxFileId))) and 1);
