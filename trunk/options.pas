@@ -41,13 +41,14 @@ type
     cbTrayIconAlways: TCheckBox;
     cbTrayMinimize: TCheckBox;
     cbCheckNewVersion: TCheckBox;
+    cbCalcAvg: TCheckBox;
     edIntfScale: TSpinEdit;
     edCheckVersionDays: TSpinEdit;
     edRefreshInterval: TSpinEdit;
     edRefreshIntervalMin: TSpinEdit;
     gbTray: TGroupBox;
     gbNewTorrent: TGroupBox;
-    gbRefresh: TGroupBox;
+    gbData: TGroupBox;
     txDays: TLabel;
     tabGeneral: TTabSheet;
     txPerc: TLabel;
