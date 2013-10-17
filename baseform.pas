@@ -183,9 +183,17 @@ begin
 {$endif LCLgtk2}
 
       if C is TWinControl then
-        with TWinControl(C) do
+        with TWinControl(C) do begin
+          with ChildSizing do begin
+            HorizontalSpacing:=ScaleInt(HorizontalSpacing);
+            VerticalSpacing:=ScaleInt(VerticalSpacing);
+            LeftRightSpacing:=ScaleInt(LeftRightSpacing);
+            TopBottomSpacing:=ScaleInt(TopBottomSpacing);
+          end;
+
           for i:=0 to ControlCount - 1 do
             DoScale(Controls[i]);
+        end;
     finally
       if C is TWinControl then
         TWinControl(C).EnableAlign;

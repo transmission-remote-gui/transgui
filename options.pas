@@ -44,6 +44,7 @@ type
     cbCalcAvg: TCheckBox;
     cbRegExt: TCheckBox;
     cbRegMagnet: TCheckBox;
+    cbTrayNotify: TCheckBox;
     edIntfScale: TSpinEdit;
     edCheckVersionDays: TSpinEdit;
     edRefreshInterval: TSpinEdit;

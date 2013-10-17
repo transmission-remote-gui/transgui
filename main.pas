@@ -1771,6 +1771,7 @@ begin
     cbTrayMinimize.Enabled:=False;
 {$endif}
     cbTrayIconAlways.Checked:=Ini.ReadBool('Interface', 'TrayIconAlways', True);
+    cbTrayNotify.Checked:=Ini.ReadBool('Interface', 'TrayNotify', True);
 
     cbShowAddTorrentWindow.Checked:=Ini.ReadBool('Interface', 'ShowAddTorrentWindow', True);
     cbDeleteTorrentFile.Checked:=Ini.ReadBool('Interface', 'DeleteTorrentFile', False);
@@ -1801,6 +1802,7 @@ begin
       Ini.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
 {$endif}
       Ini.WriteBool('Interface', 'TrayIconAlways', cbTrayIconAlways.Checked);
+      Ini.WriteBool('Interface', 'TrayNotify', cbTrayNotify.Checked);
 
       Ini.WriteBool('Interface', 'ShowAddTorrentWindow', cbShowAddTorrentWindow.Checked);
       Ini.WriteBool('Interface', 'DeleteTorrentFile', cbDeleteTorrentFile.Checked);
@@ -2427,7 +2429,7 @@ end;
 
 procedure TMainForm.DownloadFinished(const TorrentName: string);
 begin
-  if not TrayIcon.Visible then exit;
+  if not TrayIcon.Visible or not Ini.ReadBool('Interface', 'TrayNotify', True) then exit;
   TrayIcon.BalloonHint:=Format(sFinishedDownload, [TorrentName]);
   TrayIcon.BalloonTitle:=sDownloadComplete;
   TrayIcon.ShowBalloonHint;

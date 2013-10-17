@@ -8,6 +8,7 @@
 [+] Free disk space is updated when changing a destination folder in the Add torrent window (Transmission 2.80+ only). Issue #665.
 [+] Options to control handling of .torrent files and magnet links on Windows. Issue #645.
 [+] Added column "Seeding time". Also display seeding time in the "Share ratio" field in the torrent info pane. Issue #591.
+[+] Option "Show notifications in tray icon". Issue #590.
 [+] Display the number of files in the title of the Files tab.
 [+] Strike out torrents in the list during deletion while waiting for action to complete.
 [*] Removed flickering of torrent details while changing current torrent.
