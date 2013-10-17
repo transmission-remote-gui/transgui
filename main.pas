@@ -1031,6 +1031,15 @@ begin
   Ini:=TIniFileUtf8.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.ini'));
   Ini.CacheUpdates:=True;
 
+  // Check for outdated IPC file
+  if FileExistsUTF8(FIPCFileName) then begin
+    h:=FileOpenUTF8(FIPCFileName, fmOpenRead or fmShareDenyNone);
+    i:=FileGetDate(h);
+    FileClose(h);
+    if (i > 0) and (Abs(Now - DosDateTimeToDateTime(i)) > 1/MinsPerDay) then
+      DeleteFileUTF8(FIPCFileName);
+  end;
+
   for i:=1 to ParamCount do begin
     s:=ParamStrUTF8(i);
     if IsProtocolSupported(s) or FileExistsUTF8(s) then
@@ -1051,13 +1060,20 @@ begin
       FileClose(FileCreateUTF8(FIPCFileName));
     for i:=1 to 50 do
       if not FileExistsUTF8(FIPCFileName) then begin
+        // The running process works normally. Exit application.
         Result:=False;
         exit;
       end
       else
         Sleep(200);
-    // A running process is not responding
+    // The running process is not responding
     DeleteFileUTF8(FRunFileName);
+    // Delete IPC file if it is empty
+    h:=FileOpenUTF8(FIPCFileName, fmOpenRead or fmShareDenyNone);
+    i:=FileSeek(h, 0, soFromEnd);
+    FileClose(h);
+    if i = 0 then
+      DeleteFileUTF8(FIPCFileName);
   end;
 
   // Create a new run file
@@ -1065,7 +1081,6 @@ begin
   pid:=GetProcessID;
   FileWrite(h, pid, SizeOf(pid));
   FileClose(h);
-  DeleteFileUTF8(FIPCFileName);
 
   LoadTranslation;
 
