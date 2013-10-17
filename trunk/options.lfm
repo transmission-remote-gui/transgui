@@ -1,13 +1,13 @@
 inherited OptionsForm: TOptionsForm
   Left = 313
-  Height = 349
+  Height = 330
   Top = 230
   Width = 525
   AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Application options'
-  ClientHeight = 349
+  ClientHeight = 330
   ClientWidth = 525
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,7 +15,7 @@ inherited OptionsForm: TOptionsForm
   Position = poMainFormCenter
   object Page: TPageControl[0]
     Left = 8
-    Height = 299
+    Height = 280
     Top = 8
     Width = 509
     ActivePage = tabAdvanced
@@ -25,7 +25,7 @@ inherited OptionsForm: TOptionsForm
     TabOrder = 0
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 271
+      ClientHeight = 273
       ClientWidth = 501
       object gbNewTorrent: TGroupBox
         Left = 8
@@ -136,55 +136,69 @@ inherited OptionsForm: TOptionsForm
     end
     object tabAdvanced: TTabSheet
       Caption = 'Advanced'
-      ClientHeight = 273
+      ClientHeight = 254
       ClientWidth = 501
       object txLanguage: TLabel
         Left = 8
         Height = 14
-        Top = 168
+        Top = 148
         Width = 52
         Caption = 'Language:'
         ParentColor = False
       end
       object gbTray: TGroupBox
         Left = 8
-        Height = 93
+        Height = 73
         Top = 6
         Width = 484
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Tray icon'
-        ClientHeight = 75
+        ChildSizing.LeftRightSpacing = 10
+        ChildSizing.TopBottomSpacing = 4
+        ChildSizing.VerticalSpacing = 6
+        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 2
+        ClientHeight = 55
         ClientWidth = 480
         TabOrder = 0
-        object cbTrayIconAlways: TCheckBox
-          Left = 10
-          Height = 17
-          Top = 50
-          Width = 130
-          Caption = 'Tray icon always visible'
-          TabOrder = 2
-        end
         object cbTrayMinimize: TCheckBox
           Left = 10
           Height = 17
           Top = 4
-          Width = 93
+          Width = 215
           Caption = 'Minimize to tray'
           TabOrder = 0
         end
         object cbTrayClose: TCheckBox
+          Left = 225
+          Height = 17
+          Top = 4
+          Width = 245
+          Caption = 'Close to tray'
+          TabOrder = 1
+        end
+        object cbTrayIconAlways: TCheckBox
           Left = 10
           Height = 17
           Top = 27
-          Width = 80
-          Caption = 'Close to tray'
-          TabOrder = 1
+          Width = 215
+          Caption = 'Tray icon always visible'
+          TabOrder = 2
+        end
+        object cbTrayNotify: TCheckBox
+          Left = 225
+          Height = 17
+          Top = 27
+          Width = 245
+          Caption = 'Show notifications in tray icon'
+          TabOrder = 3
         end
       end
       object cbLanguage: TComboBox
         Left = 304
         Height = 21
-        Top = 166
+        Top = 146
         Width = 188
         Anchors = [akTop, akLeft, akRight]
         ItemHeight = 13
@@ -196,7 +210,7 @@ inherited OptionsForm: TOptionsForm
       object txIntfScale: TLabel
         Left = 8
         Height = 14
-        Top = 141
+        Top = 121
         Width = 48
         Caption = 'Font size:'
         ParentColor = False
@@ -204,7 +218,7 @@ inherited OptionsForm: TOptionsForm
       object edIntfScale: TSpinEdit
         Left = 304
         Height = 21
-        Top = 138
+        Top = 118
         Width = 70
         Increment = 5
         MaxValue = 200
@@ -215,7 +229,7 @@ inherited OptionsForm: TOptionsForm
       object txPerc: TLabel
         Left = 384
         Height = 14
-        Top = 141
+        Top = 121
         Width = 12
         Caption = '%'
         ParentColor = False
@@ -223,7 +237,7 @@ inherited OptionsForm: TOptionsForm
       object cbCheckNewVersion: TCheckBox
         Left = 8
         Height = 17
-        Top = 112
+        Top = 92
         Width = 160
         Caption = 'Check for new version every:'
         OnClick = cbCheckNewVersionClick
@@ -232,7 +246,7 @@ inherited OptionsForm: TOptionsForm
       object edCheckVersionDays: TSpinEdit
         Left = 304
         Height = 21
-        Top = 110
+        Top = 90
         Width = 70
         MaxValue = 999
         MinValue = 1
@@ -242,7 +256,7 @@ inherited OptionsForm: TOptionsForm
       object txDays: TLabel
         Left = 384
         Height = 14
-        Top = 113
+        Top = 93
         Width = 24
         Caption = 'days'
         ParentColor = False
@@ -250,7 +264,7 @@ inherited OptionsForm: TOptionsForm
       object gbSysInt: TGroupBox
         Left = 8
         Height = 69
-        Top = 192
+        Top = 172
         Width = 484
         Anchors = [akTop, akLeft, akRight]
         Caption = 'System integration'
@@ -280,7 +294,7 @@ inherited OptionsForm: TOptionsForm
   object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
-    Top = 315
+    Top = 296
     Width = 525
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
