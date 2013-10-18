@@ -4162,6 +4162,7 @@ begin
       RpcObj.Http.ProxyPass:=DecodeBase64(Ini.ReadString(Sec, 'ProxyPass', ''));
     end;
   end;
+  RpcObj.RpcPath:=Ini.ReadString(Sec, 'RpcPath', '');
   RpcObj.Url:=Format('%s://%s:%d', [RpcObj.Url, Ini.ReadString(Sec, 'Host', ''), Ini.ReadInteger(Sec, 'Port', 9091)]);
   SetRefreshInterval;
   RpcObj.InfoStatus:=sConnectingToDaemon;
@@ -4463,6 +4464,7 @@ begin
         btDel.Hide;
         panTop.ClientHeight:=btNew.Top;
       end;
+      cbShowAdvancedClick(nil);
       AutoSizeForm(frm);
     end;
     AppNormal;
