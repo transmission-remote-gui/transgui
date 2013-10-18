@@ -49,6 +49,7 @@ type
     cbUseSocks5: TCheckBox;
     cbAuth: TCheckBox;
     cbShowAdvanced: TCheckBox;
+    cbAskPassword: TCheckBox;
     edRpcPath: TEdit;
     edUpSpeeds: TEdit;
     edHost: TEdit;
@@ -88,6 +89,7 @@ type
     procedure btNewClick(Sender: TObject);
     procedure btOKClick(Sender: TObject);
     procedure btRenameClick(Sender: TObject);
+    procedure cbAskPasswordClick(Sender: TObject);
     procedure cbAuthClick(Sender: TObject);
     procedure cbConnectionSelect(Sender: TObject);
     procedure cbProxyAuthClick(Sender: TObject);
@@ -144,9 +146,15 @@ begin
   edConnection.SelectAll;
 end;
 
+procedure TConnOptionsForm.cbAskPasswordClick(Sender: TObject);
+begin
+  EnableControls(not cbAskPassword.Checked and cbAskPassword.Enabled, [txPassword, edPassword]);
+end;
+
 procedure TConnOptionsForm.cbAuthClick(Sender: TObject);
 begin
-  EnableControls(cbAuth.Checked, [txUserName, edUserName, txPassword, edPassword]);
+  EnableControls(cbAuth.Checked, [txUserName, edUserName, txPassword, cbAskPassword]);
+  cbAskPasswordClick(nil);
 end;
 
 procedure TConnOptionsForm.cbConnectionSelect(Sender: TObject);
@@ -419,7 +427,7 @@ end;
 
 procedure TConnOptionsForm.LoadConnSettings(const ConnName: string);
 var
-  Sec: string;
+  Sec, s: string;
 begin
   with Ini do begin
     Sec:='Connection.' + ConnName;
@@ -431,11 +439,15 @@ begin
     cbSSL.Checked:=ReadBool(Sec, 'UseSSL', False);
     edUserName.Text:=ReadString(Sec, 'UserName', '');
     cbAuth.Checked:=edUserName.Text <> '';
-    if cbAuth.Checked then
-      if ReadString(Sec, 'Password', '') <> '' then
-        edPassword.Text:='******'
-      else
-        edPassword.Text:='';
+    if cbAuth.Checked then begin
+      s:=ReadString(Sec, 'Password', '');
+      cbAskPassword.Checked:=s = '-';
+      if not cbAskPassword.Checked then
+        if s <> '' then
+          edPassword.Text:='******'
+        else
+          edPassword.Text:='';
+    end;
     cbAuthClick(nil);
     edRpcPath.Text:=ReadString(Sec, 'RpcPath', DefaultRpcPath);
     cbUseProxy.Checked:=ReadBool(Sec, 'UseProxy', False);
@@ -449,7 +461,6 @@ begin
         edProxyPassword.Text:='******'
       else
         edProxyPassword.Text:='';
-    cbProxyAuthClick(nil);
     edPaths.Text:=StringReplace(ReadString(Sec, 'PathMap', ''), '|', LineEnding, [rfReplaceAll]);
     edDownSpeeds.Text:=ReadString(Sec, 'DownSpeeds', DefSpeeds);
     edUpSpeeds.Text:=ReadString(Sec, 'UpSpeeds', DefSpeeds);
@@ -479,15 +490,19 @@ begin
     if not cbAuth.Checked then begin
       edUserName.Text:='';
       edPassword.Text:='';
+      cbAskPassword.Checked:=False;
     end;
     WriteString(Sec, 'UserName', edUserName.Text);
-    if edPassword.Text <> '******' then begin
-      if edPassword.Text = '' then
-        s:=''
-      else
-        s:=EncodeBase64(edPassword.Text);
-      WriteString(Sec, 'Password', s);
-    end;
+    if cbAskPassword.Checked then
+      WriteString(Sec, 'Password', '-')
+    else
+      if edPassword.Text <> '******' then begin
+        if edPassword.Text = '' then
+          s:=''
+        else
+          s:=EncodeBase64(edPassword.Text);
+        WriteString(Sec, 'Password', s);
+      end;
 
     if (edRpcPath.Text = DefaultRpcPath) or (edRpcPath.Text = '') then
       DeleteKey(Sec, 'RpcPath')
