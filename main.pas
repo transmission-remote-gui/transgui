@@ -210,6 +210,7 @@ type
     ImageList16: TImageList;
     FilterTimer: TTimer;
     MenuItem100: TMenuItem;
+    MenuItem68: TMenuItem;
     MenuItem93: TMenuItem;
     MenuItem94: TMenuItem;
     MenuItem95: TMenuItem;
@@ -646,6 +647,7 @@ type
     function RenameTorrent(TorrentId: integer; const OldPath, NewName: string): boolean;
     procedure FilesTreeStateChanged(Sender: TObject);
     function SelectTorrent(TorrentId, TimeOut: integer): integer;
+    procedure OpenCurrentTorrent(OpenFolderOnly: boolean);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -1704,56 +1706,30 @@ begin
 end;
 
 procedure TMainForm.acOpenContainingFolderExecute(Sender: TObject);
-var
-  res: TJSONObject;
-  p, s: string;
-  sel: boolean;
-  files: TJSONArray;
 begin
   if gTorrents.Items.Count = 0 then
     exit;
   Application.ProcessMessages;
-  AppBusy;
   if lvFiles.Focused and (lvFiles.Items.Count > 0) then begin
-    p:=FFilesTree.GetFullPath(lvFiles.Row);
-    sel:=not FFilesTree.IsFolder(lvFiles.Row);
+    AppBusy;
+    ExecRemoteFile(FFilesTree.GetFullPath(lvFiles.Row), not FFilesTree.IsFolder(lvFiles.Row));
+    AppNormal;
   end
-  else begin
-    sel:=False;
-    gTorrents.RemoveSelection;
-    res:=RpcObj.RequestInfo(gTorrents.Items[idxTorrentId, gTorrents.Row], ['files', 'downloadDir']);
-    if res = nil then
-      CheckStatus(False)
-    else
-      try
-        with res.Arrays['torrents'].Objects[0] do begin
-          files:=Arrays['files'];
-          if files.Count = 0 then exit;
-          if files.Count = 1 then begin
-            p:=UTF8Encode((files[0] as TJSONObject).Strings['name']);
-            sel:=True;
-          end
-          else begin
-            s:=GetFilesCommonPath(files);
-            repeat
-              p:=s;
-              s:=ExtractFilePath(p);
-            until (s = '') or (s = p);
-          end;
-          p:=IncludeTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + p;
-        end;
-      finally
-        res.Free;
-      end;
-  end;
-  ExecRemoteFile(p, sel);
-  AppNormal;
+  else
+    OpenCurrentTorrent(True);
 end;
 
 procedure TMainForm.acOpenFileExecute(Sender: TObject);
 begin
-  if lvFiles.Items.Count = 0 then exit;
-  ExecRemoteFile(FFilesTree.GetFullPath(lvFiles.Row), False);
+  if gTorrents.Items.Count = 0 then
+    exit;
+  Application.ProcessMessages;
+  if lvFiles.Focused then begin
+    if lvFiles.Items.Count = 0 then exit;
+    ExecRemoteFile(FFilesTree.GetFullPath(lvFiles.Row), False);
+  end
+  else
+    OpenCurrentTorrent(False);
 end;
 
 procedure TMainForm.acOptionsExecute(Sender: TObject);
@@ -3663,7 +3639,33 @@ begin
 end;
 
 procedure TMainForm.gTorrentsDblClick(Sender: TObject);
+var
+  res: TJSONObject;
+  s, n: string;
 begin
+  if gTorrents.Items.Count = 0 then
+    exit;
+  if gTorrents.Items[idxDone, gTorrents.Row] = 100.0 then begin
+    // The torrent is finished. Check if it is possible to open its file/folder
+    AppBusy;
+    try
+      res:=RpcObj.RequestInfo(gTorrents.Items[idxTorrentId, gTorrents.Row], ['downloadDir']);
+      if res = nil then
+        CheckStatus(False);
+      with res.Arrays['torrents'].Objects[0] do
+        n:=IncludeProperTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + UTF8Encode(gTorrents.Items[idxName, gTorrents.Row]);
+      s:=MapRemoteToLocal(n);
+      if s = '' then
+        s:=n;
+      if FileExistsUTF8(s) or DirectoryExistsUTF8(s) then begin
+        // File/folder exists - open it
+        OpenCurrentTorrent(False);
+        exit;
+      end;
+    finally
+      AppNormal;
+    end;
+  end;
   acTorrentProps.Execute;
 end;
 
@@ -6612,6 +6614,50 @@ begin
     Sleep(100);
     if Now - tt >= TimeOut/MSecsPerDay then
       br:=True;
+  end;
+end;
+
+procedure TMainForm.OpenCurrentTorrent(OpenFolderOnly: boolean);
+var
+  res: TJSONObject;
+  p, s: string;
+  sel: boolean;
+  files: TJSONArray;
+begin
+  if gTorrents.Items.Count = 0 then
+    exit;
+  Application.ProcessMessages;
+  AppBusy;
+  try
+    sel:=False;
+    gTorrents.RemoveSelection;
+    res:=RpcObj.RequestInfo(gTorrents.Items[idxTorrentId, gTorrents.Row], ['files', 'downloadDir']);
+    if res = nil then
+      CheckStatus(False)
+    else
+      try
+        with res.Arrays['torrents'].Objects[0] do begin
+          files:=Arrays['files'];
+          if files.Count = 0 then exit;
+          if files.Count = 1 then begin
+            p:=UTF8Encode((files[0] as TJSONObject).Strings['name']);
+            sel:=OpenFolderOnly;
+          end
+          else begin
+            s:=GetFilesCommonPath(files);
+            repeat
+              p:=s;
+              s:=ExtractFilePath(p);
+            until (s = '') or (s = p);
+          end;
+          p:=IncludeTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + p;
+        end;
+      finally
+        res.Free;
+      end;
+    ExecRemoteFile(p, sel);
+  finally
+    AppNormal;
   end;
 end;
 
