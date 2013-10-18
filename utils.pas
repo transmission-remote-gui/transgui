@@ -70,6 +70,7 @@ procedure HideTaskbarButton;
 function IsTaskbarButtonVisible: boolean;
 
 procedure CenterOnParent(C: TControl);
+procedure EnableControls(AEnable: boolean; const AControls: array of TControl);
 
 function OpenURL(const URL: string; const Params: string = ''): boolean;
 
@@ -99,7 +100,7 @@ uses
 {$ifdef CALLSTACK}
   lineinfo2,
 {$endif CALLSTACK}
-  FileUtil;
+  FileUtil, StdCtrls, Graphics;
 
 {$ifdef windows}
 function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
@@ -609,6 +610,23 @@ begin
   SetLength(Result, optr);
 end;
 {$POP}
+
+procedure EnableControls(AEnable: boolean; const AControls: array of TControl);
+var
+  i: integer;
+  C: TControl;
+begin
+  for i:=Low(AControls) to High(AControls) do begin
+    C:=AControls[i];
+    C.Enabled:=AEnable;
+    if (C is TCustomEdit) or (C is TCustomListBox) or (C is TCustomComboBox) then begin
+      if AEnable then
+        C.Color:=clDefault
+      else
+        C.Color:=clBtnFace;
+    end;
+  end;
+end;
 
 finalization
 {$ifdef windows}

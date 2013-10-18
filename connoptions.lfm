@@ -1,6 +1,6 @@
 inherited ConnOptionsForm: TConnOptionsForm
   Left = 401
-  Height = 313
+  Height = 364
   Top = 186
   Width = 529
   HorzScrollBar.Page = 349
@@ -9,7 +9,7 @@ inherited ConnOptionsForm: TConnOptionsForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Manage connections to Transmission'
-  ClientHeight = 313
+  ClientHeight = 364
   ClientWidth = 529
   Constraints.MinHeight = 280
   Constraints.MinWidth = 471
@@ -18,7 +18,7 @@ inherited ConnOptionsForm: TConnOptionsForm
   Position = poMainFormCenter
   object Page: TPageControl[0]
     Left = 8
-    Height = 202
+    Height = 253
     Top = 69
     Width = 513
     ActivePage = tabConnection
@@ -29,20 +29,20 @@ inherited ConnOptionsForm: TConnOptionsForm
     TabOrder = 1
     object tabConnection: TTabSheet
       Caption = 'Transmission'
-      ClientHeight = 176
+      ClientHeight = 227
       ClientWidth = 505
       object txPassword: TLabel
-        Left = 8
+        Left = 24
         Height = 14
-        Top = 132
+        Top = 157
         Width = 51
         Caption = 'Password:'
         ParentColor = False
       end
       object txUserName: TLabel
-        Left = 8
+        Left = 24
         Height = 14
-        Top = 104
+        Top = 128
         Width = 56
         Caption = 'User name:'
         ParentColor = False
@@ -66,20 +66,20 @@ inherited ConnOptionsForm: TConnOptionsForm
       object edPassword: TEdit
         Left = 180
         Height = 21
-        Top = 129
+        Top = 153
         Width = 316
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword
         PasswordChar = '*'
-        TabOrder = 4
+        TabOrder = 5
       end
       object edUserName: TEdit
         Left = 180
         Height = 21
-        Top = 101
+        Top = 125
         Width = 316
         Anchors = [akTop, akLeft, akRight]
-        TabOrder = 3
+        TabOrder = 4
       end
       object edPort: TSpinEdit
         Left = 180
@@ -119,10 +119,44 @@ inherited ConnOptionsForm: TConnOptionsForm
         ParentColor = False
         WordWrap = True
       end
+      object cbAuth: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 101
+        Width = 131
+        Caption = 'Authentication required'
+        OnClick = cbAuthClick
+        TabOrder = 3
+      end
+      object edRpcPath: TEdit
+        Left = 180
+        Height = 21
+        Top = 185
+        Width = 316
+        TabOrder = 6
+      end
+      object txRpcPath: TLabel
+        Left = 8
+        Height = 14
+        Top = 188
+        Width = 50
+        Caption = 'RPC path:'
+        ParentColor = False
+      end
+      object cbShowAdvanced: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 201
+        Width = 132
+        Caption = 'Show advanced options'
+        OnClick = cbShowAdvancedClick
+        TabOrder = 7
+        Visible = False
+      end
     end
     object tabProxy: TTabSheet
       Caption = 'Proxy'
-      ClientHeight = 176
+      ClientHeight = 227
       ClientWidth = 505
       object txProxy: TLabel
         Left = 8
@@ -141,17 +175,17 @@ inherited ConnOptionsForm: TConnOptionsForm
         ParentColor = False
       end
       object txProxyUserName: TLabel
-        Left = 8
+        Left = 24
         Height = 14
-        Top = 93
+        Top = 116
         Width = 86
         Caption = 'Proxy user name:'
         ParentColor = False
       end
       object txProxyPassword: TLabel
-        Left = 8
+        Left = 24
         Height = 14
-        Top = 121
+        Top = 144
         Width = 82
         Caption = 'Proxy password:'
         ParentColor = False
@@ -195,7 +229,7 @@ inherited ConnOptionsForm: TConnOptionsForm
       object edProxyUserName: TEdit
         Left = 180
         Height = 21
-        Top = 90
+        Top = 113
         Width = 316
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 4
@@ -203,17 +237,26 @@ inherited ConnOptionsForm: TConnOptionsForm
       object edProxyPassword: TEdit
         Left = 180
         Height = 21
-        Top = 118
+        Top = 141
         Width = 316
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword
         PasswordChar = '*'
         TabOrder = 5
       end
+      object cbProxyAuth: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 89
+        Width = 131
+        Caption = 'Authentication required'
+        OnClick = cbProxyAuthClick
+        TabOrder = 6
+      end
     end
     object tabPaths: TTabSheet
       Caption = 'Paths'
-      ClientHeight = 176
+      ClientHeight = 227
       ClientWidth = 505
       OnShow = tabPathsShow
       object txPaths: TLabel
@@ -228,7 +271,7 @@ inherited ConnOptionsForm: TConnOptionsForm
       end
       object edPaths: TMemo
         Left = 8
-        Height = 82
+        Height = 133
         Top = 82
         Width = 488
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -239,7 +282,7 @@ inherited ConnOptionsForm: TConnOptionsForm
     end
     object tabMisc: TTabSheet
       Caption = 'Misc'
-      ClientHeight = 176
+      ClientHeight = 227
       ClientWidth = 505
       object gbSpeed: TGroupBox
         Left = 8
@@ -289,7 +332,7 @@ inherited ConnOptionsForm: TConnOptionsForm
   object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
-    Top = 279
+    Top = 330
     Width = 529
     BorderSpacing.Top = 8
     BorderSpacing.Bottom = 8

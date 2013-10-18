@@ -29,6 +29,9 @@ uses
 resourcestring
   sTransmissionAt = 'Transmission%s at %s:%s';
 
+const
+  DefaultRpcPath = '/transmission/rpc';
+
 type
   TAdvInfoType = (aiNone, aiGeneral, aiFiles, aiPeers, aiTrackers, aiStats);
   TRefreshTypes = (rtTorrents, rtDetails, rtSession);
@@ -88,7 +91,7 @@ type
     FRPCVersion: integer;
     XTorrentSession: string;
     FMainThreadId: TThreadID;
-    FWebPath: string;
+    FRpcPath: string;
 
     function GetConnected: boolean;
     function GetConnecting: boolean;
@@ -132,6 +135,7 @@ type
     property Connecting: boolean read GetConnecting;
     property TorrentFields: string read GetTorrentFields write SetTorrentFields;
     property RPCVersion: integer read FRPCVersion;
+    property RpcPath: string read FRpcPath write FRpcPath;
   end;
 
 var
@@ -624,8 +628,8 @@ var
   i, j, OldTimeOut, RetryCnt: integer;
   locked, r: boolean;
 begin
-  if FWebPath = '' then
-    FWebPath:='/transmission/rpc';
+  if FRpcPath = '' then
+    FRpcPath:=DefaultRpcPath;
   Status:='';
   Result:=nil;
   RetryCnt:=2;
@@ -647,7 +651,7 @@ begin
       if ATimeOut >= 0 then
         Http.Timeout:=ATimeOut;
       try
-        r:=Http.HTTPMethod('POST', Url + FWebPath);
+        r:=Http.HTTPMethod('POST', Url + FRpcPath);
       finally
         Http.Timeout:=OldTimeOut;
       end;
@@ -684,7 +688,7 @@ begin
             else
               if Copy(s, j - 3, MaxInt) = '/web' then
                 SetLength(s, j - 3);
-            FWebPath:=s + 'rpc';
+            FRpcPath:=s + 'rpc';
             Inc(RetryCnt);
             continue;
           end;
@@ -950,7 +954,7 @@ begin
   end;
   Status:='';
   RequestStartTime:=0;
-  FWebPath:='';
+  FRpcPath:='';
 end;
 
 end.
