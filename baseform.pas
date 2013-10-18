@@ -145,6 +145,15 @@ begin
           Around:=ScaleInt(Around);
           InnerBorder:=ScaleInt(InnerBorder);
         end;
+
+        if C is TWinControl then
+          with TWinControl(C).ChildSizing do begin
+            HorizontalSpacing:=ScaleInt(HorizontalSpacing);
+            VerticalSpacing:=ScaleInt(VerticalSpacing);
+            LeftRightSpacing:=ScaleInt(LeftRightSpacing);
+            TopBottomSpacing:=ScaleInt(TopBottomSpacing);
+          end;
+
         if C is TButtonPanel then
           TButtonPanel(C).Spacing:=ScaleInt(TButtonPanel(C).Spacing);
 
@@ -175,6 +184,13 @@ begin
         THackControl(C).CalculatePreferredSize(w, h, True);
         C.Height:=h;
       end;
+      // Add extra top spacing for group box
+      i:=ScaleInt(6);
+      if C.Parent is TCustomGroupBox then
+        Top:=Top + i;
+      if C is TCustomGroupBox then
+        with TCustomGroupBox(C).ChildSizing do
+          TopBottomSpacing:=TopBottomSpacing + i;
 {$endif darwin}
 {$ifdef LCLgtk2}
       // Fix panel color bug on GTK2
@@ -183,17 +199,9 @@ begin
 {$endif LCLgtk2}
 
       if C is TWinControl then
-        with TWinControl(C) do begin
-          with ChildSizing do begin
-            HorizontalSpacing:=ScaleInt(HorizontalSpacing);
-            VerticalSpacing:=ScaleInt(VerticalSpacing);
-            LeftRightSpacing:=ScaleInt(LeftRightSpacing);
-            TopBottomSpacing:=ScaleInt(TopBottomSpacing);
-          end;
-
+        with TWinControl(C) do
           for i:=0 to ControlCount - 1 do
             DoScale(Controls[i]);
-        end;
     finally
       if C is TWinControl then
         TWinControl(C).EnableAlign;
