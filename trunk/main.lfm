@@ -2324,6 +2324,10 @@ inherited MainForm: TMainForm
     OnPopup = pmTorrentsPopup
     left = 149
     top = 55
+    object MenuItem68: TMenuItem
+      Action = acOpenFile
+      Default = True
+    end
     object MenuItem42: TMenuItem
       Action = acOpenContainingFolder
       Bitmap.Data = {
@@ -2763,7 +2767,6 @@ inherited MainForm: TMainForm
     end
     object MenuItem20: TMenuItem
       Action = acTorrentProps
-      Default = True
       OnClick = acTorrentPropsExecute
     end
     object MenuItem36: TMenuItem
