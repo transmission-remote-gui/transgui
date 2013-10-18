@@ -3653,7 +3653,7 @@ begin
       if res = nil then
         CheckStatus(False);
       with res.Arrays['torrents'].Objects[0] do
-        n:=IncludeProperTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + UTF8Encode(gTorrents.Items[idxName, gTorrents.Row]);
+        n:=IncludeProperTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Row]));
       s:=MapRemoteToLocal(n);
       if s = '' then
         s:=n;
@@ -3717,7 +3717,7 @@ end;
 
 procedure TMainForm.gTorrentsSetEditText(Sender: TObject; ACol, ARow: Integer; const Value: string);
 begin
-  if RenameTorrent(gTorrents.Items[idxTorrentId, ARow], UTF8Encode(gTorrents.Items[idxName, ARow]), Trim(Value)) then begin
+  if RenameTorrent(gTorrents.Items[idxTorrentId, ARow], UTF8Encode(widestring(gTorrents.Items[idxName, ARow])), Trim(Value)) then begin
     gTorrents.Items[idxName, ARow]:=UTF8Decode(Trim(Value));
     FFilesTree.Clear;
   end;

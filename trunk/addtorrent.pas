@@ -752,7 +752,7 @@ begin
             State:=Checked[ARow];
           end;
           if IsPlain then begin
-            Text:=Copy(UTF8Encode(Sender.Items[idxFileFullPath, ARow]), FCommonPathLen + 1, MaxInt) + Text;
+            Text:=Copy(UTF8Encode(widestring(Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text;
           end
           else begin
             Indent:=integer(Sender.Items[idxFileLevel, ARow])*16;
