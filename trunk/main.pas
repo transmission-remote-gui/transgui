@@ -104,6 +104,8 @@ resourcestring
   SDuplicateTorrent = 'Torrent already exists in the list';
   SUpdateTrackers = 'Update trackers for the existing torrent?';
   SDownloadingTorrent = 'Downloading torrent file...';
+  SConnectTo = 'Connect to %s';
+  SEnterPassword = 'Please enter a password to connect to %s:';
 
   SDownloaded = 'Downloaded';
   SUploaded = 'Uploaded';
@@ -584,10 +586,11 @@ type
     FFilesTree: TFilesTree;
     FFilesCapt: string;
     FCalcAvg: boolean;
+    FPasswords: TStringList;
 
     procedure UpdateUI;
     procedure UpdateUIRpcVersion(RpcVersion: integer);
-    procedure DoConnect;
+    function DoConnect: boolean;
     procedure DoCreateOutZipStream(Sender: TObject; var AStream: TStream; AItem: TFullZipFileEntry);
     procedure DoDisconnect;
     procedure DoOpenFlagsZip(Sender: TObject; var AStream: TStream);
@@ -1320,8 +1323,8 @@ begin
   lvTrackers.AlternateColor:=FAlterColor;
   gStats.AlternateColor:=FAlterColor;
   FPendingTorrents:=TStringList.Create;
-
   FFilesCapt:=tabFiles.Caption;
+  FPasswords:=TStringList.Create;
 
   FSlowResponse:=TProgressImage.Create(MainToolBar);
   with FSlowResponse do begin
@@ -1453,6 +1456,7 @@ end;
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   DeleteFileUTF8(FRunFileName);
+  FPasswords.Free;
   FResolver.Free;
   FTrackers.Free;
   FUnZip.Free;
@@ -2159,6 +2163,9 @@ var
   ok: boolean;
 begin
   Result:=False;
+  if not RpcObj.Connected then
+    if not DoConnect then
+      exit;
   WaitForm:=nil;
   id:=0;
   Inc(FAddingTorrent);
@@ -4118,16 +4125,37 @@ begin
   CenterOnParent(panReconnect);
 end;
 
-procedure TMainForm.DoConnect;
+function TMainForm.DoConnect: boolean;
 var
-  Sec: string;
+  Sec, pwd: string;
   i, j: integer;
 begin
+  Result:=True;
   panReconnect.Hide;
   DoDisconnect;
   Sec:='Connection.' + FCurConn;
   if not Ini.SectionExists(Sec) then
     Sec:='Connection';
+
+  i:=FPasswords.IndexOfName(FCurConn);
+  pwd:=Ini.ReadString(Sec, 'Password', '');
+  if pwd = '-' then begin
+    if i >= 0 then
+      pwd:=FPasswords.ValueFromIndex[i]
+    else begin
+      pwd:='';
+      if not InputQuery(Format(SConnectTo, [FCurConn]), Format(SEnterPassword, [FCurConn]), pwd) then begin
+        RpcObj.Url:='-';
+        Result:=False;
+        exit;
+      end;
+    end;
+  end
+  else
+    pwd:=DecodeBase64(pwd);
+  if i >= 0 then
+    FPasswords.Delete(i);
+
   if Ini.ReadBool(Sec, 'UseSSL', False) then begin
     RpcObj.InitSSL;
     if not IsSSLloaded then begin
@@ -4139,7 +4167,7 @@ begin
   else
     RpcObj.Url:='http';
   RpcObj.Http.UserName:=Ini.ReadString(Sec, 'UserName', '');
-  RpcObj.Http.Password:=DecodeBase64(Ini.ReadString(Sec, 'Password', ''));
+  RpcObj.Http.Password:=pwd;
   RpcObj.Http.ProxyHost:='';
   RpcObj.Http.ProxyPort:='';
   RpcObj.Http.ProxyUser:='';
@@ -5842,6 +5870,8 @@ begin
     if StatusBar.Panels[0].Text <> RpcObj.InfoStatus then begin
       StatusBar.Panels[0].Text:=RpcObj.InfoStatus;
       TrayIcon.Hint:=RpcObj.InfoStatus;
+      if (RpcObj.Connected) and (RpcObj.Http.UserName <> '') then
+        FPasswords.Values[FCurConn]:=RpcObj.Http.Password;  // Save password to cache
     end;
     if not RpcObj.Connected then
       for i:=1 to StatusBar.Panels.Count - 1 do

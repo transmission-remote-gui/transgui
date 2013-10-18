@@ -1,6 +1,6 @@
 inherited ConnOptionsForm: TConnOptionsForm
   Left = 401
-  Height = 364
+  Height = 379
   Top = 186
   Width = 529
   HorzScrollBar.Page = 349
@@ -9,7 +9,7 @@ inherited ConnOptionsForm: TConnOptionsForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Manage connections to Transmission'
-  ClientHeight = 364
+  ClientHeight = 379
   ClientWidth = 529
   Constraints.MinHeight = 280
   Constraints.MinWidth = 471
@@ -18,7 +18,7 @@ inherited ConnOptionsForm: TConnOptionsForm
   Position = poMainFormCenter
   object Page: TPageControl[0]
     Left = 8
-    Height = 253
+    Height = 268
     Top = 69
     Width = 513
     ActivePage = tabConnection
@@ -29,7 +29,7 @@ inherited ConnOptionsForm: TConnOptionsForm
     TabOrder = 1
     object tabConnection: TTabSheet
       Caption = 'Transmission'
-      ClientHeight = 227
+      ClientHeight = 242
       ClientWidth = 505
       object txPassword: TLabel
         Left = 24
@@ -131,14 +131,14 @@ inherited ConnOptionsForm: TConnOptionsForm
       object edRpcPath: TEdit
         Left = 180
         Height = 21
-        Top = 185
+        Top = 209
         Width = 316
-        TabOrder = 6
+        TabOrder = 7
       end
       object txRpcPath: TLabel
         Left = 8
         Height = 14
-        Top = 188
+        Top = 212
         Width = 50
         Caption = 'RPC path:'
         ParentColor = False
@@ -146,12 +146,21 @@ inherited ConnOptionsForm: TConnOptionsForm
       object cbShowAdvanced: TCheckBox
         Left = 8
         Height = 17
-        Top = 201
+        Top = 225
         Width = 132
         Caption = 'Show advanced options'
         OnClick = cbShowAdvancedClick
-        TabOrder = 7
+        TabOrder = 8
         Visible = False
+      end
+      object cbAskPassword: TCheckBox
+        Left = 180
+        Height = 17
+        Top = 181
+        Width = 101
+        Caption = 'Ask for password'
+        OnClick = cbAskPasswordClick
+        TabOrder = 6
       end
     end
     object tabProxy: TTabSheet
@@ -332,7 +341,7 @@ inherited ConnOptionsForm: TConnOptionsForm
   object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
-    Top = 330
+    Top = 345
     Width = 529
     BorderSpacing.Top = 8
     BorderSpacing.Bottom = 8

@@ -11,6 +11,8 @@
 [+] Option "Show notifications in tray icon". Issue #590.
 [+] Display the number of files in the title of the Files tab.
 [+] Strike out torrents in the list during deletion while waiting for action to complete.
+[+] Option "RPC path". Issue #667.
+[+] Option "Ask for password". Issue #152.
 [*] Removed flickering of torrent details while changing current torrent.
 [*] Speed up rendering of torrent and file lists.
 [*] Update window contents while splitters are moving.
