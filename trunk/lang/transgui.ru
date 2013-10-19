@@ -1,4 +1,4 @@
-TranslationLanguage=Русский
+﻿TranslationLanguage=Русский
 
 %ds=%dс
 %d x %s (have %d)=%d x %s (в наличии %d)

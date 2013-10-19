@@ -896,12 +896,13 @@ end;
 
 procedure OnTranslate(Sender: TResTranslator; const ResourceName: AnsiString; var Accept: boolean);
 const
-  IgnoreUnits: array[0..11] of string =
+  IgnoreUnits: array[0..12] of string =
       ('fpjson','jsonparser','jsonscanner','lclstrconsts','math',
-       'rtlconsts','sysconst','variants','zbase','zipper','zstream', 'xmlcfg');
+       'rtlconsts','sysconst','variants','zbase','zipper','zstream',
+       'xmlcfg', 'registry');
 
-  IgnoreControls: array[0..2] of string =
-    ('AboutForm.txAuthor', 'MainForm.miLn', 'ConnOptionsForm.cbUseSocks5');
+  IgnoreControls: array[0..3] of string =
+    ('AboutForm.txAuthor', 'MainForm.miLn', 'ConnOptionsForm.cbUseSocks5', 'ConnOptionsForm.tabConnection');
 
 var
   i: integer;
