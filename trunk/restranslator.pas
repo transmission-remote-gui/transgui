@@ -442,7 +442,7 @@ end;
 
 function TTranslateStringList.GetOptions(Index: integer): TTranslateStringOptions;
 begin
-  Result:=TTranslateStringOptions(Objects[Index]);
+  Result:=TTranslateStringOptions(cardinal(ptruint(Objects[Index])));
 end;
 
 function TTranslateStringList.CorrectGetName(Index: integer): string;
@@ -478,7 +478,7 @@ end;
 
 procedure TTranslateStringList.SetOptions(Index: integer; const AValue: TTranslateStringOptions);
 begin
-  Objects[Index]:=TObject(AValue);
+  Objects[Index]:=TObject(ptruint(cardinal(AValue)));
 end;
 
 function TTranslateStringList.DoCompareText(const s1, s2: string): PtrInt;
