@@ -1,13 +1,13 @@
 inherited OptionsForm: TOptionsForm
   Left = 313
-  Height = 330
+  Height = 331
   Top = 230
   Width = 525
   AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Application options'
-  ClientHeight = 330
+  ClientHeight = 331
   ClientWidth = 525
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,7 +15,7 @@ inherited OptionsForm: TOptionsForm
   Position = poMainFormCenter
   object Page: TPageControl[0]
     Left = 8
-    Height = 280
+    Height = 281
     Top = 8
     Width = 509
     ActivePage = tabGeneral
@@ -25,7 +25,7 @@ inherited OptionsForm: TOptionsForm
     TabOrder = 0
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 254
+      ClientHeight = 255
       ClientWidth = 501
       object gbNewTorrent: TGroupBox
         Left = 8
@@ -136,7 +136,7 @@ inherited OptionsForm: TOptionsForm
     end
     object tabAdvanced: TTabSheet
       Caption = 'Advanced'
-      ClientHeight = 254
+      ClientHeight = 255
       ClientWidth = 501
       object txLanguage: TLabel
         Left = 8
@@ -263,12 +263,12 @@ inherited OptionsForm: TOptionsForm
       end
       object gbSysInt: TGroupBox
         Left = 8
-        Height = 69
+        Height = 71
         Top = 172
         Width = 484
         Anchors = [akTop, akLeft, akRight]
         Caption = 'System integration'
-        ClientHeight = 51
+        ClientHeight = 53
         ClientWidth = 480
         TabOrder = 5
         Visible = False
@@ -294,7 +294,7 @@ inherited OptionsForm: TOptionsForm
   object Buttons: TButtonPanel[1]
     Left = 0
     Height = 26
-    Top = 296
+    Top = 297
     Width = 525
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0

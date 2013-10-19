@@ -1456,7 +1456,33 @@ begin
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
+
+  procedure _CreateAllForms;
+  begin
+    // Create all application forms to properly update language files
+    TAboutForm.Create(Self).Free;
+    TAddLinkForm.Create(Self).Free;
+    TAddTorrentForm.Create(Self).Free;
+    TAddTrackerForm.Create(Self).Free;
+    TColSetupForm.Create(Self).Free;
+    TConnOptionsForm.Create(Self).Free;
+    TDaemonOptionsForm.Create(Self).Free;
+    TDownloadForm.Create(Self).Free;
+    TMoveTorrentForm.Create(Self).Free;
+    TOptionsForm.Create(Self).Free;
+    TTorrPropsForm.Create(Self).Free;
+  end;
+
 begin
+  if Application.HasOption('updatelang') then begin
+    _CreateAllForms;
+    SupplementTranslationFiles;
+  end;
+  if Application.HasOption('makelang') then begin
+    _CreateAllForms;
+    MakeTranslationFile;
+  end;
+
   DeleteFileUTF8(FRunFileName);
   FPasswords.Free;
   FResolver.Free;
@@ -1467,10 +1493,6 @@ begin
   FPathMap.Free;
   FTorrents.Free;
   FPendingTorrents.Free;
-  if Application.HasOption('updatelang') then
-    SupplementTranslationFiles;
-  if Application.HasOption('makelang') then
-    MakeTranslationFile;
   try
     Ini.UpdateFile;
   except
@@ -4861,7 +4883,7 @@ begin
                 if Booleans['lastAnnounceSucceeded'] then
                   s:=sTrackerWorking
                 else
-                  s:=TranslateString(UTF8Encode(Strings['lastAnnounceResult']));
+                  s:=TranslateString(UTF8Encode(Strings['lastAnnounceResult']), True);
 
             if s = 'Success' then
               s:=sTrackerWorking;
@@ -5687,7 +5709,7 @@ begin
                   if Booleans['lastAnnounceSucceeded'] then
                     s:=sTrackerWorking
                   else
-                    s:=TranslateString(UTF8Encode(Strings['lastAnnounceResult']));
+                    s:=TranslateString(UTF8Encode(Strings['lastAnnounceResult']), True);
 
               if s = 'Success' then
                 s:=sTrackerWorking;
