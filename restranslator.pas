@@ -1,5 +1,6 @@
 {************************************************************
    Copyright (c) 2010 Alex Cherednichenko, aka Alex7Che.
+   Copyright (c) 2011-2013 Yury Sidorov.
 
    Published at GNU General Public License as Free Software.
  ************************************************************}
