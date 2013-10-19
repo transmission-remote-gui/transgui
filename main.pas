@@ -1040,10 +1040,12 @@ begin
   // Check for outdated IPC file
   if FileExistsUTF8(FIPCFileName) then begin
     h:=FileOpenUTF8(FIPCFileName, fmOpenRead or fmShareDenyNone);
-    i:=FileGetDate(h);
-    FileClose(h);
-    if (i > 0) and (Abs(Now - DosDateTimeToDateTime(i)) > 1/MinsPerDay) then
-      DeleteFileUTF8(FIPCFileName);
+    if h <> INVALID_HANDLE_VALUE then begin
+      i:=FileGetDate(h);
+      FileClose(h);
+      if (i > 0) and (Abs(Now - FileDateToDateTime(i)) > 1/MinsPerDay) then
+        DeleteFileUTF8(FIPCFileName);
+    end;
   end;
 
   for i:=1 to ParamCount do begin
