@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Русский
+TranslationLanguage=Русский
 
 %ds=%dс
 %d x %s (have %d)=%d x %s (в наличии %d)
@@ -245,7 +245,7 @@ Free: %s=Своб: %s
 From=С
 minutes=минут
 Misc=Разное
-New connection=Новое соединение
+New connection=Новое подключение
 New=Создать
 No tracker URL was specified=Не указан URL трекера
 Proxy=Прокси
@@ -333,7 +333,7 @@ Network (WAN)=Сеть (WAN)
 New connection to Transmission=Новое подключение к Transmission
 Pick random port on Transmission launch=Использовать случайный порт при запуске Transmission
 Please enter a password to connect to %s=Пожалуйста, введите пароль для подключения к %s
-Please specify how %s will connect to a remote host running Transmission daemon (service)=Пожалуйста, укажите как %s будет подключаться к удаленному узлу, где работает демон (сервис) Transmission
+Please specify how %s will connect to a remote host running Transmission daemon (service)=Пожалуйста, укажите как %s будет подключаться к удаленному узлу, где работает демон (служба) Transmission
 Prompt for download options when adding a new torrent=Запрашивать параметры загрузки при добавлении нового торрента
 RPC path=Путь RPC
 Save as=Сохранить как
