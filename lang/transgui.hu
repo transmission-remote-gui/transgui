@@ -345,4 +345,4 @@ Torrent already exists in the list=A torrent már létezik a listában
 Unable to find path mapping.~Use the application's options to setup path mappings=Nem található az útvonal.~ Használd az alkalmazás beállításai opciót az útvonalak beállításához
 Update trackers for the existing torrent?=A létező torrent trackereinek frissítése
 You need to restart the application to apply changes=Újra kell indítanod az alkalmazást a beállítások érvénybelépéséhez
-Torrent not registered with this tracker==Torrent not registered with this tracker
+Torrent not registered with this tracker==A torrent nincs regisztrálva ezen a trackeren
