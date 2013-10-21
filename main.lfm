@@ -2031,35 +2031,41 @@ inherited MainForm: TMainForm
       Hint = 'Start torrent'
       ImageIndex = 1
       OnExecute = acStartTorrentExecute
+      ShortCut = 114
     end
     object acSetHighPriority: TAction
       Category = 'Files'
       Caption = 'High priority'
       ImageIndex = 26
       OnExecute = acSetHighPriorityExecute
+      ShortCut = 16456
     end
     object acSetNormalPriority: TAction
       Category = 'Files'
       Caption = 'Normal priority'
       ImageIndex = 25
       OnExecute = acSetNormalPriorityExecute
+      ShortCut = 16462
     end
     object acSetLowPriority: TAction
       Category = 'Files'
       Caption = 'Low priority'
       ImageIndex = 24
       OnExecute = acSetLowPriorityExecute
+      ShortCut = 16460
     end
     object acSetNotDownload: TAction
       Category = 'Files'
       Caption = 'Don''t download'
       ImageIndex = 23
       OnExecute = acSetNotDownloadExecute
+      ShortCut = 16457
     end
     object acOptions: TAction
       Category = 'Tools'
       Caption = 'Application options...'
       OnExecute = acOptionsExecute
+      ShortCut = 16504
     end
     object acDaemonOptions: TAction
       Category = 'Tools'
@@ -2067,10 +2073,12 @@ inherited MainForm: TMainForm
       Hint = 'Transmission options'
       ImageIndex = 8
       OnExecute = acDaemonOptionsExecute
+      ShortCut = 120
     end
     object acExit: TAction
       Caption = 'E&xit'
       OnExecute = acExitExecute
+      ShortCut = 32856
     end
     object acResolveHost: TAction
       Category = 'Peers'
@@ -2103,6 +2111,7 @@ inherited MainForm: TMainForm
       Caption = 'Open containing folder'
       ImageIndex = 22
       OnExecute = acOpenContainingFolderExecute
+      ShortCut = 16397
     end
     object acUpdateBlocklist: TAction
       Category = 'Tools'
@@ -2158,12 +2167,14 @@ inherited MainForm: TMainForm
       Hint = 'Use alternate bandwidth settings'
       ImageIndex = 38
       OnExecute = acAltSpeedExecute
+      ShortCut = 119
     end
     object acForceStartTorrent: TAction
       Category = 'Torrent'
       Caption = 'Force start'
       ImageIndex = 39
       OnExecute = acForceStartTorrentExecute
+      ShortCut = 8306
     end
     object acStopTorrent: TAction
       Category = 'Torrent'
@@ -2171,6 +2182,7 @@ inherited MainForm: TMainForm
       Hint = 'Stop torrent'
       ImageIndex = 2
       OnExecute = acStopTorrentExecute
+      ShortCut = 115
     end
     object acRemoveTorrent: TAction
       Category = 'Torrent'
@@ -2196,18 +2208,21 @@ inherited MainForm: TMainForm
       Category = 'Torrent'
       Caption = 'Properties...'
       OnExecute = acTorrentPropsExecute
+      ShortCut = 32781
     end
     object acStartAllTorrents: TAction
       Category = 'Torrent'
       Caption = 'Start all torrents'
       Hint = 'Start all torrents'
       OnExecute = acStartAllTorrentsExecute
+      ShortCut = 16498
     end
     object acStopAllTorrents: TAction
       Category = 'Torrent'
       Caption = 'Stop all torrents'
       Hint = 'Stop all'
       OnExecute = acStopAllTorrentsExecute
+      ShortCut = 16499
     end
     object acSetupColumns: TAction
       Category = 'View'
@@ -2220,21 +2235,25 @@ inherited MainForm: TMainForm
       Hint = 'Add torrent link'
       ImageIndex = 21
       OnExecute = acAddLinkExecute
+      ShortCut = 16429
     end
     object acReannounceTorrent: TAction
       Category = 'Torrent'
       Caption = 'Reannounce (get more peers)'
       OnExecute = acReannounceTorrentExecute
+      ShortCut = 16466
     end
     object acMoveTorrent: TAction
       Category = 'Torrent'
       Caption = 'Set data location...'
       OnExecute = acMoveTorrentExecute
+      ShortCut = 117
     end
     object acQMoveTop: TAction
       Category = 'Torrent'
       Caption = 'Move top'
       OnExecute = acQMoveTopExecute
+      ShortCut = 24625
     end
     object acQMoveUp: TAction
       Category = 'Torrent'
@@ -2242,6 +2261,7 @@ inherited MainForm: TMainForm
       Hint = 'Move up queue'
       ImageIndex = 40
       OnExecute = acQMoveUpExecute
+      ShortCut = 16433
     end
     object acQMoveDown: TAction
       Category = 'Torrent'
@@ -2249,11 +2269,13 @@ inherited MainForm: TMainForm
       Hint = 'Move down queue'
       ImageIndex = 41
       OnExecute = acQMoveDownExecute
+      ShortCut = 16434
     end
     object acQMoveBottom: TAction
       Category = 'Torrent'
       Caption = 'Move bottom'
       OnExecute = acQMoveBottomExecute
+      ShortCut = 24626
     end
     object acCheckNewVersion: TAction
       Caption = 'Check for updates'
@@ -2327,6 +2349,42 @@ inherited MainForm: TMainForm
     object MenuItem68: TMenuItem
       Action = acOpenFile
       Default = True
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFFF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF009933
+        00FF993300FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00993300FF993300FF993300FFFF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00993300FFAA5F1FFF993300FFFF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00993300FFBA7D48FF993300FF993300FFFF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00993300FFCDA27CFFD8B596FF993300FF9933
+        00FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFE1C6B0FFECDCCDFFEDDD
+        D1FF993300FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFF4E9E2FFFDF9
+        F5FFFBF4ECFF993300FF993300FFFF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFE1C0ABFFF7E9
+        DAFFF4E0CCFFE1BA9CFF993300FF993300FFFF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFF6E6D6FFF3DEC8FFF0D5
+        BAFFE3B995FF993300FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFEDCAA8FFEAC1
+        99FFE7B98BFFDFA875FF993300FFFF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFE3AE
+        79FFE0A56BFFDD9C5CFFDA944FFF993300FFFF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF009933
+        00FF993300FF993300FF993300FF993300FF993300FFFF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      }
     end
     object MenuItem42: TMenuItem
       Action = acOpenContainingFolder

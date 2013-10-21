@@ -878,7 +878,7 @@ begin
           FAnchor:=-1;
         end;
   end;
-  if (Key = VK_RETURN) and Assigned(OnDblClick) then
+  if (Key = VK_RETURN) and (Shift = []) and Assigned(OnDblClick) then
     OnDblClick(Self);
 end;
 

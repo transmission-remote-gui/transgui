@@ -14,6 +14,7 @@
 [+] Strike out torrents in the list during deletion while waiting for action to complete.
 [+] Option "RPC path". Issue #667.
 [+] Option "Ask for password". Issue #152.
+[+] Added many keyboard shortcuts.
 [*] Removed flickering of torrent details while changing current torrent.
 [*] Speed up rendering of torrent and file lists.
 [*] Update window contents while splitters are moving.
