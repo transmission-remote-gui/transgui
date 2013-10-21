@@ -26,9 +26,14 @@ program transgui;
 {$mode objfpc}{$H+}
 
 uses
-  {$IFDEF UNIX}
-  cthreads, clocale,
-  {$ENDIF}
+{$ifdef UNIX}
+  cthreads,
+  {$ifdef darwin}
+  maclocale,
+  {$else}
+  clocale,
+  {$endif}
+{$endif}
   Interfaces, // this includes the LCL widgetset
   Forms
   { you can add units after this }, BaseForm, Main, rpc, AddTorrent, ConnOptions, varlist,
