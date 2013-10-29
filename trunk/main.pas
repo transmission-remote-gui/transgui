@@ -2164,7 +2164,7 @@ var
   ok: boolean;
 begin
   Result:=False;
-  if not RpcObj.Connected then
+  if not RpcObj.Connected and not RpcObj.Connecting then
     if not DoConnect then
       exit;
   WaitForm:=nil;
