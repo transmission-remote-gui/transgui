@@ -41,6 +41,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
+UninstallDisplayIcon={app}\transgui.exe
 
 VersionInfoVersion={#GetFileVersion(SourcePath+'..\..\transgui.exe')}
 VersionInfoTextVersion={#GetFileVersion(SourcePath+'..\..\transgui.exe')}
