@@ -20,6 +20,7 @@
 [*] Update window contents while splitters are moving.
 [*] Use system default date/time format on Linux and OS X. Issue #624.
 [*] Restore display of a queue position for finished torrents. Issue #568.
+[*] Enabled the "Close to tray" option on Mac OS X and Ubuntu with Unity. It simply minimizes the application when the main window is closed. Issue #686.
 [*] Align the Ratio column to the right. Issue #668.
 [*] Increased drop down count for the folders combo box to 20.
 [*] Display ETA in more vague way.
