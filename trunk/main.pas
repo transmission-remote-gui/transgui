@@ -1769,12 +1769,11 @@ begin
     edRefreshIntervalMin.Value:=Ini.ReadInteger('Interface', 'RefreshIntervalMin', 20);
     cbCalcAvg.Checked:=FCalcAvg;
 {$ifndef darwin}
-    cbTrayClose.Checked:=Ini.ReadBool('Interface', 'TrayClose', False);
     cbTrayMinimize.Checked:=Ini.ReadBool('Interface', 'TrayMinimize', True);
 {$else}
-    cbTrayClose.Enabled:=False;
     cbTrayMinimize.Enabled:=False;
 {$endif}
+    cbTrayClose.Checked:=Ini.ReadBool('Interface', 'TrayClose', False);
     cbTrayIconAlways.Checked:=Ini.ReadBool('Interface', 'TrayIconAlways', True);
     cbTrayNotify.Checked:=Ini.ReadBool('Interface', 'TrayNotify', True);
 
@@ -1790,10 +1789,10 @@ begin
     if IsUnity then begin
       cbTrayIconAlways.Enabled:=False;
       cbTrayIconAlways.Checked:=False;
-      cbTrayClose.Enabled:=False;
-      cbTrayClose.Checked:=False;
       cbTrayMinimize.Enabled:=False;
       cbTrayMinimize.Checked:=False;
+      cbTrayNotify.Enabled:=False;
+      cbTrayNotify.Checked:=False;
     end;
 {$endif linux}
     AppNormal;
@@ -1803,9 +1802,9 @@ begin
       Ini.WriteInteger('Interface', 'RefreshIntervalMin', edRefreshIntervalMin.Value);
       Ini.WriteBool('Interface', 'CalcAvg', cbCalcAvg.Checked);
 {$ifndef darwin}
-      Ini.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
       Ini.WriteBool('Interface', 'TrayMinimize', cbTrayMinimize.Checked);
 {$endif}
+      Ini.WriteBool('Interface', 'TrayClose', cbTrayClose.Checked);
       Ini.WriteBool('Interface', 'TrayIconAlways', cbTrayIconAlways.Checked);
       Ini.WriteBool('Interface', 'TrayNotify', cbTrayNotify.Checked);
 
@@ -4084,14 +4083,23 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-{$ifndef darwin}
-  if not IsUnity and Ini.ReadBool('Interface', 'TrayClose', False) then begin
-    CloseAction:=caHide;
-    HideApp;
-    UpdateTray;
+  if Ini.ReadBool('Interface', 'TrayClose', False) then begin
+{$ifdef darwin}
+    CloseAction:=caMinimize;
+{$else}
+{$ifdef linux}
+    if IsUnity and
+      CloseAction:=caMinimize
+    else
+{$endif linux}
+    begin
+      CloseAction:=caHide;
+      HideApp;
+      UpdateTray;
+    end;
+{$endif darwin}
     exit;
   end;
-{$endif darwin}
   BeforeCloseApp;
 end;
 
