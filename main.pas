@@ -4088,7 +4088,7 @@ begin
     CloseAction:=caMinimize;
 {$else}
 {$ifdef linux}
-    if IsUnity and
+    if IsUnity then
       CloseAction:=caMinimize
     else
 {$endif linux}
