@@ -18,10 +18,10 @@ inherited OptionsForm: TOptionsForm
     Height = 281
     Top = 8
     Width = 548
-    ActivePage = tabGeneral
+    ActivePage = tabAdvanced
     Align = alClient
     BorderSpacing.Around = 8
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object tabGeneral: TTabSheet
       Caption = 'General'
@@ -205,6 +205,7 @@ inherited OptionsForm: TOptionsForm
         Top = 146
         Width = 227
         Anchors = [akTop, akLeft, akRight]
+        DropDownCount = 20
         ItemHeight = 13
         OnEnter = cbLanguageEnter
         OnMouseDown = cbLanguageMouseDown
