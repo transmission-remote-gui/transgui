@@ -4516,6 +4516,9 @@ begin
       btNewClick(nil);
       if Ini.ReadInteger('Hosts', 'Count', 0) = 0 then begin
         panTop.Visible:=False;
+{$ifdef LCLgtk2}
+        panTop.Height:=0;
+{$endif LCLgtk2}
         with Page.BorderSpacing do
           Top:=Left;
         tabPaths.TabVisible:=False;

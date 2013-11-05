@@ -190,7 +190,9 @@ procedure TConnOptionsForm.cbShowAdvancedClick(Sender: TObject);
 begin
   txRpcPath.Visible:=cbShowAdvanced.Checked;
   edRpcPath.Visible:=cbShowAdvanced.Checked;
+{$ifndef LCLgtk2}
   tabConnection.TabVisible:=cbShowAdvanced.Checked;
+{$endif LCLgtk2}
   tabProxy.TabVisible:=cbShowAdvanced.Checked;
   tabPaths.TabVisible:=cbShowAdvanced.Checked;
   tabMisc.TabVisible:=cbShowAdvanced.Checked;
