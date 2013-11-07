@@ -5,7 +5,7 @@ Unfortunately I can not accept direct *`PayPal`* payments, since they are not al
 So I am forced to use *`ShareIt`* e-commerce solution for donations. The registration during an order process at `ShareIt` is optional. You can donate without the registration.
 
 [http://transmisson-remote-gui.googlecode.com/svn/wiki/donate2.png]
-<wiki:gadget url="http://transmisson-remote-gui.googlecode.com/svn/wiki/DonateGadget.xml" border="0" height="180"/>
+<wiki:gadget url="http://transmisson-remote-gui.googlecode.com/svn/wiki/DonateGadget.xml" border="0" height="190"/>
 
 
 Also it is possible to transfer a donation directly to my *`WebMoney`* wallet: `WMR348621554817` or `WMZ425405865371`.
