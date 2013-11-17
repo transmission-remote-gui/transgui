@@ -9,10 +9,10 @@
 	height="62"
 	scrolling="false">
 </ModulePrefs>
-<UserPref name="url" datatype="string" default_value="" />
-<UserPref name="uid" datatype="string" default_value="" />
-<UserPref name="title" datatype="string" default_value="" />
-<UserPref name="desc" datatype="string" default_value="" />
+<UserPref name="url" datatype="string" default_value="http://code.google.com/p/transmisson-remote-gui" />
+<UserPref name="uid" datatype="string" default_value="jusid" />
+<UserPref name="title" datatype="string" default_value="Transmission Remote GUI" />
+<UserPref name="desc" datatype="string" default_value="Transmission Remote GUI is a feature rich cross platform front-end to remotely control a Transmission Bit-Torrent client daemon." />
 <UserPref name="cat" datatype="string" default_value="software" />
 <UserPref name="lang" datatype="string" default_value="en_GB" />
 <UserPref name="tags" datatype="string" default_value="" />
