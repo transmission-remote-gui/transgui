@@ -8,7 +8,7 @@ So I am forced to use *`ShareIt`* e-commerce solution for donations. The registr
 <wiki:gadget url="http://transmisson-remote-gui.googlecode.com/svn/wiki/DonateGadget.xml" border="0" height="190"/>
 
 ===Donate via Flattr=== 
-<wiki:gadget url="http://transmisson-remote-gui.googlecode.com/svn/wiki/FlattrGadget.xml" border="0" width="110" height="20" up_uid="jusid" up_title="Transmission Remote GUI" up_desc="Transmission Remote GUI is a feature rich cross platform front-end to remotely control a Transmission Bit-Torrent client daemon" up_url="http://code.google.com/p/transmisson-remote-gui"/>
+<wiki:gadget url="http://transmisson-remote-gui.googlecode.com/svn/wiki/FlattrGadget.xml" border="0" width="110" height="20" up_uid="jusid" up_title="Transmission Remote GUI" up_desc="Transmission Remote GUI is a feature rich cross platform front-end to remotely control a Transmission Bit-Torrent client daemon." up_url="http://code.google.com/p/transmisson-remote-gui"/>
 
 ===Webmoney direct donation===
 Also it is possible to transfer a donation directly to my *`WebMoney`* wallet: `WMR348621554817` or `WMZ425405865371`. Please notify me when you have made the donation via `WebMoney`.
