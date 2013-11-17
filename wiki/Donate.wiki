@@ -1,5 +1,5 @@
 #labels Featured
-===Donate to support further development of Transmission Remote GUI.===
+==Donate to support further development of Transmission Remote GUI.==
 Unfortunately I can not accept direct *`PayPal`* payments, since they are not allowed for accounts from Ukraine. :(
 
 So I am forced to use *`ShareIt`* e-commerce solution for donations. The registration during an order process at `ShareIt` is optional. You can donate without the registration.
@@ -7,7 +7,10 @@ So I am forced to use *`ShareIt`* e-commerce solution for donations. The registr
 [http://transmisson-remote-gui.googlecode.com/svn/wiki/donate2.png]
 <wiki:gadget url="http://transmisson-remote-gui.googlecode.com/svn/wiki/DonateGadget.xml" border="0" height="190"/>
 
+===Donate via Flattr=== 
+<wiki:gadget url="http://transmisson-remote-gui.googlecode.com/svn/wiki/FlattrGadget.xml" border="0" width="110" height="20" up_uid="jusid" up_title="Transmission Remote GUI" up_desc="Transmission Remote GUI is a feature rich cross platform front-end to remotely control a Transmission Bit-Torrent client daemon" up_url="http://code.google.com/p/transmisson-remote-gui"/>
 
+===Webmoney direct donation===
 Also it is possible to transfer a donation directly to my *`WebMoney`* wallet: `WMR348621554817` or `WMZ425405865371`.
 
 Также можно перевести пожертвование напрямую на мой кошелек *`WebMoney`*:  `WMR348621554817` или `WMZ425405865371`.
