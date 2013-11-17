@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+<ModulePrefs
+	title="Flattr button"
+	author="Stefan Sundin"
+	author_location="Sweden"
+	author_email="recover89@gmail.com"
+	width="55"
+	height="62"
+	scrolling="false">
+</ModulePrefs>
+<UserPref name="url" datatype="string" default_value="" />
+<UserPref name="uid" datatype="string" default_value="" />
+<UserPref name="title" datatype="string" default_value="" />
+<UserPref name="desc" datatype="string" default_value="" />
+<UserPref name="cat" datatype="string" default_value="software" />
+<UserPref name="lang" datatype="string" default_value="en_GB" />
+<UserPref name="tags" datatype="string" default_value="" />
+<UserPref name="button" datatype="string" default_value="" />
+<UserPref name="https" datatype="string" default_value="" />
+<UserPref name="hidden" datatype="string" default_value="" />
+<Content type="html">
+<![CDATA[
+<style type="text/css"> 
+body {
+	overflow: hidden;
+}
+</style>
+
+<script type="text/javascript">
+
+//Get options
+var prefs = new gadgets.Prefs();
+var options = {
+	uid:         prefs.getString("uid"),
+	url:         prefs.getString("url"),
+	title:       prefs.getString("title"),
+	description: prefs.getString("desc"),
+	category:    prefs.getString("cat"),
+	language:    prefs.getString("lang"),
+	tags:        prefs.getString("tags"),
+	button:      prefs.getString("button"),
+	hidden:      prefs.getString("hidden")
+};
+
+//IE
+if (!window.innerWidth && document.body.offsetWidth) {
+	window.innerWidth = document.body.offsetWidth;
+	window.innerHeight = document.body.offsetHeight;
+}
+
+//Auto-detect compact button
+if (options.button == "" && (window.innerWidth && window.innerWidth > 100)) {
+	options.button = "compact";
+}
+
+//https
+var https = prefs.getString("https");
+if (https == "" && document.location.protocol == "https:") {
+	https = 1;
+}
+
+//Load API
+var ga = document.createElement("script");
+ga.type = "text/javascript";
+ga.async = true;
+ga.src = (https?"https:":"http:")+"//api.flattr.com/js/0.6/load.js";
+ga.onload = addbutton;
+ga.onreadystatechange = function() { //Stupid IE :-(
+	if (this.readyState == "loaded" || this.readyState == "complete") {
+		addbutton();
+	}
+}
+var s = document.getElementsByTagName("script")[0];
+s.parentNode.insertBefore(ga, s);
+
+//Failsafe if script onload trigger doesn't fire
+var failsafe = setTimeout(addbutton, 5000);
+
+//Add button
+function addbutton() {
+	clearTimeout(failsafe);
+	FlattrLoader.render(options, "button", "replace");
+}
+
+</script>
+
+<div id="button"></div>
+
+]]>
+</Content>
+</Module>
