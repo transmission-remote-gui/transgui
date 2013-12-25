@@ -186,21 +186,23 @@ inherited AddTorrentForm: TAddTorrentForm
     end
   end
   object Buttons: TButtonPanel[2]
-    Left = 0
+    Left = 8
     Height = 26
     Top = 406
-    Width = 497
+    Width = 481
+    BorderSpacing.Left = 8
+    BorderSpacing.Right = 8
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
     OKButton.Name = 'OKButton'
-    OKButton.Caption = '&OK'
+    OKButton.DefaultCaption = True
     OKButton.OnClick = OKButtonClick
     HelpButton.Name = 'HelpButton'
-    HelpButton.Caption = '&Help'
+    HelpButton.DefaultCaption = True
     CloseButton.Name = 'CloseButton'
-    CloseButton.Caption = '&Close'
+    CloseButton.DefaultCaption = True
     CancelButton.Name = 'CancelButton'
-    CancelButton.Caption = 'Cancel'
+    CancelButton.DefaultCaption = True
     TabOrder = 2
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]

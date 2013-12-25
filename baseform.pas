@@ -73,12 +73,6 @@ begin
       continue;
     with C do begin
       if C is TButtonPanel then begin
-        {$if lcl_major>=1}
-        with TButtonPanel(C) do begin
-          BorderSpacing.Left:=Spacing;
-          BorderSpacing.Right:=Spacing;
-        end;
-        {$endif}
         TButtonPanel(C).HandleNeeded;
         w:=0;
         h:=0;
