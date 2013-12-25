@@ -5,7 +5,6 @@
     <PathDelim Value="\"/>
     <General>
       <Flags>
-        <AlwaysBuild Value="False"/>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
@@ -57,6 +56,7 @@
         <Filename Value="main.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main"/>
       </Unit1>
@@ -69,6 +69,7 @@
         <Filename Value="addtorrent.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AddTorrentForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="AddTorrent"/>
       </Unit3>
@@ -76,6 +77,7 @@
         <Filename Value="connoptions.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ConnOptionsForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ConnOptions"/>
       </Unit4>
@@ -88,6 +90,7 @@
         <Filename Value="torrprops.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="TorrPropsForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TorrProps"/>
       </Unit6>
@@ -95,6 +98,7 @@
         <Filename Value="daemonoptions.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DaemonOptionsForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="DaemonOptions"/>
       </Unit7>
@@ -102,6 +106,7 @@
         <Filename Value="about.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AboutForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="About"/>
       </Unit8>
@@ -114,6 +119,7 @@
         <Filename Value="download.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DownloadForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="download"/>
       </Unit10>
@@ -121,6 +127,7 @@
         <Filename Value="colsetup.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ColSetupForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ColSetup"/>
       </Unit11>
@@ -138,6 +145,7 @@
         <Filename Value="addlink.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AddLinkForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="AddLink"/>
       </Unit14>
@@ -145,6 +153,7 @@
         <Filename Value="movetorrent.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MoveTorrentForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="MoveTorrent"/>
       </Unit15>
@@ -152,6 +161,7 @@
         <Filename Value="addtracker.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AddTrackerForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="AddTracker"/>
       </Unit16>
@@ -159,6 +169,7 @@
         <Filename Value="options.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="OptionsForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Options"/>
       </Unit17>
@@ -166,13 +177,14 @@
         <Filename Value="baseform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="BaseForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="BaseForm"/>
       </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <SearchPaths>
       <IncludeFiles Value="synapse\source\lib"/>
@@ -197,7 +209,7 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="True"/>
+        <DebugInfoType Value="dsStabs"/>
       </Debugging>
     </Linking>
     <Other>
