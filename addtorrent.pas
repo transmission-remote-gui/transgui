@@ -364,7 +364,9 @@ begin
       end
       else
         TreeChanged;
-    end;
+    end
+    else
+      TreeChanged;
     if not IsPlain then
       UpdateSummary;
   finally

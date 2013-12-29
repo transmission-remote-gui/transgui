@@ -296,7 +296,7 @@ begin
   if Result = 0 then begin
     Result:=CompareVariants(v1[_SortColumn], v2[_SortColumn]);
     i:=_IntCols;
-    while (Result = 0) and (i < _List.ColCnt) do begin
+    while (Result = 0) and (i < _List.ColCnt + _IntCols) do begin
       if i <> _SortColumn then
         Result:=CompareVariants(v1[i], v2[i]);
       Inc(i);
