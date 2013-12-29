@@ -143,7 +143,7 @@ begin
 
   Application.ProcessMessages;
   AppBusy;
-  OpenURL('http://code.google.com/p/transmisson-remote-gui/downloads/list');
+  OpenURL('http://code.google.com/p/transmisson-remote-gui/wiki/Download?tm=2');
   AppNormal;
 end;
 
