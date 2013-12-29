@@ -2264,6 +2264,8 @@ begin
             gbSaveAs.BorderSpacing.Bottom:=gbSaveAs.BorderSpacing.Top;
             BorderStyle:=bsDialog;
             AutoSizeForm(TCustomForm(gbContents.Parent));
+            edSaveAs.Enabled:=False;
+            edSaveAs.ParentColor:=True;
           end
           else
             // Torrent file
