@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Suomi
+TranslationLanguage=Suomi
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Etäsijaintien määrittäminen paikallisten kanssa.~~Esimerkkejä:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (valmiina %d)
@@ -223,7 +223,7 @@ Update blocklist=Päivitä estolista
 URL of a .torrent file or a magnet link=Anna .torrent tiedoston URL-osoite tai magnet -linkki
 Columns setup=Sarakkeiden asetukset
 Add torrent=Lisää torrent
-Delete a .torrent file after after a successful addition=Poista .torrent tiedosto onnistuneen lisäämisen jälkeen
+Delete a .torrent file after a successful addition=Poista .torrent tiedosto onnistuneen lisäämisen jälkeen
 Torrent=Torrentti
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Torrentien todentaminen voi kestää kauan.~Haluatko varmasti aloittaa %d torrentin todentamisen?
 Unable to load OpenSSL library files: %s and %s=OpenSSL kirjaston tiedostojen lataaminen epäonnistui: %s and %s

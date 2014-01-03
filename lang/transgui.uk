@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Українська
+TranslationLanguage=Українська
 
 %ds=%dс
 %d x %s (have %d)=%d x %s (в наявності %d)
@@ -227,7 +227,7 @@ Add torrent=Додавання торренту
 Torrent=Торрент
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Перевірка торрентів може тривати досить довго.~Ви впевнені, що бажаєте перевірити %d торрентів?
 Unable to load OpenSSL library files: %s and %s=Неможливо завантажити файли бібліотеки OpenSSL: %s і %s
-Delete a .torrent file after after a successful addition=Видаляти .torrent файл після вдалого додавання
+Delete a .torrent file after a successful addition=Видаляти .torrent файл після вдалого додавання
 Use SSL=Використовувати SSL
 Add tracker=Додати трекер
 Alternate bandwidth settings=Налаштування альтернативної швидкості

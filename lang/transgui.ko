@@ -1,4 +1,4 @@
-﻿TranslationLanguage=한국어
+TranslationLanguage=한국어
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="리모트와 로컬간의 경로설정.~~사용예:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (%d 소유)
 %ds=%d초
@@ -223,7 +223,7 @@ Update blocklist=blocklist 업데이트
 URL of a .torrent file or a magnet link=URL of a .torrent file or a magnet link
 Columns setup=세로줄 설정
 Add torrent=토렌트 추가
-Delete a .torrent file after after a successful addition=추가 성공 후 .torrent 파일을 지움
+Delete a .torrent file after a successful addition=추가 성공 후 .torrent 파일을 지움
 Torrent=토렌트
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=토렌트 파일 확인은 시간이 오래 걸릴 수도 있습니다.~ %d 토렌트 파일을 확인 하시겠습니까?
 Unable to load OpenSSL library files: %s and %s=OpenSSL library 파일을 열 수 없음: %s and %s

@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Portugues do Brasil
+TranslationLanguage=Portugues do Brasil
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapeamentos de caminho  remoto para local. Examplo:~/share=\\pch\share~/var/downloads/musicas=Z:\musicas"
 %d x %s (have %d)=%d x %s (have %d)
@@ -224,7 +224,7 @@ Torrents=Torrents
 Unable to execute "%s"=Unable to execute "%s"
 URL of a .torrent file or a magnet link=URL of a .torrent file or a magnet link
 Add torrent=Add torrent
-Delete a .torrent file after after a successful addition=Delete a .torrent file after after a successful addition
+Delete a .torrent file after a successful addition=Delete a .torrent file after a successful addition
 Torrent=Torrent
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Torrents verification may take a long time.~Are you sure to start verification of %d torrents?
 Unable to load OpenSSL library files: %s and %s=Unable to load OpenSSL library files: %s and %s

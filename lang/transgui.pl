@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Polski
+TranslationLanguage=Polski
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapowanie ścieżek zdalnych do lokalnych.~~Przykłady:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (pobrano %d)
@@ -224,7 +224,7 @@ Update blocklist=Uaktualnij blocklistę
 URL of a .torrent file or a magnet link=URL pliku .torrent lub magnet linka
 Columns setup=Ustawienia kolumn
 Add torrent=Dodaj torrent
-Delete a .torrent file after after a successful addition=Usuń plik .torrent po dodaniu
+Delete a .torrent file after a successful addition=Usuń plik .torrent po dodaniu
 Torrent=Torrent
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Weryfikacja torrentów może trwać bardzo długo.~Czy na pewno chcesz zweryfikować %d torrentów?
 Unable to load OpenSSL library files: %s and %s=Nie można załadować biblioteki OpenSSL: %s i %s

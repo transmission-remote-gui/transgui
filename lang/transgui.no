@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Norsk (Bokmål)
+TranslationLanguage=Norsk (Bokmål)
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Knytt ekstern tjeners filbane mot en lokal filbane.~~For eksempel:~/deling=\\pch\deling~/var/nedlastinger/musikk=Z:\musikk"
 %d x %s (have %d)=%d x %s (har %d)
@@ -224,7 +224,7 @@ Update blocklist=Oppdater svarteliste
 URL of a .torrent file or a magnet link=Adresse til en .torrent-fil eller magnetlenke
 Columns setup=Kolonnevalg
 Add torrent=Legg til
-Delete a .torrent file after after a successful addition=Slett .torrent-filen etter at den er lagt til tjeneren
+Delete a .torrent file after a successful addition=Slett .torrent-filen etter at den er lagt til tjeneren
 Torrent=Torrent
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Kontroll av torrenter kan ta lang tid.~Er du sikker på at du vil starte å kontrollere %d torrenter?
 Unable to load OpenSSL library files: %s and %s=Kunne ikke åpne OpenSSL-bibliotekene: %s and %s

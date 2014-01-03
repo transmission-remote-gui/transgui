@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Dansk
+TranslationLanguage=Dansk
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Fjernadgang til lokale stier og mapper.~~Eks:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (downloaded %d)
@@ -224,7 +224,7 @@ Update blocklist=Update blocklist
 URL of a .torrent file or a magnet link=URL of a .torrent file or a magnet link
 Columns setup=Columns setup
 Add torrent=Add torrent
-Delete a .torrent file after after a successful addition=Delete a .torrent file after after a successful addition
+Delete a .torrent file after a successful addition=Delete a .torrent file after a successful addition
 Torrent=Torrent
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Torrents verification may take a long time.~Are you sure to start verification of %d torrents?
 Unable to load OpenSSL library files: %s and %s=Unable to load OpenSSL library files: %s and %s
