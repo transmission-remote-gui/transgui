@@ -18,10 +18,10 @@ inherited OptionsForm: TOptionsForm
     Height = 281
     Top = 8
     Width = 548
-    ActivePage = tabAdvanced
+    ActivePage = tabGeneral
     Align = alClient
     BorderSpacing.Around = 8
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object tabGeneral: TTabSheet
       Caption = 'General'
@@ -49,8 +49,8 @@ inherited OptionsForm: TOptionsForm
           Left = 10
           Height = 17
           Top = 28
-          Width = 272
-          Caption = 'Delete a .torrent file after after a successful addition'
+          Width = 245
+          Caption = 'Delete a .torrent file after a successful addition'
           TabOrder = 1
         end
         object cbLinksFromClipboard: TCheckBox

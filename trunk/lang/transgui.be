@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Беларуская
+TranslationLanguage=Беларуская
 
 %ds=%dс
 %d x %s (have %d)=%d x %s (у наяўнасьці %d)
@@ -227,7 +227,7 @@ Add torrent=Дадаць торэнт
 Torrent=Торэнт
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Праверка торэнтаў можа заняць шмат часу.~Вы ўпэўнены, што жадаеце праверыць %d торэнтаў?
 Unable to load OpenSSL library files: %s and %s=Немагчыма задзейнічаць файлы бібліятэкі OpenSSL: %s і %s
-Delete a .torrent file after after a successful addition=Выдаліць .torrent файл пасьля пасьпяховага даданьня
+Delete a .torrent file after a successful addition=Выдаліць .torrent файл пасьля пасьпяховага даданьня
 Use SSL=Выкарыстоўваць SSL
 Add tracker=Дадаць трэкер
 Alternate bandwidth settings=Альтэрнатыўныя налады хуткасьці

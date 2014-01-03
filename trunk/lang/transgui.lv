@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Latviešu
+TranslationLanguage=Latviešu
 
 %ds=%ds
 %d x %s (have %d)=%d x %s (novilkts %d)
@@ -225,7 +225,7 @@ Torrent data location=Torrenta datu atrašanās vieta
 Columns setup=Kolonu uzstādīšana
 KB=KB
 Add torrent=Add torrent
-Delete a .torrent file after after a successful addition=Delete a .torrent file after after a successful addition
+Delete a .torrent file after a successful addition=Delete a .torrent file after a successful addition
 Torrent=Torrent
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Torrents verification may take a long time.~Are you sure to start verification of %d torrents?
 Unable to load OpenSSL library files: %s and %s=Unable to load OpenSSL library files: %s and %s

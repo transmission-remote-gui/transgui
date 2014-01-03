@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Nederlands
+TranslationLanguage=Nederlands
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Remote naar lokale path mappings.~~Voorbeelden:~/share=\\pch\share~/var/downloads/muziek=Z:\muziek"
 %d x %s (have %d)=%d x %s (heb %d)
@@ -224,7 +224,7 @@ Update blocklist=Update blocklijst
 URL of a .torrent file or a magnet link=URL van een .torrent of een magnet link
 Columns setup=Kolommen instellen
 Add torrent=Voeg torrent toe
-Delete a .torrent file after after a successful addition=.torrent bestand verwijderen na succesvol toevoegen
+Delete a .torrent file after a successful addition=.torrent bestand verwijderen na succesvol toevoegen
 Torrent=Torrent
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Torrents verifieren kan lang duren.~Weet je zeker dat je %d torrents wil verifieren?
 Unable to load OpenSSL library files: %s and %s=Fout bij laden OpenSSL library bestanden: %s en %s

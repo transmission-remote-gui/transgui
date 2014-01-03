@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Turkish
+TranslationLanguage=Turkish
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Uzak klasöre yerel yol atama.~~Örnek:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (%d sahip)
@@ -224,7 +224,7 @@ Update blocklist=Engelleme listesini güncelle
 URL of a .torrent file or a magnet link=.torrent dosyası adresi veya magnet bağlantısı
 Columns setup=Sütun ayarları
 Add torrent=Torrent ekle
-Delete a .torrent file after after a successful addition=Torrent başarıyla eklendikten sonra .torrent dosyasını sil
+Delete a .torrent file after a successful addition=Torrent başarıyla eklendikten sonra .torrent dosyasını sil
 Torrent=Torrent
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Torrentlerin kontolü uzun sürebilecek bir işlemdir.~%d torrentlerini kontrol ettirmek istiyor musun?
 Unable to load OpenSSL library files: %s and %s=OpenSSL kütüphanesinden dosyalar yüklenemedi: %s ve %s

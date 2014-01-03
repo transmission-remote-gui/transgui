@@ -1,4 +1,4 @@
-﻿TranslationLanguage=Ελληνικά
+TranslationLanguage=Ελληνικά
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Χαρτογράφηση μονοπατιού απομακρυσμένο σε τοπικό.~~Παραδείγματα:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (έχω %d)
@@ -224,7 +224,7 @@ Update blocklist=Ενημέρωση λίστας αποκλεισμού
 URL of a .torrent file or a magnet link=URL ενός αρχείου .torrent ή ένα magnet link
 Columns setup=Επιλογή στηλών
 Add torrent=Προσθήκη torrent
-Delete a .torrent file after after a successful addition=Διαγραφή αρχείου .torrent μετά από επιτυχή προσθήκη
+Delete a .torrent file after a successful addition=Διαγραφή αρχείου .torrent μετά από επιτυχή προσθήκη
 Torrent=Torrent
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Η επαλήθευση των torrent μπορεί να διαρκέσει αρκετό χρόνο.~Είστε σίγουροι ότι θέλετε να ξεκινήσετε την επαλήθευση των %d torrents?
 Unable to load OpenSSL library files: %s and %s=Αδυναμία φόρτωσης των αρχείων βιβλιοθήκης του OpenSSL: %s και %s
