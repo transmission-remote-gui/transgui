@@ -1,4 +1,5 @@
-5.1 (?)
+5.0.1 (Jan 04, 2014)
+[*] Include OpenSSL files in Windows setup. Issue #711.
 [-] Disable the "Save as" field when adding magnet links. Issue #725.
 [-] Incorrect color alternation when sorting the files list by any column except the "File name".
 
