@@ -1,5 +1,5 @@
 Transmission Remote GUI.
-Copyright (c) 2008-2014 by Yury Sidorov.
+Copyright (c) 2008-2012 by Yury Sidorov.
 
 Transmission Remote GUI is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 *********************************************************************************
 
-Transmission Remote GUI is feature rich cross platform front-end to remotely control Transmission daemon via its RPC protocol. It is faster and has more functionality than builtin Transmission web interface.
+Transmission Remote GUI is feature rich cross platform front-end to remotely control Transmission daemon via its RPC protocol. It is faster and has more functionality than build-in Transmission web interface.
 
 Transmission Remote GUI is developed using Lazarus RAD and Free Pascal compiler.
 
@@ -45,7 +45,7 @@ Harder way.
 
 Build the program by yourself.
 - Make sure you have working Lazarus and Free Pascal compiler installed.
-  * Free Pascal Compiler 2.6.2 and Lazarus 1.0 is used to develop Transmission Remote GUI. You may use different versions of FPC and Lazarus at your own risk.
+  * Free Pascal Compiler 2.4.4 and Lazarus 0.9.30 is used to develop Transmission Remote GUI. You may use different versions of FPC and Lazarus at your own risk.
 - Download the sources archive and extract it to some folder or perform svn checkout. 
 - Open terminal/command line prompt and cd to the sources folder;
 - Execute "make" command to build the application;
@@ -64,11 +64,3 @@ You can specify path to a .torrent file or a magnet link as a command line param
 PORTABLE MODE
 
 If the program finds the transgui.ini file in the same folder as the binary file, then it will store all configuration and data files in the program's folder, instead of the folder in a user profile.
-
-ADVANCED PARAMETERS
-
-There are some parameters in the tramsgui.ini file, that can not be modified via the GUI.
-
-[Interface]
-; Maximum number of elements in the folder history list
-MaxFoldersHistory=10

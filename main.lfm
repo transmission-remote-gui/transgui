@@ -9,7 +9,7 @@ inherited MainForm: TMainForm
   ActiveControl = panTop
   AllowDropFiles = True
   Caption = ' '
-  ClientHeight = 487
+  ClientHeight = 486
   ClientWidth = 780
   Constraints.MinHeight = 300
   Constraints.MinWidth = 300
@@ -24,38 +24,37 @@ inherited MainForm: TMainForm
   OnWindowStateChange = FormWindowStateChange
   object panTop: TPanel[0]
     Left = 0
-    Height = 127
+    Height = 126
     Top = 26
     Width = 780
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 127
+    ClientHeight = 126
     ClientWidth = 780
     Constraints.MinHeight = 80
     TabOrder = 0
     object HSplitter: TSplitter
       Left = 130
-      Height = 127
+      Height = 126
       Top = 0
       Width = 5
       AutoSnap = False
       MinSize = 50
-      OnChangeBounds = HSplitterChangeBounds
     end
     object panFilter: TPanel
       Left = 0
-      Height = 127
+      Height = 126
       Top = 0
       Width = 130
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 127
+      ClientHeight = 126
       ClientWidth = 130
       TabOrder = 2
       object panSearch: TPanel
         Left = 0
         Height = 21
-        Top = 104
+        Top = 103
         Width = 130
         Align = alBottom
         AutoSize = True
@@ -132,7 +131,7 @@ inherited MainForm: TMainForm
       end
       object lvFilter: TVarGrid
         Left = 0
-        Height = 102
+        Height = 101
         Top = 0
         Width = 130
         Align = alClient
@@ -158,7 +157,7 @@ inherited MainForm: TMainForm
     end
     object gTorrents: TVarGrid
       Left = 135
-      Height = 127
+      Height = 126
       Top = 0
       Width = 645
       Align = alClient
@@ -201,12 +200,10 @@ inherited MainForm: TMainForm
           Width = 75
         end      
         item
-          Alignment = taRightJustify
           Title.Caption = 'ETA'
           Width = 80
         end      
         item
-          Alignment = taRightJustify
           Title.Caption = 'Ratio'
         end      
         item
@@ -273,13 +270,6 @@ inherited MainForm: TMainForm
           Title.Caption = 'Queue position'
           Width = 0
           Visible = False
-        end      
-        item
-          Alignment = taRightJustify
-          SizePriority = 0
-          Title.Caption = 'Seeding time'
-          Width = 0
-          Visible = False
         end>
       FixedCols = 0
       Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
@@ -289,7 +279,6 @@ inherited MainForm: TMainForm
       OnClick = gTorrentsClick
       OnDblClick = gTorrentsDblClick
       OnResize = gTorrentsResize
-      OnSetEditText = gTorrentsSetEditText
       Images = ImageList16
       MultiSelect = True
       SortColumn = 0
@@ -297,14 +286,12 @@ inherited MainForm: TMainForm
       OnDrawCell = gTorrentsDrawCell
       OnSortColumn = gTorrentsSortColumn
       OnQuickSearch = gTorrentsQuickSearch
-      OnEditorShow = gTorrentsEditorShow
-      OnEditorHide = gTorrentsEditorHide
     end
   end
   object StatusBar: TStatusBar[1]
     Left = 0
     Height = 23
-    Top = 464
+    Top = 463
     Width = 780
     Panels = <    
       item
@@ -328,16 +315,16 @@ inherited MainForm: TMainForm
   object PageInfo: TPageControl[2]
     Left = 0
     Height = 306
-    Top = 158
+    Top = 157
     Width = 780
-    ActivePage = tabGeneral
+    ActivePage = tabStats
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 1
     OnChange = PageInfoChange
-    OnResize = PageInfoResize
+    OnPageChanged = PageInfoChange
     object tabGeneral: TTabSheet
       Caption = 'General'
       ClientHeight = 279
@@ -348,8 +335,6 @@ inherited MainForm: TMainForm
         Height = 253
         Top = 26
         Width = 772
-        HorzScrollBar.Page = 768
-        VertScrollBar.Page = 249
         Align = alClient
         ClientHeight = 249
         ClientWidth = 768
@@ -1025,13 +1010,13 @@ inherited MainForm: TMainForm
         RowCount = 1
         TabOrder = 0
         OnDblClick = lvFilesDblClick
-        OnSetEditText = lvFilesSetEditText
+        OnKeyPress = lvFilesKeyPress
         Images = ImageList16
         MultiSelect = True
         SortColumn = 0
         HideSelection = True
-        OnEditorShow = lvFilesEditorShow
-        OnEditorHide = lvFilesEditorHide
+        OnCellAttributes = lvFilesCellAttributes
+        OnDrawCell = lvFilesDrawCell
       end
     end
     object tabStats: TTabSheet
@@ -1082,12 +1067,11 @@ inherited MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 153
+    Top = 152
     Width = 780
     Align = alBottom
     AutoSnap = False
     MinSize = 80
-    OnChangeBounds = VSplitterChangeBounds
     ResizeAnchor = akBottom
   end
   object MainToolBar: TToolBar[4]
@@ -1104,55 +1088,64 @@ inherited MainForm: TMainForm
     ShowHint = True
     TabOrder = 2
     object ToolButton1: TToolButton
-      Left = 49
+      Left = 47
       Top = 2
       Action = acAddTorrent
     end
     object ToolButton2: TToolButton
-      Left = 95
+      Left = 93
       Top = 2
-      Width = 10
+      Width = 8
       Caption = 'ToolButton2'
       Style = tbsSeparator
     end
     object ToolButton3: TToolButton
-      Left = 105
+      Left = 101
       Top = 2
       Action = acStartTorrent
     end
     object ToolButton4: TToolButton
-      Left = 128
+      Left = 124
       Top = 2
       Action = acStopTorrent
     end
     object tbStopTorrent: TToolButton
-      Left = 151
+      Left = 147
       Top = 2
       Action = acRemoveTorrent
     end
     object ToolButton6: TToolButton
       Left = 39
       Top = 2
-      Width = 10
+      Width = 8
       Caption = 'ToolButton6'
       Style = tbsSeparator
     end
     object ToolButton7: TToolButton
-      Left = 263
+      Left = 255
       Top = 2
-      Width = 10
+      Width = 8
       Caption = 'ToolButton7'
       Style = tbsSeparator
     end
     object ToolButton8: TToolButton
-      Left = 273
+      Left = 263
       Top = 2
       Action = acDaemonOptions
     end
     object ToolButton9: TToolButton
-      Left = 72
+      Left = 70
       Top = 2
       Action = acAddLink
+    end
+    object pbStatus: TPaintBox
+      Left = 756
+      Height = 22
+      Top = 2
+      Width = 24
+      Align = alRight
+      Visible = False
+      OnPaint = pbStatusPaint
     end
     object tbConnect: TToolButton
       Left = 4
@@ -1162,42 +1155,42 @@ inherited MainForm: TMainForm
       Style = tbsDropDown
     end
     object tbtAltSpeed: TToolButton
-      Left = 240
+      Left = 232
       Top = 2
       Action = acAltSpeed
     end
     object sepAltSpeed: TToolButton
-      Left = 230
+      Left = 224
       Top = 2
-      Width = 10
+      Width = 8
       Caption = 'sepAltSpeed'
       Style = tbsSeparator
     end
     object sepQueue: TToolButton
-      Left = 174
+      Left = 170
       Top = 2
-      Width = 10
+      Width = 8
       Caption = 'sepQueue'
       Style = tbsSeparator
     end
     object tbQMoveUp: TToolButton
-      Left = 184
+      Left = 178
       Top = 2
       Action = acQMoveUp
     end
     object tbQMoveDown: TToolButton
-      Left = 207
+      Left = 201
       Top = 2
       Action = acQMoveDown
     end
   end
   object panReconnect: TPanel[5]
     Left = 532
-    Height = 44
-    Top = 56
+    Height = 71
+    Top = 64
     Width = 161
     BevelOuter = bvNone
-    ClientHeight = 44
+    ClientHeight = 71
     ClientWidth = 161
     Color = clInfoBk
     Font.Color = clInfoText
@@ -1248,31 +1241,22 @@ inherited MainForm: TMainForm
       ParentColor = False
     end
     object panReconnectFrame: TShape
-      Left = 4
+      Left = 8
       Height = 19
-      Top = 24
+      Top = 32
       Width = 24
       Brush.Style = bsClear
       Pen.Color = clBtnShadow
     end
   end
-  object panDetailsWait: TPanel[6]
-    Left = 495
-    Height = 33
-    Top = 56
-    Width = 27
-    BevelOuter = bvNone
-    TabOrder = 3
-    Visible = False
-  end
-  object MainMenu: TMainMenu[7]
+  object MainMenu: TMainMenu[6]
     Images = ImageList16
     left = 8
     top = 28
     object miTorrent: TMenuItem
       Caption = '&Torrent'
       object miConnect: TMenuItem
-        Caption = 'Connect to Transmission'
+        Caption = 'Connect to daemon'
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000000000000000
@@ -1844,9 +1828,6 @@ inherited MainForm: TMainForm
         Action = acMoveTorrent
         OnClick = acMoveTorrentExecute
       end
-      object MenuItem98: TMenuItem
-        Action = acRename
-      end
       object MenuItem21: TMenuItem
         Action = acTorrentProps
         OnClick = acTorrentPropsExecute
@@ -1931,6 +1912,10 @@ inherited MainForm: TMainForm
         }
         OnClick = acDaemonOptionsExecute
       end
+      object MenuItem68: TMenuItem
+        Action = acConnOptions
+        OnClick = acConnOptionsExecute
+      end
       object MenuItem17: TMenuItem
         Action = acOptions
         OnClick = acOptionsExecute
@@ -2009,12 +1994,12 @@ inherited MainForm: TMainForm
       end
     end
   end
-  object ActionList: TActionList[8]
+  object ActionList: TActionList[7]
     left = 40
     top = 28
     object acConnect: TAction
-      Caption = 'Connect to Transmission'
-      Hint = 'Connect to Transmission'
+      Caption = 'Connect to daemon'
+      Hint = 'Connect to daemon'
       ImageIndex = 18
       OnExecute = acConnectExecute
     end
@@ -2032,41 +2017,35 @@ inherited MainForm: TMainForm
       Hint = 'Start torrent'
       ImageIndex = 1
       OnExecute = acStartTorrentExecute
-      ShortCut = 114
     end
     object acSetHighPriority: TAction
       Category = 'Files'
       Caption = 'High priority'
       ImageIndex = 26
       OnExecute = acSetHighPriorityExecute
-      ShortCut = 16456
     end
     object acSetNormalPriority: TAction
       Category = 'Files'
       Caption = 'Normal priority'
       ImageIndex = 25
       OnExecute = acSetNormalPriorityExecute
-      ShortCut = 16462
     end
     object acSetLowPriority: TAction
       Category = 'Files'
       Caption = 'Low priority'
       ImageIndex = 24
       OnExecute = acSetLowPriorityExecute
-      ShortCut = 16460
     end
     object acSetNotDownload: TAction
       Category = 'Files'
       Caption = 'Don''t download'
       ImageIndex = 23
       OnExecute = acSetNotDownloadExecute
-      ShortCut = 16457
     end
     object acOptions: TAction
       Category = 'Tools'
-      Caption = 'Application options...'
+      Caption = 'Options...'
       OnExecute = acOptionsExecute
-      ShortCut = 16504
     end
     object acDaemonOptions: TAction
       Category = 'Tools'
@@ -2074,12 +2053,10 @@ inherited MainForm: TMainForm
       Hint = 'Transmission options'
       ImageIndex = 8
       OnExecute = acDaemonOptionsExecute
-      ShortCut = 120
     end
     object acExit: TAction
       Caption = 'E&xit'
       OnExecute = acExitExecute
-      ShortCut = 32856
     end
     object acResolveHost: TAction
       Category = 'Peers'
@@ -2112,7 +2089,6 @@ inherited MainForm: TMainForm
       Caption = 'Open containing folder'
       ImageIndex = 22
       OnExecute = acOpenContainingFolderExecute
-      ShortCut = 16397
     end
     object acUpdateBlocklist: TAction
       Category = 'Tools'
@@ -2150,7 +2126,7 @@ inherited MainForm: TMainForm
     end
     object acConnOptions: TAction
       Category = 'Tools'
-      Caption = 'Manage connections...'
+      Caption = 'Connection options...'
       OnExecute = acConnOptionsExecute
     end
     object acNewConnection: TAction
@@ -2158,7 +2134,7 @@ inherited MainForm: TMainForm
       OnExecute = acNewConnectionExecute
     end
     object acDisconnect: TAction
-      Caption = 'Disconnect from Transmission'
+      Caption = 'Disconnect'
       ImageIndex = 27
       OnExecute = acDisconnectExecute
     end
@@ -2168,14 +2144,12 @@ inherited MainForm: TMainForm
       Hint = 'Use alternate bandwidth settings'
       ImageIndex = 38
       OnExecute = acAltSpeedExecute
-      ShortCut = 119
     end
     object acForceStartTorrent: TAction
       Category = 'Torrent'
       Caption = 'Force start'
       ImageIndex = 39
       OnExecute = acForceStartTorrentExecute
-      ShortCut = 8306
     end
     object acStopTorrent: TAction
       Category = 'Torrent'
@@ -2183,7 +2157,6 @@ inherited MainForm: TMainForm
       Hint = 'Stop torrent'
       ImageIndex = 2
       OnExecute = acStopTorrentExecute
-      ShortCut = 115
     end
     object acRemoveTorrent: TAction
       Category = 'Torrent'
@@ -2209,21 +2182,18 @@ inherited MainForm: TMainForm
       Category = 'Torrent'
       Caption = 'Properties...'
       OnExecute = acTorrentPropsExecute
-      ShortCut = 32781
     end
     object acStartAllTorrents: TAction
       Category = 'Torrent'
       Caption = 'Start all torrents'
       Hint = 'Start all torrents'
       OnExecute = acStartAllTorrentsExecute
-      ShortCut = 16498
     end
     object acStopAllTorrents: TAction
       Category = 'Torrent'
       Caption = 'Stop all torrents'
       Hint = 'Stop all'
       OnExecute = acStopAllTorrentsExecute
-      ShortCut = 16499
     end
     object acSetupColumns: TAction
       Category = 'View'
@@ -2236,25 +2206,21 @@ inherited MainForm: TMainForm
       Hint = 'Add torrent link'
       ImageIndex = 21
       OnExecute = acAddLinkExecute
-      ShortCut = 16429
     end
     object acReannounceTorrent: TAction
       Category = 'Torrent'
       Caption = 'Reannounce (get more peers)'
       OnExecute = acReannounceTorrentExecute
-      ShortCut = 16466
     end
     object acMoveTorrent: TAction
       Category = 'Torrent'
       Caption = 'Set data location...'
       OnExecute = acMoveTorrentExecute
-      ShortCut = 117
     end
     object acQMoveTop: TAction
       Category = 'Torrent'
       Caption = 'Move top'
       OnExecute = acQMoveTopExecute
-      ShortCut = 24625
     end
     object acQMoveUp: TAction
       Category = 'Torrent'
@@ -2262,7 +2228,6 @@ inherited MainForm: TMainForm
       Hint = 'Move up queue'
       ImageIndex = 40
       OnExecute = acQMoveUpExecute
-      ShortCut = 16433
     end
     object acQMoveDown: TAction
       Category = 'Torrent'
@@ -2270,13 +2235,11 @@ inherited MainForm: TMainForm
       Hint = 'Move down queue'
       ImageIndex = 41
       OnExecute = acQMoveDownExecute
-      ShortCut = 16434
     end
     object acQMoveBottom: TAction
       Category = 'Torrent'
       Caption = 'Move bottom'
       OnExecute = acQMoveBottomExecute
-      ShortCut = 24626
     end
     object acCheckNewVersion: TAction
       Caption = 'Check for updates'
@@ -2320,73 +2283,26 @@ inherited MainForm: TMainForm
       Caption = 'Copy file path to clipboard'
       OnExecute = acCopyPathExecute
     end
-    object acRename: TAction
-      Category = 'Torrent'
-      Caption = 'Rename'
-      OnExecute = acRenameExecute
-      ShortCut = 113
-      Visible = False
-    end
   end
-  object TorrentsListTimer: TTimer[9]
+  object TorrentsListTimer: TTimer[8]
     Enabled = False
     Interval = 100
     OnTimer = TorrentsListTimerTimer
     left = 253
     top = 55
   end
-  object OpenTorrentDlg: TOpenDialog[10]
+  object OpenTorrentDlg: TOpenDialog[9]
     Title = 'Select a .torrent to open'
     Filter = 'Torrents (*.torrent)|*.torrent|All files (*.*)|*.*'
     Options = [ofAllowMultiSelect, ofEnableSizing, ofViewDetail]
     left = 213
     top = 55
   end
-  object pmTorrents: TPopupMenu[11]
+  object pmTorrents: TPopupMenu[10]
     Images = ImageList16
     OnPopup = pmTorrentsPopup
     left = 149
     top = 55
-    object MenuItem68: TMenuItem
-      Action = acOpenFile
-      Default = True
-      Bitmap.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFFF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF009933
-        00FF993300FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00993300FF993300FF993300FFFF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00993300FFAA5F1FFF993300FFFF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00993300FFBA7D48FF993300FF993300FFFF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00993300FFCDA27CFFD8B596FF993300FF9933
-        00FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFE1C6B0FFECDCCDFFEDDD
-        D1FF993300FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFF4E9E2FFFDF9
-        F5FFFBF4ECFF993300FF993300FFFF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFE1C0ABFFF7E9
-        DAFFF4E0CCFFE1BA9CFF993300FF993300FFFF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFF6E6D6FFF3DEC8FFF0D5
-        BAFFE3B995FF993300FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFEDCAA8FFEAC1
-        99FFE7B98BFFDFA875FF993300FFFF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00993300FFE3AE
-        79FFE0A56BFFDD9C5CFFDA944FFF993300FFFF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF009933
-        00FF993300FF993300FF993300FF993300FF993300FFFF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-      }
-    end
     object MenuItem42: TMenuItem
       Action = acOpenContainingFolder
       Bitmap.Data = {
@@ -2818,14 +2734,12 @@ inherited MainForm: TMainForm
       Action = acMoveTorrent
       OnClick = acMoveTorrentExecute
     end
-    object MenuItem99: TMenuItem
-      Action = acRename
-    end
     object MenuItem19: TMenuItem
       Caption = '-'
     end
     object MenuItem20: TMenuItem
       Action = acTorrentProps
+      Default = True
       OnClick = acTorrentPropsExecute
     end
     object MenuItem36: TMenuItem
@@ -2836,16 +2750,15 @@ inherited MainForm: TMainForm
       OnClick = acSetupColumnsExecute
     end
   end
-  object ApplicationProperties: TApplicationProperties[12]
+  object ApplicationProperties: TApplicationProperties[11]
     ShowButtonGlyphs = sbgSystem
     OnIdle = ApplicationPropertiesIdle
-    OnEndSession = ApplicationPropertiesEndSession
     OnMinimize = ApplicationPropertiesMinimize
     OnRestore = ApplicationPropertiesRestore
     left = 348
     top = 56
   end
-  object pmFiles: TPopupMenu[13]
+  object pmFiles: TPopupMenu[12]
     Images = ImageList16
     OnPopup = pmFilesPopup
     left = 304
@@ -2930,9 +2843,6 @@ inherited MainForm: TMainForm
         FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       }
       OnClick = acOpenContainingFolderExecute
-    end
-    object MenuItem100: TMenuItem
-      Action = acRename
     end
     object MenuItem97: TMenuItem
       Action = acCopyPath
@@ -3111,14 +3021,14 @@ inherited MainForm: TMainForm
       OnClick = acSetupColumnsExecute
     end
   end
-  object TickTimer: TTimer[14]
+  object TickTimer: TTimer[13]
     Enabled = False
-    Interval = 200
+    Interval = 300
     OnTimer = TickTimerTimer
     left = 408
     top = 55
   end
-  object ImageList16: TImageList[15]
+  object ImageList16: TImageList[14]
     left = 412
     top = 92
     Bitmap = {
@@ -4501,7 +4411,7 @@ inherited MainForm: TMainForm
       FF000000FF000000FF000000FF00
     }
   end
-  object pmLabels: TPopupMenu[16]
+  object pmLabels: TPopupMenu[15]
     left = 268
     top = 92
     object miCopyLabel: TMenuItem
@@ -4509,7 +4419,7 @@ inherited MainForm: TMainForm
       OnClick = miCopyLabelClick
     end
   end
-  object TrayIcon: TTrayIcon[17]
+  object TrayIcon: TTrayIcon[16]
     BalloonFlags = bfInfo
     BalloonTimeout = 10000
     PopUpMenu = pmTray
@@ -4518,7 +4428,7 @@ inherited MainForm: TMainForm
     left = 456
     top = 56
   end
-  object pmTray: TPopupMenu[18]
+  object pmTray: TPopupMenu[17]
     Images = ImageList16
     left = 460
     top = 88
@@ -4599,7 +4509,7 @@ inherited MainForm: TMainForm
       OnClick = acExitExecute
     end
   end
-  object imgFlags: TImageList[19]
+  object imgFlags: TImageList[18]
     Height = 12
     Width = 18
     left = 144
@@ -4635,7 +4545,7 @@ inherited MainForm: TMainForm
       FF00FFFFFF00FFFFFF00FFFFFF00
     }
   end
-  object pmPeers: TPopupMenu[20]
+  object pmPeers: TPopupMenu[19]
     left = 340
     top = 92
     object MenuItem29: TMenuItem
@@ -4658,13 +4568,13 @@ inherited MainForm: TMainForm
       OnClick = acSetupColumnsExecute
     end
   end
-  object FilterTimer: TTimer[21]
+  object FilterTimer: TTimer[20]
     Interval = 100
     OnTimer = FilterTimerTimer
     left = 76
     top = 28
   end
-  object pmTrackers: TPopupMenu[22]
+  object pmTrackers: TPopupMenu[21]
     Images = ImageList16
     left = 376
     top = 92
@@ -4690,6 +4600,13 @@ inherited MainForm: TMainForm
       Action = acSetupColumns
       OnClick = acSetupColumnsExecute
     end
+  end
+  object AnimateTimer: TTimer[22]
+    Enabled = False
+    Interval = 100
+    OnTimer = AnimateTimerTimer
+    left = 732
+    top = 60
   end
   object pmConnections: TPopupMenu[23]
     left = 12

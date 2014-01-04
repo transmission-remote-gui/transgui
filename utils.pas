@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2012 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -69,9 +69,6 @@ procedure ShowTaskbarButton;
 procedure HideTaskbarButton;
 function IsTaskbarButtonVisible: boolean;
 
-procedure CenterOnParent(C: TControl);
-procedure EnableControls(AEnable: boolean; const AControls: array of TControl);
-
 function OpenURL(const URL: string; const Params: string = ''): boolean;
 
 function CompareFilePath(const p1, p2: string): integer;
@@ -83,8 +80,6 @@ procedure ForceAppNormal;
 function ParamStrUTF8(Param: Integer): utf8string;
 function ParamCount: integer;
 function GetCmdSwitchValue(const Switch: string): string;
-
-function Base32Decode(const s: ansistring): ansistring;
 
 {$ifdef CALLSTACK}
 function GetLastExceptionCallStack: string;
@@ -100,7 +95,7 @@ uses
 {$ifdef CALLSTACK}
   lineinfo2,
 {$endif CALLSTACK}
-  FileUtil, StdCtrls, Graphics;
+  FileUtil;
 
 {$ifdef windows}
 function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
@@ -174,35 +169,28 @@ begin
     exit;
   end;
 
-  if FParams = nil then begin
-    FParams:=TStringList.Create;
-    P := GetCommandLineW;
-    while True do begin
-      P := SkipSpaces( P );
-      P1 := P;
-      P := SkipParam(P);
-      if P = P1 then
-        break;
-      s := Copy( P1, 1, P - P1 );
-      if Length(s) >= 2 then
-        if (s[1] = '"') and (s[Length(s)] = '"') then
-          s:=Copy(s, 2, Length(s) - 2);
-      FParams.Add(UTF8Encode(s));
-    end;
-    // Getting real executable name
-    SetLength(s, 1000);
-    SetLength(s, GetModuleFileNameW(HINSTANCE, PWideChar(s), Length(s) + 1));
-    if s <> '' then
-      if FParams.Count > 0 then
-        FParams[0]:=UTF8Encode(s)
-      else
-        FParams.Add(UTF8Encode(s));
+  if FParams <> nil then begin
+    if Param >= FParams.Count then
+      Result:=''
+    else
+      Result:=FParams[Param];
+    exit;
   end;
 
-  if Param >= FParams.Count then
-    Result:=''
-  else
-    Result:=FParams[Param];
+  FParams:=TStringList.Create;
+  P := GetCommandLineW;
+  while True do begin
+    P := SkipSpaces( P );
+    P1 := P;
+    P := SkipParam(P);
+    if P = P1 then
+      break;
+    s := Copy( P1, 1, P - P1 );
+    if Length(s) >= 2 then
+      if (s[1] = '"') and (s[Length(s)] = '"') then
+        s:=Copy(s, 2, Length(s) - 2);
+    FParams.Add(UTF8Encode(s));
+  end;
 end;
 
 function ParamCount: integer;
@@ -330,7 +318,6 @@ begin
   THandle(pointer(@FStream.Handle)^):=h;
   try
     inherited UpdateFile;
-    FStream.Size:=FStream.Position;
   finally
     FileClose(FStream.Handle);
     THandle(pointer(@FStream.Handle)^):=0;
@@ -551,82 +538,6 @@ begin
     Result := Result + LineEnding + GetAddrInfo(Frames[I]);
 end;
 {$endif CALLSTACK}
-
-procedure CenterOnParent(C: TControl);
-var
-  R: TRect;
-begin
-  R:=C.BoundsRect;
-  R.Left:=(C.Parent.ClientWidth - C.Width) div 2;
-  R.Top:=(C.Parent.ClientHeight - C.Height) div 2;
-  C.BoundsRect:=R;
-end;
-
-{$PUSH}
-{$RANGECHECKS OFF}
-function Base32Decode(const s: ansistring): ansistring;
-var
-  optr, len, bcnt: integer;
-  Output: PByteArray;
-  Input: PAnsiChar;
-  w: word;
-  c: ansichar;
-  b: byte;
-begin
-  len:=Length(s);
-  Input:=PAnsiChar(s);
-  SetLength(Result, len);
-  Output:=PByteArray(PAnsiChar(Result));
-  optr:=0;
-  w:=0;
-  bcnt:=0;
-  while len > 0 do begin
-    repeat
-      c:=Input^;
-      if c = '=' then begin
-        len:=0;
-        break;
-      end;
-      if c in ['A'..'Z'] then
-        b:=Ord(c) - Ord('A')
-      else
-        if c in ['2'..'7'] then
-          b:=Ord(c) - 24
-        else
-          raise Exception.Create('Invalid base32 string.');
-      w:=(w shl 5) or b;
-      Inc(bcnt, 5);
-      Inc(Input);
-      Dec(len);
-    until (bcnt >= 8) or (len <= 0);
-    if bcnt < 8 then
-      Output^[optr]:=w shl (8 - bcnt)
-    else begin
-      Dec(bcnt, 8);
-      Output^[optr]:=w shr bcnt;
-    end;
-    Inc(optr);
-  end;
-  SetLength(Result, optr);
-end;
-{$POP}
-
-procedure EnableControls(AEnable: boolean; const AControls: array of TControl);
-var
-  i: integer;
-  C: TControl;
-begin
-  for i:=Low(AControls) to High(AControls) do begin
-    C:=AControls[i];
-    C.Enabled:=AEnable;
-    if (C is TCustomEdit) or (C is TCustomListBox) or (C is TCustomComboBox) then begin
-      if AEnable then
-        C.Color:=clDefault
-      else
-        C.Color:=clBtnFace;
-    end;
-  end;
-end;
 
 finalization
 {$ifdef windows}

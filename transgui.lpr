@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2013 by Yury Sidorov.
+  Copyright (c) 2008-2011 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,14 +26,9 @@ program transgui;
 {$mode objfpc}{$H+}
 
 uses
-{$ifdef UNIX}
+  {$IFDEF UNIX}
   cthreads,
-  {$ifdef darwin}
-  maclocale,
-  {$else}
-  clocale,
-  {$endif}
-{$endif}
+  {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms
   { you can add units after this }, BaseForm, Main, rpc, AddTorrent, ConnOptions, varlist,

@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2012 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -77,23 +77,20 @@ type
     procedure Execute; override;
   end;
 
-function DownloadFile(const URL, DestFolder: string; const DestFileName: string = ''; const DisplayName: string = ''): boolean;
+function DownloadFile(const URL, DestFolder: string; const DestFileName: string = ''): boolean;
 
 implementation
 
 uses Main, rpc;
 
-function DownloadFile(const URL, DestFolder: string; const DestFileName, DisplayName: string): boolean;
+function DownloadFile(const URL, DestFolder: string; const DestFileName: string): boolean;
 var
   s: string;
 begin
   with TDownloadForm.Create(Application) do
   try
     s:=ExtractFileName(StringReplace(URL, '/', DirectorySeparator, [rfReplaceAll]));
-    if DisplayName <> '' then
-      txFileName.Caption:=DisplayName
-    else
-      txFileName.Caption:=s;
+    txFileName.Caption:=s;
     if DestFileName <> '' then
       s:=DestFileName;
     FThread.FUrl:=URL;

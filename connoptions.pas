@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2012 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@ resourcestring
   sNoHost = 'No host name specified.';
   sNoProxy = 'No proxy server specified.';
   SDelConnection = 'Are you sure to delete connection ''%s''?';
-  SNewConnection = 'New connection to Transmission';
 
 type
 
@@ -44,13 +43,8 @@ type
     btDel: TButton;
     btRename: TButton;
     Buttons: TButtonPanel;
-    cbProxyAuth: TCheckBox;
     cbUseProxy: TCheckBox;
     cbUseSocks5: TCheckBox;
-    cbAuth: TCheckBox;
-    cbShowAdvanced: TCheckBox;
-    cbAskPassword: TCheckBox;
-    edRpcPath: TEdit;
     edUpSpeeds: TEdit;
     edHost: TEdit;
     cbSSL: TCheckBox;
@@ -64,9 +58,7 @@ type
     edPassword: TEdit;
     edPaths: TMemo;
     gbSpeed: TGroupBox;
-    txRpcPath: TLabel;
-    txConName: TLabel;
-    txConnHelp: TLabel;
+    Label1: TLabel;
     txDownSpeeds: TLabel;
     panTop: TPanel;
     tabProxy: TTabSheet;
@@ -89,11 +81,7 @@ type
     procedure btNewClick(Sender: TObject);
     procedure btOKClick(Sender: TObject);
     procedure btRenameClick(Sender: TObject);
-    procedure cbAskPasswordClick(Sender: TObject);
-    procedure cbAuthClick(Sender: TObject);
     procedure cbConnectionSelect(Sender: TObject);
-    procedure cbProxyAuthClick(Sender: TObject);
-    procedure cbShowAdvancedClick(Sender: TObject);
     procedure cbUseProxyClick(Sender: TObject);
     procedure edHostChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -119,7 +107,7 @@ type
 
 implementation
 
-uses Main, synacode, utils, rpc;
+uses Main, synacode, utils;
 
 { TConnOptionsForm }
 
@@ -146,17 +134,6 @@ begin
   edConnection.SelectAll;
 end;
 
-procedure TConnOptionsForm.cbAskPasswordClick(Sender: TObject);
-begin
-  EnableControls(not cbAskPassword.Checked and cbAskPassword.Enabled, [txPassword, edPassword]);
-end;
-
-procedure TConnOptionsForm.cbAuthClick(Sender: TObject);
-begin
-  EnableControls(cbAuth.Checked, [txUserName, edUserName, txPassword, cbAskPassword]);
-  cbAskPasswordClick(nil);
-end;
-
 procedure TConnOptionsForm.cbConnectionSelect(Sender: TObject);
 var
   i: integer;
@@ -179,25 +156,6 @@ begin
   end;
   if s <> '' then
     LoadConnSettings(s);
-end;
-
-procedure TConnOptionsForm.cbProxyAuthClick(Sender: TObject);
-begin
-  EnableControls(cbProxyAuth.Checked and cbProxyAuth.Enabled, [txProxyUserName, edProxyUserName, txProxyPassword, edProxyPassword]);
-end;
-
-procedure TConnOptionsForm.cbShowAdvancedClick(Sender: TObject);
-begin
-  txRpcPath.Visible:=cbShowAdvanced.Checked;
-  edRpcPath.Visible:=cbShowAdvanced.Checked;
-{$ifndef LCLgtk2}
-  tabConnection.TabVisible:=cbShowAdvanced.Checked;
-{$endif LCLgtk2}
-  tabProxy.TabVisible:=cbShowAdvanced.Checked;
-  tabPaths.TabVisible:=cbShowAdvanced.Checked;
-  tabMisc.TabVisible:=cbShowAdvanced.Checked;
-  cbShowAdvanced.Visible:=not cbShowAdvanced.Checked;
-  Page.ActivePage:=tabConnection;
 end;
 
 procedure TConnOptionsForm.btNewClick(Sender: TObject);
@@ -258,9 +216,26 @@ begin
 end;
 
 procedure TConnOptionsForm.cbUseProxyClick(Sender: TObject);
+var
+  c: TColor;
 begin
-  EnableControls(cbUseProxy.Checked, [txProxy, edProxy, txProxyPort, edProxyPort, cbUseSocks5, cbProxyAuth]);
-  cbProxyAuthClick(nil);
+  cbUseSocks5.Enabled:=cbUseProxy.Checked;
+  edProxy.Enabled:=cbUseProxy.Checked;
+  edProxyPort.Enabled:=cbUseProxy.Checked;
+  edProxyUserName.Enabled:=cbUseProxy.Checked;
+  edProxyPassword.Enabled:=cbUseProxy.Checked;
+  txProxy.Enabled:=cbUseProxy.Checked;
+  txProxyPort.Enabled:=cbUseProxy.Checked;
+  txProxyUserName.Enabled:=cbUseProxy.Checked;
+  txProxyPassword.Enabled:=cbUseProxy.Checked;
+  if cbUseProxy.Checked then
+    c:=clWindow
+  else
+    c:=edProxy.Parent.Color;
+  edProxy.Color:=c;
+  edProxyPort.Color:=c;
+  edProxyUserName.Color:=c;
+  edProxyPassword.Color:=c;
 end;
 
 procedure TConnOptionsForm.edHostChange(Sender: TObject);
@@ -276,7 +251,6 @@ var
   s: string;
 begin
   Page.ActivePageIndex:=0;
-  txConnHelp.Caption:=Format(txConnHelp.Caption, [AppName]);
   ActiveControl:=edHost;
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@btOKClick;
@@ -292,8 +266,6 @@ begin
     if s <> '' then
       cbConnection.Items.Add(s);
   end;
-
-  cbShowAdvanced.Top:=edRpcPath.Top;
 end;
 
 procedure TConnOptionsForm.FormShow(Sender: TObject);
@@ -330,7 +302,7 @@ begin
     exit;
   end;
   edProxy.Text:=Trim(edProxy.Text);
-  if tabProxy.TabVisible and cbUseProxy.Checked and (edProxy.Text = '') then begin
+  if cbUseProxy.Checked and (edProxy.Text = '') then begin
     Page.ActivePage:=tabProxy;
     edProxy.SetFocus;
     MessageDlg(sNoProxy, mtError, [mbOK], 0);
@@ -429,7 +401,7 @@ end;
 
 procedure TConnOptionsForm.LoadConnSettings(const ConnName: string);
 var
-  Sec, s: string;
+  Sec: string;
 begin
   with Ini do begin
     Sec:='Connection.' + ConnName;
@@ -440,29 +412,19 @@ begin
     edPort.Value:=ReadInteger(Sec, 'Port', 9091);
     cbSSL.Checked:=ReadBool(Sec, 'UseSSL', False);
     edUserName.Text:=ReadString(Sec, 'UserName', '');
-    cbAuth.Checked:=edUserName.Text <> '';
-    if cbAuth.Checked then begin
-      s:=ReadString(Sec, 'Password', '');
-      cbAskPassword.Checked:=s = '-';
-      if not cbAskPassword.Checked then
-        if s <> '' then
-          edPassword.Text:='******'
-        else
-          edPassword.Text:='';
-    end;
-    cbAuthClick(nil);
-    edRpcPath.Text:=ReadString(Sec, 'RpcPath', DefaultRpcPath);
+    if ReadString(Sec, 'Password', '') <> '' then
+      edPassword.Text:='******'
+    else
+      edPassword.Text:='';
     cbUseProxy.Checked:=ReadBool(Sec, 'UseProxy', False);
     cbUseSocks5.Checked:=ReadBool(Sec, 'UseSockProxy', False);
     edProxy.Text:=ReadString(Sec, 'ProxyHost', '');
     edProxyPort.Value:=ReadInteger(Sec, 'ProxyPort', 8080);
     edProxyUserName.Text:=ReadString(Sec, 'ProxyUser', '');
-    cbProxyAuth.Checked:=edProxyUserName.Text <> '';
-    if cbProxyAuth.Checked then
-      if ReadString(Sec, 'ProxyPass', '') <> '' then
-        edProxyPassword.Text:='******'
-      else
-        edProxyPassword.Text:='';
+    if ReadString(Sec, 'ProxyPass', '') <> '' then
+      edProxyPassword.Text:='******'
+    else
+      edProxyPassword.Text:='';
     edPaths.Text:=StringReplace(ReadString(Sec, 'PathMap', ''), '|', LineEnding, [rfReplaceAll]);
     edDownSpeeds.Text:=ReadString(Sec, 'DownSpeeds', DefSpeeds);
     edUpSpeeds.Text:=ReadString(Sec, 'UpSpeeds', DefSpeeds);
@@ -489,36 +451,18 @@ begin
     WriteString(Sec, 'Host', Trim(edHost.Text));
     WriteBool(Sec, 'UseSSL', cbSSL.Checked);
     WriteInteger(Sec, 'Port', edPort.Value);
-    if not cbAuth.Checked then begin
-      edUserName.Text:='';
-      edPassword.Text:='';
-      cbAskPassword.Checked:=False;
-    end;
     WriteString(Sec, 'UserName', edUserName.Text);
-    if cbAskPassword.Checked then
-      WriteString(Sec, 'Password', '-')
-    else
-      if edPassword.Text <> '******' then begin
-        if edPassword.Text = '' then
-          s:=''
-        else
-          s:=EncodeBase64(edPassword.Text);
-        WriteString(Sec, 'Password', s);
-      end;
-
-    if (edRpcPath.Text = DefaultRpcPath) or (edRpcPath.Text = '') then
-      DeleteKey(Sec, 'RpcPath')
-    else
-      WriteString(Sec, 'RpcPath', edRpcPath.Text);
-
+    if edPassword.Text <> '******' then begin
+      if edPassword.Text = '' then
+        s:=''
+      else
+        s:=EncodeBase64(edPassword.Text);
+      WriteString(Sec, 'Password', s);
+    end;
     WriteBool(Sec, 'UseProxy', cbUseProxy.Checked);
     WriteBool(Sec, 'UseSockProxy', cbUseSocks5.Checked);
     WriteString(Sec, 'ProxyHost', Trim(edProxy.Text));
     WriteInteger(Sec, 'ProxyPort', edProxyPort.Value);
-    if cbProxyAuth.Checked then begin
-      edProxyUserName.Text:='';
-      edProxyPassword.Text:='';
-    end;
     WriteString(Sec, 'ProxyUser', edProxyUserName.Text);
     if edProxyPassword.Text <> '******' then begin
       if edProxyPassword.Text = '' then
@@ -552,7 +496,6 @@ begin
             (edUserName.Text <> ReadString(Sec, 'UserName', '')) or
             ((ReadString(Sec, 'Password', '') = '') and (edPassword.Text <> '')) or
             ((ReadString(Sec, 'Password', '') <> '') and (edPassword.Text <> '******')) or
-            (edRpcPath.Text <> ReadString(Sec, 'RpcPath', DefaultRpcPath)) or
             (cbUseProxy.Checked <> ReadBool(Sec, 'UseProxy', False)) or
             (edProxy.Text <> ReadString(Sec, 'ProxyHost', '')) or
             (edProxyPort.Value <> ReadInteger(Sec, 'ProxyPort', 8080)) or

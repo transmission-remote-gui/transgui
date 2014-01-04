@@ -12,22 +12,20 @@ inherited MoveTorrentForm: TMoveTorrentForm
   OnCreate = FormCreate
   Position = poMainFormCenter
   object Buttons: TButtonPanel[0]
-    Left = 8
+    Left = 0
     Height = 36
     Top = 82
-    Width = 545
-    BorderSpacing.Left = 8
-    BorderSpacing.Right = 8
+    Width = 561
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
     OKButton.Name = 'OKButton'
-    OKButton.DefaultCaption = True
+    OKButton.Caption = '&OK'
     HelpButton.Name = 'HelpButton'
-    HelpButton.DefaultCaption = True
+    HelpButton.Caption = '&Help'
     CloseButton.Name = 'CloseButton'
-    CloseButton.DefaultCaption = True
+    CloseButton.Caption = '&Close'
     CancelButton.Name = 'CancelButton'
-    CancelButton.DefaultCaption = True
+    CancelButton.Caption = 'Cancel'
     TabOrder = 1
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]
@@ -60,7 +58,6 @@ inherited MoveTorrentForm: TMoveTorrentForm
       Top = 20
       Width = 449
       Anchors = [akTop, akLeft, akRight]
-      DropDownCount = 20
       ItemHeight = 13
       TabOrder = 0
     end

@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2012 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,9 +29,6 @@ uses
 resourcestring
   sTransmissionAt = 'Transmission%s at %s:%s';
 
-const
-  DefaultRpcPath = '/transmission/rpc';
-
 type
   TAdvInfoType = (aiNone, aiGeneral, aiFiles, aiPeers, aiTrackers, aiStats);
   TRefreshTypes = (rtTorrents, rtDetails, rtSession);
@@ -56,7 +53,7 @@ type
     procedure GetPeers(TorrentId: integer);
     procedure GetFiles(TorrentId: integer);
     procedure GetTrackers(TorrentId: integer);
-    procedure GetStats;
+    procedure GetStats(TorrentId: integer);
     procedure GetInfo(TorrentId: integer);
     procedure GetSessionInfo;
 
@@ -91,7 +88,7 @@ type
     FRPCVersion: integer;
     XTorrentSession: string;
     FMainThreadId: TThreadID;
-    FRpcPath: string;
+    FWebPath: string;
 
     function GetConnected: boolean;
     function GetConnecting: boolean;
@@ -135,11 +132,7 @@ type
     property Connecting: boolean read GetConnecting;
     property TorrentFields: string read GetTorrentFields write SetTorrentFields;
     property RPCVersion: integer read FRPCVersion;
-    property RpcPath: string read FRpcPath write FRpcPath;
   end;
-
-var
-  RemotePathDelimiter: char = '/';
 
 implementation
 
@@ -150,8 +143,6 @@ uses Main, ssl_openssl_lib, synafpc, blcksock;
 procedure TRpcThread.Execute;
 var
   t, tt: TDateTime;
-  i: integer;
-  ai: TAdvInfoType;
 begin
   try
     GetSessionInfo;
@@ -179,28 +170,21 @@ begin
         end
         else
           if rtDetails in FRpc.RefreshNow then begin
-            i:=CurTorrentId;
-            ai:=AdvInfo;
-            if i <> 0 then begin
-              case ai of
+            if CurTorrentId <> 0 then begin
+              case AdvInfo of
                 aiGeneral:
-                  GetInfo(i);
+                  GetInfo(CurTorrentId);
                 aiPeers:
-                  GetPeers(i);
+                  GetPeers(CurTorrentId);
                 aiFiles:
-                  GetFiles(i);
+                  GetFiles(CurTorrentId);
                 aiTrackers:
-                  GetTrackers(i);
+                  GetTrackers(CurTorrentId);
+                aiStats:
+                  GetStats(CurTorrentId);
               end;
             end;
-
-            case ai of
-              aiStats:
-                GetStats;
-            end;
-
-            if (i = CurTorrentId) and (ai = AdvInfo) then
-              Exclude(FRpc.RefreshNow, rtDetails);
+            Exclude(FRpc.RefreshNow, rtDetails);
           end
           else
             if rtSession in FRpc.RefreshNow then begin
@@ -266,7 +250,7 @@ begin
     dir:=t.Strings['downloadDir']
   else
     dir:='';
-  MainForm.FillFilesList(t.Integers['id'], t.Arrays['files'], t.Arrays['priorities'], t.Arrays['wanted'], dir);
+  MainForm.FillFilesList(t.Arrays['files'], t.Arrays['priorities'], t.Arrays['wanted'], dir);
 end;
 
 procedure TRpcThread.DoFillInfo;
@@ -303,7 +287,7 @@ end;
 
 procedure TRpcThread.GetSessionInfo;
 var
-  req, args, args2: TJSONObject;
+  req, args: TJSONObject;
   s: string;
 begin
   req:=TJSONObject.Create;
@@ -322,26 +306,7 @@ begin
       else
         s:='';
       FRpc.InfoStatus:=Format(sTransmissionAt, [s, FRpc.Http.TargetHost, FRpc.Http.TargetPort]);
-      if FRpc.RPCVersion >= 15 then begin
-        // Requesting free space in download dir
-        req.Free;
-        req:=TJSONObject.Create;
-        req.Add('method', 'free-space');
-        args2:=TJSONObject.Create;
-        try
-          args2.Add('path', args.Strings['download-dir']);
-          req.Add('arguments', args2);
-          args2:=FRpc.SendRequest(req);
-          if args2 <> nil then
-            args.Floats['download-dir-free-space']:=args2.Floats['size-bytes']
-          else begin
-            args.Floats['download-dir-free-space']:=-1;
-            FRpc.Status:='';
-          end;
-        finally
-          args2.Free;
-        end;
-      end;
+
       ResultData:=args;
       if not Terminated then
         Synchronize(@DoFillSessionInfo);
@@ -440,7 +405,7 @@ var
   args: TJSONObject;
   t: TJSONArray;
 begin
-  args:=FRpc.RequestInfo(TorrentId, ['id', 'files','priorities','wanted','downloadDir']);
+  args:=FRpc.RequestInfo(TorrentId, ['files','priorities','wanted','downloadDir']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
@@ -477,7 +442,7 @@ begin
   end;
 end;
 
-procedure TRpcThread.GetStats;
+procedure TRpcThread.GetStats(TorrentId: integer);
 var
   req, args: TJSONObject;
 begin
@@ -509,7 +474,7 @@ begin
                                      'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
                                      'seeders','peersGettingFromUs','leechers', 'uploadRatio', 'addedDate', 'doneDate',
                                      'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id', 'pieces',
-                                     'trackerStats', 'secondsDownloading', 'secondsSeeding']);
+                                     'trackerStats', 'secondsDownloading']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
@@ -628,8 +593,8 @@ var
   i, j, OldTimeOut, RetryCnt: integer;
   locked, r: boolean;
 begin
-  if FRpcPath = '' then
-    FRpcPath:=DefaultRpcPath;
+  if FWebPath = '' then
+    FWebPath:='/transmission/rpc';
   Status:='';
   Result:=nil;
   RetryCnt:=2;
@@ -651,7 +616,7 @@ begin
       if ATimeOut >= 0 then
         Http.Timeout:=ATimeOut;
       try
-        r:=Http.HTTPMethod('POST', Url + FRpcPath);
+        r:=Http.HTTPMethod('POST', Url + FWebPath);
       finally
         Http.Timeout:=OldTimeOut;
       end;
@@ -688,7 +653,7 @@ begin
             else
               if Copy(s, j - 3, MaxInt) = '/web' then
                 SetLength(s, j - 3);
-            FRpcPath:=s + 'rpc';
+            FWebPath:=s + 'rpc';
             Inc(RetryCnt);
             continue;
           end;
@@ -954,7 +919,7 @@ begin
   end;
   Status:='';
   RequestStartTime:=0;
-  FRpcPath:='';
+  FWebPath:='';
 end;
 
 end.

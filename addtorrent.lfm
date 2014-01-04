@@ -18,7 +18,7 @@ inherited AddTorrentForm: TAddTorrentForm
   Position = poMainFormCenter
   object gbSaveAs: TGroupBox[0]
     Left = 8
-    Height = 132
+    Height = 92
     Top = 8
     Width = 481
     Align = alTop
@@ -26,7 +26,7 @@ inherited AddTorrentForm: TAddTorrentForm
     BorderSpacing.Top = 8
     BorderSpacing.Right = 8
     Caption = ' '
-    ClientHeight = 114
+    ClientHeight = 74
     ClientWidth = 477
     TabOrder = 0
     object txDestFolder: TLabel
@@ -40,7 +40,7 @@ inherited AddTorrentForm: TAddTorrentForm
     object txPeerLimit: TLabel
       Left = 340
       Height = 14
-      Top = 87
+      Top = 49
       Width = 48
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
@@ -53,30 +53,28 @@ inherited AddTorrentForm: TAddTorrentForm
       Top = 16
       Width = 360
       Anchors = [akTop, akLeft, akRight]
-      DropDownCount = 20
       ItemHeight = 13
-      OnChange = cbDestFolderChange
       TabOrder = 0
     end
     object cbStartTorrent: TCheckBox
       Left = 10
       Height = 17
-      Top = 85
+      Top = 47
       Width = 79
       Caption = 'Start torrent'
       Checked = True
       State = cbChecked
-      TabOrder = 3
+      TabOrder = 2
     end
     object edPeerLimit: TSpinEdit
       Left = 404
       Height = 21
-      Top = 84
+      Top = 46
       Width = 62
       Anchors = [akTop, akRight]
       MaxValue = 999
       MinValue = 1
-      TabOrder = 4
+      TabOrder = 3
       Value = 1
     end
     object btBrowse: TButton
@@ -89,28 +87,11 @@ inherited AddTorrentForm: TAddTorrentForm
       OnClick = btBrowseClick
       TabOrder = 1
     end
-    object txSaveAs: TLabel
-      Left = 10
-      Height = 14
-      Top = 40
-      Width = 43
-      Caption = 'Save as:'
-      ParentColor = False
-    end
-    object edSaveAs: TEdit
-      Left = 10
-      Height = 21
-      Top = 56
-      Width = 456
-      Anchors = [akTop, akLeft, akRight]
-      OnChange = edSaveAsChange
-      TabOrder = 2
-    end
   end
   object gbContents: TGroupBox[1]
     Left = 8
-    Height = 254
-    Top = 144
+    Height = 294
+    Top = 104
     Width = 481
     Align = alClient
     BorderSpacing.Left = 8
@@ -118,7 +99,7 @@ inherited AddTorrentForm: TAddTorrentForm
     BorderSpacing.Right = 8
     BorderSpacing.Bottom = 8
     Caption = 'Torrent contents'
-    ClientHeight = 236
+    ClientHeight = 276
     ClientWidth = 477
     TabOrder = 1
     object txDiskSpace: TLabel
@@ -138,7 +119,7 @@ inherited AddTorrentForm: TAddTorrentForm
     end
     object lvFiles: TVarGrid
       Left = 10
-      Height = 183
+      Height = 223
       Top = 40
       Width = 456
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -152,15 +133,19 @@ inherited AddTorrentForm: TAddTorrentForm
           ReadOnly = True
           Title.Caption = 'Size'
           Width = 80
+        end      
+        item
+          Title.Caption = ' '
+          Visible = False
         end>
       FixedCols = 0
-      Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goEditing, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
+      Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goEditing, goRowSelect, goThumbTracking, goDblClickAutoSize]
       RowCount = 1
       TabOrder = 0
       Images = MainForm.ImageList16
       MultiSelect = True
-      SortColumn = 0
       HideSelection = True
+      OnCellAttributes = lvFilesCellAttributes
     end
     object btSelectAll: TButton
       Left = 206
@@ -186,32 +171,23 @@ inherited AddTorrentForm: TAddTorrentForm
     end
   end
   object Buttons: TButtonPanel[2]
-    Left = 8
+    Left = 0
     Height = 26
     Top = 406
-    Width = 481
-    BorderSpacing.Left = 8
-    BorderSpacing.Right = 8
+    Width = 497
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
     OKButton.Name = 'OKButton'
-    OKButton.DefaultCaption = True
-    OKButton.OnClick = OKButtonClick
+    OKButton.Caption = '&OK'
     HelpButton.Name = 'HelpButton'
-    HelpButton.DefaultCaption = True
+    HelpButton.Caption = '&Help'
     CloseButton.Name = 'CloseButton'
-    CloseButton.DefaultCaption = True
+    CloseButton.Caption = '&Close'
     CancelButton.Name = 'CancelButton'
-    CancelButton.DefaultCaption = True
+    CancelButton.Caption = 'Cancel'
     TabOrder = 2
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]
     ShowBevel = False
-  end
-  object DiskSpaceTimer: TTimer[3]
-    Enabled = False
-    OnTimer = DiskSpaceTimerTimer
-    left = 44
-    top = 248
   end
 end

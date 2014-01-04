@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2012 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -73,6 +73,12 @@ begin
       continue;
     with C do begin
       if C is TButtonPanel then begin
+        {$if lcl_major>=1}
+        with TButtonPanel(C) do begin
+          BorderSpacing.Left:=Spacing;
+          BorderSpacing.Right:=Spacing;
+        end;
+        {$endif}
         TButtonPanel(C).HandleNeeded;
         w:=0;
         h:=0;
@@ -124,12 +130,6 @@ begin
         R.Top := ScaleInt(R.Top);
         R.Right := ScaleInt(R.Right);
         R.Bottom := ScaleInt(R.Bottom);
-        if (Parent <> nil) and (Align = alNone) then begin
-          if akRight in Anchors then
-            Inc(R.Right, C.Parent.ClientWidth - ScaleInt(C.BaseParentClientSize.cx));
-          if akBottom in Anchors then
-            Inc(R.Bottom, C.Parent.ClientHeight - ScaleInt(C.BaseParentClientSize.cy));
-        end;
         BoundsRect := R;
         with BorderSpacing do begin
           Top:=ScaleInt(Top);
@@ -139,15 +139,6 @@ begin
           Around:=ScaleInt(Around);
           InnerBorder:=ScaleInt(InnerBorder);
         end;
-
-        if C is TWinControl then
-          with TWinControl(C).ChildSizing do begin
-            HorizontalSpacing:=ScaleInt(HorizontalSpacing);
-            VerticalSpacing:=ScaleInt(VerticalSpacing);
-            LeftRightSpacing:=ScaleInt(LeftRightSpacing);
-            TopBottomSpacing:=ScaleInt(TopBottomSpacing);
-          end;
-
         if C is TButtonPanel then
           TButtonPanel(C).Spacing:=ScaleInt(TButtonPanel(C).Spacing);
 
@@ -164,7 +155,7 @@ begin
       // Runtime fixes
 
       // Fix right aligned label autosize
-      if C.Visible and (C is TCustomLabel) and C.AutoSize and (TLabel(C).Alignment = taLeftJustify) and (C.Anchors*[akLeft, akRight] = [akRight]) then begin
+      if C.Visible and (C is TCustomLabel) and (C.AutoSize) and (C.Anchors*[akLeft, akRight] = [akRight]) then begin
         w:=0;
         h:=0;
         THackControl(C).CalculatePreferredSize(w, h, True);
@@ -178,13 +169,6 @@ begin
         THackControl(C).CalculatePreferredSize(w, h, True);
         C.Height:=h;
       end;
-      // Add extra top spacing for group box
-      i:=ScaleInt(6);
-      if C.Parent is TCustomGroupBox then
-        Top:=Top + i;
-      if C is TCustomGroupBox then
-        with TCustomGroupBox(C).ChildSizing do
-          TopBottomSpacing:=TopBottomSpacing + i;
 {$endif darwin}
 {$ifdef LCLgtk2}
       // Fix panel color bug on GTK2
@@ -217,13 +201,13 @@ var
   {$endif LCLcarbon}
 begin
   InitScale;
-  HandleNeeded;
   Font.Height:=ScaleInt(-11);
+  HandleNeeded;
   DoScale(Self);
   if FNeedAutoSize then
     AutoSizeForm(Self);
 {$ifdef LCLcarbon}
-  // Destroy handles of child controls to fix the LCL Carbon bug.
+  // Destroy handles of chuld controls to fix the LCL Carbon bug.
   // Without this hack, it will not be possible to hide form's controls.
   for i:=0 to ControlCount - 1 do
     if Controls[i] is TWinControl then
