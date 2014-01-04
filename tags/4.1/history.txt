@@ -1,0 +1,332 @@
+4.1 (Oct 06, 2012)
+[+] Option "Automatically add torrent links from the clipboard". Issue #571.
+[+] Statistics tab. Issue #157.
+[+] SOCKS 5 proxy support. Patch by Evgeny Rex. Issue #111.
+[+] Options to hide Filter pane, Info pane and status bar. Issue #98.
+[+] The "Copy file path to clipboard" command. Issue #326.
+[*] Greatly improved speed when handling large torrent and files lists. Issue #575.
+[*] Speedup adding torrents with many files (90K+). Issue #600.
+[*] Support for retina displays on OS X. Issue #594.
+[-] Reposition main window if the saved window position outside visible area. Issue #423.
+[-] Do not hide the Trackers tab when opening torrent properties if using old versions of Transmission. Issue #567.
+[-] Do not show tray icon if "Minimize to tray" and "Tray icon always visible" turned off. Issue #569.
+[-] Do not show queue position for finished (stopped) torrents. Issue #568.
+[-] Do not display tracker errors for stopped torrents.
+
+4.0.3 (May 10, 2012)
+[*] Show a wait window when adding a new torrent while the main window is hidden.
+[*] Do not show torrent contents when adding magnet links. Issue #560.
+[*] Show "?" as a torrent size if the torrent meta data is not downloaded yet. Issue #560.
+[-] The "MainForm:TMainForm Can not focus" error when adding a new torrent while the application is closed to tray. Issue #553.
+[-] Crash when adding nonexisting torrent file. Issue #555.
+
+4.0.2 (Apr 09, 2012)
+[*] Always search on torrent names when a letter is pressed. Issue #314.
+[-] A running instance of the application is not restored, when launching a new instance of the application.
+[-] Regression. Unable to add/edit trackers in v4.0. Issue #548.
+[-] Do not jump to the first column on key press. Issue #549.
+
+4.0.1 (Apr 08, 2012)
+[-] Incorrect folder filtering when tracker grouping is disabled. Issue #545.
+
+4.0 (Apr 07, 2012)
+[+] Added WebMoney and restored PayPal donation options. It is the right time to donate! :)
+[+] Support for torrent queues in Transmission 2.40+. Issue #445.
+[+] Support for adding several torrents at once. Issue #508.
+[+] Display a torrent name in the title of the Add torrent window. Issue #533.
+[+] Filer category "Error". Issue #420.
+[+] Trackers can be bulk edited in the torrent properties window. Issue #389.
+[+] Handle custom "rpc-url". Issue #523.
+[+] Option "User interface scaling". Issue #505.
+[+] Options to show/hide folder and tracker grouping. Issue #265.
+[+] Checking for a new version. Issue #361.
+[+] Searching in the torrent list by pressing letter keys. Issue #314.
+[+] Swedish translation by pesegolsson.
+[+] Finnish translation by thomazuu.
+[*] Unicode support for file operations on Windows. Issue #454.
+[*] Handle magnet links on Mac OS X. Issue #403.
+[*] Do not show the main application window when adding torrents, while the application is minimized to tray. Issue #455.
+[*] Allow specifying empty blocklist URL. Issue #543.
+[*] Caching of writes to the settings file.
+[-] The application hangs on start on Ubuntu 12.04 (with libglib 2.31+). Issue #489.
+[-] Do not change the last download dir when setting torrent's location. Issue #482.
+[-] Stall during auto reconnection on the "Connecting to daemon..." stage.
+[-] Unable to click again on a grid's header after the first click, unless you move the mouse cursor.
+[-] Scaling of the status bar on high DPI settings. Issue #495.
+[-] The "Access violation" error when connecting to a daemon using SSL in some cases. Issue #544.
+
+3.2 (Nov 01, 2011)
+------------------
+[+] Support for Transmission 2.40+.
+[+] Support for Ubuntu 11.x. Issue #466, #470.
+[+] Support for high DPI display settings.
+[+] Save path history in the Set location window. Issue #422.
+[*] Use system defined font size.
+[*] Use system defined wheel scroll speed. Issue #306.
+[*] Use case insensitive reverse path mapping on Windows.
+[*] Accept HTTPS protocol when adding torrent via a web link. Issue #474.
+[*] When opening a folder/url on linux, use the following apps to do that: xdg-open, gnome-open, kioclient, kfmclient. Issue #355.
+[-] The "Connection refused" error, when creating a new connection on Mac OS X. Issue #426.
+[-] Tray icon menu items are not updated on Mac OS X. Issue #415.
+[-] The "Alternate speeds" flag is not displayed in menus on linux.
+[-] Overlapping of sizing grip on Mac OS X.
+[-] Tray icon menu transparency problem on linux.
+[-] Minimize to tray problems on linux.
+
+3.1 (Apr 09, 2011)
+------------------
+[+] Support for Transmission 2.30+.
+[+] Implemented a folder browsing window for choosing torrent destination folder.
+[+] Option to Windows setup to handle magnet links by Transmission Remote GUI.
+[+] The "Enable µTP" daemon option.
+[+] Average download speed to torrent details.
+[+] Polish translation by piotr.tytus.dobrowolski.
+[+] Traditional Chinese (Taiwan) translation by thelordkao.
+[*] Hide popup menu items for tracker editing, if a transmission daemon does not support it. Issue #396.
+[*] Display "-" when disk free space can not be obtained.
+[-] Properly handle infinite ETA when sorting by the ETA column. Issue #397.
+[-] The "Unknown Run-Time error: 202" error when clicking on the filter separator, when there are no torrents in the list. Issue #401.
+
+3.0 (Feb 27, 2011)
+------------------
+[+] Added the "Refresh interval when minimized" option. Issue #313.
+[+] Trackers can be added, edited and removed. Issue #275.
+[+] Added the following transmission options: Disk cache size, Blocklist URL, Enable Local Peer Discovery.
+[+] Added the "Stop seeding when inactive" option to the daemon and torrent options.
+[+] Implemented setting of alternate speed limits. Issue #166.
+[+] Added speed limit popup menu to the status bar. Issue #82.
+[+] Added speed limit menu items to the tray icon menu. Issue #339.
+[+] Added a toolbar button to enable/disable alternate bandwidth settings. Issue #325.
+[+] Show disk free space in the status bar.
+[+] Show torrent contents as a tree in the Add torrent window. Issue #81.
+[+] Show free disk space in the Add torrent window. Issue #354.
+[+] Show total size of selected files in the Add torrent window.
+[+] Remember size of the Add torrent window.
+[+] Added the "Connect" toolbar button with a drop-down list of available connections.
+[+] Added the "Disconnect" menu item. Issue #283.
+[+] Added Belarusian translation by rohierd.
+[+] Added Korean translation by kpsman.
+[+] Added Chinese translation by xtfllbl.
+[+] Added Ukrainian translation by PavelDudn.
+[+] Added Italian translation by ilnero71. 
+[+] Added Greek translation by lamprakisa.
+[*] Separated connection settings from the program's options.
+[*] Improved handling of connection settings.
+[*] Use system button order for the OK/Cancel buttons.
+[*] Open the main window on single mouse click on the tray icon. Issue #372.
+[-] Increased time out for the "Update blocklist" command. Issue #353.
+[-] Fixed loading of OpenSSL files on some linux systems. Issue #369.
+[-] Prevent resources leak on Mac OS X. Issue #382.
+
+2.2 (Nov 11, 2010)
+------------------
+[+] Added a wait animation to the right side of the toolbar. The animation is shown when a daemon response takes more than 1 second.
+[+] Added SSL support. Issue #227.
+[+] Verification of selected torrents. Issue #312.
+[+] Allow changing properties for multiple selected torrents. Issue #322.
+[+] Added option "Delete a .torrent file after after a successful addition". Patch by reardonia with some modifications. Issue #329.
+[+] Added a new command line option. --home=<home_dir> : Specifies a home directory for the program. All program's settings are stored in the home directory. You can run multiple instances of the program by specifying different home directories.
+[+] Added Norwegian translation by anoteng. Issue #293.
+[+] Added German translation by dboxtester. Issue #302.
+[+] Added Romanian translation by contactdanielro. Issue #340.
+[*] Speedup disconnection.
+[*] Better connection errors handling.
+[*] Added 2 separate items to the tray icon menu: Show and Hide. Double click on menu shows the application.
+[*] Use the Command key for multi-selection on MacOS. Issue #344.
+[*] Do not ask an Administrator password during installation on Mac OS X.
+[*] Resolve names using hosts file on unix.
+[-] Pressing the Delete key when editing the search/filter asks to delete the currently selected torrent. Issue #330.
+[-] Files with 0 bytes length always shown as 0% downloaded in the file status panel. Issue #321.
+[-] Changing torrent selection using keyboard did not work properly after changing sort order. Issue #338.
+[-] The dialog for downloading torrent is not brought up over GUI if GUI was minimized and restored. Issue #336.
+[-] Properly restore the running instance of application when adding a new torrent via file association on Windows.
+[-] Fixed opening files/folders with spaces on Linux. Issue #291.
+[-] Selection was not visible on some GTK themes. Issue #320.
+
+2.1.1 (Aug 26, 2010)
+--------------------
+[+] Added the -hidden command line parameter to start the program hidden. Only the program's tray icon will be visible. Issue #36.
+[*] "Minimize to tray" and "Close to tray" options are enabled and work properly on Linux. Issue #285.
+[*] Speed optimizations. The program can now easily handle thousands torrents. Issue #281.
+[*] Improved a hint on a partial text.
+[-] Fixed wrong data in columns in some cases. Issue #273.
+
+2.1 (Aug 24, 2010)
+------------------
+[+] Ctrl+A selects all torrents/files. Issue #259.
+[+] Added the "Stopped" filter for torrents. Issue #268.
+[+] Support for adding magnet and URL links via the command line. Issue #261.
+[+] French, Spanish, Latvian, Portuguese Brazilian translations.
+[*] Use smaller font on Mac OS X. Issue #267.
+[*] Use proxy settings for GeoIP database download. Issue #278.
+[-] Improper update of the peer list. Issue #264.
+[-] Incorrect encoding of file names in the Add torrent window.
+[-] Problem to "Open containing folder" from the torrents list for some path mappings. Issue #260. 
+[-] Improper filtering by path in some cases. Issue #262.
+
+2.0 (Aug 11, 2010)
+------------------
+[+] Implemented the "Set location" command for torrents. Issue #110.
+[+] Support for adding a torrent via a URL or a magnet link. Issue #106, Issue #161.
+[+] Implemented filtering by download dir. It can be used as torrent labels. Issue #23.
+[+] Implemented changing of torrents priority. Issue #215.
+[+] Multiselect in the torrents list.
+[+] Added the "Reannounce (get more peers)" command for torrents. Issue #78.
+[+] Implemented the "Update blocklist" function. Issue #70.
+[+] Implemented per torrent seed ratio. Issue #201.
+[+] Added the following daemon options: "Enable blocklist", "Add .part extension to incomplete files", "Directory for incomplete files".
+[+] Added the "Priority", "Size to download" and "ID" columns to the torrents list. Issue #228, #245, #255.
+[+] Progress bars in the torrents and files lists are available on all platforms.
+[+] Sorting in the trackers, peers, files lists.
+[+] The columns setup window can be invoked for trackers, peers and files lists.
+[+] Icons for priorities.
+[+] Portable mode support. If the program finds the transgui.ini file in the same folder as the binary file, then it will store all configuration and data files in the program's folder, instead of the folder in a user profile.
+[+] Croatian translation by Tomislav Spoljaric.
+[+] Hungarian translation by zgyivi.
+[+] Czech translation by schunkac.
+[+] Dutch translation by Omkomarijke.
+[+] Danish translation by wilhjelm.
+[*] Disabled the "Close to tray" option on non-Windows platforms.
+[*] The "Open containing folder" command now highlights the active file in Windows Explorer window. Issue #145.
+[-] Fixed sorting by the Status column. Issue #253.
+[-] Fixed the "Invalid floating point operation" error when clicking on a torrent added via a magnet link. Issue #223.
+[-] Fixed the "Access violation" error when switching to the Trackers tab on old version of Transmission. Issue #231.
+[-] The "Open containing folder" command now properly handle torrents with sub-folders. Issue #222.
+[-] Lot of other bugs were fixed.
+
+1.4 (May 06, 2010)
+------------------
+[+] Localization support by Alex Cherednichenko, aka Alex7Che. See http://code.google.com/p/transmisson-remote-gui/wiki/Localization page if you want to make a translation.
+[+] Russian translation by Alex Cherednichenko, aka Alex7Che.
+[+] Trackers page.
+[+] Torrent files can be dragged and dropped to the program window.
+[-] Lot of Mac OS X specific bugs were fixed.
+[-] Fixed the "Could not convert variant of type (Null) into type (Int64)" error when the "Seeds" column is hidden. Issues #172 and #187.
+[-] Fixed tracker errors handling for newer versions of the daemon.
+[-] Do not jump to the selected torrent when the list refreshes om linux. Issue #192.
+[-] Issue #177: Sorting by "Status" doesn't differentiate "Finished" and "Stopped".
+[-] Issue #212: Sorting by Seeds does not work properly.
+
+1.3.2 (Jan 09, 2010)
+------------------
+[-] Fixed x10 progress percentage in some cases. Issue #171.
+[-] Fixed "List index (0) out of bounds" error in some cases. Issue #170.
+
+1.3.1 (Dec 20, 2009)
+------------------
+[*] Support for Transmission 1.80. Issue #147.
+[-] Fixed 10x progress percentage in some rare cases.
+
+1.3 (Oct 09, 2009)
+------------------
+[+] Alternate lines color in torrent,peer and file lists (Windows only). Issue #24.
+[-] Priority was set for wrong files. Issue #128.
+[-] Fixed error "JSON element 'downloadDir' not found." with Transmission 1.4x. Issue #132.
+[-] "Open" menu item was active if more than one file in the list was selected. Issue #127.
+[-] Crash when building pieces map for large torrents. Issue #130.
+
+1.2 (Sep 07, 2009)
+------------------
+[+] Draw progress bar in torrents and files lists (works on Windows only).
+[+] Show torrent pieces map on General page when Transmission 1.60 or later is connected. Issue #99.
+[+] Added the following daemon options available in Transmission 1.60 and later: Peek random port on daemon launch, Enable DHT, Seed ratio, Port testing.
+[+] Support for connection profiles.
+[+] Ability to specify remote to local path mappings in program's options.
+[+] Ability to open file and open containing folder when path mappings are specified.
+[+] Added ini parameter MaxFoldersHistory to [Interface] section of .ini file. Issue #101.
+[-] Select items using right mouse click in torrent and files lists on GTK2. Issue #84.
+[-] Reconnect window was shown if torrent deletion took too much time. Issue #79.
+[-] Fixed connection error "Can't assign requested address" on Windows 2000 or older. Issue #90.
+[-] Restored Win9x support.
+[-] Fixed handling of international character in torrent path on General info page. Issue #96.
+[-] Double click is required to select/deselect files in Add torrent window. Issue #94
+[-] Do not transform & character to underscore in labels. Issue #104.
+[-] More correct sorting on torrent name when there are several torrents with the same name. Issue #103.
+[-] Fixed changing of the following options for newer versions of transmission: Incoming port, Enable peer exchange, Global peer limit.
+[-] Fixed checking and un-checking files using Space key in Add torrent window.
+[-] Fixed red error images on successfully running torrents on Transmission 1.74+. Issue #121.
+
+1.1 (May 21, 2009)
+------------------
+[+] Remove torrent and all associated data function. Issue #67.
+[+] Quick search for torrents list. Issue #21.
+[+] Automatically reconnect when connection was lost. Issue #9, Issue #41.
+[+] Torrent comment becomes clickable if it contains URL address.
+[*] Display full torrent path in detailed info pane.
+[*] Made torrent name column always visible. Issue #72.
+[*] Improved UI response time on Linux.
+[-] Wrong torrent name shown in dialog box when deleting/verifying torrent if filtering is active. Issue #69.
+[-] Window not maximized again after minimization on Windows. Issue #46.
+[-] Properly display date/time during daylight time.
+[-] Completed percentage of 99.99% are displayed as 100.0%. Noticed by leshekb.
+
+1.0 (May 12, 2009)
+------------------
+[+] Added option 'Show parameters window when adding a new torrent'.
+[*] Support for the latest version of Transmission. Issues #45, #50, #60, #64.
+[*] Faster update of torrent details.
+[*] Transmission Remote GUI can be compiled as native Windows x64 application.
+[-] Several fixes to Unicode support. Issues #49, #56.
+[-] Strip only common part of path in case if a torrent contains multiple folders. Issue #22.
+[-] Wrong torrent name in delete confirmation window if name column is not the first in the list. Issue #34.
+[-] When opening several .torrent files via file association, multiple instances of the application are started. Issue #44.
+[-] Selected/focused mix-up in torrents list. Issue #62.
+[-] Error during updating of GeoIP database in some cases.
+[-] Several fixes for 64-bit targets.
+
+0.95 beta (Jan 21, 2009)
+------------------------
+[+] Proxy support.
+[+] Show column's sort direction.
+[*] Resolve peer's country in real time since it is quick.
+[-] Fixed .torrent association if user home path contains non English letters. Bug #12.
+[-] Some images were displayed on list header after column moving on Vista. Bug #14.
+[-] Wrong sorting after columns were moved. Bug #15.
+[-] Splitter positions were reset after restoring from tray icon. Bug #16.
+[-] Enumeration of completed torrents. Bug #20.
+[-] Peers view for Transmission 1.40.
+
+0.94 beta (Jan 18, 2009)
+------------------------
+[+] Columns setup for torrents list.
+[+] New columns to torrents list: Downloaded, Uploaded, Tracker, Tracker status, Added on, Completed on, Last active.
+[+] New entries on General info page: Tracker, Added on, Completed on, Last active.
+[+] Changing priority for multiple selected files.
+[*] Quicker shutdown of the application.
+[-] Buggy selection of files to download in add torrent window.
+[-] Wrong info was displayed in General info page for filtered torrents.
+[-] Allow @ character in password.
+[-] Do not require administrator privileges for Windows setup.
+
+0.93 beta (Dec 30, 2008)
+------------------------
+[-] Unable to add new torrent. GeoIP database is downloading instead of this.
+
+0.92 beta (Dec 30, 2008)
+------------------------
+[+] Torrent filtering by status and by tracker.
+[+] Resolving of peer's host by IP. 
+[+] Resolving of peer's country by IP. 
+[+] Displaying of peer's country flag.
+[*] Store parameters for add torrent window per each host.
+[*] Added "WARNING: Transmission daemon will crash if non-existent folder is specified." to add torrent window.
+[-] Some bug fixes.
+
+0.91 beta (Dec 26, 2008)
+------------------------
+[+] Download folder and peer limit can be specified when adding new torrent.
+[+] Tray icon.
+[+] Balloon tooltip when torrent download is complete.
+[+] Added "Start all" and "Stop all" items into "Torrent" menu.
+[+] Torrent file name can be passed as command line parameter.
+[+] Peer limit can be changed in torrent properties.
+[+] Windows installer.
+[*] Only single instance of the application is allowed.
+[*] Improved startup speed on Linux.
+[-] Skipping of files to download was not possible during torrent addition.
+[-] "Access violation" error after removing a torrent.
+[-] Issues with non-english charsets.
+
+0.9 beta
+--------
+[+] Initial version.

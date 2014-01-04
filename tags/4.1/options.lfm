@@ -1,0 +1,241 @@
+inherited OptionsForm: TOptionsForm
+  Left = 313
+  Height = 280
+  Top = 230
+  Width = 525
+  AutoSize = True
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Options'
+  ClientHeight = 280
+  ClientWidth = 525
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poMainFormCenter
+  object Page: TPageControl[0]
+    Left = 8
+    Height = 230
+    Top = 8
+    Width = 509
+    ActivePage = tabGeneral
+    Align = alClient
+    BorderSpacing.Around = 8
+    TabIndex = 0
+    TabOrder = 0
+    object tabGeneral: TTabSheet
+      Caption = 'General'
+      ClientHeight = 204
+      ClientWidth = 501
+      object txSeconds: TLabel
+        Left = 396
+        Height = 14
+        Top = 14
+        Width = 40
+        Caption = 'seconds'
+        ParentColor = False
+      end
+      object txRefreshInterval: TLabel
+        Left = 8
+        Height = 14
+        Top = 13
+        Width = 82
+        Caption = 'Refresh interval:'
+        ParentColor = False
+      end
+      object txRefreshIntervalMin: TLabel
+        Left = 8
+        Height = 14
+        Top = 41
+        Width = 159
+        Caption = 'Refresh interval when minimized:'
+        ParentColor = False
+      end
+      object txSeconds2: TLabel
+        Left = 396
+        Height = 14
+        Top = 42
+        Width = 40
+        Caption = 'seconds'
+        ParentColor = False
+      end
+      object edRefreshInterval: TSpinEdit
+        Left = 316
+        Height = 21
+        Top = 10
+        Width = 70
+        MaxValue = 999
+        MinValue = 1
+        TabOrder = 0
+        Value = 1
+      end
+      object edRefreshIntervalMin: TSpinEdit
+        Left = 316
+        Height = 21
+        Top = 38
+        Width = 70
+        MaxValue = 999
+        MinValue = 1
+        TabOrder = 1
+        Value = 1
+      end
+      object cbShowAddTorrentWindow: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 66
+        Width = 274
+        Caption = 'Show parameters window when adding a new torrent'
+        TabOrder = 2
+      end
+      object cbDeleteTorrentFile: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 90
+        Width = 272
+        Caption = 'Delete a .torrent file after after a successful addition'
+        TabOrder = 3
+      end
+      object cbLinksFromClipboard: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 114
+        Width = 253
+        Caption = 'Automatically add torrent links from the clipboard'
+        TabOrder = 4
+      end
+    end
+    object tabInterface: TTabSheet
+      Caption = 'Interface'
+      ClientHeight = 204
+      ClientWidth = 501
+      object txLanguage: TLabel
+        Left = 8
+        Height = 14
+        Top = 168
+        Width = 52
+        Caption = 'Language:'
+        ParentColor = False
+      end
+      object gbTray: TGroupBox
+        Left = 8
+        Height = 93
+        Top = 6
+        Width = 484
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Tray icon'
+        ClientHeight = 75
+        ClientWidth = 480
+        TabOrder = 0
+        object cbTrayIconAlways: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 50
+          Width = 130
+          Caption = 'Tray icon always visible'
+          TabOrder = 2
+        end
+        object cbTrayMinimize: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 4
+          Width = 93
+          Caption = 'Minimize to tray'
+          TabOrder = 0
+        end
+        object cbTrayClose: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 27
+          Width = 80
+          Caption = 'Close to tray'
+          TabOrder = 1
+        end
+      end
+      object cbLanguage: TComboBox
+        Left = 304
+        Height = 21
+        Top = 166
+        Width = 188
+        Anchors = [akTop, akLeft, akRight]
+        ItemHeight = 13
+        OnEnter = cbLanguageEnter
+        OnMouseDown = cbLanguageMouseDown
+        Style = csDropDownList
+        TabOrder = 4
+      end
+      object txIntfScale: TLabel
+        Left = 8
+        Height = 14
+        Top = 141
+        Width = 108
+        Caption = 'User interface scaling:'
+        ParentColor = False
+      end
+      object edIntfScale: TSpinEdit
+        Left = 304
+        Height = 21
+        Top = 138
+        Width = 70
+        Increment = 5
+        MaxValue = 200
+        MinValue = 75
+        TabOrder = 3
+        Value = 100
+      end
+      object txPerc: TLabel
+        Left = 384
+        Height = 14
+        Top = 141
+        Width = 12
+        Caption = '%'
+        ParentColor = False
+      end
+      object cbCheckNewVersion: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 112
+        Width = 160
+        Caption = 'Check for new version every:'
+        OnClick = cbCheckNewVersionClick
+        TabOrder = 1
+      end
+      object edCheckVersionDays: TSpinEdit
+        Left = 304
+        Height = 21
+        Top = 110
+        Width = 70
+        MaxValue = 999
+        MinValue = 1
+        TabOrder = 2
+        Value = 5
+      end
+      object txDays: TLabel
+        Left = 384
+        Height = 14
+        Top = 113
+        Width = 24
+        Caption = 'days'
+        ParentColor = False
+      end
+    end
+  end
+  object Buttons: TButtonPanel[1]
+    Left = 0
+    Height = 26
+    Top = 246
+    Width = 525
+    BorderSpacing.Bottom = 8
+    BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&OK'
+    HelpButton.Name = 'HelpButton'
+    HelpButton.Caption = '&Help'
+    CloseButton.Name = 'CloseButton'
+    CloseButton.Caption = '&Close'
+    CancelButton.Name = 'CancelButton'
+    CancelButton.Caption = 'Cancel'
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+end
