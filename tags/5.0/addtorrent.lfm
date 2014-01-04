@@ -1,0 +1,215 @@
+inherited AddTorrentForm: TAddTorrentForm
+  Left = 376
+  Height = 440
+  Top = 186
+  Width = 497
+  HorzScrollBar.Page = 505
+  VertScrollBar.Page = 404
+  VertScrollBar.Range = 92
+  AutoSize = True
+  BorderIcons = [biSystemMenu]
+  Caption = 'Add new torrent'
+  ClientHeight = 440
+  ClientWidth = 497
+  Constraints.MinHeight = 300
+  Constraints.MinWidth = 470
+  OnCreate = FormCreate
+  OnShow = FormShow
+  Position = poMainFormCenter
+  object gbSaveAs: TGroupBox[0]
+    Left = 8
+    Height = 132
+    Top = 8
+    Width = 481
+    Align = alTop
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 8
+    BorderSpacing.Right = 8
+    Caption = ' '
+    ClientHeight = 114
+    ClientWidth = 477
+    TabOrder = 0
+    object txDestFolder: TLabel
+      Left = 10
+      Height = 14
+      Top = 0
+      Width = 90
+      Caption = 'Destination folder:'
+      ParentColor = False
+    end
+    object txPeerLimit: TLabel
+      Left = 340
+      Height = 14
+      Top = 87
+      Width = 48
+      Alignment = taRightJustify
+      Anchors = [akTop, akRight]
+      Caption = 'Peer limit:'
+      ParentColor = False
+    end
+    object cbDestFolder: TComboBox
+      Left = 10
+      Height = 21
+      Top = 16
+      Width = 360
+      Anchors = [akTop, akLeft, akRight]
+      DropDownCount = 20
+      ItemHeight = 13
+      OnChange = cbDestFolderChange
+      TabOrder = 0
+    end
+    object cbStartTorrent: TCheckBox
+      Left = 10
+      Height = 17
+      Top = 85
+      Width = 79
+      Caption = 'Start torrent'
+      Checked = True
+      State = cbChecked
+      TabOrder = 3
+    end
+    object edPeerLimit: TSpinEdit
+      Left = 404
+      Height = 21
+      Top = 84
+      Width = 62
+      Anchors = [akTop, akRight]
+      MaxValue = 999
+      MinValue = 1
+      TabOrder = 4
+      Value = 1
+    end
+    object btBrowse: TButton
+      Left = 375
+      Height = 23
+      Top = 15
+      Width = 91
+      Anchors = [akTop, akRight]
+      Caption = 'Browse...'
+      OnClick = btBrowseClick
+      TabOrder = 1
+    end
+    object txSaveAs: TLabel
+      Left = 10
+      Height = 14
+      Top = 40
+      Width = 43
+      Caption = 'Save as:'
+      ParentColor = False
+    end
+    object edSaveAs: TEdit
+      Left = 10
+      Height = 21
+      Top = 56
+      Width = 456
+      Anchors = [akTop, akLeft, akRight]
+      OnChange = edSaveAsChange
+      TabOrder = 2
+    end
+  end
+  object gbContents: TGroupBox[1]
+    Left = 8
+    Height = 254
+    Top = 144
+    Width = 481
+    Align = alClient
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 4
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    Caption = 'Torrent contents'
+    ClientHeight = 236
+    ClientWidth = 477
+    TabOrder = 1
+    object txDiskSpace: TLabel
+      Left = 10
+      Height = 14
+      Top = 20
+      Width = 79
+      Caption = 'Free disk space:'
+      ParentColor = False
+    end
+    object txSize: TLabel
+      Left = 10
+      Height = 1
+      Top = 2
+      Width = 1
+      ParentColor = False
+    end
+    object lvFiles: TVarGrid
+      Left = 10
+      Height = 183
+      Top = 40
+      Width = 456
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      Columns = <      
+        item
+          ReadOnly = True
+          Title.Caption = 'File name'
+          Width = 350
+        end      
+        item
+          ReadOnly = True
+          Title.Caption = 'Size'
+          Width = 80
+        end>
+      FixedCols = 0
+      Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goEditing, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
+      RowCount = 1
+      TabOrder = 0
+      Images = MainForm.ImageList16
+      MultiSelect = True
+      SortColumn = 0
+      HideSelection = True
+    end
+    object btSelectAll: TButton
+      Left = 206
+      Height = 23
+      Top = 4
+      Width = 126
+      Anchors = [akTop, akRight]
+      Caption = 'Select all'
+      Constraints.MinWidth = 75
+      OnClick = btSelectAllClick
+      TabOrder = 1
+    end
+    object btSelectNone: TButton
+      Left = 340
+      Height = 23
+      Top = 4
+      Width = 126
+      Anchors = [akTop, akRight]
+      Caption = 'Select none'
+      Constraints.MinWidth = 75
+      OnClick = btSelectNoneClick
+      TabOrder = 2
+    end
+  end
+  object Buttons: TButtonPanel[2]
+    Left = 0
+    Height = 26
+    Top = 406
+    Width = 497
+    BorderSpacing.Bottom = 8
+    BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&OK'
+    OKButton.OnClick = OKButtonClick
+    HelpButton.Name = 'HelpButton'
+    HelpButton.Caption = '&Help'
+    CloseButton.Name = 'CloseButton'
+    CloseButton.Caption = '&Close'
+    CancelButton.Name = 'CancelButton'
+    CancelButton.Caption = 'Cancel'
+    TabOrder = 2
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+  object DiskSpaceTimer: TTimer[3]
+    Enabled = False
+    OnTimer = DiskSpaceTimerTimer
+    left = 44
+    top = 248
+  end
+end

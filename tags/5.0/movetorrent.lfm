@@ -1,0 +1,86 @@
+inherited MoveTorrentForm: TMoveTorrentForm
+  Left = 354
+  Height = 126
+  Top = 193
+  Width = 561
+  AutoSize = True
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Torrent data location'
+  ClientHeight = 126
+  ClientWidth = 561
+  OnCreate = FormCreate
+  Position = poMainFormCenter
+  object Buttons: TButtonPanel[0]
+    Left = 0
+    Height = 36
+    Top = 82
+    Width = 561
+    BorderSpacing.Bottom = 8
+    BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&OK'
+    HelpButton.Name = 'HelpButton'
+    HelpButton.Caption = '&Help'
+    CloseButton.Name = 'CloseButton'
+    CloseButton.Caption = '&Close'
+    CancelButton.Name = 'CancelButton'
+    CancelButton.Caption = 'Cancel'
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+  end
+  object Panel1: TPanel[1]
+    Left = 8
+    Height = 74
+    Top = 8
+    Width = 545
+    Align = alClient
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 8
+    BorderSpacing.Right = 8
+    BevelOuter = bvNone
+    ClientHeight = 74
+    ClientWidth = 545
+    Constraints.MinWidth = 545
+    TabOrder = 0
+    object txTorrentDir: TLabel
+      Left = 0
+      Height = 14
+      Top = 0
+      Width = 145
+      Caption = 'New location for torrent data:'
+      ParentColor = False
+    end
+    object edTorrentDir: TComboBox
+      Left = 0
+      Height = 21
+      Top = 20
+      Width = 449
+      Anchors = [akTop, akLeft, akRight]
+      DropDownCount = 20
+      ItemHeight = 13
+      TabOrder = 0
+    end
+    object cbMoveData: TCheckBox
+      Left = 0
+      Height = 17
+      Top = 47
+      Width = 285
+      Caption = 'Move torrent data from current location to new location'
+      Checked = True
+      State = cbChecked
+      TabOrder = 2
+    end
+    object btBrowse: TButton
+      Left = 454
+      Height = 23
+      Top = 19
+      Width = 91
+      Anchors = [akTop, akRight]
+      Caption = 'Browse...'
+      OnClick = btBrowseClick
+      TabOrder = 1
+    end
+  end
+end

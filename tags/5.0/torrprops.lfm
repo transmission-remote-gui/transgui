@@ -1,0 +1,215 @@
+inherited TorrPropsForm: TTorrPropsForm
+  Left = 364
+  Height = 270
+  Top = 185
+  Width = 517
+  HorzScrollBar.Page = 349
+  HorzScrollBar.Range = 40
+  VertScrollBar.Page = 155
+  VertScrollBar.Range = 22
+  AutoSize = True
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Torrent properties'
+  ClientHeight = 270
+  ClientWidth = 517
+  Constraints.MinHeight = 186
+  Constraints.MinWidth = 350
+  OnCreate = FormCreate
+  Position = poMainFormCenter
+  object Buttons: TButtonPanel[0]
+    Left = 0
+    Height = 26
+    Top = 236
+    Width = 517
+    BorderSpacing.Bottom = 8
+    BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&OK'
+    HelpButton.Name = 'HelpButton'
+    HelpButton.Caption = '&Help'
+    CloseButton.Name = 'CloseButton'
+    CloseButton.Caption = '&Close'
+    CancelButton.Name = 'CancelButton'
+    CancelButton.Caption = 'Cancel'
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+  object Page: TPageControl[1]
+    Left = 8
+    Height = 220
+    Top = 8
+    Width = 501
+    ActivePage = tabGeneral
+    Align = alClient
+    BorderSpacing.Around = 8
+    TabIndex = 0
+    TabOrder = 0
+    object tabGeneral: TTabSheet
+      Caption = 'General'
+      ClientHeight = 194
+      ClientWidth = 493
+      object txKbs1: TLabel
+        Left = 420
+        Height = 14
+        Top = 37
+        Width = 22
+        Anchors = [akTop, akRight]
+        Caption = 'KB/s'
+        ParentColor = False
+      end
+      object txKbs2: TLabel
+        Left = 420
+        Height = 14
+        Top = 69
+        Width = 22
+        Anchors = [akTop, akRight]
+        Caption = 'KB/s'
+        ParentColor = False
+      end
+      object txName: TLabel
+        Left = 10
+        Height = 14
+        Top = 10
+        Width = 32
+        Caption = 'Name:'
+        ParentColor = False
+        ShowAccelChar = False
+      end
+      object txPeerLimit: TLabel
+        Left = 10
+        Height = 14
+        Top = 101
+        Width = 48
+        Caption = 'Peer limit:'
+        ParentColor = False
+      end
+      object txMinutes: TLabel
+        Left = 420
+        Height = 14
+        Top = 163
+        Width = 38
+        Anchors = [akTop, akRight]
+        Caption = 'minutes'
+        ParentColor = False
+      end
+      object cbMaxDown: TCheckBox
+        Left = 10
+        Height = 17
+        Top = 36
+        Width = 147
+        Caption = 'Maximum download speed:'
+        OnClick = cbMaxDownClick
+        TabOrder = 0
+      end
+      object edMaxDown: TSpinEdit
+        Left = 340
+        Height = 21
+        Top = 34
+        Width = 66
+        Anchors = [akTop, akRight]
+        Increment = 10
+        MaxValue = 999999
+        TabOrder = 1
+      end
+      object cbMaxUp: TCheckBox
+        Left = 10
+        Height = 17
+        Top = 68
+        Width = 133
+        Caption = 'Maximum upload speed:'
+        OnClick = cbMaxUpClick
+        TabOrder = 2
+      end
+      object edMaxUp: TSpinEdit
+        Left = 340
+        Height = 21
+        Top = 66
+        Width = 66
+        Anchors = [akTop, akRight]
+        Increment = 10
+        MaxValue = 999999
+        TabOrder = 3
+      end
+      object edPeerLimit: TSpinEdit
+        Left = 340
+        Height = 21
+        Top = 98
+        Width = 66
+        Anchors = [akTop, akRight]
+        MaxValue = 999
+        MinValue = 1
+        TabOrder = 4
+        Value = 1
+      end
+      object cbSeedRatio: TCheckBox
+        Left = 10
+        Height = 17
+        Top = 131
+        Width = 71
+        AllowGrayed = True
+        Caption = 'Seed ratio:'
+        OnClick = cbSeedRatioClick
+        TabOrder = 5
+      end
+      object edSeedRatio: TFloatSpinEdit
+        Left = 340
+        Height = 21
+        Top = 129
+        Width = 66
+        Anchors = [akTop, akRight]
+        Increment = 0.1
+        MaxValue = 9999
+        MinValue = 0
+        TabOrder = 6
+        Value = 0
+      end
+      object cbIdleSeedLimit: TCheckBox
+        Left = 10
+        Height = 17
+        Top = 162
+        Width = 170
+        AllowGrayed = True
+        Caption = 'Stop seeding when inactive for:'
+        OnClick = cbIdleSeedLimitClick
+        TabOrder = 7
+      end
+      object edIdleSeedLimit: TSpinEdit
+        Left = 340
+        Height = 21
+        Top = 160
+        Width = 66
+        Anchors = [akTop, akRight]
+        MaxValue = 999999
+        MinValue = 1
+        TabOrder = 8
+        Value = 1
+      end
+    end
+    object tabAdvanced: TTabSheet
+      Caption = 'Advanced'
+      ClientHeight = 194
+      ClientWidth = 488
+      object edTrackers: TMemo
+        Left = 8
+        Height = 153
+        Top = 30
+        Width = 471
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ScrollBars = ssAutoBoth
+        TabOrder = 0
+        WordWrap = False
+      end
+      object txTrackers: TLabel
+        Left = 8
+        Height = 14
+        Top = 10
+        Width = 46
+        Caption = 'Trackers:'
+        ParentColor = False
+      end
+    end
+  end
+end
