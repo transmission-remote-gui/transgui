@@ -490,7 +490,7 @@ inherited AboutForm: TAboutForm
         Height = 14
         Top = 66
         Width = 198
-        Caption = 'Copyright (c) 2008-2014 by Yury Sidorov'
+        Caption = 'Copyright (c) 2008-2013 by Yury Sidorov'
         ParentColor = False
       end
       object txVersion: TLabel
@@ -950,13 +950,13 @@ inherited AboutForm: TAboutForm
     BorderSpacing.Top = 8
     BorderSpacing.Around = 0
     OKButton.Name = 'OKButton'
-    OKButton.DefaultCaption = True
+    OKButton.Caption = '&OK'
     HelpButton.Name = 'HelpButton'
-    HelpButton.DefaultCaption = True
+    HelpButton.Caption = '&Help'
     CloseButton.Name = 'CloseButton'
-    CloseButton.DefaultCaption = True
+    CloseButton.Caption = '&Close'
     CancelButton.Name = 'CancelButton'
-    CancelButton.DefaultCaption = True
+    CancelButton.Caption = 'Cancel'
     TabOrder = 1
     Spacing = 0
     ShowButtons = [pbOK]

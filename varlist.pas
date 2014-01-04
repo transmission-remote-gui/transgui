@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2013 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -296,7 +296,7 @@ begin
   if Result = 0 then begin
     Result:=CompareVariants(v1[_SortColumn], v2[_SortColumn]);
     i:=_IntCols;
-    while (Result = 0) and (i < _List.ColCnt + _IntCols) do begin
+    while (Result = 0) and (i < _List.ColCnt) do begin
       if i <> _SortColumn then
         Result:=CompareVariants(v1[i], v2[i]);
       Inc(i);

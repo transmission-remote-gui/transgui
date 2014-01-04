@@ -562,22 +562,20 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
     end
   end
   object Buttons: TButtonPanel[1]
-    Left = 8
+    Left = 0
     Height = 26
     Top = 311
-    Width = 601
-    BorderSpacing.Left = 8
-    BorderSpacing.Right = 8
+    Width = 617
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
     OKButton.Name = 'OKButton'
-    OKButton.DefaultCaption = True
+    OKButton.Caption = '&OK'
     HelpButton.Name = 'HelpButton'
-    HelpButton.DefaultCaption = True
+    HelpButton.Caption = '&Help'
     CloseButton.Name = 'CloseButton'
-    CloseButton.DefaultCaption = True
+    CloseButton.Caption = '&Close'
     CancelButton.Name = 'CancelButton'
-    CancelButton.DefaultCaption = True
+    CancelButton.Caption = 'Cancel'
     TabOrder = 1
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]

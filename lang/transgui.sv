@@ -1,4 +1,4 @@
-TranslationLanguage=Svenska
+﻿TranslationLanguage=Svenska
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mappning remote til lokala sökvägar.~~Till exempel:~/share=\\pch\share~/var/downloads/musik=Z:\musik"
 %d x %s (have %d)=%d x %s (har %d)
@@ -224,7 +224,7 @@ Update blocklist=Uppdatera blockeringslista
 URL of a .torrent file or a magnet link=Adressen till en .torrent-fil eller en magnet-länk
 Columns setup=Kolumn inställning
 Add torrent=Lägg till torrent
-Delete a .torrent file after a successful addition=Ta bort .torrent-filen efter att den är uppladdad till servern
+Delete a .torrent file after after a successful addition=Ta bort .torrent-filen efter att den är uppladdad till servern
 Torrent=Torrent
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Dataverifiering kan ta lång tid.~Är du säker på att du önskar att verifiera %d torrenter?
 Unable to load OpenSSL library files: %s and %s=Klarade inte att ladda OpenSSL biblioteks filerna: %s och %s från OpenSSL

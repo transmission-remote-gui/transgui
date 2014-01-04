@@ -1,4 +1,4 @@
-TranslationLanguage=Česky
+﻿TranslationLanguage=Česky
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapování vzdálené cesty na lokalní.~~Příklady:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (hotových %d)
@@ -223,7 +223,7 @@ Update blocklist=Aktualizovat blocklist
 URL of a .torrent file or a magnet link=URL .torrent souboru nebo magnet link
 Columns setup=Nastavení sloupců
 Add torrent=Přidat torrent
-Delete a .torrent file after a successful addition=Odstranit .torrent soubor po úspěšném přidání
+Delete a .torrent file after after a successful addition=Odstranit .torrent soubor po úspěšném přidání
 Torrent=Torrent
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Ověřování torrentu může trvat delší dobu.~Opravdu chcete ověřit %d torrentů?
 Unable to load OpenSSL library files: %s and %s=Nebylo možné otevřít soubory knihovny OpenSSL: %s a %s

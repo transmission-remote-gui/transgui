@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2013 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -143,7 +143,7 @@ begin
 
   Application.ProcessMessages;
   AppBusy;
-  OpenURL('http://code.google.com/p/transmisson-remote-gui/wiki/Download?tm=2');
+  OpenURL('http://code.google.com/p/transmisson-remote-gui/downloads/list');
   AppNormal;
 end;
 

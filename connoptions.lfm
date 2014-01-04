@@ -339,23 +339,21 @@ inherited ConnOptionsForm: TConnOptionsForm
     end
   end
   object Buttons: TButtonPanel[1]
-    Left = 8
+    Left = 0
     Height = 26
     Top = 345
-    Width = 513
-    BorderSpacing.Left = 8
+    Width = 529
     BorderSpacing.Top = 8
-    BorderSpacing.Right = 8
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
     OKButton.Name = 'OKButton'
-    OKButton.DefaultCaption = True
+    OKButton.Caption = '&OK'
     HelpButton.Name = 'HelpButton'
-    HelpButton.DefaultCaption = True
+    HelpButton.Caption = '&Help'
     CloseButton.Name = 'CloseButton'
-    CloseButton.DefaultCaption = True
+    CloseButton.Caption = '&Close'
     CancelButton.Name = 'CancelButton'
-    CancelButton.DefaultCaption = True
+    CancelButton.Caption = 'Cancel'
     TabOrder = 2
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]

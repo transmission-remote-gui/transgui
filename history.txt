@@ -1,7 +1,3 @@
-5.1 (?)
-[-] Disable the "Save as" field when adding magnet links. Issue #725.
-[-] Incorrect color alternation when sorting the files list by any column except the "File name".
-
 5.0 (Nov 05, 2013)
 [+] An option to change a torrent's file/folder name during addition (Transmission 2.80+ only). Issue #498.
 [+] Renaming of existing torrents, files and folders (Transmission 2.80+ only). Issue #498.

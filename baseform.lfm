@@ -3,5 +3,5 @@ object BaseForm: TBaseForm
   Height = 240
   Top = 132
   Width = 320
-  LCLVersion = '1.0.15.0'
+  LCLVersion = '0.9.30.5'
 end

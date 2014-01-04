@@ -1,4 +1,4 @@
-TranslationLanguage=繁體中文
+﻿TranslationLanguage=繁體中文
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="遠端路徑映射.~~例如:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (下載了 %d)
@@ -224,7 +224,7 @@ Update blocklist=更新黑名單
 URL of a .torrent file or a magnet link=Torrent檔案網址或是Magnet連結
 Columns setup=欄位設定
 Add torrent=添加Torrent檔案
-Delete a .torrent file after a successful addition=成功添加任務之後刪除Torrent檔案
+Delete a .torrent file after after a successful addition=成功添加任務之後刪除Torrent檔案
 Torrent=Torrent檔案
 Torrents verification may take a long time.~Are you sure to start verification of %d torrents?=Torrent校驗時間可能會很長，是否對 %d 個Torrents進行校驗?
 Unable to load OpenSSL library files: %s and %s=無法載入 OpenSSL 函式庫檔案: %s and %s

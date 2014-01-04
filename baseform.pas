@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2013 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -73,6 +73,12 @@ begin
       continue;
     with C do begin
       if C is TButtonPanel then begin
+        {$if lcl_major>=1}
+        with TButtonPanel(C) do begin
+          BorderSpacing.Left:=Spacing;
+          BorderSpacing.Right:=Spacing;
+        end;
+        {$endif}
         TButtonPanel(C).HandleNeeded;
         w:=0;
         h:=0;

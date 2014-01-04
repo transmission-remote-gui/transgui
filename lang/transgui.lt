@@ -1,4 +1,4 @@
-TranslationLanguage=Lietuvių
+﻿TranslationLanguage=Lietuvių
 '%s' has finished downloading=Baigtas „%s“ atsiuntimas
 /s=/s
 &Add torrent=&Pridėti torentą
@@ -72,7 +72,7 @@ Current=Ši sesija
 D: %s/s=Ats.: %s/s
 Days=Dienos
 days=dienų
-Delete a .torrent file after a successful addition=Pašalinti .torrent failą sėkmingai pridėjus
+Delete a .torrent file after after a successful addition=Pašalinti .torrent failą sėkmingai pridėjus
 Delete=Ištrinti
 Destination folder=Atsiuntimų aplankas
 Directory for incomplete files=Aplankas nebaigtiems failams

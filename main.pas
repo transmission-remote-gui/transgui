@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2013 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.0.1';
+  AppVersion = '5.0';
 
 resourcestring
   sAll = 'All torrents';
@@ -2264,8 +2264,6 @@ begin
             gbSaveAs.BorderSpacing.Bottom:=gbSaveAs.BorderSpacing.Top;
             BorderStyle:=bsDialog;
             AutoSizeForm(TCustomForm(gbContents.Parent));
-            edSaveAs.Enabled:=False;
-            edSaveAs.ParentColor:=True;
           end
           else
             // Torrent file
