@@ -93,6 +93,11 @@ Source: "..\..\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion; Components:
 Source: "..\..\readme.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
 Source: "..\..\history.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
 Source: "..\..\lang\transgui.*"; DestDir: "{app}\lang"; Flags: ignoreversion; Components: lang
+; OpenSSL
+#if FileExists("libeay32.dll") && FileExists("ssleay32.dll")
+Source: "libeay32.dll"; DestDir: "{app}"; Components: app
+Source: "ssleay32.dll"; DestDir: "{app}"; Components: app
+#endif
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: {app}
