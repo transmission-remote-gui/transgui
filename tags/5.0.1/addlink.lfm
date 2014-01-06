@@ -1,0 +1,64 @@
+inherited AddLinkForm: TAddLinkForm
+  Left = 354
+  Height = 93
+  Top = 193
+  Width = 574
+  AutoSize = True
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Add torrent link'
+  ClientHeight = 93
+  ClientWidth = 574
+  OnCreate = FormCreate
+  Position = poMainFormCenter
+  object Buttons: TButtonPanel[0]
+    Left = 8
+    Height = 26
+    Top = 59
+    Width = 558
+    BorderSpacing.Left = 8
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+  object Panel1: TPanel[1]
+    Left = 8
+    Height = 43
+    Top = 8
+    Width = 558
+    Align = alClient
+    BorderSpacing.Around = 8
+    BevelOuter = bvNone
+    ClientHeight = 43
+    ClientWidth = 558
+    TabOrder = 0
+    object txLink: TLabel
+      Left = 0
+      Height = 14
+      Top = 0
+      Width = 183
+      Caption = 'URL of a .torrent file or a magnet link:'
+      ParentColor = False
+    end
+    object edLink: TEdit
+      Left = 0
+      Height = 21
+      Top = 20
+      Width = 558
+      Anchors = [akTop, akLeft, akRight]
+      TabOrder = 0
+    end
+  end
+end
