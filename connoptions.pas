@@ -50,6 +50,7 @@ type
     cbAuth: TCheckBox;
     cbShowAdvanced: TCheckBox;
     cbAskPassword: TCheckBox;
+    edMaxFolder: TSpinEdit;
     edRpcPath: TEdit;
     edUpSpeeds: TEdit;
     edHost: TEdit;
@@ -64,6 +65,7 @@ type
     edPassword: TEdit;
     edPaths: TMemo;
     gbSpeed: TGroupBox;
+    Label1: TLabel;
     txRpcPath: TLabel;
     txConName: TLabel;
     txConnHelp: TLabel;
@@ -275,6 +277,8 @@ var
   i, cnt: integer;
   s: string;
 begin
+  bidiMode := GetBiDi(); // PETROV
+
   Page.ActivePageIndex:=0;
   txConnHelp.Caption:=Format(txConnHelp.Caption, [AppName]);
   ActiveControl:=edHost;
@@ -468,6 +472,9 @@ begin
     edUpSpeeds.Text:=ReadString(Sec, 'UpSpeeds', DefSpeeds);
     cbUseProxyClick(nil);
   end;
+
+  edMaxFolder.Value:= Ini.ReadInteger('Interface','MaxFoldersHistory', 50); // PETROV
+
   FCurConn:=ConnName;
   FCurHost:=edHost.Text;
 end;
@@ -483,6 +490,8 @@ begin
   if ConnName = ActiveConnection then
     if IsConnSettingsChanged(ConnName) then
       ActiveSettingChanged:=True;
+
+  Ini.WriteInteger('Interface','MaxFoldersHistory', edMaxFolder.Value); // PETROV
 
   with Ini do begin
     Sec:='Connection.' + ConnName;

@@ -47,6 +47,7 @@ type
     property FileName: utf8string Read FFilename;
   end;
 
+  
   { TIniFileUtf8 }
 
   TIniFileUtf8 = class(TIniFile)
@@ -57,7 +58,10 @@ type
     constructor Create(const AFileName: string; AEscapeLineFeeds : Boolean = False); override;
     destructor Destroy; override;
     procedure UpdateFile; override;
+    function getFileName() : string;
   end;
+  
+  
 
 function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
 function FileCreateUTF8(Const FileName : string) : THandle;
@@ -627,6 +631,13 @@ begin
     end;
   end;
 end;
+
+
+function TIniFileUtf8.getFileName() : string;
+begin
+	result:=FFileName;
+end;
+
 
 finalization
 {$ifdef windows}

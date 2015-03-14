@@ -21,11 +21,11 @@ inherited OptionsForm: TOptionsForm
     ActivePage = tabGeneral
     Align = alClient
     BorderSpacing.Around = 8
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 255
+      ClientHeight = 253
       ClientWidth = 540
       object gbNewTorrent: TGroupBox
         Left = 8
@@ -39,25 +39,25 @@ inherited OptionsForm: TOptionsForm
         TabOrder = 1
         object cbShowAddTorrentWindow: TCheckBox
           Left = 10
-          Height = 17
+          Height = 19
           Top = 4
-          Width = 289
+          Width = 322
           Caption = 'Prompt for download options when adding a new torrent'
           TabOrder = 0
         end
         object cbDeleteTorrentFile: TCheckBox
           Left = 10
-          Height = 17
+          Height = 19
           Top = 28
-          Width = 245
+          Width = 263
           Caption = 'Delete a .torrent file after a successful addition'
           TabOrder = 1
         end
         object cbLinksFromClipboard: TCheckBox
           Left = 10
-          Height = 17
+          Height = 19
           Top = 52
-          Width = 253
+          Width = 285
           Caption = 'Automatically add torrent links from the clipboard'
           TabOrder = 2
         end
@@ -73,42 +73,42 @@ inherited OptionsForm: TOptionsForm
         ClientWidth = 519
         TabOrder = 0
         object txSeconds: TLabel
-          Left = 438
-          Height = 14
+          Left = 435
+          Height = 15
           Top = 6
-          Width = 40
+          Width = 43
           Anchors = [akTop, akRight]
           Caption = 'seconds'
           ParentColor = False
         end
         object txRefreshInterval: TLabel
           Left = 10
-          Height = 14
+          Height = 15
           Top = 5
-          Width = 105
+          Width = 108
           Caption = 'Data refresh interval:'
           ParentColor = False
         end
         object txRefreshIntervalMin: TLabel
           Left = 10
-          Height = 14
+          Height = 15
           Top = 33
-          Width = 182
+          Width = 199
           Caption = 'Data refresh interval when minimized:'
           ParentColor = False
         end
         object txSeconds2: TLabel
-          Left = 438
-          Height = 14
+          Left = 435
+          Height = 15
           Top = 34
-          Width = 40
+          Width = 43
           Anchors = [akTop, akRight]
           Caption = 'seconds'
           ParentColor = False
         end
         object edRefreshInterval: TSpinEdit
           Left = 358
-          Height = 21
+          Height = 23
           Top = 2
           Width = 70
           Anchors = [akTop, akRight]
@@ -119,7 +119,7 @@ inherited OptionsForm: TOptionsForm
         end
         object edRefreshIntervalMin: TSpinEdit
           Left = 358
-          Height = 21
+          Height = 23
           Top = 30
           Width = 70
           Anchors = [akTop, akRight]
@@ -130,9 +130,9 @@ inherited OptionsForm: TOptionsForm
         end
         object cbCalcAvg: TCheckBox
           Left = 10
-          Height = 17
+          Height = 19
           Top = 60
-          Width = 274
+          Width = 298
           Caption = 'Average out transfer speeds to eliminate fluctuations'
           TabOrder = 2
         end
@@ -140,13 +140,13 @@ inherited OptionsForm: TOptionsForm
     end
     object tabAdvanced: TTabSheet
       Caption = 'Advanced'
-      ClientHeight = 255
+      ClientHeight = 253
       ClientWidth = 540
       object txLanguage: TLabel
         Left = 8
-        Height = 14
+        Height = 15
         Top = 148
-        Width = 52
+        Width = 55
         Caption = 'Language:'
         ParentColor = False
       end
@@ -168,45 +168,45 @@ inherited OptionsForm: TOptionsForm
         TabOrder = 0
         object cbTrayMinimize: TCheckBox
           Left = 10
-          Height = 17
+          Height = 19
           Top = 4
-          Width = 234
+          Width = 231
           Caption = 'Minimize to tray'
           TabOrder = 0
         end
         object cbTrayClose: TCheckBox
-          Left = 244
-          Height = 17
+          Left = 241
+          Height = 19
           Top = 4
-          Width = 265
+          Width = 268
           Caption = 'Close to tray'
           TabOrder = 1
         end
         object cbTrayIconAlways: TCheckBox
           Left = 10
-          Height = 17
-          Top = 27
-          Width = 234
+          Height = 19
+          Top = 29
+          Width = 231
           Caption = 'Tray icon always visible'
           TabOrder = 2
         end
         object cbTrayNotify: TCheckBox
-          Left = 244
-          Height = 17
-          Top = 27
-          Width = 265
+          Left = 241
+          Height = 19
+          Top = 29
+          Width = 268
           Caption = 'Show notifications in tray icon'
           TabOrder = 3
         end
       end
       object cbLanguage: TComboBox
-        Left = 304
-        Height = 21
+        Left = 248
+        Height = 23
         Top = 146
-        Width = 227
+        Width = 136
         Anchors = [akTop, akLeft, akRight]
-        DropDownCount = 20
-        ItemHeight = 13
+        DropDownCount = 60
+        ItemHeight = 15
         OnEnter = cbLanguageEnter
         OnMouseDown = cbLanguageMouseDown
         Style = csDropDownList
@@ -214,15 +214,15 @@ inherited OptionsForm: TOptionsForm
       end
       object txIntfScale: TLabel
         Left = 8
-        Height = 14
+        Height = 15
         Top = 121
-        Width = 48
+        Width = 49
         Caption = 'Font size:'
         ParentColor = False
       end
       object edIntfScale: TSpinEdit
-        Left = 304
-        Height = 21
+        Left = 248
+        Height = 23
         Top = 118
         Width = 70
         Increment = 5
@@ -232,25 +232,25 @@ inherited OptionsForm: TOptionsForm
         Value = 100
       end
       object txPerc: TLabel
-        Left = 384
-        Height = 14
+        Left = 328
+        Height = 15
         Top = 121
-        Width = 12
+        Width = 10
         Caption = '%'
         ParentColor = False
       end
       object cbCheckNewVersion: TCheckBox
         Left = 8
-        Height = 17
+        Height = 19
         Top = 92
-        Width = 160
+        Width = 171
         Caption = 'Check for new version every:'
         OnClick = cbCheckNewVersionClick
         TabOrder = 1
       end
       object edCheckVersionDays: TSpinEdit
-        Left = 304
-        Height = 21
+        Left = 248
+        Height = 23
         Top = 90
         Width = 70
         MaxValue = 999
@@ -259,8 +259,8 @@ inherited OptionsForm: TOptionsForm
         Value = 5
       end
       object txDays: TLabel
-        Left = 384
-        Height = 14
+        Left = 328
+        Height = 15
         Top = 93
         Width = 24
         Caption = 'days'
@@ -279,20 +279,33 @@ inherited OptionsForm: TOptionsForm
         Visible = False
         object cbRegExt: TCheckBox
           Left = 10
-          Height = 17
+          Height = 19
           Top = 4
-          Width = 148
+          Width = 158
           Caption = 'Handle .torrent files by %s'
           TabOrder = 0
         end
         object cbRegMagnet: TCheckBox
           Left = 10
-          Height = 17
+          Height = 19
           Top = 28
-          Width = 147
+          Width = 163
           Caption = 'Handle magnet links by %s'
           TabOrder = 1
         end
+      end
+      object cbLangLeftRight: TComboBox
+        Left = 392
+        Height = 23
+        Top = 146
+        Width = 136
+        Anchors = [akTop, akLeft, akRight]
+        DropDownCount = 60
+        ItemHeight = 15
+        OnEnter = cbLanguageEnter
+        OnMouseDown = cbLanguageMouseDown
+        Style = csDropDownList
+        TabOrder = 6
       end
     end
   end

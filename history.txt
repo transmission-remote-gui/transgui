@@ -1,3 +1,23 @@
+5.0.3 (Feb 8, 2015)
+[-] Minor fixes new features version 5.0.2
+[-] Removed display of items to export/import from the system menu (in tray). Items have been added in version 5.0.2
+[-] Fixed display and storing of a directory to store torrents. Now by default the first displays the last selected directory. See version 5.0.2 - sorting
+[+] In the options dialog adds the ability to select the text direction (left to right or right to left). Issue 734
+[+] In the options dialog adds the ability to enter the maximum number of directories to store torrents
+[+] Added to count the number of selecting folders to store torrents. The directories that are the least used, will be deleted from the history in excess of the maximum number of directories (see above)
+
+5.0.2 (Jan 14, 2015)
+[-] Fixed 'deprecated ShortMonthNames' in synapse\source\lib\synautil.pas (in accordance with changes in the latest version of Lazarus)
+[-] Fixed separators in the main toolbar and menu (in accordance with changes in the latest version of Lazarus)
+[+] Added correction of directory names to store torrents. Double separators and the final separator are removed (for example: /tmp/mnt/TRANSCEND//Torrent/download/ => /tmp/mnt/TRANSCEND/Torrent/download).
+[-] Fixed loading history directory to store torrents. Duplicate directories in the list are not added
+[+] Added entry of the hidden parameter 'MaxFoldersHistory' in the ini file. Parameter specifies the maximum number of directories to store torrents
+[*] Changed the maximum number of stored history MaxFoldersHistory (Default:50)
+[*] Increased quantity of elements in the drop-down lists from 20 to 60 (elements: 'Add torrent...', 'Set data location...')
+[*] Changed sorting directories to store torrents. Directories are sorted by name 
+[+] Added support for text direction in the program. Issue 734. Parameter 'IgnoreRightLeft' ini-file. 0/1/2/3/4 =nothing/from left to right/from left to right(No Align)/from left to right(Reading Only)
+[+] Added import / export program settings. Issue 752
+
 5.0.1 (Jan 04, 2014)
 [*] Include OpenSSL files in Windows setup. Issue #711.
 [-] Disable the "Save as" field when adding magnet links. Issue #725.

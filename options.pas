@@ -35,6 +35,7 @@ type
     Buttons: TButtonPanel;
     cbDeleteTorrentFile: TCheckBox;
     cbLanguage: TComboBox;
+    cbLangLeftRight: TComboBox;
     cbLinksFromClipboard: TCheckBox;
     cbShowAddTorrentWindow: TCheckBox;
     cbTrayClose: TCheckBox;
@@ -103,6 +104,8 @@ var
   s: string;
 {$endif mswindows}
 begin
+  bidiMode := GetBiDi(); // PETROV
+
   cbRegExt.Caption:=Format(cbRegExt.Caption, [AppName]);
   cbRegMagnet.Caption:=Format(cbRegMagnet.Caption, [AppName]);
 
@@ -118,6 +121,13 @@ begin
   Page.ActivePageIndex:=0;
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@OKButtonClick;
+
+  cbLangLeftRight.Items.Add('Default');
+  cbLangLeftRight.Items.Add('Left->Right');
+  cbLangLeftRight.Items.Add('Right->Left');
+  cbLangLeftRight.Items.Add('Right->Left (No Align)');
+  cbLangLeftRight.Items.Add('Right->Left (Reading Only)');
+  cbLangLeftRight.ItemIndex:=Ini.ReadInteger ('Interface', 'IgnoreRightLeft', 0);
 
   cbLanguage.Items.Add(FTranslationLanguage);
   cbLanguage.ItemIndex:=0;
@@ -217,6 +227,7 @@ end;
 procedure TOptionsForm.OKButtonClick(Sender: TObject);
 var
   s: string;
+  bd,idx : Integer;
   restart: boolean;
 {$ifdef mswindows}
   reg: TRegistry;
@@ -235,6 +246,12 @@ begin
     Ini.WriteString('Interface', 'TranslationFile', s);
     restart:=True;
   end;
+
+  // bidi
+  idx:= cbLangLeftRight.ItemIndex;
+  bd :=Ini.ReadInteger ('Interface', 'IgnoreRightLeft', 0);
+  Ini.WriteInteger     ('Interface', 'IgnoreRightLeft', idx);
+  if idx <> bd then restart:=True;
 
 {$ifdef mswindows}
   reg:=TRegistry.Create;

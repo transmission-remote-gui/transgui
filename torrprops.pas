@@ -91,6 +91,7 @@ end;
 procedure TTorrPropsForm.FormCreate(Sender: TObject);
 begin
   Page.ActivePageIndex:=0;
+  bidiMode := GetBiDi(); // PETROV
 end;
 
 initialization

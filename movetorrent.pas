@@ -80,6 +80,8 @@ procedure TMoveTorrentForm.FormCreate(Sender: TObject);
 begin
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@btOKClick;
+
+  bidiMode := GetBiDi(); // PETROV
 end;
 
 initialization

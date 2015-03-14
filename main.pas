@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.0.1';
+  AppVersion = '5.0.3';
 
 resourcestring
   sAll = 'All torrents';
@@ -152,6 +152,8 @@ type
   TMainForm = class(TBaseForm)
     acConnect: TAction;
     acAddTorrent: TAction;
+    acExport: TAction;
+    acImport: TAction;
     acStopTorrent: TAction;
     acRemoveTorrent: TAction;
     acStartTorrent: TAction;
@@ -210,6 +212,10 @@ type
     ImageList16: TImageList;
     FilterTimer: TTimer;
     MenuItem100: TMenuItem;
+    MenuItem122: TMenuItem;
+    MenuItem1888: TMenuItem;
+    MenuItem1889: TMenuItem;
+    MenuItem1890: TMenuItem;
     MenuItem68: TMenuItem;
     MenuItem93: TMenuItem;
     MenuItem94: TMenuItem;
@@ -218,7 +224,11 @@ type
     MenuItem97: TMenuItem;
     MenuItem98: TMenuItem;
     MenuItem99: TMenuItem;
+    miExport: TMenuItem;
+    miImport: TMenuItem;
+    OpenDialog1: TOpenDialog;
     panDetailsWait: TPanel;
+    SaveDialog1: TSaveDialog;
     txGlobalStats: TLabel;
     lvFilter: TVarGrid;
     lvTrackers: TVarGrid;
@@ -470,6 +480,8 @@ type
     procedure acOpenFileExecute(Sender: TObject);
     procedure acOptionsExecute(Sender: TObject);
     procedure acDisconnectExecute(Sender: TObject);
+    procedure acExportExecute(Sender: TObject);
+    procedure acImportExecute(Sender: TObject);
     procedure acExitExecute(Sender: TObject);
     procedure acDaemonOptionsExecute(Sender: TObject);
     procedure acQMoveBottomExecute(Sender: TObject);
@@ -553,6 +565,7 @@ type
     procedure pmTorrentsPopup(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
     procedure VSplitterChangeBounds(Sender: TObject);
+    function CorrectPath (path: string): string; // PETROV
   private
     FStarted: boolean;
     FTorrents: TVarList;
@@ -629,6 +642,7 @@ type
     function GetSelectedTorrents: variant;
     procedure FillDownloadDirs(CB: TComboBox; const CurFolderParam: string);
     procedure SaveDownloadDirs(CB: TComboBox; const CurFolderParam: string);
+    procedure DeleteDirs(CB: TComboBox; maxdel : Integer);          // PETROV
     procedure SetRefreshInterval;
     procedure AddTracker(EditMode: boolean);
     procedure UpdateConnections;
@@ -666,6 +680,7 @@ type
     procedure ConnectionSettingsChanged(const ActiveConnection: string; ForceReconnect: boolean);
   end;
 
+function GetBiDi: TBiDiMode; // PETROV
 function CheckAppParams: boolean;
 function GetHumanSize(sz: double; RoundTo: integer = 0; const EmptyStr: string = '-'): string;
 function PriorityToStr(p: integer; var ImageIndex: integer): string;
@@ -1092,6 +1107,8 @@ begin
 
   LoadTranslation;
 
+  GetBiDi; // PETROV
+
   SizeNames[1]:=sByte;
   SizeNames[2]:=sKByte;
   SizeNames[3]:=sMByte;
@@ -1449,6 +1466,8 @@ begin
   i:=Ini.ReadInteger('Interface', 'LastRpcVersion', -1);
   if i >= 0 then
     UpdateUIRpcVersion(i);
+
+  bidiMode := GetBiDi; // PETROV
 
   acFolderGrouping.Checked:=Ini.ReadBool('Interface', 'FolderGrouping', True);
   acTrackerGrouping.Checked:=Ini.ReadBool('Interface', 'TrackerGrouping', True);
@@ -2207,7 +2226,9 @@ begin
             CheckStatus(False);
             exit;
           end;
-          s:=UTF8Encode(args.Strings['download-dir']);
+
+          s:=CorrectPath (UTF8Encode(args.Strings['download-dir']) ); // PETROV
+
           if cbDestFolder.Items.IndexOf(s) < 0 then begin
             cbDestFolder.Items.Insert(0, s);
             cbDestFolder.ItemIndex:=0;
@@ -2735,6 +2756,111 @@ begin
   DoDisconnect;
 end;
 
+procedure TMainForm.acExportExecute(Sender: TObject); // PETROV
+var
+  s,d : string;
+  FileVar1: TextFile;
+  FileVar2: TextFile;
+begin
+  SaveDialog1.filename := 'transgui.ini';
+  if SaveDialog1.Execute then begin
+     s:=SaveDialog1.filename;
+     d:=Ini.getFileName();
+
+     AssignFile(FileVar1, d );
+     AssignFile(FileVar2, s );
+
+     Reset  (FileVar1);
+     Rewrite(FileVar2);
+
+     {$I+} //use exceptions
+     try
+
+     Repeat
+       Readln (FileVar1,s);
+       Writeln(FileVar2,s);
+     Until Eof(FileVar1);
+
+     CloseFile(FileVar1);
+     CloseFile(FileVar2);
+     except
+     end;
+     {$I-} //!use exceptions
+  end;
+end;
+
+procedure TMainForm.acImportExecute(Sender: TObject); // PETROV
+var
+  s,d : string;
+  FileVar1: TextFile;
+  FileVar2: TextFile;
+  P,p1,p2,p3,p4: Integer;
+begin
+  OpenDialog1.filename := 'transgui.ini';
+  if OpenDialog1.Execute then begin
+     s:=OpenDialog1.filename;
+     d:=Ini.getFileName();
+     p1:=0;
+     p2:=0;
+     p3:=0;
+     p4:=0;
+     // check valid Ini-file
+     AssignFile(FileVar2, s);
+     Reset     (FileVar2);
+     {$I+} //use exceptions
+     try
+     Repeat
+       Readln (FileVar2,s);
+       P := Pos ('[Hosts]',s);
+       if P>0 then p1 := P;
+
+       P := Pos ('[MainForm]',s);
+       if P>0 then p2 := P;
+
+       P := Pos ('[TorrentsList]',s);
+       if P>0 then p3 := P;
+
+       P := Pos ('ShowCountryFlag=',s);
+       if P>0 then p4 := P;
+     Until Eof(FileVar2);
+     CloseFile(FileVar2);
+     except
+     end;
+     {$I-} //!use exceptions
+
+     if (p1=0) and (p2=0) and (p3=0) and (p4=0) then begin
+        MessageDlg('Invalid file!', mtError, [mbOK], 0);
+        exit;
+     end;
+
+     // rewrite ini-file
+     s:=OpenDialog1.filename;
+     AssignFile(FileVar1, s );
+     AssignFile(FileVar2, d );
+
+     Reset  (FileVar1);
+     Rewrite(FileVar2);
+
+     {$I+} //use exceptions
+     try
+     Repeat
+       Readln (FileVar1,s);
+       Writeln(FileVar2,s);
+     Until Eof(FileVar1);
+     CloseFile(FileVar1);
+     CloseFile(FileVar2);
+     except
+     end;
+     {$I-} //!use exceptions
+
+     // Read ini now!
+     CheckAppParams ();
+
+//   MessageDlg('All ok!', mtInformation, [mbOK], 0);
+     MessageDlg(sRestartRequired, mtInformation, [mbOk], 0);
+  end;
+end;
+
 procedure TMainForm.acExitExecute(Sender: TObject);
 begin
   BeforeCloseApp;
@@ -2756,7 +2882,9 @@ begin
       args:=RpcObj.SendRequest(req);
       if args <> nil then
         try
-          edDownloadDir.Text:=UTF8Encode(args.Strings['download-dir']);
+
+          edDownloadDir.Text:= CorrectPath(UTF8Encode(args.Strings['download-dir'])); // PETROV
+
           if RpcObj.RPCVersion >= 5 then begin
             // RPC version 5
             edPort.Value:=args.Integers['peer-port'];
@@ -4589,6 +4717,55 @@ begin
   LV.SortOrder:=TSortOrder(Ini.ReadInteger(AName, 'SortOrder', integer(LV.SortOrder)));
 end;
 
+
+//----------------------------------------------------------------
+// функция: вернуть требуемое значение БиДи
+function GetBiDi: TBiDiMode;
+var
+  i:integer;
+begin
+  // PETROV - Herb off
+  i:=Ini.ReadInteger ('Interface', 'IgnoreRightLeft', 0);	// 0 - by default
+     Ini.WriteInteger('Interface', 'IgnoreRightLeft', i);
+
+  if (FTranslationLanguage='English') and (i=0) then
+     i := 1;
+
+  Result := bdLeftToRight;
+  case i of
+    1: Result := bdLeftToRight;
+    2: Result := bdRightToLeft;
+    3: Result := bdRightToLeftNoAlign;
+    4: Result := bdRightToLeftReadingOnly;
+  end;
+end;
+
+
+//----------------------------------------------------------------
+// функция:
+// удаляет лишние косые (случайно или спец.добавленные)
+// удаляет последний слэш в пусти, если есть
+//
+// цель - привести строчку (путь размещения скаченного торрента) к одному виду
+function TMainForm.CorrectPath (path: string): string; // PETROV
+var
+  l_old: integer;
+begin
+  path  := StringReplace(path, '//', '/', [rfReplaceAll, rfIgnoreCase]);
+  Result:= path;
+  l_old := length(path);
+  if l_old >= 1 then begin
+     if path[l_old]='/' then
+        path := MidStr(path,1,l_old-1);
+
+     Result:= path;
+  end;
+end;
+
+
+
+
+
 function TMainForm.GetTorrentError(t: TJSONObject; Status: integer): string;
 var
   i: integer;
@@ -6226,48 +6403,104 @@ end;
 
 procedure TMainForm.FillDownloadDirs(CB: TComboBox; const CurFolderParam: string);
 var
-  i, j: integer;
+  i, j, n,xx, m,z: integer;
   s, IniSec: string;
 begin
   CB.Items.Clear;
-  IniSec:='AddTorrent.' + FCurConn;
-  j:=Ini.ReadInteger(IniSec, 'FolderCount', 0);
+  IniSec   :='AddTorrent.' + FCurConn;
+  j        :=Ini.ReadInteger(IniSec, 'FolderCount', 0);
+
   for i:=0 to j - 1 do begin
     s:=Ini.ReadString(IniSec, Format('Folder%d', [i]), '');
-    if s <> '' then
-      CB.Items.Add(s);
+    if s <> '' then begin
+      s := CorrectPath (s); // PETROV
+
+      n := 0; // PETROV - добавляем строчку в комбобокс только в том случае, если такой нет
+      for xx:=0 to CB.Items.Count - 1 do begin
+         if CB.Items[xx]=s then begin
+           n := 1;
+         end;
+      end;
+
+      if n=0 then begin // PETROV
+        m := CB.Items.Add(s);
+        z := Ini.ReadInteger (IniSec, Format('FolHit%d', [i]), 1);
+        CB.Items.Objects[m] := TObject(z);
+      end;
+    end;
   end;
 
-  s:=Ini.ReadString(IniSec, CurFolderParam, '');
+  s:=CorrectPath (Ini.ReadString(IniSec, CurFolderParam, '')); // PETROV
   if s <> '' then begin
     i:=CB.Items.IndexOf(s);
-    if i > 0 then
-      CB.Items.Move(i, 0);
+    if i > 0 then  // autosorting
+      CB.ItemIndex:=i;
+    CB.Text := s;
+  end
+  else begin
+    if CB.Items.Count > 0 then
+       CB.ItemIndex:=0;
   end;
-
-  if CB.Items.Count > 0 then
-    CB.ItemIndex:=0;
 end;
 
 procedure TMainForm.SaveDownloadDirs(CB: TComboBox; const CurFolderParam: string);
 var
-  i: integer;
+  i, Iv: integer;
   IniSec: string;
+  tmp,selfolder : string;
 begin
-  IniSec:='AddTorrent.' + FCurConn;
-  i:=CB.Items.IndexOf(CB.Text);
-  if i >= 0 then
-    CB.Items.Move(i, 0)
-  else
-    CB.Items.Insert(0, CB.Text);
-  i:=Ini.ReadInteger('Interface', 'MaxFoldersHistory', 10);
-  while CB.Items.Count > i do
-    CB.Items.Delete(CB.Items.Count - 1);
+  IniSec   := 'AddTorrent.' + FCurConn;
+  selfolder:= CorrectPath(CB.Text);
+
+  i:=CB.Items.IndexOf(selfolder);
+  if i < 0 then begin
+     DeleteDirs (CB, 1);               // prepare for new item
+     CB.Items.Insert (0, selfolder);
+     i:=CB.Items.IndexOf(selfolder);
+     CB.Items.Objects[i]:= TObject(1); // by default 1
+  end else begin
+     Iv                 := Integer(CB.Items.Objects[i]);
+     Iv                 := Iv + 1;     // popular item
+     CB.Items.Objects[i]:= TObject(Iv);
+     DeleteDirs (CB, 0);               // check count items
+  end;
+
   Ini.WriteInteger(IniSec, 'FolderCount', CB.Items.Count);
-  for i:=0 to CB.Items.Count - 1 do
-    Ini.WriteString(IniSec, Format('Folder%d', [i]), CB.Items[i]);
-  Ini.WriteString(IniSec, CurFolderParam, CB.Items[0]);
+  for i:=0 to CB.Items.Count - 1 do begin
+    tmp := CorrectPath(CB.Items[i]); // PETROV
+    Iv  := Integer    (CB.Items.Objects[i]);
+    Ini.WriteString (IniSec, Format('Folder%d', [i]), tmp);
+    Ini.WriteInteger(IniSec, Format('FolHit%d', [i]), Iv );
+  end;
+
+  Ini.WriteString (IniSec, Format('Folder%d', [i+1]), '');
+  Ini.WriteInteger(IniSec, Format('FolHit%d', [i+1]), -1 );
+
+  Ini.WriteString(IniSec, CurFolderParam, selfolder); // autosorting, valid from text
   Ini.UpdateFile;
+end;
+
+procedure TMainForm.DeleteDirs(CB: TComboBox; maxdel : Integer);
+var
+  i,Iv,min,max,indx: integer;
+begin
+    max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
+    Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max); // PETROV
+    while (CB.Items.Count+maxdel) > max do begin
+       // должен найти итем с меньшим Хит и именно эту строчку грохнуть
+       min := 9999999;
+       indx:=-1;
+       for i:=0 to CB.Items.Count - 1 do begin
+         Iv  := Integer(CB.Items.Objects[i]);
+         if Iv < min then begin
+           min := Iv;
+           indx:= i;
+         end;
+       end;
+
+       if indx > -1 then
+         CB.Items.Delete(indx);
+    end;
 end;
 
 procedure TMainForm.SetRefreshInterval;

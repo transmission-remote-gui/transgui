@@ -944,6 +944,9 @@ begin
   FTree.Checkboxes:=True;
   FTree.OnStateChange:=@TreeStateChanged;
   Buttons.OKButton.ModalResult:=mrNone;
+
+  bidiMode := GetBiDi(); // PETROV
+
 {$ifdef windows}
   gbSaveAs.Caption:='';
 {$endif windows}

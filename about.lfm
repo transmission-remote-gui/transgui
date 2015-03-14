@@ -27,7 +27,7 @@ inherited AboutForm: TAboutForm
     TabOrder = 0
     object tabAbout: TTabSheet
       Caption = 'About'
-      ClientHeight = 273
+      ClientHeight = 271
       ClientWidth = 427
       object imgTransmission: TImage
         Left = 10
@@ -135,7 +135,7 @@ inherited AboutForm: TAboutForm
         Cursor = crHandPoint
         Left = 124
         Height = 42
-        Top = 215
+        Top = 213
         Width = 102
         Anchors = [akLeft, akBottom]
         AutoSize = True
@@ -278,7 +278,7 @@ inherited AboutForm: TAboutForm
         Cursor = crHandPoint
         Left = 6
         Height = 47
-        Top = 210
+        Top = 208
         Width = 102
         Anchors = [akLeft, akBottom]
         AutoSize = True
@@ -478,7 +478,7 @@ inherited AboutForm: TAboutForm
         Left = 86
         Height = 17
         Top = 14
-        Width = 75
+        Width = 73
         Caption = 'txAppName'
         Font.Height = -13
         Font.Style = [fsBold]
@@ -487,24 +487,24 @@ inherited AboutForm: TAboutForm
       end
       object txAuthor: TLabel
         Left = 86
-        Height = 14
+        Height = 15
         Top = 66
-        Width = 198
-        Caption = 'Copyright (c) 2008-2014 by Yury Sidorov'
+        Width = 307
+        Caption = 'Copyright (c) 2008-2015 by Yury Sidorov, Alexander Petrov'
         ParentColor = False
       end
       object txVersion: TLabel
         Left = 86
-        Height = 14
+        Height = 15
         Top = 38
-        Width = 55
+        Width = 57
         Caption = 'Version %s'
         ParentColor = False
       end
       object Bevel1: TBevel
         Left = 6
         Height = 7
-        Top = 189
+        Top = 187
         Width = 416
         Anchors = [akLeft, akRight, akBottom]
         Shape = bsTopLine
@@ -564,9 +564,9 @@ inherited AboutForm: TAboutForm
       object txHomePage: TLabel
         Cursor = crHandPoint
         Left = 86
-        Height = 14
+        Height = 15
         Top = 86
-        Width = 55
+        Width = 62
         Caption = 'Home page'
         Font.Color = clBlue
         Font.Style = [fsUnderline]
@@ -576,9 +576,9 @@ inherited AboutForm: TAboutForm
       end
       object txDonate: TLabel
         Left = 86
-        Height = 14
+        Height = 15
         Top = 118
-        Width = 195
+        Width = 211
         Caption = 'Donate to support further development:'
         ParentColor = False
       end
