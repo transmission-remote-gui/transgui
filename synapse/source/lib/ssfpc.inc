@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.001.003 |
+| Project : Ararat Synapse                                       | 001.001.004 |
 |==============================================================================|
 | Content: Socket Independent Platform Layer - FreePascal definition include   |
 |==============================================================================|
-| Copyright (c)2006-2010, Lukas Gebauer                                        |
+| Copyright (c)2006-2011, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2006-2010.                |
+| Portions created by Lukas Gebauer are Copyright (c)2006-2011.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |

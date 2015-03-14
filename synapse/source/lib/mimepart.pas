@@ -1,10 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 002.008.000 |
+| Project : Ararat Synapse                                       | 002.009.000 |
 |==============================================================================|
 | Content: MIME support procedures and functions                               |
 |==============================================================================|
-| Copyright (c)1999-2008, Lukas Gebauer                                        |
-| All rights reserved.                                                         |
+| Copyright (c)1999-200812                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
 | modification, are permitted provided that the following conditions are met:  |
@@ -33,7 +32,8 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2000-2008.                |
+| Portions created by Lukas Gebauer are Copyright (c)2000-2012.                |
+| Portions created by Petr Fejfar are Copyright (c)2011-2012.                  |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -54,6 +54,7 @@ Used RFC: RFC-2045
 {$H+}
 {$Q-}
 {$R-}
+{$M+}
 
 {$IFDEF UNICODE}
   {$WARN IMPLICIT_STRING_CAST OFF}
@@ -137,6 +138,7 @@ type
     FAttachInside: boolean;
     FConvertCharset: Boolean;
     FForcedHTMLConvert: Boolean;
+    FBinaryDecomposer: boolean;
     procedure SetPrimary(Value: string);
     procedure SetEncoding(Value: string);
     procedure SetCharset(Value: string);
@@ -203,6 +205,20 @@ type
      For each MIME subpart is created new TMimepart object (accessible via
      method @link(GetSubPart)).}
     procedure DecomposeParts;
+
+    {pf}
+    {: HTTP message is received by @link(THTTPSend) component in two parts:
+     headers are stored in @link(THTTPSend.Headers) and a body in memory stream
+     @link(THTTPSend.Document).
+
+     On the top of it, HTTP connections are always 8-bit, hence data are
+     transferred in native format i.e. no transfer encoding is applied.
+
+     This method operates the similiar way and produces the same
+     result as @link(DecomposeParts).
+    }
+    procedure DecomposePartsBinary(AHeader:TStrings; AStx,AEtx:PANSIChar);
+    {/pf}
 
     {:This part and all subparts is composed into one MIME message stored in
      @link(Lines) property.}
@@ -535,6 +551,7 @@ var
   end;
 
 begin
+  FBinaryDecomposer := false;
   x := 0;
   Clear;
   //extract headers
@@ -623,6 +640,95 @@ begin
     end;
   end;
 end;
+
+procedure TMIMEPart.DecomposePartsBinary(AHeader:TStrings; AStx,AEtx:PANSIChar);
+var
+  x:    integer;
+  s:    ANSIString;
+  Mime: TMimePart;
+  BOP:  PANSIChar; // Beginning of Part
+  EOP:  PANSIChar; // End of Part
+
+  function ___HasUUCode(ALines:TStrings): boolean;
+  var
+    x: integer;
+  begin
+    Result := FALSE;
+    for x:=0 to ALines.Count-1 do
+      if IsUUcode(ALInes[x]) then
+      begin
+        Result := TRUE;
+        exit;
+      end;
+  end;
+
+begin
+  FBinaryDecomposer := true;
+  Clear;
+  // Parse passed headers (THTTPSend returns HTTP headers and body separately)
+  x := 0;
+  while x<AHeader.Count do
+    begin
+      s := NormalizeHeader(AHeader,x);
+      if s = '' then
+        Break;
+      FHeaders.Add(s);
+    end;
+  DecodePartHeader;
+  // Extract prepart
+  if FPrimaryCode=MP_MULTIPART then
+    begin
+      CopyLinesFromStreamUntilBoundary(AStx,AEtx,FPrePart,FBoundary);
+      FAttachInside := FAttachInside or ___HasUUCode(FPrePart);
+    end;
+  // Extract body part
+  if FPrimaryCode=MP_MULTIPART then
+    begin
+      repeat
+        if CanSubPart then
+          begin
+            Mime := AddSubPart;
+            BOP  := AStx;
+            EOP  := SearchForBoundary(AStx,AEtx,FBoundary);
+            CopyLinesFromStreamUntilNullLine(BOP,EOP,Mime.Lines);
+            Mime.DecomposePartsBinary(Mime.Lines,BOP,EOP);
+          end
+        else
+          begin
+            EOP := SearchForBoundary(AStx,AEtx,FBoundary);
+            FPartBody.Add(BuildStringFromBuffer(AStx,EOP));
+          end;
+        //
+        BOP := MatchLastBoundary(EOP,AEtx,FBoundary);
+        if Assigned(BOP) then
+          begin
+            AStx := BOP;
+            Break;
+          end;
+      until FALSE;
+    end;
+  // Extract nested MIME message
+  if (FPrimaryCode=MP_MESSAGE) and CanSubPart then
+    begin
+      Mime := AddSubPart;
+      SkipNullLines(AStx,AEtx);
+      CopyLinesFromStreamUntilNullLine(AStx,AEtx,Mime.Lines);
+      Mime.DecomposePartsBinary(Mime.Lines,AStx,AEtx);
+    end
+  // Extract body of single part
+  else
+    begin
+      FPartBody.Add(BuildStringFromBuffer(AStx,AEtx));
+      FAttachInside := FAttachInside or ___HasUUCode(FPartBody);
+    end;
+  // Extract postpart
+  if FPrimaryCode=MP_MULTIPART then
+    begin
+      CopyLinesFromStreamUntilBoundary(AStx,AEtx,FPostPart,'');
+      FAttachInside := FAttachInside or ___HasUUCode(FPostPart);
+    end;
+end;
+{/pf}
 
 {==============================================================================}
 
@@ -713,6 +819,33 @@ var
   b: Boolean;
 begin
   FDecodedLines.Clear;
+  {pf}
+  // The part decomposer passes data via TStringList which appends trailing line
+  // break inherently. But in a case of native 8-bit data transferred withouth
+  // encoding (default e.g. for HTTP protocol), the redundant line terminators
+  // has to be removed
+  if FBinaryDecomposer and (FPartBody.Count=1) then
+    begin
+      case FEncodingCode of
+          ME_QUOTED_PRINTABLE:
+            s := DecodeQuotedPrintable(FPartBody[0]);
+          ME_BASE64:
+            s := DecodeBase64(FPartBody[0]);
+          ME_UU, ME_XX:
+            begin
+              s := '';
+              for n := 0 to FPartBody.Count - 1 do
+                if FEncodingCode = ME_UU then
+                  s := s + DecodeUU(FPartBody[n])
+                else
+                  s := s + DecodeXX(FPartBody[n]);
+            end;
+        else
+          s := FPartBody[0];
+        end;
+    end
+  else
+  {/pf}
   case FEncodingCode of
     ME_QUOTED_PRINTABLE:
       s := DecodeQuotedPrintable(FPartBody.Text);

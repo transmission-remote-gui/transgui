@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 005.002.000 |
+| Project : Ararat Synapse                                       | 005.002.001 |
 |==============================================================================|
 | Content: Socket Independent Platform Layer                                   |
 |==============================================================================|
-| Copyright (c)1999-2010, Lukas Gebauer                                        |
+| Copyright (c)1999-2011, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2001-20010.                |
+| Portions created by Lukas Gebauer are Copyright (c)2001-2011.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -56,18 +56,18 @@ unit synsock;
 {$ENDIF}
 
 {$IFDEF CIL}
-  {$I ssdotnet.pas}
+  {$I ssdotnet.inc}
 {$ELSE}
   {$IFDEF MSWINDOWS}
-    {$I sswin32.pas}
+    {$I sswin32.inc}
   {$ELSE}
     {$IFDEF WINCE}
-      {$I sswin32.pas}  //not complete yet!
+      {$I sswin32.inc}  //not complete yet!
     {$ELSE}
       {$IFDEF FPC}
-        {$I ssfpc.pas}
+        {$I ssfpc.inc}
       {$ELSE}
-        {$I sslinux.pas}
+        {$I sslinux.inc}
       {$ENDIF}
     {$ENDIF}
   {$ENDIF}

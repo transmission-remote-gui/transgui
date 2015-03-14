@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 002.002.003 |
+| Project : Ararat Synapse                                       | 002.003.000 |
 |==============================================================================|
-| Content: Socket Independent Platform Layer - Win32 definition include        |
+| Content: Socket Independent Platform Layer - Win32/64 definition include     |
 |==============================================================================|
-| Copyright (c)1999-2010, Lukas Gebauer                                        |
+| Copyright (c)1999-2011, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2003-2010.                |
+| Portions created by Lukas Gebauer are Copyright (c)2003-2011.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -236,6 +236,14 @@ For IPv6 support you must have new API!
   (*$HPPEMIT '#undef PF_INET6' *)
 {$ENDIF}
 
+{$IFDEF FPC}
+  {$IFDEF WIN32}
+    {$ALIGN OFF}
+  {$ELSE}
+    {$PACKRECORDS C}
+  {$ENDIF}
+{$ENDIF}
+
 interface
 
 uses
@@ -261,17 +269,25 @@ type
 {$IFDEF FPC}
   TSocket = ptruint;
 {$ELSE}
+  {$IFDEF WIN64}
+  TSocket = UINT_PTR;
+  {$ELSE}
   TSocket = u_int;
+  {$ENDIF}
 {$ENDIF}
   TAddrFamily = integer;
 
   TMemory = pointer;
 
 const
-  {$IFDEF WINSOCK1}
-    DLLStackName = 'wsock32.dll';
+  {$IFDEF WINCE}
+    DLLStackName = 'ws2.dll';
   {$ELSE}
+    {$IFDEF WINSOCK1}
+    DLLStackName = 'wsock32.dll';
+    {$ELSE}
     DLLStackName = 'ws2_32.dll';
+    {$ENDIF}
   {$ENDIF}
   DLLwship6 = 'wship6.dll';
 
@@ -282,7 +298,7 @@ const
   c6AnyHost = '::0';
   c6Broadcast = 'ffff::1';
   cAnyPort = '0';
-  
+
 
 const
   FD_SETSIZE     =   64;

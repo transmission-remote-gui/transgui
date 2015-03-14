@@ -11,8 +11,8 @@
 
 #define AppName "Transmission Remote GUI"
 #define AppVerName AppName + " " + AppVersion
-#define AppPublisher "Yury Sidorov"
-#define AppURL "http://code.google.com/p/transmisson-remote-gui/"
+#define AppPublisher "Yury Sidorov & Alexander Petrov"
+#define AppURL "https://github.com/leonsoft-kras/transmisson-remote-gui"
 #define AppExeName "transgui.exe"
 #define CurYear GetDateTimeString('yyyy', '', '')
 
@@ -36,7 +36,7 @@ Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
 AppId=transgui
 AppName={#AppName}
 AppVerName={#AppVerName}
-AppCopyright=Copyright (c) 2008-{#CurYear} by Yury Sidorov
+AppCopyright=Copyright (c) 2008-{#CurYear} by Yury Sidorov & Alexander Petrov
 AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}

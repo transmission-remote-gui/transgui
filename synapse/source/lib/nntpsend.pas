@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.005.002 |
+| Project : Ararat Synapse                                       | 001.005.003 |
 |==============================================================================|
 | Content: NNTP client                                                         |
 |==============================================================================|
-| Copyright (c)1999-2010, Lukas Gebauer                                        |
+| Copyright (c)1999-2011, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c) 1999-2010.               |
+| Portions created by Lukas Gebauer are Copyright (c) 1999-2011.               |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -292,11 +292,13 @@ begin
   if not Connect then
     Exit;
   Result := (ReadResult div 100) = 2;
-  ListExtensions;
-  FNNTPcap.Assign(Fdata);
   if Result then
+  begin
+    ListExtensions;
+    FNNTPcap.Assign(Fdata);
     if (not FullSSL) and FAutoTLS and (FindCap('STARTTLS') <> '') then
       Result := StartTLS;
+  end;
   if (FUsername <> '') and Result then
   begin
     FSock.SendString('AUTHINFO USER ' + FUsername + CRLF);

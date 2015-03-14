@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 003.005.003 |
+| Project : Ararat Synapse                                       | 004.000.000 |
 |==============================================================================|
 | Content: FTP client                                                          |
 |==============================================================================|
-| Copyright (c)1999-2010, Lukas Gebauer                                        |
+| Copyright (c)1999-2011, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -52,6 +52,9 @@ Used RFC: RFC-959, RFC-2228, RFC-2428
   {$MODE DELPHI}
 {$ENDIF}
 {$H+}
+{$TYPEINFO ON}// Borland changed defualt Visibility from Public to Published
+                // and it requires RTTI to be generated $M+
+{$M+}
 
 {$IFDEF UNICODE}
   {$WARN IMPLICIT_STRING_CAST OFF}
@@ -92,7 +95,7 @@ type
     FFileName: String;
     FDirectory: Boolean;
     FReadable: Boolean;
-    FFileSize: Longint;
+    FFileSize: int64;
     FFileTime: TDateTime;
     FOriginalLine: string;
     FMask: string;
@@ -107,7 +110,7 @@ type
     {:if you have rights to read}
     property Readable: Boolean read FReadable write FReadable;
     {:size of file in bytes}
-    property FileSize: Longint read FFileSize write FFileSize;
+    property FileSize: int64 read FFileSize write FFileSize;
     {:date and time of file. Local server timezone is used. Any timezone
      conversions was not done!}
     property FileTime: TDateTime read FFileTime write FFileTime;
@@ -228,7 +231,7 @@ type
     FFullSSL: Boolean;
     function Auth(Mode: integer): Boolean; virtual;
     function Connect: Boolean; virtual;
-    function InternalStor(const Command: string; RestoreAt: integer): Boolean; virtual;
+    function InternalStor(const Command: string; RestoreAt: int64): Boolean; virtual;
     function DataSocket: Boolean; virtual;
     function AcceptDataSocket: Boolean; virtual;
     procedure DoStatus(Response: Boolean; const Value: string); virtual;
@@ -308,7 +311,7 @@ type
 
     {:Return size of Filename file on FTP server. If command failed (i.e. not
      implemented), return -1.}
-    function FileSize(const FileName: string): integer; virtual;
+    function FileSize(const FileName: string): int64; virtual;
 
     {:Send NOOP command to FTP server for preserve of disconnect by inactivity
      timeout.}
@@ -852,7 +855,7 @@ begin
       s := '2'
     else
       s := '1';
-    if not(FForceOldPort) and ((FTPCommand('EPSV ' + s) div 100) = 2) then
+    if FSock.IP6used and not(FForceOldPort) and ((FTPCommand('EPSV ' + s) div 100) = 2) then
     begin
       ParseRemoteEPSV(FResultString);
     end
@@ -887,7 +890,7 @@ begin
     FDataIP := FDSock.GetLocalSinIP;
     FDataIP := FDSock.ResolveName(FDataIP);
     FDataPort := IntToStr(FDSock.GetLocalSinPort);
-    if not FForceOldPort then
+    if FSock.IP6used and (not FForceOldPort) then
     begin
       if IsIp6(FDataIP) then
         s := '2'
@@ -1040,10 +1043,10 @@ begin
   end;
 end;
 
-function TFTPSend.InternalStor(const Command: string; RestoreAt: integer): Boolean;
+function TFTPSend.InternalStor(const Command: string; RestoreAt: int64): Boolean;
 var
   SendStream: TStream;
-  StorSize: integer;
+  StorSize: int64;
 begin
   Result := False;
   if FDirectFile then
@@ -1087,7 +1090,7 @@ end;
 
 function TFTPSend.StoreFile(const FileName: string; Restore: Boolean): Boolean;
 var
-  RestoreAt: integer;
+  RestoreAt: int64;
 begin
   Result := False;
   if FileName = '' then
@@ -1113,7 +1116,7 @@ begin
   Result := False;
   if FileName = '' then
     Exit;
-  Result := InternalStor('APPE '+FileName, 0);
+  Result := InternalStor('APPE ' + FileName, 0);
 end;
 
 function TFTPSend.NoOp: Boolean;
@@ -1134,7 +1137,7 @@ begin
   Result := (FTPCommand('DELE ' + FileName) div 100) = 2;
 end;
 
-function TFTPSend.FileSize(const FileName: string): integer;
+function TFTPSend.FileSize(const FileName: string): int64;
 var
   s: string;
 begin
@@ -1143,7 +1146,11 @@ begin
   begin
     s := Trim(SeparateRight(ResultString, ' '));
     s := Trim(SeparateLeft(s, ' '));
-    Result := StrToIntDef(s, -1);
+    {$IFDEF VER100}
+      Result := StrToIntDef(s, -1);
+    {$ELSE}
+      Result := StrToInt64Def(s, -1);
+    {$ENDIF}
   end;
 end;
 
@@ -1676,7 +1683,11 @@ begin
     x := StrToIntDef(BlockSize, 1)
   else
     x := 1;
+  {$IFDEF VER100}
   Value.FileSize := x * StrToIntDef(Size, 0);
+  {$ELSE}
+  Value.FileSize := x * StrToInt64Def(Size, 0);
+  {$ENDIF}
 
   DecodeDate(Date,myear,mmonth,mday);
   mhours := 0;
@@ -1767,7 +1778,11 @@ begin
           'r':
             flr.Readable := true;
           's':
+            {$IFDEF VER100}
             flr.FileSize := StrToIntDef(Copy(s, 2, Length(s) - 1), 0);
+            {$ELSE}
+            flr.FileSize := StrToInt64Def(Copy(s, 2, Length(s) - 1), 0);
+            {$ENDIF}
           'm':
             flr.FileTime := (StrToIntDef(Copy(s, 2, Length(s) - 1), 0) / 86400)
               + 25569;

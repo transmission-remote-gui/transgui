@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 002.005.002 |
+| Project : Ararat Synapse                                       | 002.006.000 |
 |==============================================================================|
 | Content: MIME message object                                                 |
 |==============================================================================|
-| Copyright (c)1999-2006, Lukas Gebauer                                        |
+| Copyright (c)1999-2012, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,8 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2000-2006.                |
+| Portions created by Lukas Gebauer are Copyright (c)2000-2012.                |
+| Portions created by Petr Fejfar are Copyright (c)2011-2012.                  |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -50,6 +51,7 @@ Classes for easy handling with e-mail message.
   {$MODE DELPHI}
 {$ENDIF}
 {$H+}
+{$M+}
 
 unit mimemess;
 
@@ -269,6 +271,20 @@ type
     {:Decode message from @link(Lines) to @link(MessagePart). Massage headers
      are parsed into @link(Header) object.}
     procedure DecodeMessage;
+
+    {pf}
+    {: HTTP message is received by @link(THTTPSend) component in two parts:
+     headers are stored in @link(THTTPSend.Headers) and a body in memory stream
+     @link(THTTPSend.Document).
+
+     On the top of it, HTTP connections are always 8-bit, hence data are
+     transferred in native format i.e. no transfer encoding is applied.
+
+     This method operates the similiar way and produces the same
+     result as @link(DecodeMessage).
+    }
+    procedure DecodeMessageBinary(AHeader:TStrings; AData:TMemoryStream);
+    {/pf}
   published
     {:@link(TMimePart) object with decoded MIME message. This object can handle
      any number of nested @link(TMimePart) objects itself. It is used for handle
@@ -820,5 +836,16 @@ begin
   FMessagePart.Lines.Assign(FLines);
   FMessagePart.DecomposeParts;
 end;
+
+{pf}
+procedure TMimeMess.DecodeMessageBinary(AHeader:TStrings; AData:TMemoryStream);
+begin
+  FHeader.Clear;
+  FLines.Clear;
+  FLines.Assign(AHeader);
+  FHeader.DecodeHeaders(FLines);
+  FMessagePart.DecomposePartsBinary(AHeader,PANSIChar(AData.Memory),PANSIChar(AData.Memory)+AData.Size);
+end;
+{/pf}
 
 end.

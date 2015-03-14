@@ -24,7 +24,8 @@ unit About;
 interface
 
 uses
-  BaseForm, Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, ExtCtrls, ButtonPanel;
+  BaseForm, Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, ExtCtrls, ButtonPanel,
+    ssl_openssl, ssl_openssl_lib;
 
 resourcestring
   SErrorCheckingVersion = 'Error checking for new version.';
@@ -112,15 +113,15 @@ end;
 procedure GoHomePage;
 begin
   AppBusy;
-  OpenURL('http://code.google.com/p/transmisson-remote-gui');
+  OpenURL('https://github.com/leonsoft-kras/transmisson-remote-gui/releases');
   AppNormal;
 end;
 
 procedure GoDonate;
 begin
-  AppBusy;
-  OpenURL('http://code.google.com/p/transmisson-remote-gui/wiki/Donate');
-  AppNormal;
+//  AppBusy;
+//  OpenURL('http://code.google.com/p/transmisson-remote-gui/wiki/Donate');
+//  AppNormal;
 end;
 
 { TCheckVersionThread }
@@ -143,7 +144,7 @@ begin
 
   Application.ProcessMessages;
   AppBusy;
-  OpenURL('http://code.google.com/p/transmisson-remote-gui/wiki/Download?tm=2');
+  OpenURL('https://github.com/leonsoft-kras/transmisson-remote-gui/releases');
   AppNormal;
 end;
 
@@ -180,7 +181,7 @@ begin
           FHttp.ProxyUser:=RpcObj.Http.ProxyUser;
           FHttp.ProxyPass:=RpcObj.Http.ProxyPass;
         end;
-        if FHttp.HTTPMethod('GET', 'http://transmisson-remote-gui.googlecode.com/svn/wiki/version.txt') then begin
+        if FHttp.HTTPMethod('GET', 'https://raw.githubusercontent.com/leonsoft-kras/transmisson-remote-gui/master/VERSION.txt') then begin
           if FHttp.ResultCode = 200 then begin
             SetString(FVersion, FHttp.Document.Memory, FHttp.Document.Size);
             FVersion:=Trim(FVersion);

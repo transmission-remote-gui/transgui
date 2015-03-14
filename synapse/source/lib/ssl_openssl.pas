@@ -1,5 +1,5 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.001.001 |
+| Project : Ararat Synapse                                       | 001.002.000 |
 |==============================================================================|
 | Content: SSL support by OpenSSL                                              |
 |==============================================================================|
@@ -33,7 +33,8 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2005-2008.                |
+| Portions created by Lukas Gebauer are Copyright (c)2005-2012.                |
+| Portions created by Petr Fejfar are Copyright (c)2011-2012.                  |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -139,9 +140,13 @@ type
     {:See @inherited}
     function GetPeerSubject: string; override;
     {:See @inherited}
+    function GetPeerSerialNo: integer; override; {pf}
+    {:See @inherited}
     function GetPeerIssuer: string; override;
     {:See @inherited}
     function GetPeerName: string; override;
+    {:See @inherited}
+    function GetPeerNameHash: cardinal; override; {pf}
     {:See @inherited}
     function GetPeerFingerprint: string; override;
     {:See @inherited}
@@ -331,10 +336,18 @@ begin
       cert := nil;
       pkey := nil;
       ca := nil;
-      if PKCS12parse(p12, FKeyPassword, pkey, cert, ca) > 0 then
-        if SSLCTXusecertificate(Fctx, cert) > 0 then
-          if SSLCTXusePrivateKey(Fctx, pkey) > 0 then
-            Result := True;
+      try {pf}
+        if PKCS12parse(p12, FKeyPassword, pkey, cert, ca) > 0 then
+          if SSLCTXusecertificate(Fctx, cert) > 0 then
+            if SSLCTXusePrivateKey(Fctx, pkey) > 0 then
+              Result := True;
+      {pf}
+      finally
+        EvpPkeyFree(pkey);
+        X509free(cert);
+        SkX509PopFree(ca,_X509Free); // for ca=nil a new STACK was allocated...
+      end;
+      {/pf}
     finally
       PKCS12free(p12);
     end;
@@ -501,6 +514,8 @@ begin
       SSLCheck;
       Exit;
     end;
+    if SNIHost<>'' then
+      SSLCtrl(Fssl, SSL_CTRL_SET_TLSEXT_HOSTNAME, TLSEXT_NAMETYPE_host_name, PAnsiChar(SNIHost));
     x := sslconnect(FSsl);
     if x < 1 then
     begin
@@ -508,7 +523,7 @@ begin
       Exit;
     end;
   if FverifyCert then
-    if GetVerifyCert <> 0 then
+    if (GetVerifyCert <> 0) or (not DoVerifyCert) then
       Exit;
     FSSLEnabled := True;
     Result := True;
@@ -620,8 +635,11 @@ begin
     err := SslGetError(FSsl, Result);
   until (err <> SSL_ERROR_WANT_READ) and (err <> SSL_ERROR_WANT_WRITE);
   if err = SSL_ERROR_ZERO_RETURN then
-    Result := 0;
-  if (err <> 0) then
+    Result := 0
+  {pf}// Verze 1.1.0 byla s else tak jak to ted mam,
+      // ve verzi 1.1.1 bylo ELSE zruseno, ale pak je SSL_ERROR_ZERO_RETURN
+      // propagovano jako Chyba.
+  {pf} else {/pf} if (err <> 0) then   
     FLastError := err;
 end;
 
@@ -667,6 +685,31 @@ begin
   X509Free(cert);
 end;
 
+
+function TSSLOpenSSL.GetPeerSerialNo: integer; {pf}
+var
+  cert: PX509;
+  SN:   PASN1_INTEGER;
+begin
+  if not assigned(FSsl) then
+  begin
+    Result := -1;
+    Exit;
+  end;
+  cert := SSLGetPeerCertificate(Fssl);
+  try
+    if not assigned(cert) then
+    begin
+      Result := -1;
+      Exit;
+    end;
+    SN := X509GetSerialNumber(cert);
+    Result := Asn1IntegerGet(SN);
+  finally
+    X509Free(cert);
+  end;
+end;
+
 function TSSLOpenSSL.GetPeerName: string;
 var
   s: ansistring;
@@ -674,6 +717,28 @@ begin
   s := GetPeerSubject;
   s := SeparateRight(s, '/CN=');
   Result := Trim(SeparateLeft(s, '/'));
+end;
+
+function TSSLOpenSSL.GetPeerNameHash: cardinal; {pf}
+var
+  cert: PX509;
+begin
+  if not assigned(FSsl) then
+  begin
+    Result := 0;
+    Exit;
+  end;
+  cert := SSLGetPeerCertificate(Fssl);
+  try
+    if not assigned(cert) then
+    begin
+      Result := 0;
+      Exit;
+    end;
+    Result := X509NameHash(X509GetSubjectName(cert));
+  finally
+    X509Free(cert);
+  end;
 end;
 
 function TSSLOpenSSL.GetPeerIssuer: string;
@@ -758,28 +823,34 @@ begin
     Result := '';
     Exit;
   end;
-  b := BioNew(BioSMem);
-  try
-    X509Print(b, cert);
-    x := bioctrlpending(b);
-{$IFDEF CIL}
-    sb := StringBuilder.Create(x);
-    y := bioread(b, sb, x);
-    if y > 0 then
-    begin
-      sb.Length := y;
-      s := sb.ToString;
+  try {pf}
+    b := BioNew(BioSMem);
+    try
+      X509Print(b, cert);
+      x := bioctrlpending(b);
+  {$IFDEF CIL}
+      sb := StringBuilder.Create(x);
+      y := bioread(b, sb, x);
+      if y > 0 then
+      begin
+        sb.Length := y;
+        s := sb.ToString;
+      end;
+  {$ELSE}
+      setlength(s,x);
+      y := bioread(b,s,x);
+      if y > 0 then
+        setlength(s, y);
+  {$ENDIF}
+      Result := ReplaceString(s, LF, CRLF);
+    finally
+      BioFreeAll(b);
     end;
-{$ELSE}
-    setlength(s,x);
-    y := bioread(b,s,x);
-    if y > 0 then
-      setlength(s, y);
-{$ENDIF}
-    Result := ReplaceString(s, LF, CRLF);
+  {pf}
   finally
-    BioFreeAll(b);
+    X509Free(cert);
   end;
+  {/pf}
 end;
 
 function TSSLOpenSSL.GetCipherName: string;
@@ -819,7 +890,7 @@ end;
 {==============================================================================}
 
 initialization
-//  if InitSSLInterface then
-//    SSLImplementation := TSSLOpenSSL;
+  if InitSSLInterface then
+    SSLImplementation := TSSLOpenSSL;
 
 end.

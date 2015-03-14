@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 007.005.000 |
+| Project : Ararat Synapse                                       | 007.005.002 |
 |==============================================================================|
 | Content: Serial port support                                                 |
 |==============================================================================|
-| Copyright (c)2001-2010, Lukas Gebauer                                        |
+| Copyright (c)2001-2011, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2001-2010.                |
+| Portions created by Lukas Gebauer are Copyright (c)2001-2011.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -1938,7 +1938,7 @@ begin
     {$IFDEF DARWIN}
     SerialCheck(fpioctl(FHandle, TCIOflush, TCIOFLUSH));
     {$ELSE}
-    SerialCheck(fpioctl(FHandle, TCFLSH, TCIOFLUSH));
+    SerialCheck(fpioctl(FHandle, TCFLSH, Pointer(PtrInt(TCIOFLUSH))));
     {$ENDIF}
   {$ENDIF}
   FBuffer := '';
@@ -2147,7 +2147,7 @@ begin
     sOK:               Result := 'OK';
     ErrAlreadyOwned:   Result := 'Port owned by other process';{HGJ}
     ErrAlreadyInUse:   Result := 'Instance already in use';    {HGJ}
-    ErrWrongParameter: Result := 'Wrong paramter at call';     {HGJ}
+    ErrWrongParameter: Result := 'Wrong parameter at call';     {HGJ}
     ErrPortNotOpen:    Result := 'Instance not yet connected'; {HGJ}
     ErrNoDeviceAnswer: Result := 'No device answer detected';  {HGJ}
     ErrMaxBuffer:      Result := 'Maximal buffer length exceeded';
