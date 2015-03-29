@@ -119,9 +119,9 @@ end;
 
 procedure GoDonate;
 begin
-//  AppBusy;
-//  OpenURL('http://code.google.com/p/transmisson-remote-gui/wiki/Donate');
-//  AppNormal;
+  AppBusy;
+  OpenURL('http://code.google.com/p/transmisson-remote-gui/wiki/Donate');
+  AppNormal;
 end;
 
 { TCheckVersionThread }
