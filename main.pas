@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.0.3';
+  AppVersion = '5.0.4';
 
 resourcestring
   sAll = 'All torrents';
@@ -5290,7 +5290,7 @@ begin
           if not IsActive then
             continue;
         fltInactive:
-          if IsActive then
+          if (IsActive=true) or ((StateImg in [imgStopped, imgDone])=true) then // PETROV
             continue;
         fltDown:
           if FTorrents[idxStatus, i] <> TR_STATUS_DOWNLOAD then
@@ -5351,7 +5351,7 @@ begin
     lvFilter.Items[0, 1]:=UTF8Decode(Format('%s (%d)', [SDownloading, DownCnt]));
     lvFilter.Items[0, 2]:=UTF8Decode(Format('%s (%d)', [SCompleted, CompletedCnt]));
     lvFilter.Items[0, 3]:=UTF8Decode(Format('%s (%d)', [SActive, ActiveCnt]));
-    lvFilter.Items[0, 4]:=UTF8Decode(Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt]));
+    lvFilter.Items[0, 4]:=UTF8Decode(Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt - StoppedCnt])); // PETROV - остановленный торрент==неактивный!
     lvFilter.Items[0, 5]:=UTF8Decode(Format('%s (%d)', [sStopped, StoppedCnt]));
     lvFilter.Items[0, 6]:=UTF8Decode(Format('%s (%d)', [sErrorState, ErrorCnt]));
 

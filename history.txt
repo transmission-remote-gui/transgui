@@ -1,3 +1,12 @@
+usage: 
+
+    transgui.exe [-hidden] [-updatelang] [-makelang] 
+	
+	
+
+5.0.4 (Mar 29, 2015)
+[*] Change "Inactive" (torrent) option - torrents are not considered Inactive in status "Stopped" and "Done"
+
 5.0.3 (Feb 8, 2015)
 [-] Minor fixes new features version 5.0.2
 [-] Removed display of items to export/import from the system menu (in tray). Items have been added in version 5.0.2
