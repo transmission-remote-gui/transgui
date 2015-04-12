@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.0.4';
+  AppVersion = '5.1.0';
 
 resourcestring
   sAll = 'All torrents';
@@ -113,6 +113,16 @@ resourcestring
   SActiveTime = 'Active time';
 
 type
+
+  // PETROV - for torrent folder
+  FolderData = class
+  public
+    Hit: integer;
+    Ext: string;
+    Txt: string;
+  end;
+
+
   { TProgressImage }
 
   TProgressImage = class(TGraphicControl)
@@ -2180,6 +2190,7 @@ var
   fs: TFileStreamUTF8;
   s, OldDownloadDir, IniSec, OldName: string;
   ok: boolean;
+  pFD:FolderData;
 begin
   Result:=False;
   if not RpcObj.Connected and not RpcObj.Connecting then
@@ -2230,8 +2241,14 @@ begin
           s:=CorrectPath (UTF8Encode(args.Strings['download-dir']) ); // PETROV
 
           if cbDestFolder.Items.IndexOf(s) < 0 then begin
+
+            pFD    := FolderData.create;
+            pFD.Hit:= 1;
+            pFD.Ext:= '';
+            pFD.Txt:= s;
             cbDestFolder.Items.Insert(0, s);
-            cbDestFolder.ItemIndex:=0;
+            i := cbDestFolder.Items.IndexOf(s);
+            cbDestFolder.Items.Objects[i]:= pFD;
           end;
 
           if RpcObj.RPCVersion < 15 then
@@ -4719,7 +4736,6 @@ end;
 
 
 //----------------------------------------------------------------
-// функция: вернуть требуемое значение БиДи
 function GetBiDi: TBiDiMode;
 var
   i:integer;
@@ -4742,11 +4758,6 @@ end;
 
 
 //----------------------------------------------------------------
-// функция:
-// удаляет лишние косые (случайно или спец.добавленные)
-// удаляет последний слэш в пусти, если есть
-//
-// цель - привести строчку (путь размещения скаченного торрента) к одному виду
 function TMainForm.CorrectPath (path: string): string; // PETROV
 var
   l_old: integer;
@@ -4757,7 +4768,6 @@ begin
   if l_old >= 1 then begin
      if path[l_old]='/' then
         path := MidStr(path,1,l_old-1);
-
      Result:= path;
   end;
 end;
@@ -6403,10 +6413,12 @@ end;
 
 procedure TMainForm.FillDownloadDirs(CB: TComboBox; const CurFolderParam: string);
 var
-  i, j, n,xx, m,z: integer;
+  i, j, n,xx, m: integer;
   s, IniSec: string;
+  pFD : FolderData;
 begin
   CB.Items.Clear;
+
   IniSec   :='AddTorrent.' + FCurConn;
   j        :=Ini.ReadInteger(IniSec, 'FolderCount', 0);
 
@@ -6424,8 +6436,11 @@ begin
 
       if n=0 then begin // PETROV
         m := CB.Items.Add(s);
-        z := Ini.ReadInteger (IniSec, Format('FolHit%d', [i]), 1);
-        CB.Items.Objects[m] := TObject(z);
+        pFD    := FolderData.create;
+        pFD.Hit:= Ini.ReadInteger (IniSec, Format('FolHit%d', [i]), 1);
+        pFD.Ext:= Ini.ReadString  (IniSec, Format('FolExt%d', [i]),'');
+        pFD.Txt:= s; // petrov for debug
+        CB.Items.Objects[m] := pFD;
       end;
     end;
   end;
@@ -6445,36 +6460,46 @@ end;
 
 procedure TMainForm.SaveDownloadDirs(CB: TComboBox; const CurFolderParam: string);
 var
-  i, Iv: integer;
+  i: integer;
   IniSec: string;
   tmp,selfolder : string;
+  pFD : FolderData;
 begin
   IniSec   := 'AddTorrent.' + FCurConn;
   selfolder:= CorrectPath(CB.Text);
+  i        := CB.Items.IndexOf(selfolder);
 
-  i:=CB.Items.IndexOf(selfolder);
+  if CurFolderParam = 'LastMoveDir' then begin
   if i < 0 then begin
-     DeleteDirs (CB, 1);               // prepare for new item
+      DeleteDirs (CB, 1);
      CB.Items.Insert (0, selfolder);
      i:=CB.Items.IndexOf(selfolder);
-     CB.Items.Objects[i]:= TObject(1); // by default 1
-  end else begin
-     Iv                 := Integer(CB.Items.Objects[i]);
-     Iv                 := Iv + 1;     // popular item
-     CB.Items.Objects[i]:= TObject(Iv);
-     DeleteDirs (CB, 0);               // check count items
+      pFD    := FolderData.create;
+      pFD.Hit:= 1;
+      pFD.Ext:= '';
+      pFD.Txt:= selfolder;
+      CB.Items.Objects[i]:= pFD;
+    end else begin
+      pFD    := CB.Items.Objects[i] as FolderData;
+      pFD.Hit:= pFD.Hit + 1;
+      CB.Items.Objects[i]:= pFD;
+      DeleteDirs (CB, 0);
+    end;
   end;
 
   Ini.WriteInteger(IniSec, 'FolderCount', CB.Items.Count);
   for i:=0 to CB.Items.Count - 1 do begin
     tmp := CorrectPath(CB.Items[i]); // PETROV
-    Iv  := Integer    (CB.Items.Objects[i]);
+    pFD := CB.Items.Objects[i] as FolderData;
     Ini.WriteString (IniSec, Format('Folder%d', [i]), tmp);
-    Ini.WriteInteger(IniSec, Format('FolHit%d', [i]), Iv );
+    Ini.WriteInteger(IniSec, Format('FolHit%d', [i]), pFD.Hit);
+    Ini.WriteString (IniSec, Format('FolExt%d', [i]), pFD.Ext);
   end;
 
-  Ini.WriteString (IniSec, Format('Folder%d', [i+1]), '');
+  // clear string
+  Ini.WriteString (IniSec, Format('Folder%d', [i+1]), '' );
   Ini.WriteInteger(IniSec, Format('FolHit%d', [i+1]), -1 );
+  Ini.WriteString (IniSec, Format('FolExt%d', [i+1]), '' );
 
   Ini.WriteString(IniSec, CurFolderParam, selfolder); // autosorting, valid from text
   Ini.UpdateFile;
@@ -6482,18 +6507,21 @@ end;
 
 procedure TMainForm.DeleteDirs(CB: TComboBox; maxdel : Integer);
 var
-  i,Iv,min,max,indx: integer;
+  i,min,max,indx: integer;
+  pFD : FolderData;
+  tmp : string;
 begin
     max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
     Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max); // PETROV
+
     while (CB.Items.Count+maxdel) > max do begin
-       // должен найти итем с меньшим Хит и именно эту строчку грохнуть
        min := 9999999;
        indx:=-1;
        for i:=0 to CB.Items.Count - 1 do begin
-         Iv  := Integer(CB.Items.Objects[i]);
-         if Iv < min then begin
-           min := Iv;
+         tmp := CorrectPath(CB.Items[i]); // PETROV
+         pFD := CB.Items.Objects[i] as FolderData;
+         if pFD.Hit < min then begin
+           min := pFD.Hit;
            indx:= i;
          end;
        end;

@@ -25,7 +25,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, VarGrid, Grids,
-  ButtonPanel, ExtCtrls, BaseForm, varlist, fpjson;
+  ButtonPanel, ExtCtrls, BaseForm, varlist, fpjson, StrUtils;
 
 resourcestring
   SSize = 'Size';
@@ -45,11 +45,13 @@ type
     cbStartTorrent: TCheckBox;
     cbDestFolder: TComboBox;
     edSaveAs: TEdit;
+    edExtension: TEdit;
     gbSaveAs: TGroupBox;
     gbContents: TGroupBox;
     edPeerLimit: TSpinEdit;
     DiskSpaceTimer: TTimer;
     txSaveAs: TLabel;
+    txSaveAs1: TLabel;
     txSize: TLabel;
     txDiskSpace: TLabel;
     txPeerLimit: TLabel;
@@ -64,6 +66,12 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
+    procedure SearchGoodExtension ();
+    function  GetTempate (ext:string; var e: array of string):integer;
+    function  IsFileTemplate(filename:string; cntE : integer; e: array of string):boolean;
+    function  CorrectPath (path: string): string;
+    procedure DeleteDirs(maxdel : Integer);
+
   private
     FDiskSpaceCaption: string;
     FTree: TFilesTree;
@@ -71,6 +79,7 @@ type
     procedure UpdateSize;
   public
     OrigCaption: string;
+    Extension : string;
     property FilesTree: TFilesTree read FTree;
   end;
 
@@ -830,12 +839,82 @@ begin
   finally
     lvFiles.EndUpdate;
   end;
+
+  // Search good extension
+  SearchGoodExtension ();
+
   DiskSpaceTimerTimer(nil);
   AppNormal;
 end;
 
-procedure TAddTorrentForm.OKButtonClick(Sender: TObject);
+function TAddTorrentForm.CorrectPath (path: string): string;
+var
+  l_old: integer;
 begin
+  path  := StringReplace(path, '//', '/', [rfReplaceAll, rfIgnoreCase]);
+  Result:= path;
+  l_old := length(path);
+  if l_old >= 1 then begin
+     if path[l_old]='/' then
+        path := MidStr(path,1,l_old-1);
+     Result:= path;
+  end;
+end;
+
+procedure TAddTorrentForm.DeleteDirs(maxdel : Integer);
+var
+  i,min,max,indx: integer;
+  pFD : FolderData;
+  tmp : string;
+begin
+    max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
+    Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max); // PETROV
+
+    while (cbDestFolder.Items.Count+maxdel) > max do begin
+       min := 9999999;
+       indx:=-1;
+       for i:=0 to cbDestFolder.Items.Count - 1 do begin
+         tmp := CorrectPath(cbDestFolder.Items[i]); // PETROV
+         pFD := cbDestFolder.Items.Objects[i] as FolderData;
+         if pFD.Hit < min then begin
+           min := pFD.Hit;
+           indx:= i;
+         end;
+       end;
+
+       if indx > -1 then
+         cbDestFolder.Items.Delete(indx);
+    end;
+end;
+
+procedure TAddTorrentForm.OKButtonClick(Sender: TObject);
+var
+  s,e : string;
+  i : integer;
+  pFD : FolderData;
+begin
+
+  s := CorrectPath(cbDestFolder.Text);
+  e := edExtension.Text;
+  i := cbDestFolder.Items.IndexOf(s);
+  if i < 0 then begin
+     DeleteDirs (1);               // prepare for new item
+     cbDestFolder.Items.Insert (0, s);
+     i:=cbDestFolder.Items.IndexOf(s);
+     pFD    := FolderData.create;
+     pFD.Hit:= 1;
+     pFD.Ext:= e;
+     pFD.Txt:= s;
+     cbDestFolder.Items.Objects[i]:= pFD;
+  end else begin
+     pFD    := cbDestFolder.Items.Objects[i] as FolderData;
+     pFD.Hit:= pFD.Hit + 1;
+     pFD.Ext:= e;
+     pFD.Txt:= s;
+     cbDestFolder.Items.Objects[i]:= pFD;
+     DeleteDirs (0);               // check count items
+  end;
+
   if edSaveAs.Enabled then begin
     edSaveAs.Text:=Trim(edSaveAs.Text);
     if edSaveAs.Text = '' then begin
@@ -879,8 +958,10 @@ var
   s: string;
 begin
   s:=MainForm.SelectRemoteFolder(cbDestFolder.Text, SSelectDownloadFolder);
-  if s <> '' then
+  if s <> '' then begin
     cbDestFolder.Text:=s;
+    cbDestFolderChange (nil);
+  end;
 end;
 
 procedure TAddTorrentForm.btSelectNoneClick(Sender: TObject);
@@ -889,7 +970,20 @@ begin
 end;
 
 procedure TAddTorrentForm.cbDestFolderChange(Sender: TObject);
+var
+  s, s2 : string;
+  i : integer;
+  pFD : FolderData;
 begin
+  s := cbDestFolder.Text;
+  i := cbDestFolder.Items.IndexOf(s);
+  if i < 0 then begin
+    edExtension.Text := '';
+  end else begin
+    pFD             := cbDestFolder.Items.Objects[i] as FolderData;
+    s2              := pFD.Txt;
+    edExtension.Text:= pFD.Ext;
+  end;
   DiskSpaceTimer.Enabled:=True;
 end;
 
@@ -933,6 +1027,144 @@ end;
 procedure TAddTorrentForm.TreeStateChanged(Sender: TObject);
 begin
   UpdateSize;
+end;
+
+function  TAddTorrentForm.GetTempate (ext:string; var e: array of string):integer;
+var
+  tmp,exten : string;
+  i,n : integer;
+begin
+  tmp   := ext;
+  exten := ext;
+  n     := 0;
+  while tmp <> '' do begin
+    i := Pos (' ', tmp);
+    if (i <> 0) then begin
+      exten:= Trim (Copy (tmp, 1, i-1));
+      tmp  := Trim (Copy (tmp, i, 999));
+      end
+    else begin
+      exten:= Trim (tmp);
+      tmp  := '';
+    end;
+    e[n]:= exten;
+    n   := n+1;
+  end;
+  GetTempate := n;
+end;
+
+function  TAddTorrentForm.IsFileTemplate(filename:string; cntE : integer; e: array of string):boolean;
+var
+  tmp, tmpExt, tmp_Name, sstr: string;
+  i,n,lstr,j,k, total_sstr, total_templ : integer;
+  ok : boolean;
+  re : boolean;
+begin
+  IsFileTemplate := false;
+
+  tmp := filename;
+  lstr:= Length(tmp);
+  for i:=1 to lstr do begin
+    if (tmp[lstr-i]= '/') or (tmp[lstr-i]= '\\') then begin
+      tmp := Copy (tmp, lstr-i+1, 999);
+      Break;
+    end;
+  end;
+
+  for i:=0 to cntE-1 do begin
+      tmpExt     := e[i];
+      tmp_Name   := tmp;
+      total_sstr := 0;
+      total_templ:= 0;
+      while tmpExt <> '' do begin
+        j := Pos ('*', tmpExt);
+        if j <> 0 then begin
+          sstr  := Copy (tmpExt, 1, j-1);
+          tmpExt:= Copy (tmpExt, j+1, 999);
+          re    := false;
+          end
+        else begin
+          sstr  := Trim (tmpExt);
+          tmpExt:= '';
+          re    := true;
+        end;
+        if sstr = '' then continue;
+
+        total_templ := total_templ +1;
+        n           := Length(sstr);
+        ok          := false;
+        while 1 = 1 do begin
+          if tmp_Name = '' then break;
+          k := Pos (sstr, tmp_Name);
+          if k <> 0 then begin
+            tmp_Name    := Copy (tmp_Name, k+n, 999);
+            if ((tmpExt ='') and (re=true)) and (tmp_Name <> '') then begin
+               continue;
+            end else begin
+              total_sstr := total_sstr +1;
+              ok         := true;
+              Break;
+            end;
+          end else begin
+            Break;
+          end;
+        end;
+        if ok = true then break;
+      end;
+
+      if total_sstr = total_templ then begin
+        IsFileTemplate := true;
+        Break;
+      end;
+  end;
+end;
+
+
+procedure TAddTorrentForm.SearchGoodExtension ();
+var
+  i,j, jMax, torrMax : integer;
+  s, filename : string;
+  filesize, dTotal,dTotalMax : double;
+  pFD : FolderData;
+  e : array [0..50] of string;
+  n : integer;
+begin
+    dTotalMax := 0;
+    jMax      :=-1;
+
+    for j:=0 to cbDestFolder.Items.Count-1 do begin
+      pFD  := cbDestFolder.Items.Objects[j] as FolderData;
+      s    := Trim(pFD.Ext);
+      if s = '' then continue;
+
+      n      := GetTempate (AnsiLowerCase(s), e);
+      dTotal := 0;
+      torrMax:= lvFiles.Items.Count;
+      if torrMax > 100 then torrMax := 100;
+
+      for i:=0 to torrMax - 1 do begin
+          if not FTree.IsFolder(i) then begin
+            filename := lvFiles.Items[idxFileName, i];
+            filesize := double(lvFiles.Items[idxFileSize, i]);
+            if IsFileTemplate(filename, n,e) = true then
+              dTotal := dTotal + filesize;
+          end;
+      end;
+
+      if (dTotal > 0) and (dTotal > dTotalMax) then begin
+        dTotalMax := dTotal;
+        jMax      := j;
+      end;
+    end;
+
+    if jMax <> -1 then begin
+      pFD  := cbDestFolder.Items.Objects[jMax] as FolderData;
+      cbDestFolder.ItemIndex := jMax;
+      cbDestFolder.Text := pFD.Txt;
+      cbDestFolderChange(nil);
+    end else begin
+      cbDestFolderChange(nil);
+    end;
 end;
 
 procedure TAddTorrentForm.FormCreate(Sender: TObject);

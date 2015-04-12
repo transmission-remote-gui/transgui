@@ -1,3 +1,6 @@
+5.1.0 (Apr 11, 2015)
+[+] Rules to automatically suggest download directory (for each directory, you can specify a template, for example: *.avi *.mpg). Issue #500,605.
+
 5.0.4 (Mar 29, 2015)
 [*] Change "Inactive" (torrent) option - torrents are not considered Inactive in status "Stopped" and "Done"
 
