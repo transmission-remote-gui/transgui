@@ -266,11 +266,11 @@ type
 
     {:Compose message from @link(MessagePart) to @link(Lines). Headers from
      @link(Header) object is added also.}
-    procedure EncodeMessage;
+    procedure EncodeMessage; virtual;
 
     {:Decode message from @link(Lines) to @link(MessagePart). Massage headers
      are parsed into @link(Header) object.}
-    procedure DecodeMessage;
+    procedure DecodeMessage; virtual;
 
     {pf}
     {: HTTP message is received by @link(THTTPSend) component in two parts:

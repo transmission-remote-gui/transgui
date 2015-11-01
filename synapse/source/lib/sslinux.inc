@@ -3,7 +3,7 @@
 |==============================================================================|
 | Content: Socket Independent Platform Layer - Linux definition include        |
 |==============================================================================|
-| Copyright (c)1999-2010, Lukas Gebauer                                        |
+| Copyright (c)1999-2012, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2003-2010.                |
+| Portions created by Lukas Gebauer are Copyright (c)2003-2012.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -1206,7 +1206,6 @@ end;
 function InitSocketInterface(stack: string): Boolean;
 begin
   Result := False;
-  SockEnhancedApi := False;
   if stack = '' then
     stack := DLLStackName;
   SynSockCS.Enter;

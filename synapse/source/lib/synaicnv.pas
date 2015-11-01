@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.001.001 |
+| Project : Ararat Synapse                                       | 001.001.002 |
 |==============================================================================|
-| Content: ICONV support for Win32, Linux and .NET                             |
+| Content: ICONV support for Win32, OS/2, Linux and .NET                       |
 |==============================================================================|
-| Copyright (c)2004-2010, Lukas Gebauer                                        |
+| Copyright (c)2004-2013, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,10 +33,11 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2004-2010.                |
+| Portions created by Lukas Gebauer are Copyright (c)2004-2013.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
+|   Tomas Hajny (OS2 support)                                                  |
 |==============================================================================|
 | History: see HISTORY.HTM from distribution package                           |
 |          (Found at URL: http://www.ararat.cz/synapse/)                       |
@@ -81,7 +82,11 @@ uses
 
 const
   {$IFNDEF MSWINDOWS}
+   {$IFDEF OS2}
+  DLLIconvName = 'iconv.dll';
+   {$ELSE OS2}
   DLLIconvName = 'libiconv.so';
+   {$ENDIF OS2}
   {$ELSE}
   DLLIconvName = 'iconv.dll';
   {$ENDIF}

@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 005.002.002 |
+| Project : Ararat Synapse                                       | 005.002.004 |
 |==============================================================================|
 | Content: Charset conversion support                                          |
 |==============================================================================|
-| Copyright (c)1999-2004, Lukas Gebauer                                        |
+| Copyright (c)1999-2015, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2000-2004.                |
+| Portions created by Lukas Gebauer are Copyright (c)2000-2015.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -60,6 +60,13 @@ Internal routines knows all major charsets for Europe or America. For East-Asian
 {$Q-}
 {$H+}
 
+//old Delphi does not have MSWINDOWS define.
+{$IFDEF WIN32}
+  {$IFNDEF MSWINDOWS}
+    {$DEFINE MSWINDOWS}
+  {$ENDIF}
+{$ENDIF}
+
 {$IFDEF UNICODE}
   {$WARN IMPLICIT_STRING_CAST OFF}
   {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
@@ -70,13 +77,9 @@ unit synachar;
 interface
 
 uses
-{$IFNDEF WIN32}
+{$IFNDEF MSWINDOWS}
   {$IFNDEF FPC}
   Libc,
-  {$ELSE}
-    {$IFDEF FPC_USE_LIBC}
-  Libc,
-    {$ENDIF}
   {$ENDIF}
 {$ELSE}
   Windows,
@@ -219,6 +222,9 @@ function StringToWide(const Value: AnsiString): WideString;
 
 {:Convert WideString to binary string with unicode content.}
 function WideToString(const Value: WideString): AnsiString;
+
+function GetIconvIDFromCP(Value: TMimeChar): AnsiString;
+function GetCPFromIconvID(Value: AnsiString): TMimeChar;
 
 {==============================================================================}
 implementation
@@ -1490,19 +1496,16 @@ begin
 end;
 
 {==============================================================================}
-{$IFNDEF WIN32}
+{$IFNDEF MSWINDOWS}
 
 function GetCurCP: TMimeChar;
 begin
   {$IFNDEF FPC}
   Result := GetCPFromID(nl_langinfo(_NL_CTYPE_CODESET_NAME));
   {$ELSE}
-    {$IFDEF FPC_USE_LIBC}
-  Result := GetCPFromID(nl_langinfo(_NL_CTYPE_CODESET_NAME));
-    {$ELSE}
   //How to get system codepage without LIBC?
   Result := UTF_8;
-    {$ENDIF}
+{ TODO : Waiting for FPC 2.8 solution }
   {$ENDIF}
 end;
 
@@ -1805,91 +1808,91 @@ end;
 initialization
 begin
   IconvArr[0].Charset := ISO_8859_1;
-  IconvArr[0].Charname := 'ISO-8859-1 CP819 IBM819 ISO-IR-100 ISO8859-1 ISO_8859-1 ISO_8859-1:1987 L1 LATIN1 CSISOLATIN1';
+  IconvArr[0].Charname := 'ISO-8859-1 CP819 IBM819 ISO-IR-100 ISO8859-1 ISO_8859-1 ISO_8859-1:1987 L1 LATIN1 CSISOLATIN1 ISO88591 ISOIR100';
   IconvArr[1].Charset := UTF_8;
-  IconvArr[1].Charname := 'UTF-8';
+  IconvArr[1].Charname := 'UTF-8 UTF8';
   IconvArr[2].Charset := UCS_2;
-  IconvArr[2].Charname := 'ISO-10646-UCS-2 UCS-2 CSUNICODE';
+  IconvArr[2].Charname := 'ISO-10646-UCS-2 UCS-2 CSUNICODE UCS2';
   IconvArr[3].Charset := UCS_2;
-  IconvArr[3].Charname := 'UCS-2BE UNICODE-1-1 UNICODEBIG CSUNICODE11';
+  IconvArr[3].Charname := 'UCS-2BE UNICODE-1-1 UNICODEBIG CSUNICODE11 UNICODE11 UCS2BE UCS2-BE';
   IconvArr[4].Charset := UCS_2LE;
-  IconvArr[4].Charname := 'UCS-2LE UNICODELITTLE';
+  IconvArr[4].Charname := 'UCS-2LE UNICODELITTLE UCS2LE UCS2-LE';
   IconvArr[5].Charset := UCS_4;
-  IconvArr[5].Charname := 'ISO-10646-UCS-4 UCS-4 CSUCS4';
+  IconvArr[5].Charname := 'ISO-10646-UCS-4 UCS-4 CSUCS4 UCS4 ISO10646UCS4';
   IconvArr[6].Charset := UCS_4;
-  IconvArr[6].Charname := 'UCS-4BE';
+  IconvArr[6].Charname := 'UCS-4BE UCS4BE UCS4-BE';
   IconvArr[7].Charset := UCS_2LE;
-  IconvArr[7].Charname := 'UCS-4LE';
+  IconvArr[7].Charname := 'UCS-4LE UCS4LE UCS4-LE';
   IconvArr[8].Charset := UTF_16;
-  IconvArr[8].Charname := 'UTF-16';
+  IconvArr[8].Charname := 'UTF-16 UTF16';
   IconvArr[9].Charset := UTF_16;
-  IconvArr[9].Charname := 'UTF-16BE';
+  IconvArr[9].Charname := 'UTF-16BE UTF16BE UTF16-BE';
   IconvArr[10].Charset := UTF_16LE;
-  IconvArr[10].Charname := 'UTF-16LE';
+  IconvArr[10].Charname := 'UTF-16LE UTF16LE UTF16-LE';
   IconvArr[11].Charset := UTF_32;
-  IconvArr[11].Charname := 'UTF-32';
+  IconvArr[11].Charname := 'UTF-32 UTF32';
   IconvArr[12].Charset := UTF_32;
-  IconvArr[12].Charname := 'UTF-32BE';
+  IconvArr[12].Charname := 'UTF-32BE UTF32BE UTF32-BE';
   IconvArr[13].Charset := UTF_32;
-  IconvArr[13].Charname := 'UTF-32LE';
+  IconvArr[13].Charname := 'UTF-32LE UTF32LE UTF32-LE';
   IconvArr[14].Charset := UTF_7;
-  IconvArr[14].Charname := 'UNICODE-1-1-UTF-7 UTF-7 CSUNICODE11UTF7';
+  IconvArr[14].Charname := 'UNICODE-1-1-UTF-7 UTF-7 CSUNICODE11UTF7 UTF7 UNICODE11UTF7';
   IconvArr[15].Charset := C99;
   IconvArr[15].Charname := 'C99';
   IconvArr[16].Charset := JAVA;
   IconvArr[16].Charname := 'JAVA';
   IconvArr[17].Charset := ISO_8859_1;
-  IconvArr[17].Charname := 'US-ASCII ANSI_X3.4-1968 ANSI_X3.4-1986 ASCII CP367 IBM367 ISO-IR-6 ISO646-US ISO_646.IRV:1991 US CSASCII';
+  IconvArr[17].Charname := 'US-ASCII ANSI_X3.4-1968 ANSI_X3.4-1986 ASCII CP367 IBM367 ISO-IR-6 ISO646-US ISO_646.IRV:1991 US CSASCII USASCII ISOIR6';
   IconvArr[18].Charset := ISO_8859_2;
-  IconvArr[18].Charname := 'ISO-8859-2 ISO-IR-101 ISO8859-2 ISO_8859-2 ISO_8859-2:1987 L2 LATIN2 CSISOLATIN2';
+  IconvArr[18].Charname := 'ISO-8859-2 ISO-IR-101 ISO8859-2 ISO_8859-2 ISO_8859-2:1987 L2 LATIN2 CSISOLATIN2 ISO88592 ISOIR101';
   IconvArr[19].Charset := ISO_8859_3;
-  IconvArr[19].Charname := 'ISO-8859-3 ISO-IR-109 ISO8859-3 ISO_8859-3 ISO_8859-3:1988 L3 LATIN3 CSISOLATIN3';
+  IconvArr[19].Charname := 'ISO-8859-3 ISO-IR-109 ISO8859-3 ISO_8859-3 ISO_8859-3:1988 L3 LATIN3 CSISOLATIN3 ISO88593 ISOIR109';
   IconvArr[20].Charset := ISO_8859_4;
-  IconvArr[20].Charname := 'ISO-8859-4 ISO-IR-110 ISO8859-4 ISO_8859-4 ISO_8859-4:1988 L4 LATIN4 CSISOLATIN4';
+  IconvArr[20].Charname := 'ISO-8859-4 ISO-IR-110 ISO8859-4 ISO_8859-4 ISO_8859-4:1988 L4 LATIN4 CSISOLATIN4 ISO88594 ISOIR110';
   IconvArr[21].Charset := ISO_8859_5;
-  IconvArr[21].Charname := 'ISO-8859-5 CYRILLIC ISO-IR-144 ISO8859-5 ISO_8859-5 ISO_8859-5:1988 CSISOLATINCYRILLIC';
+  IconvArr[21].Charname := 'ISO-8859-5 CYRILLIC ISO-IR-144 ISO8859-5 ISO_8859-5 ISO_8859-5:1988 CSISOLATINCYRILLIC ISOIR144';
   IconvArr[22].Charset := ISO_8859_6;
-  IconvArr[22].Charname := 'ISO-8859-6 ARABIC ASMO-708 ECMA-114 ISO-IR-127 ISO8859-6 ISO_8859-6 ISO_8859-6:1987 CSISOLATINARABIC';
+  IconvArr[22].Charname := 'ISO-8859-6 ARABIC ASMO-708 ECMA-114 ISO-IR-127 ISO8859-6 ISO_8859-6 ISO_8859-6:1987 CSISOLATINARABIC ISOIR127';
   IconvArr[23].Charset := ISO_8859_7;
-  IconvArr[23].Charname := 'ISO-8859-7 ECMA-118 ELOT_928 GREEK GREEK8 ISO-IR-126 ISO8859-7 ISO_8859-7 ISO_8859-7:1987 CSISOLATINGREEK';
+  IconvArr[23].Charname := 'ISO-8859-7 ECMA-118 ELOT_928 GREEK GREEK8 ISO-IR-126 ISO8859-7 ISO_8859-7 ISO_8859-7:1987 CSISOLATINGREEK ISOIR126 ECMA118 ELOT928';
   IconvArr[24].Charset := ISO_8859_8;
-  IconvArr[24].Charname := 'ISO-8859-8 HEBREW ISO_8859-8 ISO-IR-138 ISO8859-8 ISO_8859-8:1988 CSISOLATINHEBREW ISO-8859-8-I';
+  IconvArr[24].Charname := 'ISO-8859-8 HEBREW ISO_8859-8 ISO-IR-138 ISO8859-8 ISO_8859-8:1988 CSISOLATINHEBREW ISO-8859-8-I ISOIR138';
   IconvArr[25].Charset := ISO_8859_9;
-  IconvArr[25].Charname := 'ISO-8859-9 ISO-IR-148 ISO8859-9 ISO_8859-9 ISO_8859-9:1989 L5 LATIN5 CSISOLATIN5';
+  IconvArr[25].Charname := 'ISO-8859-9 ISO-IR-148 ISO8859-9 ISO_8859-9 ISO_8859-9:1989 L5 LATIN5 CSISOLATIN5 ISOIR148';
   IconvArr[26].Charset := ISO_8859_10;
-  IconvArr[26].Charname := 'ISO-8859-10 ISO-IR-157 ISO8859-10 ISO_8859-10 ISO_8859-10:1992 L6 LATIN6 CSISOLATIN6';
+  IconvArr[26].Charname := 'ISO-8859-10 ISO-IR-157 ISO8859-10 ISO_8859-10 ISO_8859-10:1992 L6 LATIN6 CSISOLATIN6 ISOIR157';
   IconvArr[27].Charset := ISO_8859_13;
-  IconvArr[27].Charname := 'ISO-8859-13 ISO-IR-179 ISO8859-13 ISO_8859-13 L7 LATIN7';
+  IconvArr[27].Charname := 'ISO-8859-13 ISO-IR-179 ISO8859-13 ISO_8859-13 L7 LATIN7 ISOIR179';
   IconvArr[28].Charset := ISO_8859_14;
-  IconvArr[28].Charname := 'ISO-8859-14 ISO-CELTIC ISO-IR-199 ISO8859-14 ISO_8859-14 ISO_8859-14:1998 L8 LATIN8';
+  IconvArr[28].Charname := 'ISO-8859-14 ISO-CELTIC ISO-IR-199 ISO8859-14 ISO_8859-14 ISO_8859-14:1998 L8 LATIN8 ISOIR199 ISOCELTIC';
   IconvArr[29].Charset := ISO_8859_15;
-  IconvArr[29].Charname := 'ISO-8859-15 ISO-IR-203 ISO8859-15 ISO_8859-15 ISO_8859-15:1998';
+  IconvArr[29].Charname := 'ISO-8859-15 ISO-IR-203 ISO8859-15 ISO_8859-15 ISO_8859-15:1998 ISOIR203';
   IconvArr[30].Charset := ISO_8859_16;
-  IconvArr[30].Charname := 'ISO-8859-16 ISO-IR-226 ISO8859-16 ISO_8859-16 ISO_8859-16:2000';
+  IconvArr[30].Charname := 'ISO-8859-16 ISO-IR-226 ISO8859-16 ISO_8859-16 ISO_8859-16:2000 ISOIR226';
   IconvArr[31].Charset := KOI8_R;
-  IconvArr[31].Charname := 'KOI8-R CSKOI8R';
+  IconvArr[31].Charname := 'KOI8-R CSKOI8R KOI8R';
   IconvArr[32].Charset := KOI8_U;
-  IconvArr[32].Charname := 'KOI8-U';
+  IconvArr[32].Charname := 'KOI8-U KOI8U';
   IconvArr[33].Charset := KOI8_RU;
-  IconvArr[33].Charname := 'KOI8-RU';
+  IconvArr[33].Charname := 'KOI8-RU KOI8RU';
   IconvArr[34].Charset := CP1250;
-  IconvArr[34].Charname := 'WINDOWS-1250 CP1250 MS-EE';
+  IconvArr[34].Charname := 'WINDOWS-1250 CP1250 MS-EE WINDOWS1250 MSEE';
   IconvArr[35].Charset := CP1251;
-  IconvArr[35].Charname := 'WINDOWS-1251 CP1251 MS-CYRL';
+  IconvArr[35].Charname := 'WINDOWS-1251 CP1251 MS-CYRL WINDOWS1251 MSCYRL';
   IconvArr[36].Charset := CP1252;
-  IconvArr[36].Charname := 'WINDOWS-1252 CP1252 MS-ANSI';
+  IconvArr[36].Charname := 'WINDOWS-1252 CP1252 MS-ANSI WINDOWS1252 MSANSI';
   IconvArr[37].Charset := CP1253;
-  IconvArr[37].Charname := 'WINDOWS-1253 CP1253 MS-GREEK';
+  IconvArr[37].Charname := 'WINDOWS-1253 CP1253 MS-GREEK WINDOWS1253 MSGREEK';
   IconvArr[38].Charset := CP1254;
-  IconvArr[38].Charname := 'WINDOWS-1254 CP1254 MS-TURK';
+  IconvArr[38].Charname := 'WINDOWS-1254 CP1254 MS-TURK WINDOWS1254 MSTURK';
   IconvArr[39].Charset := CP1255;
-  IconvArr[39].Charname := 'WINDOWS-1255 CP1255 MS-HEBR';
+  IconvArr[39].Charname := 'WINDOWS-1255 CP1255 MS-HEBR WINDOWS1255 MSHEBR';
   IconvArr[40].Charset := CP1256;
-  IconvArr[40].Charname := 'WINDOWS-1256 CP1256 MS-ARAB';
+  IconvArr[40].Charname := 'WINDOWS-1256 CP1256 MS-ARAB WINDOWS1256 MSARAB';
   IconvArr[41].Charset := CP1257;
-  IconvArr[41].Charname := 'WINDOWS-1257 CP1257 WINBALTRIM';
+  IconvArr[41].Charname := 'WINDOWS-1257 CP1257 WINBALTRIM WINDOWS1257';
   IconvArr[42].Charset := CP1258;
-  IconvArr[42].Charname := 'WINDOWS-1258 CP1258';
+  IconvArr[42].Charname := 'WINDOWS-1258 CP1258 WINDOWS1258';
   IconvArr[43].Charset := ISO_8859_1;
   IconvArr[43].Charname := '850 CP850 IBM850 CSPC850MULTILINGUAL';
   IconvArr[44].Charset := CP862;
@@ -1921,57 +1924,57 @@ begin
   IconvArr[57].Charset := MACTH;
   IconvArr[57].Charname := 'MACTHAI';
   IconvArr[58].Charset := ROMAN8;
-  IconvArr[58].Charname := 'HP-ROMAN8 R8 ROMAN8 CSHPROMAN8';
+  IconvArr[58].Charname := 'HP-ROMAN8 R8 ROMAN8 CSHPROMAN8 HPROMAN8 HP-ROMAN-8 HPROMAN-8';
   IconvArr[59].Charset := NEXTSTEP;
   IconvArr[59].Charname := 'NEXTSTEP';
   IconvArr[60].Charset := ARMASCII;
-  IconvArr[60].Charname := 'ARMSCII-8';
+  IconvArr[60].Charname := 'ARMSCII-8 ARMSCII8';
   IconvArr[61].Charset := GEORGIAN_AC;
-  IconvArr[61].Charname := 'GEORGIAN-ACADEMY';
+  IconvArr[61].Charname := 'GEORGIAN-ACADEMY GEORGIANACADEMY';
   IconvArr[62].Charset := GEORGIAN_PS;
-  IconvArr[62].Charname := 'GEORGIAN-PS';
+  IconvArr[62].Charname := 'GEORGIAN-PS GEORGIANPS';
   IconvArr[63].Charset := KOI8_T;
-  IconvArr[63].Charname := 'KOI8-T';
+  IconvArr[63].Charname := 'KOI8-T KOI8T';
   IconvArr[64].Charset := MULELAO;
-  IconvArr[64].Charname := 'MULELAO-1';
+  IconvArr[64].Charname := 'MULELAO-1 MULELAO1';
   IconvArr[65].Charset := CP1133;
-  IconvArr[65].Charname := 'CP1133 IBM-CP1133';
+  IconvArr[65].Charname := 'CP1133 IBM-CP1133 IBMCP1133';
   IconvArr[66].Charset := TIS620;
-  IconvArr[66].Charname := 'TIS-620 ISO-IR-166 TIS620 TIS620-0 TIS620.2529-1 TIS620.2533-0 TIS620.2533-1';
+  IconvArr[66].Charname := 'TIS-620 ISO-IR-166 TIS620 TIS620-0 TIS620.2529-1 TIS620.2533-0 TIS620.2533-1 ISOIR166';
   IconvArr[67].Charset := CP874;
-  IconvArr[67].Charname := 'CP874 WINDOWS-874';
+  IconvArr[67].Charname := 'CP874 WINDOWS-874 WINDOWS874';
   IconvArr[68].Charset := VISCII;
   IconvArr[68].Charname := 'VISCII VISCII1.1-1 CSVISCII';
   IconvArr[69].Charset := TCVN;
-  IconvArr[69].Charname := 'TCVN TCVN-5712 TCVN5712-1 TCVN5712-1:1993';
+  IconvArr[69].Charname := 'TCVN TCVN-5712 TCVN5712-1 TCVN5712-1:1993 TCVN5712';
   IconvArr[70].Charset := ISO_IR_14;
-  IconvArr[70].Charname := 'ISO-IR-14 ISO646-JP JIS_C6220-1969-RO JP CSISO14JISC6220RO';
+  IconvArr[70].Charname := 'ISO-IR-14 ISO646-JP JIS_C6220-1969-RO JP CSISO14JISC6220RO ISOIR14';
   IconvArr[71].Charset := JIS_X0201;
-  IconvArr[71].Charname := 'JISX0201-1976 JIS_X0201 X0201 CSHALFWIDTHKATAKANA';
+  IconvArr[71].Charname := 'JISX0201-1976 JIS_X0201 X0201 CSHALFWIDTHKATAKANA JISX02011976 JISX0201';
   IconvArr[72].Charset := JIS_X0208;
-  IconvArr[72].Charname := 'ISO-IR-87 JIS0208 JIS_C6226-1983 JIS_X0208 JIS_X0208-1983 JIS_X0208-1990 X0208 CSISO87JISX0208';
+  IconvArr[72].Charname := 'ISO-IR-87 JIS0208 JIS_C6226-1983 JIS_X0208 JIS_X0208-1983 JIS_X0208-1990 X0208 CSISO87JISX0208 ISOIR87 JISC6226-1983 JIS-C6226-1983 JIS_C62261983';
   IconvArr[73].Charset := JIS_X0212;
-  IconvArr[73].Charname := 'ISO-IR-159 JIS_X0212 JIS_X0212-1990 JIS_X0212.1990-0 X0212 CSISO159JISX02121990';
+  IconvArr[73].Charname := 'ISO-IR-159 JIS_X0212 JIS_X0212-1990 JIS_X0212.1990-0 X0212 CSISO159JISX02121990 ISOIR159';
   IconvArr[74].Charset := GB1988_80;
-  IconvArr[74].Charname := 'CN GB_1988-80 ISO-IR-57 ISO646-CN CSISO57GB1988';
+  IconvArr[74].Charname := 'CN GB_1988-80 ISO-IR-57 ISO646-CN CSISO57GB1988 ISOIR57';
   IconvArr[75].Charset := GB2312_80;
-  IconvArr[75].Charname := 'CHINESE GB_2312-80 ISO-IR-58 CSISO58GB231280';
+  IconvArr[75].Charname := 'CHINESE GB_2312-80 ISO-IR-58 CSISO58GB231280 ISOIR58 GB231280 GB2312-80';
   IconvArr[76].Charset := ISO_IR_165;
-  IconvArr[76].Charname := 'CN-GB-ISOIR165 ISO-IR-165';
+  IconvArr[76].Charname := 'CN-GB-ISOIR165 ISO-IR-165 ISOIR165 CNGBIOSIR165';
   IconvArr[77].Charset := ISO_IR_149;
-  IconvArr[77].Charname := 'ISO-IR-149 KOREAN KSC_5601 KS_C_5601-1987 KS_C_5601-1989 CSKSC56011987';
+  IconvArr[77].Charname := 'ISO-IR-149 KOREAN KSC_5601 KS_C_5601-1987 KS_C_5601-1989 CSKSC56011987 ISOIR149';
   IconvArr[78].Charset := EUC_JP;
   IconvArr[78].Charname := 'EUC-JP EUCJP EXTENDED_UNIX_CODE_PACKED_FORMAT_FOR_JAPANESE CSEUCPKDFMTJAPANESE';
   IconvArr[79].Charset := SHIFT_JIS;
-  IconvArr[79].Charname := 'SHIFT-JIS MS_KANJI SHIFT_JIS SJIS CSSHIFTJIS';
+  IconvArr[79].Charname := 'SHIFT-JIS MS_KANJI SHIFT_JIS SJIS CSSHIFTJIS SHIFTJIS';
   IconvArr[80].Charset := CP932;
   IconvArr[80].Charname := 'CP932';
   IconvArr[81].Charset := ISO_2022_JP;
-  IconvArr[81].Charname := 'ISO-2022-JP CSISO2022JP';
+  IconvArr[81].Charname := 'ISO-2022-JP CSISO2022JP ISO2022JP';
   IconvArr[82].Charset := ISO_2022_JP1;
-  IconvArr[82].Charname := 'ISO-2022-JP-1';
+  IconvArr[82].Charname := 'ISO-2022-JP-1 ISO-2022-JP1 ISO-2022JP1 ISO2022-JP1 ISO2022JP1';
   IconvArr[83].Charset := ISO_2022_JP2;
-  IconvArr[83].Charname := 'ISO-2022-JP-2 CSISO2022JP2';
+  IconvArr[83].Charname := 'ISO-2022-JP-2 CSISO2022JP2 ISO-2022-JP2 ISO-2022JP2 ISO2022-JP2 ISO2022JP2';
   IconvArr[84].Charset := GB2312;
   IconvArr[84].Charname := 'CN-GB EUC-CN EUCCN GB2312 CSGB2312';
   IconvArr[85].Charset := CP936;
@@ -1979,27 +1982,27 @@ begin
   IconvArr[86].Charset := GB18030;
   IconvArr[86].Charname := 'GB18030';
   IconvArr[87].Charset := ISO_2022_CN;
-  IconvArr[87].Charname := 'ISO-2022-CN CSISO2022CN';
+  IconvArr[87].Charname := 'ISO-2022-CN CSISO2022CN ISO2022CN ISO-2022CN ISO2022-CN';
   IconvArr[88].Charset := ISO_2022_CNE;
-  IconvArr[88].Charname := 'ISO-2022-CN-EXT';
+  IconvArr[88].Charname := 'ISO-2022-CN-EXT ISO2022CNEXT ISO-2022CNEXT ISO-2022-CNEXT ISO2022-CNEXT ISO2022-CN-EXT';
   IconvArr[89].Charset := HZ;
-  IconvArr[89].Charname := 'HZ HZ-GB-2312';
+  IconvArr[89].Charname := 'HZ HZ-GB-2312 HZGB2312';
   IconvArr[90].Charset := EUC_TW;
   IconvArr[90].Charname := 'EUC-TW EUCTW CSEUCTW';
   IconvArr[91].Charset := BIG5;
-  IconvArr[91].Charname := 'BIG5 BIG-5 BIG-FIVE BIGFIVE CN-BIG5 CSBIG5';
+  IconvArr[91].Charname := 'BIG5 BIG-5 BIG-FIVE BIGFIVE CN-BIG5 CSBIG5 CNBIG5';
   IconvArr[92].Charset := CP950;
   IconvArr[92].Charname := 'CP950';
   IconvArr[93].Charset := BIG5_HKSCS;
-  IconvArr[93].Charname := 'BIG5-HKSCS BIG5HKSCS';
+  IconvArr[93].Charname := 'BIG5-HKSCS BIG5HKSCS BIG5HKSCS';
   IconvArr[94].Charset := EUC_KR;
-  IconvArr[94].Charname := 'EUC-KR EUCKR CSEUCKR';
+  IconvArr[94].Charname := 'EUC-KR EUCKR CSEUCKR EUCKR';
   IconvArr[95].Charset := CP949;
   IconvArr[95].Charname := 'CP949 UHC';
   IconvArr[96].Charset := CP1361;
   IconvArr[96].Charname := 'CP1361 JOHAB';
   IconvArr[97].Charset := ISO_2022_KR;
-  IconvArr[97].Charname := 'ISO-2022-KR CSISO2022KR';
+  IconvArr[97].Charname := 'ISO-2022-KR CSISO2022KR ISO2022KR';
   IconvArr[98].Charset := ISO_8859_1;
   IconvArr[98].Charname := '437 CP437 IBM437 CSPC8CODEPAGE437';
   IconvArr[99].Charset := CP737;
@@ -2019,7 +2022,7 @@ begin
   IconvArr[106].Charset := CP860;
   IconvArr[106].Charname := '860 CP860 IBM860 CSIBM860';
   IconvArr[107].Charset := CP861;
-  IconvArr[107].Charname := '861 CP-IS CP861 IBM861 CSIBM861';
+  IconvArr[107].Charname := '861 CP-IS CP861 IBM861 CSIBM861 CPIS';
   IconvArr[108].Charset := CP863;
   IconvArr[108].Charname := '863 CP863 IBM863 CSIBM863';
   IconvArr[109].Charset := CP864;
@@ -2027,7 +2030,7 @@ begin
   IconvArr[110].Charset := CP865;
   IconvArr[110].Charname := '865 CP865 IBM865 CSIBM865';
   IconvArr[111].Charset := CP869;
-  IconvArr[111].Charname := '869 CP-GR CP869 IBM869 CSIBM869';
+  IconvArr[111].Charname := '869 CP-GR CP869 IBM869 CSIBM869 CPGR';
   IconvArr[112].Charset := CP1125;
   IconvArr[112].Charname := 'CP1125';
 end;

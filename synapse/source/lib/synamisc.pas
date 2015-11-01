@@ -3,7 +3,7 @@
 |==============================================================================|
 | Content: misc. procedures and functions                                      |
 |==============================================================================|
-| Copyright (c)1999-2010, Lukas Gebauer                                        |
+| Copyright (c)1999-2014, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -42,7 +42,7 @@
 |          (Found at URL: http://www.ararat.cz/synapse/)                       |
 |==============================================================================}
 
-{:@abstract(Misc. network based utilities)}
+{:@abstract(Miscellaneous network based utilities)}
 
 {$IFDEF FPC}
   {$MODE DELPHI}
@@ -88,31 +88,33 @@ uses
 ;
 
 Type
-  {:@abstract(This record contains information about proxy setting.)}
+  {:@abstract(This record contains information about proxy settings.)}
   TProxySetting = record
     Host: string;
     Port: string;
     Bypass: string;
   end;
 
-{:By this function you can turn-on computer on network, if this computer
- supporting Wake-on-lan feature. You need MAC number (network card indentifier)
- of computer for turn-on. You can also assign target IP addres. If you not
- specify it, then is used broadcast for delivery magic wake-on packet. However
- broadcasts workinh only on your local network. When you need to wake-up
+{:With this function you can turn on a computer on the network, if this computer
+ supports Wake-on-LAN feature. You need the MAC address 
+ (network card identifier) of the computer. You can also assign a target IP 
+ addres. If you do not specify it, then broadcast is used to deliver magic 
+ wake-on-LAN packet. 
+ However broadcasts work only on your local network. When you need to wake-up a
  computer on another network, you must specify any existing IP addres on same
  network segment as targeting computer.}
 procedure WakeOnLan(MAC, IP: string);
 
-{:Autodetect current DNS servers used by system. If is defined more then one DNS
- server, then result is comma-delimited.}
+{:Autodetect current DNS servers used by the system. If more than one DNS server
+ is defined, then the result is comma-delimited.}
 function GetDNS: string;
 
 {:Autodetect InternetExplorer proxy setting for given protocol. This function
-working only on windows!}
+works only on windows!}
 function GetIEProxy(protocol: string): TProxySetting;
 
-{:Return all known IP addresses on local system. Addresses are divided by comma.}
+{:Return all known IP addresses on the local system. Addresses are divided by 
+comma/comma-delimited.}
 function GetLocalIPs: string;
 
 implementation

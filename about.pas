@@ -68,7 +68,7 @@ type
 
 procedure CheckNewVersion(Async: boolean = True);
 procedure GoHomePage;
-procedure GoDonate;
+procedure GoGitHub;
 
 implementation
 
@@ -117,10 +117,11 @@ begin
   AppNormal;
 end;
 
-procedure GoDonate;
+procedure GoGitHub;
 begin
   AppBusy;
-  OpenURL('http://code.google.com/p/transmisson-remote-gui/wiki/Donate');
+  //OpenURL('http://code.google.com/p/transmisson-remote-gui/wiki/Donate');
+  //OpenURL('https://github.com/xorkrus/transmisson-remote-gui');
   AppNormal;
 end;
 
@@ -247,7 +248,7 @@ end;
 
 procedure TAboutForm.imgDonateClick(Sender: TObject);
 begin
-  GoDonate;
+  GoGitHub;
 end;
 
 procedure TAboutForm.imgLazarusClick(Sender: TObject);

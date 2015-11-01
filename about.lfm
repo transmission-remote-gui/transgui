@@ -487,10 +487,11 @@ inherited AboutForm: TAboutForm
       end
       object txAuthor: TLabel
         Left = 86
-        Height = 15
-        Top = 66
+        Height = 32
+        Top = 56
         Width = 307
-        Caption = 'Copyright (c) 2008-2015 by Yury Sidorov, Alexander Petrov'
+        AutoSize = False
+        Caption = 'Copyright (c) 2008-2015 by Yury Sidorov, '#13#10'Alexander Petrov, Ircama'
         ParentColor = False
       end
       object txVersion: TLabel
@@ -560,12 +561,13 @@ inherited AboutForm: TAboutForm
         }
         ShowHint = True
         Transparent = True
+        Visible = False
       end
       object txHomePage: TLabel
         Cursor = crHandPoint
         Left = 86
         Height = 15
-        Top = 86
+        Top = 96
         Width = 62
         Caption = 'Home page'
         Font.Color = clBlue
@@ -581,6 +583,7 @@ inherited AboutForm: TAboutForm
         Width = 211
         Caption = 'Donate to support further development:'
         ParentColor = False
+        Visible = False
       end
     end
     object tabLicense: TTabSheet

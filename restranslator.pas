@@ -56,7 +56,6 @@ type
     FIgnoreDelimiters: TWordDelimitersOptions;
     FOnTranslateString: TTranslateStringEvent;
     FStrResLst:    TTranslateStringList;
-    FTranslationFile: string;
     FModified:     boolean;
     FTranslationLanguage: AnsiString;
     FWordDelims:   TSysCharset;
@@ -66,6 +65,7 @@ type
     procedure SetWordDelims(const AValue: TSysCharset);
     function InternalTranslateString(const Value: AnsiString; IsExternal: boolean = False): AnsiString;
   public
+    FTranslationFile: string;
     constructor Create(TranslationFile: AnsiString);
     destructor Destroy; override;
     procedure TranslateStringProperty(Sender: TObject; const Instance: TPersistent; PropInfo: PPropInfo; var Content: string); override;
@@ -102,6 +102,9 @@ function IsTranslationFileValid(const TranslationFile: AnsiString): boolean;
 
 const
   sLanguageIDName = 'TranslationLanguage';
+
+var
+  IniFileName: string;
 
 implementation
 
@@ -362,6 +365,7 @@ begin
       end;
     end;
   end;
+  IniFileName:=Result;
   Result := LoadTranslationFile(Result, OnTranslate);
 end;
 

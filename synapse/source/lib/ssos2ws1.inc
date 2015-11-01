@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 002.003.001 |
+| Project : Ararat Synapse                                       | 001.000.000 |
 |==============================================================================|
-| Content: Socket Independent Platform Layer - Win32/64 definition include     |
+| Content: Socket Independent Platform Layer - OS/2 winsock1                   |
 |==============================================================================|
-| Copyright (c)1999-2012, Lukas Gebauer                                        |
+| Copyright (c)1999-2013, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,16 +33,30 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2003-2012.                |
+| Portions created by Lukas Gebauer are Copyright (c)2003-2013.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
+|   Tomas Hajny (OS2 support)                                                  |
 |==============================================================================|
 | History: see HISTORY.HTM from distribution package                           |
 |          (Found at URL: http://www.ararat.cz/synapse/)                       |
 |==============================================================================}
 
 {:@exclude}
+
+{$MACRO ON}
+
+{$IFNDEF ODIN}
+ {$DEFINE WINSOCK1}
+ {$DEFINE PMWSOCK}
+{$ENDIF ODIN}
+
+{$IFDEF PMWSOCK}
+  {$DEFINE extdecl := cdecl}
+{$ELSE PMWSOCK}
+  {$DEFINE extdecl := stdcall}
+{$ENDIF PMWSOCK}
 
 //{$DEFINE WINSOCK1}
 {Note about define WINSOCK1:
@@ -234,41 +248,6 @@ For IPv6 support you must have new API!
   (*$HPPEMIT '#undef PVD_CONFIG' *)
   (*$HPPEMIT '#undef AF_INET6' *)
   (*$HPPEMIT '#undef PF_INET6' *)
-  (*$HPPEMIT '#undef NI_MAXHOST' *)
-  (*$HPPEMIT '#undef NI_MAXSERV' *)
-  (*$HPPEMIT '#undef NI_NOFQDN' *)
-  (*$HPPEMIT '#undef NI_NUMERICHOST' *)
-  (*$HPPEMIT '#undef NI_NAMEREQD' *)
-  (*$HPPEMIT '#undef NI_NUMERICSERV' *)
-  (*$HPPEMIT '#undef NI_DGRAM' *)
-  (*$HPPEMIT '#undef AI_PASSIVE' *)
-  (*$HPPEMIT '#undef AI_CANONNAME' *)
-  (*$HPPEMIT '#undef AI_NUMERICHOST' *)
-  (*$HPPEMIT '#undef EWOULDBLOCK' *)
-  (*$HPPEMIT '#undef EINPROGRESS' *)
-  (*$HPPEMIT '#undef EALREADY' *)
-  (*$HPPEMIT '#undef ENOTSOCK' *)
-  (*$HPPEMIT '#undef EDESTADDRREQ' *)
-  (*$HPPEMIT '#undef EMSGSIZE' *)
-  (*$HPPEMIT '#undef EPROTOTYPE' *)
-  (*$HPPEMIT '#undef ENOPROTOOPT' *)
-  (*$HPPEMIT '#undef EPROTONOSUPPORT' *)
-  (*$HPPEMIT '#undef EOPNOTSUPP' *)
-  (*$HPPEMIT '#undef EAFNOSUPPORT' *)
-  (*$HPPEMIT '#undef EADDRINUSE' *)
-  (*$HPPEMIT '#undef EADDRNOTAVAIL' *)
-  (*$HPPEMIT '#undef ENETDOWN' *)
-  (*$HPPEMIT '#undef ENETUNREACH' *)
-  (*$HPPEMIT '#undef ENETRESET' *)
-  (*$HPPEMIT '#undef ECONNABORTED' *)
-  (*$HPPEMIT '#undef ECONNRESET' *)
-  (*$HPPEMIT '#undef ENOBUFS' *)
-  (*$HPPEMIT '#undef EISCONN' *)
-  (*$HPPEMIT '#undef ENOTCONN' *)
-  (*$HPPEMIT '#undef ETIMEDOUT' *)
-  (*$HPPEMIT '#undef ECONNREFUSED' *)
-  (*$HPPEMIT '#undef ELOOP' *)
-  (*$HPPEMIT '#undef EHOSTUNREACH' *)
 {$ENDIF}
 
 {$IFDEF FPC}
@@ -291,7 +270,12 @@ interface
 
 uses
   SyncObjs, SysUtils, Classes,
-  Windows;
+{$IFDEF OS2}
+  Sockets, Dynlibs
+{$ELSE OS2}
+  Windows
+{$ENDIF OS2}
+;
 
 function InitSocketInterface(stack: String): Boolean;
 function DestroySocketInterface: Boolean;
@@ -304,6 +288,9 @@ const
 {$ENDIF}
 
 type
+{$IFDEF OS2}
+  Bool = longint;
+{$ENDIF OS2}
   u_short = Word;
   u_int = Integer;
   u_long = Longint;
@@ -327,7 +314,15 @@ const
     DLLStackName = 'ws2.dll';
   {$ELSE}
     {$IFDEF WINSOCK1}
+     {$IFDEF OS2}
+      {$IFDEF DAPWSOCK}
+    DLLStackName = 'dapwsock.dll';
+      {$ELSE DAPWSOCK}
+    DLLStackName = 'pmwsock.dll';
+      {$ENDIF DAPWSOCK}
+     {$ELSE OS2}
     DLLStackName = 'wsock32.dll';
+     {$ENDIF OS2}
     {$ELSE}
     DLLStackName = 'ws2_32.dll';
     {$ENDIF}
@@ -431,8 +426,13 @@ type
   THostEnt = record
     h_name: PAnsiChar;
     h_aliases: ^PAnsiChar;
+{$IFDEF PMWSOCK}
+    h_addrtype: longint;
+    h_length: longint;
+{$ELSE PMWSOCK}
     h_addrtype: Smallint;
     h_length: Smallint;
+{$ENDIF PMWSOCK}
     case integer of
      0: (h_addr_list: ^PAnsiChar);
      1: (h_addr: ^PInAddr);
@@ -442,7 +442,11 @@ type
   TNetEnt = record
     n_name: PAnsiChar;
     n_aliases: ^PAnsiChar;
+{$IFDEF PMWSOCK}
+    n_addrtype: longint;
+{$ELSE PMWSOCK}
     n_addrtype: Smallint;
+{$ENDIF PMWSOCK}
     n_net: u_long;
   end;
 
@@ -454,7 +458,11 @@ type
     s_proto: PAnsiChar;
     s_port: Smallint;
 {$else} 
+{$IFDEF PMWSOCK}
+    s_port: longint;
+{$ELSE PMWSOCK}
     s_port: Smallint;
+{$ENDIF PMWSOCK}
     s_proto: PAnsiChar;
 {$endif}
   end;
@@ -463,7 +471,11 @@ type
   TProtoEnt = record
     p_name: PAnsiChar;
     p_aliases: ^PAnsichar;
+{$IFDEF PMWSOCK}
+    p_proto: longint;
+{$ELSE PMWSOCK}
     p_proto: Smallint;
+{$ENDIF PMWSOCK}
   end;
 
 const
@@ -621,8 +633,13 @@ type
 { Structure used for manipulating linger option. }
   PLinger = ^TLinger;
   TLinger = record
+{$IFDEF PMWSOCK}
+    l_onoff: longint;
+    l_linger: longint;
+{$ELSE PMWSOCK}
     l_onoff: u_short;
     l_linger: u_short;
+{$ENDIF PMWSOCK}
   end;
 
 const
@@ -820,94 +837,94 @@ procedure FD_ZERO(var FDSet: TFDSet);
 
 type
   TWSAStartup = function(wVersionRequired: Word; var WSData: TWSAData): Integer;
-    stdcall;
+    extdecl;
   TWSACleanup = function: Integer;
-    stdcall;
+    extdecl;
   TWSAGetLastError = function: Integer;
-    stdcall;
+    extdecl;
   TGetServByName = function(name, proto: PAnsiChar): PServEnt;
-    stdcall;
+    extdecl;
   TGetServByPort = function(port: Integer; proto: PAnsiChar): PServEnt;
-    stdcall;
+    extdecl;
   TGetProtoByName = function(name: PAnsiChar): PProtoEnt;
-    stdcall;
+    extdecl;
   TGetProtoByNumber = function(proto: Integer): PProtoEnt;
-    stdcall;
+    extdecl;
   TGetHostByName = function(name: PAnsiChar): PHostEnt;
-    stdcall;
+    extdecl;
   TGetHostByAddr = function(addr: Pointer; len, Struc: Integer): PHostEnt;
-    stdcall;
+    extdecl;
   TGetHostName = function(name: PAnsiChar; len: Integer): Integer;
-    stdcall;
+    extdecl;
   TShutdown = function(s: TSocket; how: Integer): Integer;
-    stdcall;
+    extdecl;
   TSetSockOpt = function(s: TSocket; level, optname: Integer; optval: PAnsiChar;
     optlen: Integer): Integer;
-    stdcall;
+    extdecl;
   TGetSockOpt = function(s: TSocket; level, optname: Integer; optval: PAnsiChar;
     var optlen: Integer): Integer;
-    stdcall;
+    extdecl;
   TSendTo = function(s: TSocket; const Buf; len, flags: Integer; addrto: PSockAddr;
     tolen: Integer): Integer;
-    stdcall;
+    extdecl;
   TSend = function(s: TSocket; const Buf; len, flags: Integer): Integer;
-    stdcall;
+    extdecl;
   TRecv = function(s: TSocket; var Buf; len, flags: Integer): Integer;
-    stdcall;
+    extdecl;
   TRecvFrom = function(s: TSocket; var Buf; len, flags: Integer; from: PSockAddr;
     var fromlen: Integer): Integer;
-    stdcall;
+    extdecl;
   Tntohs = function(netshort: u_short): u_short;
-    stdcall;
+    extdecl;
   Tntohl = function(netlong: u_long): u_long;
-    stdcall;
+    extdecl;
   TListen = function(s: TSocket; backlog: Integer): Integer;
-    stdcall;
+    extdecl;
   TIoctlSocket = function(s: TSocket; cmd: DWORD; var arg: Integer): Integer;
-    stdcall;
+    extdecl;
   TInet_ntoa = function(inaddr: TInAddr): PAnsiChar;
-    stdcall;
+    extdecl;
   TInet_addr = function(cp: PAnsiChar): u_long;
-    stdcall;
+    extdecl;
   Thtons = function(hostshort: u_short): u_short;
-    stdcall;
+    extdecl;
   Thtonl = function(hostlong: u_long): u_long;
-    stdcall;
+    extdecl;
   TGetSockName = function(s: TSocket; name: PSockAddr; var namelen: Integer): Integer;
-    stdcall;
+    extdecl;
   TGetPeerName = function(s: TSocket; name: PSockAddr; var namelen: Integer): Integer;
-    stdcall;
+    extdecl;
   TConnect = function(s: TSocket; name: PSockAddr; namelen: Integer): Integer;
-    stdcall;
+    extdecl;
   TCloseSocket = function(s: TSocket): Integer;
-    stdcall;
+    extdecl;
   TBind = function(s: TSocket; addr: PSockAddr; namelen: Integer): Integer;
-    stdcall;
+    extdecl;
   TAccept = function(s: TSocket; addr: PSockAddr; var addrlen: Integer): TSocket;
-    stdcall;
+    extdecl;
   TTSocket = function(af, Struc, Protocol: Integer): TSocket;
-    stdcall;
+    extdecl;
   TSelect = function(nfds: Integer; readfds, writefds, exceptfds: PFDSet;
     timeout: PTimeVal): Longint;
-    stdcall;
+    extdecl;
 
   TGetAddrInfo = function(NodeName: PAnsiChar; ServName: PAnsiChar; Hints: PAddrInfo;
     var Addrinfo: PAddrInfo): integer;
-    stdcall;
+    extdecl;
   TFreeAddrInfo = procedure(ai: PAddrInfo);
-    stdcall;
+    extdecl;
   TGetNameInfo = function( addr: PSockAddr; namelen: Integer; host: PAnsiChar;
     hostlen: DWORD; serv: PAnsiChar; servlen: DWORD; flags: integer): integer;
-    stdcall;
+    extdecl;
 
   T__WSAFDIsSet = function (s: TSocket; var FDSet: TFDSet): Bool;
-    stdcall;
+    extdecl;
 
   TWSAIoctl = function (s: TSocket; dwIoControlCode: DWORD; lpvInBuffer: Pointer;
     cbInBuffer: DWORD; lpvOutBuffer: Pointer; cbOutBuffer: DWORD;
     lpcbBytesReturned: PDWORD; lpOverlapped: Pointer;
     lpCompletionRoutine: pointer): u_int;
-    stdcall;
+    extdecl;
 
 var
   WSAStartup: TWSAStartup = nil;
@@ -920,17 +937,28 @@ var
   GetHostByName: TGetHostByName = nil;
   GetHostByAddr: TGetHostByAddr = nil;
   ssGetHostName: TGetHostName = nil;
+{$IFDEF OS2}
+  ssShutdown: TShutdown = nil;
+  ssSetSockOpt: TSetSockOpt = nil;
+  ssGetSockOpt: TGetSockOpt = nil;
+{$ELSE OS2}
   Shutdown: TShutdown = nil;
   SetSockOpt: TSetSockOpt = nil;
   GetSockOpt: TGetSockOpt = nil;
+{$ENDIF OS2}
   ssSendTo: TSendTo = nil;
   ssSend: TSend = nil;
   ssRecv: TRecv = nil;
   ssRecvFrom: TRecvFrom = nil;
   ntohs: Tntohs = nil;
   ntohl: Tntohl = nil;
+{$IFDEF OS2}
+  ssListen: TListen = nil;
+  ssIoctlSocket: TIoctlSocket = nil;
+{$ELSE OS2}
   Listen: TListen = nil;
   IoctlSocket: TIoctlSocket = nil;
+{$ENDIF OS2}
   Inet_ntoa: TInet_ntoa = nil;
   Inet_addr: TInet_addr = nil;
   htons: Thtons = nil;
@@ -938,19 +966,33 @@ var
   ssGetSockName: TGetSockName = nil;
   ssGetPeerName: TGetPeerName = nil;
   ssConnect: TConnect = nil;
+{$IFDEF OS2}
+  ssCloseSocket: TCloseSocket = nil;
+{$ELSE OS2}
   CloseSocket: TCloseSocket = nil;
+{$ENDIF OS2}
   ssBind: TBind = nil;
   ssAccept: TAccept = nil;
+{$IFDEF OS2}
+  ssSocket: TTSocket = nil;
+{$ELSE OS2}
   Socket: TTSocket = nil;
+{$ENDIF OS2}
   Select: TSelect = nil;
 
   GetAddrInfo: TGetAddrInfo = nil;
   FreeAddrInfo: TFreeAddrInfo = nil;
   GetNameInfo: TGetNameInfo = nil;
 
+{$IFDEF OS2}
+  ss__WSAFDIsSet: T__WSAFDIsSet = nil;
+
+  ssWSAIoctl: TWSAIoctl = nil;
+{$ELSE OS2}
   __WSAFDIsSet: T__WSAFDIsSet = nil;
 
   WSAIoctl: TWSAIoctl = nil;
+{$ENDIF OS2}
 
 var
   SynSockCS: SyncObjs.TCriticalSection;
@@ -993,6 +1035,24 @@ function GetSinPort(Sin: TVarSin): Integer;
 procedure ResolveNameToIP(Name: AnsiString;  Family, SockProtocol, SockType: integer; const IPList: TStrings);
 function ResolveIPToName(IP: AnsiString; Family, SockProtocol, SockType: integer): AnsiString;
 function ResolvePort(Port: AnsiString; Family, SockProtocol, SockType: integer): Word;
+{$IFDEF OS2}
+function Socket (af, Struc, Protocol: Integer): TSocket;
+function Shutdown (s: TSocket; how: Integer): Integer;
+function SetSockOpt (s: TSocket; level, optname: Integer; optval: PAnsiChar;
+                                                     optlen: Integer): Integer;
+function GetSockOpt (s: TSocket; level, optname: Integer; optval: PAnsiChar;
+                                                 var optlen: Integer): Integer;
+function Listen (s: TSocket; backlog: Integer): Integer;
+function IoctlSocket (s: TSocket; cmd: DWORD; var arg: Integer): Integer;
+function CloseSocket (s: TSocket): Integer;
+
+function __WSAFDIsSet (s: TSocket; var FDSet: TFDSet): Bool;
+
+function WSAIoctl (s: TSocket; dwIoControlCode: DWORD; lpvInBuffer: Pointer;
+                  cbInBuffer: DWORD; lpvOutBuffer: Pointer; cbOutBuffer: DWORD;
+                              lpcbBytesReturned: PDWORD; lpOverlapped: Pointer;
+                                          lpCompletionRoutine: pointer): u_int;
+{$ENDIF OS2}
 
 {==============================================================================}
 implementation
@@ -1052,6 +1112,9 @@ procedure FD_CLR(Socket: TSocket; var FDSet: TFDSet);
 var
   I: Integer;
 begin
+{$IFDEF OS2}
+  Socket := TSocket (NativeSocket (cInt (Socket)));
+{$ENDIF OS2}
   I := 0;
   while I < FDSet.fd_count do
   begin
@@ -1071,11 +1134,20 @@ end;
 
 function FD_ISSET(Socket: TSocket; var FDSet: TFDSet): Boolean;
 begin
-  Result := __WSAFDIsSet(Socket, FDSet);
+{$IFDEF OS2}
+  Socket := TSocket (NativeSocket (cInt (Socket)));
+{$ENDIF OS2}
+  Result := __WSAFDIsSet(Socket, FDSet)
+{$IFDEF OS2}
+                                        <> 0
+{$ENDIF OS2}                                ;
 end;
 
 procedure FD_SET(Socket: TSocket; var FDSet: TFDSet);
 begin
+{$IFDEF OS2}
+  Socket := TSocket (NativeSocket (cInt (Socket)));
+{$ENDIF OS2}
   if FDSet.fd_count < FD_SETSIZE then
   begin
     FDSet.fd_array[FDSet.fd_count] := Socket;
@@ -1106,11 +1178,17 @@ end;
 
 function Bind(s: TSocket; const addr: TVarSin): Integer;
 begin
+{$IFDEF OS2}
+  S := TSocket (NativeSocket (cInt (S)));
+{$ENDIF OS2}
   Result := ssBind(s, @addr, SizeOfVarSin(addr));
 end;
 
 function Connect(s: TSocket; const name: TVarSin): Integer;
 begin
+{$IFDEF OS2}
+  S := TSocket (NativeSocket (cInt (S)));
+{$ENDIF OS2}
   Result := ssConnect(s, @name, SizeOfVarSin(name));
 end;
 
@@ -1118,6 +1196,9 @@ function GetSockName(s: TSocket; var name: TVarSin): Integer;
 var
   len: integer;
 begin
+{$IFDEF OS2}
+  S := TSocket (NativeSocket (cInt (S)));
+{$ENDIF OS2}
   len := SizeOf(name);
   FillChar(name, len, 0);
   Result := ssGetSockName(s, @name, Len);
@@ -1127,6 +1208,9 @@ function GetPeerName(s: TSocket; var name: TVarSin): Integer;
 var
   len: integer;
 begin
+{$IFDEF OS2}
+  S := TSocket (NativeSocket (cInt (S)));
+{$ENDIF OS2}
   len := SizeOf(name);
   FillChar(name, len, 0);
   Result := ssGetPeerName(s, @name, Len);
@@ -1144,16 +1228,25 @@ end;
 
 function Send(s: TSocket; Buf: TMemory; len, flags: Integer): Integer;
 begin
+{$IFDEF OS2}
+  S := TSocket (NativeSocket (cInt (S)));
+{$ENDIF OS2}
   Result := ssSend(s, Buf^, len, flags);
 end;
 
 function Recv(s: TSocket; Buf: TMemory; len, flags: Integer): Integer;
 begin
+{$IFDEF OS2}
+  S := TSocket (NativeSocket (cInt (S)));
+{$ENDIF OS2}
   Result := ssRecv(s, Buf^, len, flags);
 end;
 
 function SendTo(s: TSocket; Buf: TMemory; len, flags: Integer; addrto: TVarSin): Integer;
 begin
+{$IFDEF OS2}
+  S := TSocket (NativeSocket (cInt (S)));
+{$ENDIF OS2}
   Result := ssSendTo(s, Buf^, len, flags, @addrto, SizeOfVarSin(addrto));
 end;
 
@@ -1161,6 +1254,9 @@ function RecvFrom(s: TSocket; Buf: TMemory; len, flags: Integer; var from: TVarS
 var
   x: integer;
 begin
+{$IFDEF OS2}
+  S := TSocket (NativeSocket (cInt (S)));
+{$ENDIF OS2}
   x := SizeOf(from);
   Result := ssRecvFrom(s, Buf^, len, flags, @from, x);
 end;
@@ -1169,9 +1265,78 @@ function Accept(s: TSocket; var addr: TVarSin): TSocket;
 var
   x: integer;
 begin
+{$IFDEF OS2}
+  S := TSocket (NativeSocket (cInt (S)));
+{$ENDIF OS2}
   x := SizeOf(addr);
+{$IFDEF OS2}
+  Result := TSocket (EMXSocket (cInt (ssAccept (S, @Addr, X))));
+{$ELSE OS2}
   Result := ssAccept(s, @addr, x);
+{$ENDIF OS2}
 end;
+
+{$IFDEF OS2}
+function Shutdown (s: TSocket; how: Integer): Integer;
+begin
+  S := TSocket (NativeSocket (cInt (S)));
+  Shutdown := ssShutdown (s, how);
+end;
+
+function Socket (af, Struc, Protocol: Integer): TSocket;
+begin
+  Socket := TSocket (EMXSocket (cInt (ssSocket (af, Struc, Protocol))));
+end;
+
+function SetSockOpt (s: TSocket; level, optname: Integer; optval: PAnsiChar;
+                                                     optlen: Integer): Integer;
+begin
+  S := TSocket (NativeSocket (cInt (S)));
+  SetSockOpt := ssSetSockOpt (S, Level, OptName, OptVal, OptLen);
+end;
+
+function GetSockOpt (s: TSocket; level, optname: Integer; optval: PAnsiChar;
+                                                 var optlen: Integer): Integer;
+begin
+  S := TSocket (NativeSocket (cInt (S)));
+  GetSockOpt := ssGetSockOpt (S, Level, OptName, OptVal, OptLen);
+end;
+
+function Listen (s: TSocket; backlog: Integer): Integer;
+begin
+  S := TSocket (NativeSocket (cInt (S)));
+  Listen := ssListen (S, BackLog);
+end;
+
+function IoctlSocket (s: TSocket; cmd: DWORD; var arg: Integer): Integer;
+begin
+  S := TSocket (NativeSocket (cInt (S)));
+  IOCtlSocket := ssIOCtlSocket (S, Cmd, Arg);
+end;
+
+function CloseSocket (s: TSocket): Integer;
+begin
+  S := TSocket (NativeSocket (cInt (S)));
+  CloseSocket := ssCloseSocket (S);
+end;
+
+function __WSAFDIsSet (s: TSocket; var FDSet: TFDSet): Bool;
+begin
+  S := TSocket (NativeSocket (cInt (S)));
+  __WSAFDIsSet := ss__WSAFDIsSet (S, FDSet);
+end;
+
+function WSAIoctl (s: TSocket; dwIoControlCode: DWORD; lpvInBuffer: Pointer;
+                  cbInBuffer: DWORD; lpvOutBuffer: Pointer; cbOutBuffer: DWORD;
+                              lpcbBytesReturned: PDWORD; lpOverlapped: Pointer;
+                                          lpCompletionRoutine: pointer): u_int;
+begin
+  S := TSocket (NativeSocket (cInt (S)));
+  WSAIOCtl := ssWSAIOCtl (S, dwIoControlCode, lpvInBuffer, cbInBuffer,
+                lpvOutBuffer, cbOutBuffer, lpcbBytesReturned, lpOverlapped,
+                                                          lpCompletionRoutine);
+end;
+{$ENDIF OS2}
 
 {=============================================================================}
 function IsNewApi(Family: integer): Boolean;
@@ -1552,10 +1717,17 @@ begin
       LibHandle := LoadLibrary(PChar(Stack));
       if LibHandle <> 0 then
       begin
+{$IFDEF OS2}
+        ssWSAIoctl := GetProcAddress(LibHandle, PAnsiChar(AnsiString('WSAIoctl')));
+        ss__WSAFDIsSet := GetProcAddress(LibHandle, PAnsiChar(AnsiString('__WSAFDIsSet')));
+        ssCloseSocket := GetProcAddress(LibHandle, PAnsiChar(AnsiString('closesocket')));
+        ssIoctlSocket := GetProcAddress(LibHandle, PAnsiChar(AnsiString('ioctlsocket')));
+{$ELSE OS2}
         WSAIoctl := GetProcAddress(LibHandle, PAnsiChar(AnsiString('WSAIoctl')));
         __WSAFDIsSet := GetProcAddress(LibHandle, PAnsiChar(AnsiString('__WSAFDIsSet')));
         CloseSocket := GetProcAddress(LibHandle, PAnsiChar(AnsiString('closesocket')));
         IoctlSocket := GetProcAddress(LibHandle, PAnsiChar(AnsiString('ioctlsocket')));
+{$ENDIF OS2}
         WSAGetLastError := GetProcAddress(LibHandle, PAnsiChar(AnsiString('WSAGetLastError')));
         WSAStartup := GetProcAddress(LibHandle, PAnsiChar(AnsiString('WSAStartup')));
         WSACleanup := GetProcAddress(LibHandle, PAnsiChar(AnsiString('WSACleanup')));
@@ -1564,12 +1736,20 @@ begin
         ssConnect := GetProcAddress(LibHandle, PAnsiChar(AnsiString('connect')));
         ssGetPeerName := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getpeername')));
         ssGetSockName := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getsockname')));
+{$IFDEF OS2}
+        ssGetSockOpt := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getsockopt')));
+{$ELSE OS2}
         GetSockOpt := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getsockopt')));
+{$ENDIF OS2}
         Htonl := GetProcAddress(LibHandle, PAnsiChar(AnsiString('htonl')));
         Htons := GetProcAddress(LibHandle, PAnsiChar(AnsiString('htons')));
         Inet_Addr := GetProcAddress(LibHandle, PAnsiChar(AnsiString('inet_addr')));
         Inet_Ntoa := GetProcAddress(LibHandle, PAnsiChar(AnsiString('inet_ntoa')));
+{$IFDEF OS2}
+        ssListen := GetProcAddress(LibHandle, PAnsiChar(AnsiString('listen')));
+{$ELSE OS2}
         Listen := GetProcAddress(LibHandle, PAnsiChar(AnsiString('listen')));
+{$ENDIF OS2}
         Ntohl := GetProcAddress(LibHandle, PAnsiChar(AnsiString('ntohl')));
         Ntohs := GetProcAddress(LibHandle, PAnsiChar(AnsiString('ntohs')));
         ssRecv := GetProcAddress(LibHandle, PAnsiChar(AnsiString('recv')));
@@ -1577,9 +1757,15 @@ begin
         Select := GetProcAddress(LibHandle, PAnsiChar(AnsiString('select')));
         ssSend := GetProcAddress(LibHandle, PAnsiChar(AnsiString('send')));
         ssSendTo := GetProcAddress(LibHandle, PAnsiChar(AnsiString('sendto')));
+{$IFDEF OS2}
+        ssSetSockOpt := GetProcAddress(LibHandle, PAnsiChar(AnsiString('setsockopt')));
+        ssShutDown := GetProcAddress(LibHandle, PAnsiChar(AnsiString('shutdown')));
+        ssSocket := GetProcAddress(LibHandle, PAnsiChar(AnsiString('socket')));
+{$ELSE OS2}
         SetSockOpt := GetProcAddress(LibHandle, PAnsiChar(AnsiString('setsockopt')));
         ShutDown := GetProcAddress(LibHandle, PAnsiChar(AnsiString('shutdown')));
         Socket := GetProcAddress(LibHandle, PAnsiChar(AnsiString('socket')));
+{$ENDIF OS2}
         GetHostByAddr := GetProcAddress(LibHandle, PAnsiChar(AnsiString('gethostbyaddr')));
         GetHostByName := GetProcAddress(LibHandle, PAnsiChar(AnsiString('gethostbyname')));
         GetProtoByName := GetProcAddress(LibHandle, PAnsiChar(AnsiString('getprotobyname')));

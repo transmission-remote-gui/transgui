@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.001.000 |
+| Project : Ararat Synapse                                       | 001.001.001 |
 |==============================================================================|
 | Content: SSL/SSH support by Peter Gutmann's CryptLib                         |
 |==============================================================================|
-| Copyright (c)1999-2012, Lukas Gebauer                                        |
+| Copyright (c)1999-2015, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2005-2012.                |
+| Portions created by Lukas Gebauer are Copyright (c)2005-2015.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -286,6 +286,8 @@ var
   keysetobj: CRYPT_KEYSET;
   cryptContext: CRYPT_CONTEXT;
   x: integer;
+  aUserName : AnsiString;
+  aPassword: AnsiString;
 begin
   Result := False;
   FLastErrorDesc := '';
@@ -332,6 +334,8 @@ begin
 
   if FUsername <> '' then
   begin
+    aUserName := fUserName;
+    aPassword := fPassword;
     cryptSetAttributeString(FcryptSession, CRYPT_SESSINFO_USERNAME,
       Pointer(FUsername), Length(FUsername));
     cryptSetAttributeString(FcryptSession, CRYPT_SESSINFO_PASSWORD,

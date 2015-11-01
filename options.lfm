@@ -18,7 +18,7 @@ inherited OptionsForm: TOptionsForm
     Height = 281
     Top = 8
     Width = 548
-    ActivePage = tabGeneral
+    ActivePage = tabAdvanced
     Align = alClient
     BorderSpacing.Around = 8
     TabIndex = 1

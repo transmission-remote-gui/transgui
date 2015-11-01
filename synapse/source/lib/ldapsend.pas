@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.007.000 |
+| Project : Ararat Synapse                                       | 001.007.001 |
 |==============================================================================|
 | Content: LDAP client                                                         |
 |==============================================================================|
-| Copyright (c)1999-2010, Lukas Gebauer                                        |
+| Copyright (c)1999-2014, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2003-2010.                |
+| Portions created by Lukas Gebauer are Copyright (c)2003-2014.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -44,7 +44,7 @@
 
 {:@abstract(LDAP client)
 
-Used RFC: RFC-2251, RFC-2254, RFC-2829, RFC-2830
+Used RFC: RFC-2251, RFC-2254, RFC-2696, RFC-2829, RFC-2830
 }
 
 {$IFDEF FPC}
@@ -88,6 +88,7 @@ const
   LDAP_ASN1_ABANDON_REQUEST = $70;
   LDAP_ASN1_EXT_REQUEST = $77;
   LDAP_ASN1_EXT_RESPONSE = $78;
+  LDAP_ASN1_CONTROLS = $A0;
 
 
 type
@@ -103,6 +104,8 @@ type
     function Get(Index: integer): string; override;
     procedure Put(Index: integer; const Value: string); override;
     procedure SetAttributeName(Value: AnsiString);
+  public
+    function Add(const S: string): Integer; override;
   published
     {:Name of LDAP attribute.}
     property AttributeName: AnsiString read FAttributeName Write SetAttributeName;
@@ -218,6 +221,8 @@ type
     FSearchAliases: TLDAPSearchAliases;
     FSearchSizeLimit: integer;
     FSearchTimeLimit: integer;
+    FSearchPageSize: integer;
+    FSearchCookie: AnsiString;
     FSearchResult: TLDAPResultList;
     FExtName: AnsiString;
     FExtValue: AnsiString;
@@ -315,6 +320,14 @@ type
      without limit.}
     property SearchTimeLimit: integer read FSearchTimeLimit Write FSearchTimeLimit;
 
+    {:Specify number of results to return per search request. Value 0 means
+     no paging.}
+    property SearchPageSize: integer read FSearchPageSize Write FSearchPageSize;
+
+    {:Cookie returned by paged search results. Use an empty string for the first
+     search request.}
+    property SearchCookie: AnsiString read FSearchCookie Write FSearchCookie;
+
     {:Here is result of search command.}
     property SearchResult: TLDAPResultList read FSearchResult;
 
@@ -340,6 +353,12 @@ function LDAPResultDump(const Value: TLDAPResultList): AnsiString;
 implementation
 
 {==============================================================================}
+function TLDAPAttribute.Add(const S: string): Integer;
+begin
+  Result := inherited Add('');
+  Put(Result,S);
+end;
+
 function TLDAPAttribute.Get(Index: integer): string;
 begin
   Result := inherited Get(Index);
@@ -528,6 +547,8 @@ begin
   FSearchAliases := SA_Always;
   FSearchSizeLimit := 0;
   FSearchTimeLimit := 0;
+  FSearchPageSize := 0;
+  FSearchCookie := '';
   FSearchResult := TLDAPResultList.Create;
 end;
 
@@ -1079,7 +1100,7 @@ end;
 function TLDAPSend.Search(obj: AnsiString; TypesOnly: Boolean; Filter: AnsiString;
   const Attributes: TStrings): Boolean;
 var
-  s, t, u: AnsiString;
+  s, t, u, c: AnsiString;
   n, i, x: integer;
   r: TLDAPResult;
   a: TLDAPAttribute;
@@ -1107,6 +1128,17 @@ begin
     t := t + ASNObject(Attributes[n], ASN1_OCTSTR);
   s := s + ASNObject(t, ASN1_SEQ);
   s := ASNObject(s, LDAP_ASN1_SEARCH_REQUEST);
+  if FSearchPageSize > 0 then
+  begin
+    c := ASNObject('1.2.840.113556.1.4.319', ASN1_OCTSTR); // controlType: pagedResultsControl
+    c := c + ASNObject(ASNEncInt(0), ASN1_BOOL); // criticality: FALSE
+    t := ASNObject(ASNEncInt(FSearchPageSize), ASN1_INT); // page size
+    t := t + ASNObject(FSearchCookie, ASN1_OCTSTR); // search cookie
+    t := ASNObject(t, ASN1_SEQ); // wrap with SEQUENCE
+    c := c + ASNObject(t, ASN1_OCTSTR); // add searchControlValue as OCTET STRING
+    c := ASNObject(c, ASN1_SEQ); // wrap with SEQUENCE
+    s := s + ASNObject(c, LDAP_ASN1_CONTROLS); // append Controls to SearchRequest
+  end;
   Fsock.SendString(BuildPacket(s));
   repeat
     s := ReceiveResponse;
@@ -1147,6 +1179,27 @@ begin
         FReferals.Add(ASNItem(n, t, x));
     end;
   until FResponseCode = LDAP_ASN1_SEARCH_DONE;
+  n := 1;
+  ASNItem(n, t, x);
+  if x = LDAP_ASN1_CONTROLS then
+  begin
+    ASNItem(n, t, x);
+    if x = ASN1_SEQ then
+    begin
+      s := ASNItem(n, t, x);
+      if s = '1.2.840.113556.1.4.319' then
+      begin
+        s := ASNItem(n, t, x); // searchControlValue
+        n := 1;
+        ASNItem(n, s, x);
+        if x = ASN1_SEQ then
+        begin
+          ASNItem(n, s, x); // total number of result records, if known, otherwise 0
+          FSearchCookie := ASNItem(n, s, x); // active search cookie, empty when done
+        end;
+      end;
+    end;
+  end;
   Result := FResultCode = 0;
 end;
 

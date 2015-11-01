@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.004.004 |
+| Project : Ararat Synapse                                       | 002.001.000 |
 |==============================================================================|
 | Content: support for ASN.1 BER coding and decoding                           |
 |==============================================================================|
-| Copyright (c)1999-2003, Lukas Gebauer                                        |
+| Copyright (c)1999-2014, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c) 1999-2003                |
+| Portions created by Lukas Gebauer are Copyright (c) 1999-2014                |
 | Portions created by Hernan Sanchez are Copyright (c) 2000.                   |
 | All Rights Reserved.                                                         |
 |==============================================================================|
@@ -88,13 +88,14 @@ const
   ASN1_GAUGE = $42;
   ASN1_TIMETICKS = $43;
   ASN1_OPAQUE = $44;
+  ASN1_COUNTER64 = $46;
 
 {:Encodes OID item to binary form.}
-function ASNEncOIDItem(Value: Integer): AnsiString;
+function ASNEncOIDItem(Value: Int64): AnsiString;
 
 {:Decodes an OID item of the next element in the "Buffer" from the "Start"
  position.}
-function ASNDecOIDItem(var Start: Integer; const Buffer: AnsiString): Integer;
+function ASNDecOIDItem(var Start: Integer; const Buffer: AnsiString): Int64;
 
 {:Encodes the length of ASN.1 element to binary.}
 function ASNEncLen(Len: Integer): AnsiString;
@@ -103,7 +104,7 @@ function ASNEncLen(Len: Integer): AnsiString;
 function ASNDecLen(var Start: Integer; const Buffer: AnsiString): Integer;
 
 {:Encodes a signed integer to ASN.1 binary}
-function ASNEncInt(Value: Integer): AnsiString;
+function ASNEncInt(Value: Int64): AnsiString;
 
 {:Encodes unsigned integer into ASN.1 binary}
 function ASNEncUInt(Value: Integer): AnsiString;
@@ -132,9 +133,10 @@ function ASNdump(const Value: AnsiString): AnsiString;
 implementation
 
 {==============================================================================}
-function ASNEncOIDItem(Value: Integer): AnsiString;
+function ASNEncOIDItem(Value: Int64): AnsiString;
 var
-  x, xm: Integer;
+  x: Int64;
+  xm: Byte;
   b: Boolean;
 begin
   x := Value;
@@ -152,7 +154,7 @@ begin
 end;
 
 {==============================================================================}
-function ASNDecOIDItem(var Start: Integer; const Buffer: AnsiString): Integer;
+function ASNDecOIDItem(var Start: Integer; const Buffer: AnsiString): Int64;
 var
   x: Integer;
   b: Boolean;
@@ -214,23 +216,28 @@ begin
 end;
 
 {==============================================================================}
-function ASNEncInt(Value: Integer): AnsiString;
+function ASNEncInt(Value: Int64): AnsiString;
 var
-  x, y: Cardinal;
+  x: Int64;
+  y: byte;
   neg: Boolean;
 begin
   neg := Value < 0;
   x := Abs(Value);
   if neg then
-    x := not (x - 1);
+    x := x - 1;
   Result := '';
   repeat
     y := x mod 256;
     x := x div 256;
+    if neg then
+      y := not y;
     Result := AnsiChar(y) + Result;
   until x = 0;
   if (not neg) and (Result[1] > #$7F) then
     Result := #0 + Result;
+  if (neg) and (Result[1] < #$80) then
+    Result := #$FF + Result;
 end;
 
 {==============================================================================}
@@ -265,7 +272,8 @@ function ASNItem(var Start: Integer; const Buffer: AnsiString;
 var
   ASNType: Integer;
   ASNSize: Integer;
-  y, n: Integer;
+  y: int64;
+  n: Integer;
   x: byte;
   s: AnsiString;
   c: AnsiChar;
@@ -306,7 +314,7 @@ begin
             y := -(y + 1);
           Result := IntToStr(y);
         end;
-      ASN1_COUNTER, ASN1_GAUGE, ASN1_TIMETICKS:
+      ASN1_COUNTER, ASN1_GAUGE, ASN1_TIMETICKS, ASN1_COUNTER64:
         begin
           y := 0;
           for n := 1 to ASNSize do
@@ -491,6 +499,8 @@ begin
             Result := Result + ' IPADDR: ';
           ASN1_NULL:
             Result := Result + ' NULL: ';
+          ASN1_COUNTER64:
+            Result := Result + ' COUNTER64: ';
         else // other
           Result := Result + ' unknown: ';
         end;
