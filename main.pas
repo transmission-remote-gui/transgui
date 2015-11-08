@@ -6505,8 +6505,8 @@ begin
   if CurFolderParam = 'LastMoveDir' then begin
   if i < 0 then begin
       DeleteDirs (CB, 1);
-     CB.Items.Insert (0, selfolder);
-     i:=CB.Items.IndexOf(selfolder);
+      CB.Items.Insert (0, selfolder);
+      i      :=CB.Items.IndexOf(selfolder);
       pFD    := FolderData.create;
       pFD.Hit:= 1;
       pFD.Ext:= '';

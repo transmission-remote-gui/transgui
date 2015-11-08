@@ -9,7 +9,7 @@ inherited MainForm: TMainForm
   ActiveControl = panTop
   AllowDropFiles = True
   Caption = ' '
-  ClientHeight = 488
+  ClientHeight = 508
   ClientWidth = 881
   Constraints.MinHeight = 300
   Constraints.MinWidth = 300
@@ -340,8 +340,8 @@ inherited MainForm: TMainForm
     OnResize = PageInfoResize
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 278
-      ClientWidth = 873
+      ClientHeight = 556
+      ClientWidth = 1746
       ImageIndex = 4
       object sbGenInfo: TScrollBox
         Left = 0
@@ -887,8 +887,8 @@ inherited MainForm: TMainForm
     end
     object tabTrackers: TTabSheet
       Caption = 'Trackers'
-      ClientHeight = 279
-      ClientWidth = 772
+      ClientHeight = 558
+      ClientWidth = 1544
       ImageIndex = 5
       object lvTrackers: TVarGrid
         Left = 0
@@ -926,8 +926,8 @@ inherited MainForm: TMainForm
     end
     object tabPeers: TTabSheet
       Caption = 'Peers'
-      ClientHeight = 279
-      ClientWidth = 772
+      ClientHeight = 558
+      ClientWidth = 1544
       ImageIndex = 6
       object lvPeers: TVarGrid
         Left = 0
@@ -985,8 +985,8 @@ inherited MainForm: TMainForm
     end
     object tabFiles: TTabSheet
       Caption = 'Files'
-      ClientHeight = 279
-      ClientWidth = 772
+      ClientHeight = 558
+      ClientWidth = 1544
       ImageIndex = 7
       object lvFiles: TVarGrid
         Left = 0
@@ -1036,8 +1036,8 @@ inherited MainForm: TMainForm
     end
     object tabStats: TTabSheet
       Caption = 'Statistics'
-      ClientHeight = 279
-      ClientWidth = 772
+      ClientHeight = 558
+      ClientWidth = 1544
       ImageIndex = 42
       object gStats: TVarGrid
         Left = 4
