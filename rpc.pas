@@ -772,7 +772,8 @@ begin
                 if Result = nil then
                   Status:='Arguments object not found.'
                 else begin
-                  res.Extract(Result);
+//                res.Extract(Result); // lazarus 1.2.6 ok
+                  res.Extract(res.IndexOf(Result)); // fix Tample :) lazarus 1.4.0 and high!
                   FreeAndNil(obj);
                 end;
               end
