@@ -232,7 +232,8 @@ procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJ
     p: PChar;
   begin
     while idx < cnt do begin
-      s:=ExtractFilePath(UTF8Encode(widestring(list[idxFileFullPath, idx])));
+      s:=ExtractFilePath((widestring(list[idxFileFullPath, idx]))); // Lazarus 1.4.4
+//    s:=ExtractFilePath(UTF8Encode(widestring(list[idxFileFullPath, idx])));
       if s = '' then begin
         Inc(idx);
         continue;
@@ -252,10 +253,14 @@ procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJ
           SetLength(ss, p - PChar(ss) + 1);
           j:=list.Count;
           list[idxFileLevel, j]:=level;
-          list[idxFileFullPath, j]:=UTF8Decode(path + ss);
+
+//        list[idxFileFullPath, j]:=UTF8Decode(path + ss);
+          list[idxFileFullPath, j]:=(path + ss); // L1.4.4
+
           _AddFolders(list, path + ss, idx, cnt, level + 1);
           ss:=ExcludeTrailingPathDelimiter(ss);
-          list[idxFileName, j]:=UTF8Decode(ExtractFileName(ss));
+//        list[idxFileName, j]:=UTF8Decode(ExtractFileName(ss));
+          list[idxFileName, j]:=(ExtractFileName(ss)); // L1.4.4
         end;
       end;
     end;
@@ -267,6 +272,8 @@ var
   f: TJSONObject;
   s, ss, path: string;
   ff: double;
+  xxxx : string;
+  wwww : UnicodeString;
 begin
   if files = nil then begin
     FGrid.Items.Clear;
@@ -291,9 +298,9 @@ begin
 
     // Detecting top level folder to be removed
     FCommonPathLen:=0;
-    path:='';
+     path:='';
     if files.Count > 0 then begin
-      s:=UTF8Encode(files.Objects[0].Strings['name']);
+      s:=(files.Objects[0].Strings['name']); // Lazarus 1.4.4
       FCommonPathLen:=Pos(RemotePathDelimiter, s);
       if FCommonPathLen > 0 then
         path:=Copy(s, 1, FCommonPathLen);
@@ -314,14 +321,20 @@ begin
       SetRowOption(row, roTag, True);
       FFiles[idxFileId, row]:=i;
 
-      s:=UTF8Encode(f.Strings['name']);
-      FFiles[idxFileFullPath, row]:=UTF8Decode(ExtractFilePath(s));
+      s:=(f.Strings['name']); // Lazarus 1.4.4
+
+//    FFiles[idxFileFullPath, row]:=UTF8Decode(ExtractFilePath(s));         // L1.4.4
+      FFiles[idxFileFullPath, row]:=(ExtractFilePath(s));
+
       if FCommonPathLen > 0 then
         s:=Copy(s, FCommonPathLen + 1, MaxInt);
       ss:=ExtractFileName(s);
       if ss <> s then
         FHasFolders:=True;
-      FFiles[idxFileName, row]:=UTF8Decode(ss);
+
+//    FFiles[idxFileName, row]:=UTF8Decode(ss);
+      FFiles[idxFileName, row]:=(ss); // Lazarus 1.4.4
+
       ff:=f.Floats['length'];
       FFiles[idxFileSize, row]:=ff;
 
@@ -429,11 +442,14 @@ begin
   end
   else
     Result:='';
-  Result:=Result + UTF8Encode(widestring(FFiles[idxFileFullPath, ARow]));
+//  Result:=Result + (widestring(FFiles[idxFileFullPath, ARow])); // Lazarus 1.4.4
+    Result:=Result + UTF8Encode(widestring(FFiles[idxFileFullPath, ARow]));///////////////////////
+
   if IsFolder(ARow) then
     Result:=Copy(Result, 1, Length(Result) - 1)
   else
-    Result:=Result + UTF8Encode(widestring(FFiles[idxFileName, ARow]));
+//  Result:=Result + (widestring(FFiles[idxFileName, ARow])); // Lazarus 1.4.4
+    Result:=Result + UTF8Encode(widestring(FFiles[idxFileName, ARow]));//////////////////////
 end;
 
 function TFilesTree.UpdateSummary: TFolderInfo;
@@ -757,13 +773,16 @@ begin
     case ADataCol of
       0:
         begin
-//          Text:=UTF8Encode(Sender.Items[idxFileFullPath, ARow]) + ' (' + Text + ')';
+//        Text:=(Sender.Items[idxFileFullPath, ARow]) + ' (' + Text + ')';// Lazarus 1.4.4
+
           if Checkboxes then begin
             Options:=[coDrawCheckBox];
             State:=Checked[ARow];
           end;
           if IsPlain then begin
-            Text:=Copy(UTF8Encode(widestring(Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text;
+//          Text:=Copy((widestring(Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text; // Lazarus 1.4.4
+            Text:=Copy(UTF8Encode(widestring(Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text;/////////////
+
           end
           else begin
             Indent:=integer(Sender.Items[idxFileLevel, ARow])*16;
@@ -814,7 +833,9 @@ begin
     v:=Sender.Items[idxFileName, i];
     if VarIsEmpty(v) or VarIsNull(v) or (IsPlain and IsFolder(i)) then
       continue;
-    if Pos(s, Trim(UTF8UpperCase(UTF8Encode(widestring(v))))) > 0 then begin
+
+    if Pos(s, Trim(UTF8UpperCase((widestring(v))))) > 0 then begin // Lazarus 1.4.4
+//  if Pos(s, Trim(UTF8UpperCase(UTF8Encode(widestring(v))))) > 0 then begin
       ARow:=i;
       EnsureRowVisible(ARow);
       break;
@@ -905,12 +926,14 @@ begin
      pFD.Hit:= 1;
      pFD.Ext:= e;
      pFD.Txt:= s;
+     pFD.Lst:= SysUtils.Date;
      cbDestFolder.Items.Objects[i]:= pFD;
   end else begin
      pFD    := cbDestFolder.Items.Objects[i] as FolderData;
      pFD.Hit:= pFD.Hit + 1;
      pFD.Ext:= e;
      pFD.Txt:= s;
+     pFD.Lst:= SysUtils.Date;
      cbDestFolder.Items.Objects[i]:= pFD;
      DeleteDirs (0);               // check count items
   end;
@@ -991,6 +1014,7 @@ procedure TAddTorrentForm.DiskSpaceTimerTimer(Sender: TObject);
 var
   f: double;
   req, args: TJSONObject;
+  xxxxxxx : string;
 begin
   DiskSpaceTimer.Enabled:=False;
   if RpcObj.RPCVersion < 15 then
@@ -1002,7 +1026,10 @@ begin
     args:=TJSONObject.Create;
     try
       req.Add('method', 'free-space');
-      args.Add('path', UTF8Decode(cbDestFolder.Text));
+
+//    args.Add('path', UTF8Decode(cbDestFolder.Text));
+      args.Add('path', (cbDestFolder.Text));          // L1.4.4
+
       req.Add('arguments', args);
       args:=RpcObj.SendRequest(req);
       if args <> nil then

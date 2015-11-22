@@ -546,7 +546,7 @@ begin
     if VarIsNull(v) or VarIsEmpty(v) then
       s:=''
     else
-      s:=UTF8UpperCase(UTF8Encode(widestring(v)));
+      s:=UTF8UpperCase((widestring(v))); // Lazarus 1.4.4
     if Copy(s, 1, Length(ss)) = ss then begin
       Result:=i;
       break;
@@ -1079,7 +1079,7 @@ begin
     if ARow >= FixedRows then begin
       v:=Items[dc, ARow - FixedRows];
       if not VarIsNull(v) and not VarIsEmpty(v) then
-        CellAttribs.Text:=UTF8Encode(WideString(v))
+        CellAttribs.Text:=(WideString(v)) // Lazarus 1.4.4
       else
         CellAttribs.Text:='';
     end
@@ -1411,7 +1411,7 @@ begin
   if ARow >= FixedRows then begin
     v:=Items[dc, ARow - FixedRows];
     if not VarIsNull(v) and not VarIsEmpty(v) then
-      Result:=UTF8Encode(WideString(v));
+      Result:=(WideString(v)); // Lazarus 1.4.4
   end;
 end;
 

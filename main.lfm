@@ -1,7 +1,7 @@
 inherited MainForm: TMainForm
-  Left = 182
+  Left = 589
   Height = 508
-  Top = 295
+  Top = 444
   Width = 881
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
@@ -9,7 +9,7 @@ inherited MainForm: TMainForm
   ActiveControl = panTop
   AllowDropFiles = True
   Caption = ' '
-  ClientHeight = 508
+  ClientHeight = 488
   ClientWidth = 881
   Constraints.MinHeight = 300
   Constraints.MinWidth = 300
@@ -340,8 +340,8 @@ inherited MainForm: TMainForm
     OnResize = PageInfoResize
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 556
-      ClientWidth = 1746
+      ClientHeight = 278
+      ClientWidth = 873
       ImageIndex = 4
       object sbGenInfo: TScrollBox
         Left = 0
@@ -1111,6 +1111,7 @@ inherited MainForm: TMainForm
     end
     object ToolButton2: TToolButton
       Left = 90
+      Height = 22
       Top = 2
       Width = 5
       Caption = 'ToolButton2'
@@ -1133,6 +1134,7 @@ inherited MainForm: TMainForm
     end
     object ToolButton6: TToolButton
       Left = 39
+      Height = 22
       Top = 2
       Width = 5
       Caption = 'ToolButton6'
@@ -1140,6 +1142,7 @@ inherited MainForm: TMainForm
     end
     object ToolButton7: TToolButton
       Left = 243
+      Height = 22
       Top = 2
       Width = 5
       Caption = 'ToolButton7'
@@ -1169,6 +1172,7 @@ inherited MainForm: TMainForm
     end
     object sepAltSpeed: TToolButton
       Left = 215
+      Height = 22
       Top = 2
       Width = 5
       Caption = 'sepAltSpeed'
@@ -1176,6 +1180,7 @@ inherited MainForm: TMainForm
     end
     object sepQueue: TToolButton
       Left = 164
+      Height = 22
       Top = 2
       Width = 5
       Caption = 'sepQueue'
@@ -1192,7 +1197,7 @@ inherited MainForm: TMainForm
       Action = acQMoveDown
     end
     object ToolButton5: TToolButton
-      Left = 296
+      Left = 271
       Hint = 'Application Options (Ctrl+F9)'
       Top = 2
       Action = acConnOptions
