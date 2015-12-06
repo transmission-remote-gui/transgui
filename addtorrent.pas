@@ -25,7 +25,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, VarGrid, Grids,
-  ButtonPanel, ExtCtrls, BaseForm, varlist, fpjson, StrUtils;
+  ButtonPanel, ExtCtrls, BaseForm, varlist, fpjson, StrUtils,DateUtils;
 
 resourcestring
   SSize = 'Size';
@@ -233,7 +233,6 @@ procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJ
   begin
     while idx < cnt do begin
       s:=ExtractFilePath((widestring(list[idxFileFullPath, idx]))); // Lazarus 1.4.4
-//    s:=ExtractFilePath(UTF8Encode(widestring(list[idxFileFullPath, idx])));
       if s = '' then begin
         Inc(idx);
         continue;
@@ -254,12 +253,10 @@ procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJ
           j:=list.Count;
           list[idxFileLevel, j]:=level;
 
-//        list[idxFileFullPath, j]:=UTF8Decode(path + ss);
           list[idxFileFullPath, j]:=(path + ss); // L1.4.4
 
           _AddFolders(list, path + ss, idx, cnt, level + 1);
           ss:=ExcludeTrailingPathDelimiter(ss);
-//        list[idxFileName, j]:=UTF8Decode(ExtractFileName(ss));
           list[idxFileName, j]:=(ExtractFileName(ss)); // L1.4.4
         end;
       end;
@@ -272,8 +269,6 @@ var
   f: TJSONObject;
   s, ss, path: string;
   ff: double;
-  xxxx : string;
-  wwww : UnicodeString;
 begin
   if files = nil then begin
     FGrid.Items.Clear;
@@ -323,8 +318,7 @@ begin
 
       s:=(f.Strings['name']); // Lazarus 1.4.4
 
-//    FFiles[idxFileFullPath, row]:=UTF8Decode(ExtractFilePath(s));         // L1.4.4
-      FFiles[idxFileFullPath, row]:=(ExtractFilePath(s));
+      FFiles[idxFileFullPath, row]:=(ExtractFilePath(s));                   // L1.4.4
 
       if FCommonPathLen > 0 then
         s:=Copy(s, FCommonPathLen + 1, MaxInt);
@@ -332,7 +326,6 @@ begin
       if ss <> s then
         FHasFolders:=True;
 
-//    FFiles[idxFileName, row]:=UTF8Decode(ss);
       FFiles[idxFileName, row]:=(ss); // Lazarus 1.4.4
 
       ff:=f.Floats['length'];
@@ -442,14 +435,15 @@ begin
   end
   else
     Result:='';
-//  Result:=Result + (widestring(FFiles[idxFileFullPath, ARow])); // Lazarus 1.4.4
-    Result:=Result + UTF8Encode(widestring(FFiles[idxFileFullPath, ARow]));///////////////////////
+    Result:=Result + (widestring(FFiles[idxFileFullPath, ARow])); // Lazarus 1.4.4
+//  Result:=Result + UTF8Encode(widestring(FFiles[idxFileFullPath, ARow]));//??????????????????
+
 
   if IsFolder(ARow) then
-    Result:=Copy(Result, 1, Length(Result) - 1)
+      Result:=Copy(Result, 1, Length(Result) - 1)
   else
-//  Result:=Result + (widestring(FFiles[idxFileName, ARow])); // Lazarus 1.4.4
-    Result:=Result + UTF8Encode(widestring(FFiles[idxFileName, ARow]));//////////////////////
+      Result:=Result + (widestring(FFiles[idxFileName, ARow])); // Lazarus 1.4.4
+//    Result:=Result + UTF8Encode(widestring(FFiles[idxFileName, ARow]));//??????????????????
 end;
 
 function TFilesTree.UpdateSummary: TFolderInfo;
@@ -780,8 +774,7 @@ begin
             State:=Checked[ARow];
           end;
           if IsPlain then begin
-//          Text:=Copy((widestring(Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text; // Lazarus 1.4.4
-            Text:=Copy(UTF8Encode(widestring(Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text;/////////////
+            Text:=Copy((widestring(Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text; // Lazarus 1.4.4
 
           end
           else begin
@@ -835,7 +828,6 @@ begin
       continue;
 
     if Pos(s, Trim(UTF8UpperCase((widestring(v))))) > 0 then begin // Lazarus 1.4.4
-//  if Pos(s, Trim(UTF8UpperCase(UTF8Encode(widestring(v))))) > 0 then begin
       ARow:=i;
       EnsureRowVisible(ARow);
       break;
@@ -884,9 +876,8 @@ end;
 
 procedure TAddTorrentForm.DeleteDirs(maxdel : Integer);
 var
-  i,min,max,indx: integer;
+  i,min,max,indx, fldr: integer;
   pFD : FolderData;
-  tmp : string;
 begin
     max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
     Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max); // PETROV
@@ -895,10 +886,15 @@ begin
        min := 9999999;
        indx:=-1;
        for i:=0 to cbDestFolder.Items.Count - 1 do begin
-         tmp := CorrectPath(cbDestFolder.Items[i]); // PETROV
          pFD := cbDestFolder.Items.Objects[i] as FolderData;
-         if pFD.Hit < min then begin
-           min := pFD.Hit;
+
+         fldr := DaysBetween(SysUtils.Date,pFD.Lst);
+         if SysUtils.Date > pFD.Lst then
+           fldr := 0- fldr;
+
+         fldr := fldr + pFD.Hit;
+         if fldr < min then begin
+           min := fldr;
            indx:= i;
          end;
        end;
@@ -994,7 +990,7 @@ end;
 
 procedure TAddTorrentForm.cbDestFolderChange(Sender: TObject);
 var
-  s, s2 : string;
+  s : string;
   i : integer;
   pFD : FolderData;
 begin
@@ -1004,7 +1000,6 @@ begin
     edExtension.Text := '';
   end else begin
     pFD             := cbDestFolder.Items.Objects[i] as FolderData;
-    s2              := pFD.Txt;
     edExtension.Text:= pFD.Ext;
   end;
   DiskSpaceTimer.Enabled:=True;
@@ -1014,7 +1009,6 @@ procedure TAddTorrentForm.DiskSpaceTimerTimer(Sender: TObject);
 var
   f: double;
   req, args: TJSONObject;
-  xxxxxxx : string;
 begin
   DiskSpaceTimer.Enabled:=False;
   if RpcObj.RPCVersion < 15 then
@@ -1027,7 +1021,6 @@ begin
     try
       req.Add('method', 'free-space');
 
-//    args.Add('path', UTF8Decode(cbDestFolder.Text));
       args.Add('path', (cbDestFolder.Text));          // L1.4.4
 
       req.Add('arguments', args);
@@ -1091,8 +1084,8 @@ begin
 
   tmp := filename;
   lstr:= Length(tmp);
-  for i:=1 to lstr do begin
-    if (tmp[lstr-i]= '/') or (tmp[lstr-i]= '\\') then begin
+  for i:=1 to lstr-1 do begin
+    if (tmp[lstr-i]= '/') or (tmp[lstr-i]= '\') then begin
       tmp := Copy (tmp, lstr-i+1, 999);
       Break;
     end;

@@ -1316,6 +1316,7 @@ var
   ws: TWindowState;
   i, j: integer;
   R: TRect;
+
 {$ifdef darwin}
   s: string;
   pic: TPicture;
@@ -1416,10 +1417,10 @@ begin
   with gStats do begin
     BeginUpdate;
     try
-      Items[0, 0]:=UTF8Decode(SDownloaded);
-      Items[0, 1]:=UTF8Decode(SUploaded);
-      Items[0, 2]:=UTF8Decode(SFilesAdded);
-      Items[0, 3]:=UTF8Decode(SActiveTime);
+      Items[0, 0]:=(SDownloaded);
+      Items[0, 1]:=(SUploaded);
+      Items[0, 2]:=(SFilesAdded);
+      Items[0, 3]:=(SActiveTime);
     finally
       EndUpdate;
     end;
@@ -2256,16 +2257,13 @@ begin
           end;
 
           s:=CorrectPath ((args.Strings['download-dir']) ); // PETROV lazarus 1.4.4
-
-          if cbDestFolder.Items.IndexOf(s) < 0 then begin  // petrov2015-11-21 тут гдето косяк!
+          if cbDestFolder.Items.IndexOf(s) < 0 then begin
             pFD    := FolderData.create;
             pFD.Hit:= 1;
             pFD.Ext:= '';
             pFD.Txt:= s;
             pFD.Lst:= SysUtils.Date;
-
             cbDestFolder.Items.Insert(0, s);
-
             i := cbDestFolder.Items.IndexOf(s);
             cbDestFolder.Items.Objects[i]:= pFD;
           end;
@@ -4467,13 +4465,13 @@ begin
   lvFilter.Enabled:=False;
   lvFilter.Color:=gTorrents.Color;
   with lvFilter do begin
-    Items[0, 0]:=UTF8Decode(SAll);
-    Items[0, 1]:=UTF8Decode(SDownloading);
-    Items[0, 2]:=UTF8Decode(SCompleted);
-    Items[0, 3]:=UTF8Decode(SActive);
-    Items[0, 4]:=UTF8Decode(SInactive);
-    Items[0, 5]:=UTF8Decode(sStopped);
-    Items[0, 6]:=UTF8Decode(sErrorState);
+    Items[0, 0]:=(SAll);
+    Items[0, 1]:=(SDownloading);
+    Items[0, 2]:=(SCompleted);
+    Items[0, 3]:=(SActive);
+    Items[0, 4]:=(SInactive);
+    Items[0, 5]:=(sStopped);
+    Items[0, 6]:=(sErrorState);
   end;
   edSearch.Enabled:=False;
   edSearch.Color:=gTorrents.Color;
@@ -5148,7 +5146,7 @@ begin
     else
       s:='';
 
-    FTorrents[idxTrackerStatus, row]:=UTF8Decode(s);
+    FTorrents[idxTrackerStatus, row]:=(s);
 
     if FTorrents[idxStatus, row] = TR_STATUS_CHECK then
       f:=t.Floats['recheckProgress']*100.0
@@ -5261,7 +5259,8 @@ begin
       j:=Pos(':', s);
       if j > 0 then
         System.Delete(s, j, MaxInt);
-      FTorrents[idxTracker, row]:=UTF8Decode(s);
+
+      FTorrents[idxTracker, row]:=(s);
     end;
 
     if FieldExists[idxPath] then
@@ -5411,13 +5410,13 @@ begin
   crow:=-1;
   lvFilter.Items.BeginUpdate;
   try
-    lvFilter.Items[0, 0]:=UTF8Decode(Format('%s (%d)', [SAll, list.Count]));
-    lvFilter.Items[0, 1]:=UTF8Decode(Format('%s (%d)', [SDownloading, DownCnt]));
-    lvFilter.Items[0, 2]:=UTF8Decode(Format('%s (%d)', [SCompleted, CompletedCnt]));
-    lvFilter.Items[0, 3]:=UTF8Decode(Format('%s (%d)', [SActive, ActiveCnt]));
-    lvFilter.Items[0, 4]:=UTF8Decode(Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt - StoppedCnt])); // PETROV - остановленный торрент==неактивный!
-    lvFilter.Items[0, 5]:=UTF8Decode(Format('%s (%d)', [sStopped, StoppedCnt]));
-    lvFilter.Items[0, 6]:=UTF8Decode(Format('%s (%d)', [sErrorState, ErrorCnt]));
+    lvFilter.Items[0, 0]:=(Format('%s (%d)', [SAll, list.Count]));
+    lvFilter.Items[0, 1]:=(Format('%s (%d)', [SDownloading, DownCnt]));
+    lvFilter.Items[0, 2]:=(Format('%s (%d)', [SCompleted, CompletedCnt]));
+    lvFilter.Items[0, 3]:=(Format('%s (%d)', [SActive, ActiveCnt]));
+    lvFilter.Items[0, 4]:=(Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt - StoppedCnt])); // PETROV - остановленный торрент==неактивный!
+    lvFilter.Items[0, 5]:=(Format('%s (%d)', [sStopped, StoppedCnt]));
+    lvFilter.Items[0, 6]:=(Format('%s (%d)', [sErrorState, ErrorCnt]));
 
     j:=StatusFiltersCount;
 
@@ -5984,7 +5983,7 @@ begin
               if s = 'Success' then
                 s:=sTrackerWorking;
 
-              lvTrackers.Items[idxTrackersListStatus, row]:=UTF8Decode(s);
+              lvTrackers.Items[idxTrackersListStatus, row]:=(s); // UTF8Decode
               lvTrackers.Items[idxTrackersListSeeds, row]:=Integers['seederCount'];
 
               if integer(Integers['announceState']) in [2, 3] then
@@ -6101,10 +6100,10 @@ procedure TMainForm.FillStatistics(s: TJSONObject);
   procedure _Fill(idx: integer; s: TJSONObject);
   begin
     with gStats do begin
-      Items[idx, 0]:=UTF8Decode(GetHumanSize(s.Floats['downloadedBytes']));
-      Items[idx, 1]:=UTF8Decode(GetHumanSize(s.Floats['uploadedBytes']));
+      Items[idx, 0]:=(GetHumanSize(s.Floats['downloadedBytes'])); //UTF8Decode
+      Items[idx, 1]:=(GetHumanSize(s.Floats['uploadedBytes'])); //UTF8Decode
       Items[idx, 2]:=s.Integers['filesAdded'];
-      Items[idx, 3]:=UTF8Decode(SecondsToString(s.Integers['secondsActive']));
+      Items[idx, 3]:=(SecondsToString(s.Integers['secondsActive'])); //UTF8Decode
     end;
   end;
 
@@ -6552,7 +6551,7 @@ begin
       pFD.Hit:= 1;
       pFD.Ext:= '';
       pFD.Txt:= selfolder;
-      pFD.Lst:= SysUtils.Date;
+      pFD.Lst:= SysUtils.Date+7; // дадим фору 7 дней
       CB.Items.Objects[i]:= pFD;
     end else begin
       pFD    := CB.Items.Objects[i] as FolderData;
@@ -6585,9 +6584,8 @@ end;
 
 procedure TMainForm.DeleteDirs(CB: TComboBox; maxdel : Integer);
 var
-  i,min,max,indx: integer;
+  i,min,max,indx, fldr: integer;
   pFD : FolderData;
-  tmp : string;
 begin
     max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
     Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max); // PETROV
@@ -6596,10 +6594,15 @@ begin
        min := 9999999;
        indx:=-1;
        for i:=0 to CB.Items.Count - 1 do begin
-         tmp := CorrectPath(CB.Items[i]); // PETROV
+
          pFD := CB.Items.Objects[i] as FolderData;
-         if pFD.Hit < min then begin
-           min := pFD.Hit;
+         fldr := DaysBetween(SysUtils.Date,pFD.Lst);
+         if SysUtils.Date > pFD.Lst then
+           fldr := 0- fldr;
+
+         fldr := fldr + pFD.Hit;
+         if fldr < min then begin
+           min := fldr;
            indx:= i;
          end;
        end;
@@ -6647,9 +6650,11 @@ begin
         args:=TJSONObject.Create;
         args.Add('ids', TJSONArray.Create([torid]));
         if EditMode then
-          args.Add('trackerReplace', TJSONArray.Create([id, UTF8Decode(edTracker.Text)]))
+          args.Add('trackerReplace', TJSONArray.Create([id, (edTracker.Text)])) //UTF8Decode
         else
-          args.Add('trackerAdd', TJSONArray.Create([UTF8Decode(edTracker.Text)]));
+          args.Add('trackerAdd', TJSONArray.Create([(edTracker.Text)])); //UTF8Decode
+
+
         req.Add('arguments', args);
         args:=nil;
         args:=RpcObj.SendRequest(req, False);
@@ -6958,8 +6963,8 @@ begin
   if ExtractFileName(OldPath) = NewName then
     exit;
   args:=TJSONObject.Create;
-  args.Add('path', UTF8Decode(OldPath));
-  args.Add('name', UTF8Decode(NewName));
+  args.Add('path', (OldPath));
+  args.Add('name', (NewName));
   Result:=TorrentAction(TorrentId, 'torrent-rename-path', args);
 end;
 
