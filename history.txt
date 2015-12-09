@@ -1,3 +1,9 @@
+5.2.0 (Dec 09, 2015)
+[-] Fixed various bugs
+[+] Program modified to compile Lazarus 1.4.4
+[+] Automatic reconnect on loss of communication (modification Ircama)
+[+] Updated library 'synapse'
+
 5.1.0 (Apr 11, 2015)
 [+] Rules to automatically suggest download directory (for each directory, you can specify a template, for example: *.avi *.mpg). Issue #500,605.
 
