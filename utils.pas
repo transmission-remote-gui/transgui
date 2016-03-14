@@ -402,18 +402,21 @@ var
   cmd, fn: String;
 begin
   Result:=-1;
+  WrkProcess:=TProcess.Create(nil);
+  WrkProcess.Options:=[poNoConsole,poWaitOnExit];  
+
   cmd:=FindDefaultExecutablePath('xdg-open');
   if cmd = '' then begin
     cmd:=FindDefaultExecutablePath('gnome-open');
     if cmd = '' then begin
       cmd:=FindDefaultExecutablePath('kioclient');
       if cmd <> '' then
-        cmd:=cmd + ' exec'
+        Wrkprocess.Parameters.Add('exec')
       else begin
         cmd:=FindDefaultExecutablePath('kfmclient');
         if cmd = '' then
           exit;
-        cmd:=cmd + ' exec';
+        Wrkprocess.Parameters.Add('exec')
       end;
     end;
   end;
@@ -421,11 +424,10 @@ begin
   fn:=FileName;
   if Pos('://', fn) > 0 then
     fn:=StringReplace(fn, '#', '%23', [rfReplaceAll]);
+  Wrkprocess.Parameters.Add(fn);
+  WrkProcess.Executable:=cmd;
 
-  WrkProcess:=TProcess.Create(nil);
   try
-    WrkProcess.Options:=[poNoConsole];
-    WrkProcess.CommandLine:=cmd + ' "' + fn + '"';
     WrkProcess.Execute;
     Result:=WrkProcess.ExitStatus;
   finally
