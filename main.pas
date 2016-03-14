@@ -1041,10 +1041,9 @@ begin
       // Restart the app with the LIBOVERLAY_SCROLLBAR=0 env var.
       proc:=TProcess.Create(nil);
       try
-        s:='';
-        for i:=0 to ParamCount do
-          s:=s + '"' + ParamStrUTF8(i) + '" ';
-        proc.CommandLine:=s;
+        proc.Executable:=ParamStrUTF8(0);
+        for i:=1 to ParamCount do
+		  proc.Parameters.Add(ParamStrUTF8(i));
         for i:=0 to GetEnvironmentVariableCount - 1 do
           proc.Environment.Add(GetEnvironmentString(i));
         proc.Environment.Values['LIBOVERLAY_SCROLLBAR']:='0';
