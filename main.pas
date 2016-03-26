@@ -737,6 +737,7 @@ const
   idxTorrentId = 20;
   idxQueuePos = 21;
   idxSeedingTime = 22;
+  idxSizeLeft = 23;
 
   idxTag = -1;
   idxSeedsTotal = -2;
@@ -794,11 +795,11 @@ const
 
   StatusFiltersCount = 7;
 
-  TorrentFieldsMap: array[idxName..idxSeedingTime] of string =
+  TorrentFieldsMap: array[idxName..idxSizeLeft] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
      'peersGettingFromUs,leechers', '', '', 'eta', 'uploadRatio',
      'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority',
-     '', '', 'queuePosition', 'secondsSeeding');
+     '', '', 'queuePosition', 'secondsSeeding', 'leftUntilDone');
 
   FinishedQueue = 1000000;
 
@@ -3766,7 +3767,7 @@ begin
     case ADataCol of
       idxStatus:
         Text:=GetTorrentStatus(ARow);
-      idxSize, idxDownloaded, idxUploaded, idxSizeToDowload:
+      idxSize, idxDownloaded, idxUploaded, idxSizeToDowload, idxSizeLeft:
         Text:=GetHumanSize(Sender.Items[ADataCol, ARow], 0, '?');
       idxDone:
         Text:=Format('%.1f%%', [double(Sender.Items[idxDone, ARow])]);
@@ -5188,6 +5189,7 @@ begin
       end;
     GetTorrentValue(idxDownloaded, 'downloadedEver', vtExtended);
     GetTorrentValue(idxUploaded, 'uploadedEver', vtExtended);
+    GetTorrentValue(idxSizeLeft, 'leftUntilDone', vtExtended);
     GetTorrentValue(idxAddedOn, 'addedDate', vtExtended);
     GetTorrentValue(idxCompletedOn, 'doneDate', vtExtended);
     GetTorrentValue(idxLastActive, 'activityDate', vtExtended);
@@ -5744,7 +5746,8 @@ begin
   f:=gTorrents.Items[idxDownSpeed, idx];
   if f > 0 then
     i:=Round(t.Floats['leftUntilDone']/f);
-  txRemaining.Caption:=EtaToString(i);
+  //txRemaining.Caption:=EtaToString(i);
+  txRemaining.Caption:=EtaToString(i)+' ('+GetHumanSize(t.Floats['leftUntilDone'])+')';
   txDownloaded.Caption:=GetHumanSize(t.Floats['downloadedEver']);
   txUploaded.Caption:=GetHumanSize(t.Floats['uploadedEver']);
   f:=t.Floats['pieceSize'];
