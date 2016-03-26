@@ -1044,6 +1044,7 @@ inherited MainForm: TMainForm
         Height = 248
         Top = 24
         Width = 760
+        Align = alClient
         Anchors = [akTop, akLeft, akRight, akBottom]
         Columns = <        
           item
@@ -1073,6 +1074,7 @@ inherited MainForm: TMainForm
         Height = 14
         Top = 4
         Width = 79
+        Align = alTop
         Caption = 'Global statistics:'
         ParentColor = False
       end
