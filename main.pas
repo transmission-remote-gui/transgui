@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.2.0';
+  AppVersion = '5.3.0';
 
 resourcestring
   sAll = 'All torrents';
@@ -557,7 +557,6 @@ type
     procedure lvTrackersCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure lvTrackersDblClick(Sender: TObject);
     procedure lvTrackersKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure MainToolBarClick(Sender: TObject);
     procedure goDevelopmentSiteClick(Sender: TObject);
     procedure miHomePageClick(Sender: TObject);
     procedure PageInfoResize(Sender: TObject);
@@ -954,7 +953,6 @@ begin
 end;
 
 var
-//  FHomeDir: string;
   FIPCFileName: string;
   FRunFileName: string;
 
@@ -1316,6 +1314,7 @@ var
   ws: TWindowState;
   i, j: integer;
   R: TRect;
+  bigt: boolean;
 
 {$ifdef darwin}
   s: string;
@@ -1380,6 +1379,18 @@ begin
     Left:=MainToolBar.ClientWidth;
     Parent:=MainToolBar;
   end;
+
+  bigt := Ini.ReadBool('MainForm', 'BigToolbar', False);
+  Ini.WriteBool('MainForm', 'BigToolbar', bigt);
+  if (bigt = True) then begin
+    MainToolBar.ButtonWidth:= 64;      
+    MainToolBar.ButtonHeight:=64
+  end else begin
+    MainToolBar.ButtonWidth:= 23; 
+    MainToolBar.ButtonHeight:=23;
+  end;
+
+
   FDetailsWait:=TProgressImage.Create(panDetailsWait);
   with FDetailsWait do begin
     Images:=ImageList16;
@@ -4106,10 +4117,6 @@ begin
     Key:=0;
     acDelTracker.Execute;
   end;
-end;
-
-procedure TMainForm.MainToolBarClick(Sender: TObject);
-begin
 end;
 
 procedure TMainForm.goDevelopmentSiteClick(Sender: TObject);

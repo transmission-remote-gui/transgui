@@ -1,3 +1,10 @@
+5.3.0 (Apr 01, 2016)
+[+] Add a column for 'download remaining'. Issue 881,898
+[-] Fix "Global Statistics" shown problem. Issue 897 
+[+] Bigger toolbar buttons and menu for touchscreen. Issue 889 (transgui.ini, [MainForm] BigToolbar=1)
+[+] Added shortcuts keys to filter and info panel. Fix button 'Application Option' on the toolbar. Issue 886
+[-] Fix cannot execute on open (nix). Issue 888 
+
 5.2.0 (Dec 09, 2015)
 [-] Fixed various bugs
 [+] Program modified to compile Lazarus 1.4.4

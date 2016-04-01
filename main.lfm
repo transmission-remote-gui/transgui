@@ -24,18 +24,18 @@ inherited MainForm: TMainForm
   OnWindowStateChange = FormWindowStateChange
   object panTop: TPanel[0]
     Left = 0
-    Height = 128
-    Top = 26
+    Height = 127
+    Top = 27
     Width = 881
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 128
+    ClientHeight = 127
     ClientWidth = 881
     Constraints.MinHeight = 80
     TabOrder = 0
     object HSplitter: TSplitter
       Left = 130
-      Height = 128
+      Height = 127
       Top = 0
       Width = 5
       AutoSnap = False
@@ -44,18 +44,18 @@ inherited MainForm: TMainForm
     end
     object panFilter: TPanel
       Left = 0
-      Height = 128
+      Height = 127
       Top = 0
       Width = 130
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 128
+      ClientHeight = 127
       ClientWidth = 130
       TabOrder = 2
       object panSearch: TPanel
         Left = 0
         Height = 23
-        Top = 103
+        Top = 102
         Width = 130
         Align = alBottom
         AutoSize = True
@@ -132,7 +132,7 @@ inherited MainForm: TMainForm
       end
       object lvFilter: TVarGrid
         Left = 0
-        Height = 101
+        Height = 100
         Top = 0
         Width = 130
         Align = alClient
@@ -158,7 +158,7 @@ inherited MainForm: TMainForm
     end
     object gTorrents: TVarGrid
       Left = 135
-      Height = 128
+      Height = 127
       Top = 0
       Width = 746
       Align = alClient
@@ -280,7 +280,7 @@ inherited MainForm: TMainForm
           Title.Caption = 'Seeding time'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Size left'
@@ -1051,7 +1051,6 @@ inherited MainForm: TMainForm
         Top = 24
         Width = 760
         Align = alClient
-        Anchors = [akTop, akLeft, akRight, akBottom]
         Columns = <        
           item
             Title.Caption = ' '
@@ -1100,18 +1099,18 @@ inherited MainForm: TMainForm
   end
   object MainToolBar: TToolBar[4]
     Left = 0
-    Height = 24
+    Height = 25
     Top = 0
     Width = 881
     AutoSize = True
     BorderSpacing.Bottom = 2
+    ButtonHeight = 23
     Caption = 'MainToolBar'
     Images = ImageList16
     Indent = 4
     ParentShowHint = False
     ShowHint = True
     TabOrder = 2
-    OnClick = MainToolBarClick
     object ToolButton1: TToolButton
       Left = 44
       Top = 2
@@ -1119,7 +1118,7 @@ inherited MainForm: TMainForm
     end
     object ToolButton2: TToolButton
       Left = 90
-      Height = 22
+      Height = 23
       Top = 2
       Width = 5
       Caption = 'ToolButton2'
@@ -1142,7 +1141,7 @@ inherited MainForm: TMainForm
     end
     object ToolButton6: TToolButton
       Left = 39
-      Height = 22
+      Height = 23
       Top = 2
       Width = 5
       Caption = 'ToolButton6'
@@ -1150,7 +1149,7 @@ inherited MainForm: TMainForm
     end
     object ToolButton7: TToolButton
       Left = 243
-      Height = 22
+      Height = 23
       Top = 2
       Width = 5
       Caption = 'ToolButton7'
@@ -1180,7 +1179,7 @@ inherited MainForm: TMainForm
     end
     object sepAltSpeed: TToolButton
       Left = 215
-      Height = 22
+      Height = 23
       Top = 2
       Width = 5
       Caption = 'sepAltSpeed'
@@ -1188,7 +1187,7 @@ inherited MainForm: TMainForm
     end
     object sepQueue: TToolButton
       Left = 164
-      Height = 22
+      Height = 23
       Top = 2
       Width = 5
       Caption = 'sepQueue'
@@ -1209,6 +1208,7 @@ inherited MainForm: TMainForm
       Hint = 'Application Options (Ctrl+F9)'
       Top = 2
       Action = acConnOptions
+      Caption = 'Application option...'
       ImageIndex = 43
     end
   end
@@ -1913,9 +1913,11 @@ inherited MainForm: TMainForm
       end
       object MenuItem94: TMenuItem
         Action = acFilterPane
+        ShortCut = 122
       end
       object MenuItem95: TMenuItem
         Action = acInfoPane
+        ShortCut = 123
       end
       object MenuItem96: TMenuItem
         Action = acStatusBar
@@ -2229,7 +2231,7 @@ inherited MainForm: TMainForm
     object acConnOptions: TAction
       Category = 'Tools'
       Caption = 'Manage connections...'
-      OnExecute = acConnOptionsExecute
+      OnExecute = acOptionsExecute
     end
     object acNewConnection: TAction
       Caption = 'New connection...'
