@@ -195,37 +195,23 @@
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
-      <Checks>
-        <IOChecks Value="True"/>
-        <RangeChecks Value="True"/>
-        <StackChecks Value="True"/>
-      </Checks>
       <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <DebugInfoType Value="dsStabs"/>
-        <UseValgrind Value="True"/>
       </Debugging>
     </Linking>
     <Other>
       <Verbosity>
         <ShowHints Value="False"/>
-        <ShoLineNum Value="True"/>
-        <ShowDebugInfo Value="True"/>
-        <ShowCond Value="True"/>
       </Verbosity>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
       <CustomOptions Value="-Sa"/>
+      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
-  <Debugging>
-    <Exceptions Count="2">
-      <Item1>
-        <Name Value="RunError(219)"/>
-      </Item1>
-      <Item2>
-        <Name Value="EInvalidCast"/>
-      </Item2>
-    </Exceptions>
-  </Debugging>
 </CONFIG>
