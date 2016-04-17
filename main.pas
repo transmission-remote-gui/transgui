@@ -30,7 +30,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.3.0';
+  AppVersion = '5.3.1';
 
 resourcestring
   sAll = 'All torrents';
@@ -2217,7 +2217,7 @@ var
   t, files: TJSONArray;
   i: integer;
   fs: TFileStreamUTF8;
-  s, OldDownloadDir, IniSec, OldName: string;
+  s, ss, OldDownloadDir, IniSec, OldName: string;
   ok: boolean;
   pFD:FolderData;
 begin
@@ -2300,8 +2300,19 @@ begin
         if i <> 0 then
           args.Add('peer-limit', TJSONIntegerNumber.Create(i));
 
-        args.Add('download-dir', TJSONString.Create((cbDestFolder.Text)));// Lazarus 1.4.4
+        // for larazur 1.4 and up.
+        // data can be in the drop-down list, but no text is selected in the window
+        ss := cbDestFolder.Text;
+        if (ss = '') then begin
+          if (cbDestFolder.Items.Count = 0) then begin
+            ss := s;
+          end else begin
+            cbDestFolder.ItemIndex:=0;
+            ss := cbDestFolder.Text;
+          end;
+        end;
 
+        args.Add('download-dir', TJSONString.Create(ss));// Lazarus 1.4.4
         id:=_AddTorrent(args);
         if id = 0 then
           exit;
