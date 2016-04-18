@@ -1,5 +1,10 @@
+Building Transmission Remote GUI for cfpp2p's transmission daemon:  (https://github.com/cfpp2p/transmisson-remote-gui/wiki/How-to-compile) from the source. To compile the remote GUI you will need to download lazarus-0.9.30-fpc-2.4.2 from the **OLD** releases for your particular platform. _Examples_: [Lazarus Linux i386 DEB / Old releases / Lazarus 0.9.30](https://sourceforge.net/projects/lazarus/files/Lazarus%20Linux%20i386%20DEB/Old%20releases/Lazarus%200.9.30/) [Lazarus Windows 32 bits / Old releases / Lazarus 0.9.30]  (https://sourceforge.net/projects/lazarus/files/Lazarus%20Windows%2032%20bits/Old%20releases/Lazarus%200.9.30/).
+
+*********************************************************************************
+
+
 Transmission Remote GUI.
-Copyright (c) 2008-2011 by Yury Sidorov.
+Copyright (c) 2008-2014 by Yury Sidorov.
 
 Transmission Remote GUI is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
