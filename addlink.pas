@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2010 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ unit AddLink;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ButtonPanel, ExtCtrls, BaseForm;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ButtonPanel, ExtCtrls;
 
 resourcestring
   SNoLink = 'No link was specified.';
@@ -33,7 +33,7 @@ type
 
   { TAddLinkForm }
 
-  TAddLinkForm = class(TBaseForm)
+  TAddLinkForm = class(TForm)
     Buttons: TButtonPanel;
     edLink: TEdit;
     Panel1: TPanel;
@@ -65,8 +65,10 @@ end;
 
 procedure TAddLinkForm.FormCreate(Sender: TObject);
 begin
+  Font.Size:=MainForm.Font.Size;
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@btOKClick;
+  AutoSizeForm(Self);
 end;
 
 initialization

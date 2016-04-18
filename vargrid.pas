@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2010 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ unit VarGrid;
 interface
 
 uses
-  Classes, SysUtils, Grids, VarList, Graphics, Controls, LMessages, Forms, StdCtrls, LCLType, ExtCtrls;
+  Classes, SysUtils, Grids, VarList, Graphics, Controls, LMessages, Forms, StdCtrls;
 
 type
   TVarGrid = class;
@@ -45,15 +45,6 @@ type
   TOnDrawCellEvent = procedure (Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean) of object;
   TOnSortColumnEvent = procedure (Sender: TVarGrid; var ASortCol: integer) of object;
   TCellNotifyEvent = procedure (Sender: TVarGrid; ACol, ARow, ADataCol: integer) of object;
-  TOnQuickSearch = procedure (Sender: TVarGrid; var SearchText: string; var ARow: integer) of object;
-
-  { TVarGridStringEditor }
-
-  TVarGridStringEditor = class(TStringCellEditor)
-  protected
-    procedure msg_SetGrid(var Msg: TGridMessage); message GM_SETGRID;
-    procedure msg_SetBounds(var Msg: TGridMessage); message GM_SETBOUNDS;
-  end;
 
   { TVarGrid }
 
@@ -66,13 +57,9 @@ type
     FItemsChanging: boolean;
     FColumnsMap: array of integer;
     FMultiSelect: boolean;
-    FOnAfterSort: TNotifyEvent;
     FOnCellAttributes: TOnCellAttributes;
     FOnCheckBoxClick: TCellNotifyEvent;
     FOnDrawCell: TOnDrawCellEvent;
-    FOnEditorHide: TNotifyEvent;
-    FOnEditorShow: TNotifyEvent;
-    FOnQuickSearch: TOnQuickSearch;
     FOnTreeButtonClick: TCellNotifyEvent;
     FSelCount: integer;
     FAnchor: integer;
@@ -80,11 +67,6 @@ type
     FOnSortColumn: TOnSortColumnEvent;
     FRow: integer;
     FHintCell: TPoint;
-    FCurSearch: string;
-    FSearchTimer: TTimer;
-    FOldOpt: TGridOptions;
-    FNoDblClick: boolean;
-    FStrEditor: TVarGridStringEditor;
 
     function GetRow: integer;
     function GetRowSelected(RowIndex: integer): boolean;
@@ -103,8 +85,6 @@ type
     procedure CMHintShow(var Message: TCMHintShow); message CM_HINTSHOW;
     function CellNeedsCheckboxBitmaps(const aCol,aRow: Integer): boolean;
     procedure DrawCellCheckboxBitmaps(const aCol,aRow: Integer; const aRect: TRect);
-    function FindRow(const SearchStr: string; StartRow: integer): integer;
-    procedure DoSearchTimer(Sender: TObject);
 
   protected
     procedure SizeChanged(OldColCount, OldRowCount: Integer); override;
@@ -114,7 +94,6 @@ type
     procedure MouseDown(Button: TMouseButton; Shift:TShiftState; X,Y:Integer); override;
     procedure MouseMove(Shift: TShiftState; X,Y: Integer);override;
     procedure KeyDown(var Key : Word; Shift : TShiftState); override;
-    procedure UTF8KeyPress(var UTF8Key: TUTF8Char); override;
     procedure DoOnCellAttributes(ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure HeaderClick(IsColumn: Boolean; index: Integer); override;
     procedure AutoAdjustColumn(aCol: Integer); override;
@@ -127,30 +106,16 @@ type
     procedure SetupCell(ACol, ARow: integer; AState: TGridDrawState; out CellAttribs: TCellAttributes);
     procedure DoOnCheckBoxClick(ACol, ARow: integer);
     procedure DoOnTreeButtonClick(ACol, ARow: integer);
-    function  DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean; override;
-    function  DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean; override;
-    function  DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
-    procedure DrawRow(aRow: Integer); override;
-    function  GetCells(ACol, ARow: Integer): string; override;
-    function  GetEditText(ACol, ARow: Longint): string; override;
-    procedure SetEditText(ACol, ARow: Longint; const Value: string); override;
-    procedure DoEditorShow; override;
-    procedure DoEditorHide; override;
 
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    function EditorByStyle(Style: TColumnButtonStyle): TWinControl; override;
     procedure RemoveSelection;
     procedure SelectAll;
     procedure Sort; reintroduce;
     function ColToDataCol(ACol: integer): integer;
-    function DataColToCol(ADataCol: integer): integer;
-    procedure EnsureSelectionVisible;
-    procedure EnsureRowVisible(ARow: integer);
     procedure BeginUpdate; reintroduce;
     procedure EndUpdate(aRefresh: boolean = true); reintroduce;
-    procedure EditCell(ACol, ARow: integer);
 
     property Items: TVarList read FItems;
     property RowSelected[RowIndex: integer]: boolean read GetRowSelected write SetRowSelected;
@@ -213,8 +178,6 @@ type
     property OnStartDrag;
     property OnUTF8KeyPress;
     property OnResize;
-    property OnGetEditText;
-    property OnSetEditText;
 
     property Images: TImageList read FImages write FImages;
     property MultiSelect: boolean read FMultiSelect write FMultiSelect default False;
@@ -225,19 +188,15 @@ type
     property OnCellAttributes: TOnCellAttributes read FOnCellAttributes write FOnCellAttributes;
     property OnDrawCell: TOnDrawCellEvent read FOnDrawCell write FOnDrawCell;
     property OnSortColumn: TOnSortColumnEvent read FOnSortColumn write FOnSortColumn;
-    property OnAfterSort: TNotifyEvent read FOnAfterSort write FOnAfterSort;
     property OnCheckBoxClick: TCellNotifyEvent read FOnCheckBoxClick write FOnCheckBoxClick;
     property OnTreeButtonClick: TCellNotifyEvent read FOnTreeButtonClick write FOnTreeButtonClick;
-    property OnQuickSearch: TOnQuickSearch read FOnQuickSearch write FOnQuickSearch;
-    property OnEditorShow: TNotifyEvent read FOnEditorShow write FOnEditorShow;
-    property OnEditorHide: TNotifyEvent read FOnEditorHide write FOnEditorHide;
   end;
 
 procedure Register;
 
 implementation
 
-uses Variants, Math, GraphType, lclintf, Themes, types, lclproc
+uses Variants, LCLType, Math, GraphType, lclintf, Themes, types
      {$ifdef LCLcarbon} , carbonproc {$endif LCLcarbon};
 
 const
@@ -247,35 +206,6 @@ const
 procedure Register;
 begin
   RegisterComponents('TransGUI', [TVarGrid]);
-end;
-
-{ TVarGridStringEditor }
-
-procedure TVarGridStringEditor.msg_SetGrid(var Msg: TGridMessage);
-begin
-  inherited;
-  Msg.Options:=Msg.Options and not EO_AUTOSIZE;
-end;
-
-procedure TVarGridStringEditor.msg_SetBounds(var Msg: TGridMessage);
-var
-  ca: TCellAttributes;
-begin
-  with Msg do begin
-    TVarGrid(Grid).SetupCell(Col, Row, [], ca);
-    with CellRect do begin
-      Inc(Left, ca.Indent);
-      if coDrawTreeButton in ca.Options then
-        Inc(Left, Bottom - Top);
-      if coDrawCheckBox in ca.Options then
-        Inc(Left, Bottom - Top);
-      if (ca.ImageIndex <> -1) and Assigned(TVarGrid(Grid).Images) then
-        Inc(Left, TVarGrid(Grid).Images.Width + 2);
-      Dec(Left, 3);
-      Dec(Top, 1);
-      SetBounds(Left, Top, Right-Left, Bottom-Top);
-    end;
-  end;
 end;
 
 { TVarGrid }
@@ -290,10 +220,7 @@ begin
     Perform(CM_MouseLeave, 0, 0);  // Hack to call ResetHotCell to workaround a bug
     OldRows:=RowCount;
     OldCols:=Columns.Count;
-    i:=FItems.RowCnt + FixedRows;
-    if (FRow = -1) and (inherited Row >= i) and (i > FixedRows) then
-      inherited Row:=i - 1;
-    RowCount:=i;
+    RowCount:=FItems.RowCnt + FixedRows;
     if FRow <> -1 then begin
       Row:=FRow;
       FRow:=-1;
@@ -334,17 +261,14 @@ end;
 
 procedure TVarGrid.SetRow(const AValue: integer);
 var
-  i, r: integer;
+  i: integer;
 begin
   if FItems.IsUpdating then
     FRow:=AValue
   else begin
-    r:=AValue + FixedRows;
-    if r <> inherited Row then begin
-      i:=LeftCol;
-      inherited Row:=r;
-      LeftCol:=i;
-    end;
+    i:=LeftCol;
+    inherited Row:=AValue + FixedRows;
+    LeftCol:=i;
   end;
 end;
 
@@ -528,38 +452,6 @@ begin
   DrawGridCheckboxBitmaps(aCol, aRow, aRect, aState);
 end;
 
-function TVarGrid.FindRow(const SearchStr: string; StartRow: integer): integer;
-var
-  i, c: integer;
-  s, ss: string;
-  v: variant;
-begin
-  Result:=-1;
-  if Columns.Count = 0 then
-    exit;
-  c:=SortColumn;
-  if (c < 0) or (c >= Items.ColCnt) then
-    c:=0;
-  ss:=UTF8UpperCase(SearchStr);
-  for i:=StartRow to Items.Count - 1 do begin
-    v:=Items[c, i];
-    if VarIsNull(v) or VarIsEmpty(v) then
-      s:=''
-    else
-      s:=UTF8UpperCase((widestring(v))); // Lazarus 1.4.4
-    if Copy(s, 1, Length(ss)) = ss then begin
-      Result:=i;
-      break;
-    end;
-  end;
-end;
-
-procedure TVarGrid.DoSearchTimer(Sender: TObject);
-begin
-  FSearchTimer.Enabled:=False;
-  FCurSearch:='';
-end;
-
 procedure TVarGrid.SizeChanged(OldColCount, OldRowCount: Integer);
 begin
   if not FItemsChanging and (FItems <> nil) then begin
@@ -573,14 +465,15 @@ end;
 procedure TVarGrid.DrawCell(aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
 var
   ca: TCellAttributes;
-//  ts: TTextStyle;
+  ts: TTextStyle;
   dd, IsHeader: boolean;
-  R, RR: TRect;
+  R: TRect;
   det: TThemedElementDetails;
   sz: TSize;
   i: integer;
 begin
-  RR:=aRect;
+  if RowHeights[aRow] = 0 then
+    exit;
   IsHeader:=(gdFixed in aState) and (aRow=0) and (aCol>=FirstGridColumn);
   if not IsHeader and MultiSelect and (FSelCount > 0) then
     if (aRow >= FixedRows) and (aCol >= FixedCols) and RowSelected[aRow - FixedRows] then
@@ -661,52 +554,20 @@ begin
           FImages.Draw(Canvas, aRect.Left + 2, (aRect.Bottom + aRect.Top - FImages.Height) div 2, ca.ImageIndex, gdeNormal);
           Inc(aRect.Left, FImages.Width + 2);
         end;
-        if ca.Text <> '' then begin
-{
-          if Canvas.TextStyle.Alignment <> taLeftJustify then
-            if (aRect.Right <= aRect.Left) or (aRect.Right - aRect.Left < Canvas.TextWidth(ca.Text) + 9) then begin
-              ts:=Canvas.TextStyle;
-              ts.Alignment:=taLeftJustify;
-              Canvas.TextStyle:=ts;
-            end;
-          DrawCellText(aCol, aRow, aRect, aState, ca.Text);
-}
-          with aRect do begin
-            Inc(Top, 2);
-            Inc(Left, constCellPadding);
-            Dec(Right, constCellPadding);
-            if Right<Left then
-              Right:=Left;
-            if Left>Right then
-              Left:=Right;
-            if Bottom<Top then
-              Bottom:=Top;
-            if Top>Bottom then
-              Top:=Bottom;
-
-            if (Left <> Right) and (Top <> Bottom) then begin
-              if Canvas.TextStyle.Alignment <> taLeftJustify then begin
-                i:=Canvas.TextWidth(ca.Text);
-                if i < Right - Left then
-                  case Canvas.TextStyle.Alignment of
-                    taRightJustify:
-                      Left:=Right - i;
-                    taCenter:
-                      Left:=(Left + Right - i) div 2;
-                  end;
-              end;
-              ExtUTF8Out(Canvas.Handle, Left, Top, ETO_OPAQUE or ETO_CLIPPED, @aRect, PChar(ca.Text), Length(ca.Text), nil);
-            end;
+        if (Canvas.TextStyle.Alignment <> taLeftJustify) and (ca.Text <> '') then
+          if (aRect.Right <= aRect.Left) or (aRect.Right - aRect.Left < Canvas.TextWidth(ca.Text) + 9) then begin
+            ts:=Canvas.TextStyle;
+            ts.Alignment:=taLeftJustify;
+            Canvas.TextStyle:=ts;
           end;
-
-        end;
+        DrawCellText(aCol, aRow, aRect, aState, ca.Text);
       end;
     end;
   end;
   if gdFixed in aState then
-    DefaultDrawCell(aCol, aRow, RR, aState)
+    DefaultDrawCell(aCol, aRow, aRect, aState)
   else
-    DrawCellGrid(aCol, aRow, RR, aState);
+    DrawCellGrid(aCol,aRow,aRect,aState);
 end;
 
 procedure TVarGrid.ColRowMoved(IsColumn: Boolean; FromIndex, ToIndex: Integer);
@@ -719,11 +580,9 @@ procedure TVarGrid.PrepareCanvas(aCol, aRow: Integer; aState: TGridDrawState);
 var
   F: TCustomForm;
 begin
-  if FHideSelection and (FSelCount = 0) then begin
-    F:=GetParentForm(Self);
-    if (F <> nil) and (F.ActiveControl <> Self) then
-      aState:=aState - [gdSelected];
-  end;
+  F:=GetParentForm(Self);
+  if FHideSelection and (FSelCount = 0) and (F <> nil) and (F.ActiveControl <> Self) then
+    aState:=aState - [gdSelected];
   inherited PrepareCanvas(aCol, aRow, aState);
   with Canvas do
     if (Font.Color = clWindow) and (Brush.Color = clHighlight) then begin
@@ -731,7 +590,7 @@ begin
 {$ifdef LCLgtk2}
       Brush.Color:=ColorToRGB(Brush.Color); // Workaround for LCL bug
 {$endif LCLgtk2}
-  end;
+    end;
 end;
 
 procedure TVarGrid.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -760,8 +619,6 @@ begin
       if PtInRect(R, Point(X,Y)) then begin
         DoOnTreeButtonClick(pt.x, pt.y);
         InvalidateCell(pt.x, pt.y);
-        if Assigned(OnDblClick) and (ssDouble in Shift) then
-          FNoDblClick:=True;
       end;
       Inc(RR.Left, RR.Bottom - RR.Top);
     end;
@@ -774,8 +631,6 @@ begin
         DoOnCheckBoxClick(pt.x, pt.y);
         InvalidateCell(pt.x, pt.y);
         CheckBoxClicked:=True;
-        if Assigned(OnDblClick) and (ssDouble in Shift) then
-          FNoDblClick:=True;
       end;
     end;
   end;
@@ -824,14 +679,6 @@ var
   r, k: integer;
   ca: TCellAttributes;
 begin
-  if EditorMode then begin
-    if Key = VK_ESCAPE then begin
-      EditorHide;
-      SetFocus;
-    end;
-    exit;
-  end;
-
   r:=Row;
   k:=Key;
 
@@ -841,19 +688,16 @@ begin
       VK_SPACE:
         if coDrawCheckBox in ca.Options then begin
           DoOnCheckBoxClick(FixedCols, inherited Row);
-          Key:=0;
           exit;
         end;
       VK_LEFT, VK_SUBTRACT:
         if (coDrawTreeButton in ca.Options) and ca.Expanded then begin
           DoOnTreeButtonClick(FixedCols, inherited Row);
-          Key:=0;
           exit;
         end;
       VK_RIGHT, VK_ADD:
         if (coDrawTreeButton in ca.Options) and not ca.Expanded then begin
           DoOnTreeButtonClick(FixedCols, inherited Row);
-          Key:=0;
           exit;
         end;
     end;
@@ -878,35 +722,8 @@ begin
           FAnchor:=-1;
         end;
   end;
-  if (Key = VK_RETURN) and (Shift = []) and Assigned(OnDblClick) then
+  if (Key = VK_RETURN) and Assigned(OnDblClick) then
     OnDblClick(Self);
-end;
-
-procedure TVarGrid.UTF8KeyPress(var UTF8Key: TUTF8Char);
-var
-  i, r: integer;
-begin
-  inherited UTF8KeyPress(UTF8Key);
-  if UTF8Key = #0 then
-    exit;
-  FSearchTimer.Enabled:=False;
-  FSearchTimer.Enabled:=True;
-  if FCurSearch = '' then
-    i:=0
-  else
-    i:=Row;
-  FCurSearch:=FCurSearch + UTF8Key;
-  if Assigned(FOnQuickSearch) then begin
-    r:=i;
-    FOnQuickSearch(Self, FCurSearch, r);
-    if r <> i then
-      Row:=r;
-  end
-  else begin
-    i:=FindRow(FCurSearch, i);
-    if i >= 0 then
-      Row:=i;
-  end;
 end;
 
 procedure TVarGrid.DoOnCellAttributes(ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
@@ -921,7 +738,6 @@ var
 begin
   inherited HeaderClick(IsColumn, index);
   if IsColumn and (FSortColumn >= 0) then begin
-    fGridState:=gsNormal;
     i:=ColToDataCol(index);
     if FSortColumn = i then begin
       if SortOrder = soAscending then
@@ -1009,10 +825,6 @@ procedure TVarGrid.DblClick;
 var
   pt: TPoint;
 begin
-  if FNoDblClick then begin
-    FNoDblClick:=False;
-    exit;
-  end;
   pt:=MouseToCell(ScreenToClient(Mouse.CursorPos));
   if (pt.y < FixedRows) and (pt.y = 0) and (Cursor <> crHSplit) then
     exit;
@@ -1079,7 +891,7 @@ begin
     if ARow >= FixedRows then begin
       v:=Items[dc, ARow - FixedRows];
       if not VarIsNull(v) and not VarIsEmpty(v) then
-        CellAttribs.Text:=(WideString(v)) // Lazarus 1.4.4
+        CellAttribs.Text:=UTF8Encode(WideString(v))
       else
         CellAttribs.Text:='';
     end
@@ -1120,32 +932,6 @@ begin
     FOnTreeButtonClick(Self, ACol - FixedCols, ARow - FixedRows, ColToDataCol(ACol));
 end;
 
-function TVarGrid.DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean;
-begin
-  Result := False;
-  if Assigned(OnMouseWheelDown) then
-    OnMouseWheelDown(Self, Shift, MousePos, Result);
-end;
-
-function TVarGrid.DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean;
-begin
-  Result := False;
-  if Assigned(OnMouseWheelUp) then
-    OnMouseWheelUp(Self, Shift, MousePos, Result);
-end;
-
-function TVarGrid.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean;
-begin
-  Result:=inherited DoMouseWheel(Shift, WheelDelta, MousePos);
-  if not Result then begin
-    if Mouse.WheelScrollLines = -1 then
-      GridMouseWheel(Shift, -WheelDelta*VisibleRowCount div 120)
-    else
-      GridMouseWheel(Shift, -WheelDelta*Mouse.WheelScrollLines div 120);
-    Result := True;
-  end;
-end;
-
 constructor TVarGrid.Create(AOwner: TComponent);
 begin
   FRow:=-1;
@@ -1164,37 +950,12 @@ begin
   ShowHint:=True;
   SetLength(FColumnsMap, 1);
   FColumnsMap[0]:=0;
-  FSearchTimer:=TTimer.Create(Self);
-  with FSearchTimer do begin
-    Enabled:=False;
-    Interval:=1500;
-    OnTimer:=@DoSearchTimer;
-  end;
-  FastEditing:=False;
-  EditorBorderStyle:=bsSingle;
 end;
 
 destructor TVarGrid.Destroy;
 begin
   inherited Destroy;
   FItems.Free;
-end;
-
-function TVarGrid.EditorByStyle(Style: TColumnButtonStyle): TWinControl;
-begin
-  if Style = cbsAuto then begin
-    if FStrEditor = nil then begin
-      FStrEditor:=TVarGridStringEditor.Create(Self);
-      FStrEditor.Name :='VGStringEditor';
-      FStrEditor.Text:='';
-      FStrEditor.Visible:=False;
-      FStrEditor.Align:=alNone;
-      FStrEditor.BorderStyle:=bsSingle;
-    end;
-    Result:=FStrEditor;
-  end
-  else
-    Result:=inherited EditorByStyle(Style);
 end;
 
 procedure TVarGrid.RemoveSelection;
@@ -1226,8 +987,6 @@ begin
       FItems.RowOptions[Row]:=FItems.RowOptions[Row] or roCurRow;
     FItems.Sort(c, SortOrder = soDescending);
     if not FItems.IsUpdating then begin
-      if Assigned(FOnAfterSort) then
-        FOnAfterSort(Self);
       for i:=0 to FItems.Count - 1 do
         if LongBool(FItems.RowOptions[i] and roCurRow) then begin
           FItems.RowOptions[i]:=FItems.RowOptions[i] and not roCurRow;
@@ -1247,41 +1006,6 @@ begin
     Result:=-1;
 end;
 
-function TVarGrid.DataColToCol(ADataCol: integer): integer;
-var
-  i: integer;
-begin
-  for i:=FixedCols to High(FColumnsMap) do
-    if FColumnsMap[i] = ADataCol then begin
-      Result:=i;
-      exit;
-    end;
-  Result:=-1;
-end;
-
-procedure TVarGrid.EnsureSelectionVisible;
-var
-  i: integer;
-begin
-  if FSelCount > 0 then
-    for i:=0 to FItems.Count - 1 do
-      if RowSelected[i] then begin
-        Row:=i;
-        break;
-      end;
-  EnsureRowVisible(Row);
-end;
-
-procedure TVarGrid.EnsureRowVisible(ARow: integer);
-begin
-  ARow:=ARow + FixedRows;
-  if ARow < TopRow then
-    TopRow:=ARow
-  else
-    if ARow > GCache.FullVisibleGrid.Bottom then
-      TopRow:=ARow - (GCache.FullVisibleGrid.Bottom - GCache.FullVisibleGrid.Top);
-end;
-
 procedure TVarGrid.BeginUpdate;
 begin
   inherited BeginUpdate;
@@ -1292,167 +1016,6 @@ procedure TVarGrid.EndUpdate(aRefresh: boolean);
 begin
   inherited EndUpdate(aRefresh);
   Items.EndUpdate;
-end;
-
-procedure TVarGrid.EditCell(ACol, ARow: integer);
-begin
-  SetFocus;
-  FOldOpt:=Options;
-  Options:=Options + [goEditing];
-  EditorShowInCell(DataColToCol(ACol), ARow + FixedRows);
-end;
-
-procedure TVarGrid.DrawRow(aRow: Integer);
-var
-  Gds: TGridDrawState;
-  aCol: Integer;
-  Rs: Boolean;
-  R: TRect;
-  ClipArea: Trect;
-{$ifdef LCLgtk2}
-  Rgn: HRGN;
-{$endif LCLgtk2}
-
-  procedure DoDrawCell;
-  begin
-    with GCache do begin
-      if (aCol=HotCell.x) and (aRow=HotCell.y) and not ((PushedCell.X<>-1) and (PushedCell.Y<>-1)) then begin
-        Include(gds, gdHot);
-        HotCellPainted:=True;
-      end;
-      if ClickCellPushed and (aCol=PushedCell.x) and (aRow=PushedCell.y) then begin
-        Include(gds, gdPushed);
-       end;
-    end;
-{$ifdef LCLgtk2}
-    Rgn := CreateRectRgn(R.Left, R.Top, R.Right, R.Bottom);
-    SelectClipRgn(Canvas.Handle, Rgn);
-    DeleteObject(Rgn);
-{$endif LCLgtk2}
-    DrawCell(aCol, aRow, R, gds);
-  end;
-
-  function HorizontalIntersect(const aRect,bRect: TRect): boolean;
-  begin
-    result := (aRect.Left < bRect.Right) and (aRect.Right > bRect.Left);
-  end;
-
-begin
-  // Upper and Lower bounds for this row
-  R.Left:=0;
-  ColRowToOffSet(False, True, aRow, R.Top, R.Bottom);
-  if R.Bottom <= R.Top then
-    exit;
-  // is this row within the ClipRect?
-  ClipArea := Canvas.ClipRect;
-  if (R.Top >= ClipArea.Bottom) or (R.Bottom < ClipArea.Top) then
-    exit;
-  // Draw columns in this row
-  with GCache.VisibleGrid do begin
-    for aCol:=left to Right do begin
-      ColRowToOffset(True, True, aCol, R.Left, R.Right);
-      if (R.Right <= R.Left) or not HorizontalIntersect(R, ClipArea) then
-        continue;
-      gds := [];
-      Rs := (goRowSelect in Options);
-      if ARow<FixedRows then
-        include(gds, gdFixed)
-      else begin
-        if (aCol=Col)and(aRow=inherited Row) then
-          gds := gds + [gdFocused, gdSelected]
-        else
-        if IsCellSelected[aCol, aRow] then
-          include(gds, gdSelected);
-      end;
-
-      DoDrawCell;
-    end;
-
-    // Draw Fixed Columns
-    For aCol:=0 to FixedCols-1 do begin
-      gds:=[gdFixed];
-      ColRowToOffset(True, True, aCol, R.Left, R.Right);
-      // is this column within the ClipRect?
-      if (R.Right > R.Left) and HorizontalIntersect(R, ClipArea) then
-        DoDrawCell;
-    end;
-
-{$ifdef LCLgtk2}
-    with ClipArea do
-      Rgn := CreateRectRgn(Left, Top, Right, Bottom);
-    SelectClipRgn(Canvas.Handle, Rgn);
-    DeleteObject(Rgn);
-{$endif LCLgtk2}
-
-    // Draw the focus Rect
-    if FocusRectVisible and (ARow=inherited Row) and
-       ((Rs and (ARow>=Top) and (ARow<=Bottom)) or IsCellVisible(Col,ARow))
-    then begin
-      if EditorMode then begin
-      //if EditorAlwaysShown and (FEditor<>nil) and FEditor.Visible then begin
-        //DebugLn('No Draw Focus Rect');
-      end else begin
-        ColRowToOffset(True, True, Col, R.Left, R.Right);
-        // is this column within the ClipRect?
-        if HorizontalIntersect(R, ClipArea) then
-          DrawFocusRect(Col,inherited Row, R);
-      end;
-    end;
-  end;
-end;
-
-function TVarGrid.GetCells(ACol, ARow: Integer): string;
-var
-  dc: integer;
-  v: variant;
-begin
-  Result:='';
-  dc:=ColToDataCol(ACol);
-  if ARow >= FixedRows then begin
-    v:=Items[dc, ARow - FixedRows];
-    if not VarIsNull(v) and not VarIsEmpty(v) then
-      Result:=(WideString(v)); // Lazarus 1.4.4
-  end;
-end;
-
-function TVarGrid.GetEditText(ACol, ARow: Longint): string;
-begin
-  Result:=GetCells(ACol, ARow);
-  if Assigned(OnGetEditText) then
-    OnGetEditText(self, aCol - FixedCols, aRow - FixedRows, Result);
-end;
-
-procedure TVarGrid.SetEditText(ACol, ARow: Longint; const Value: string);
-var
-  dc: integer;
-begin
-  if not (gfEditingDone in GridFlags) then
-    exit;
-  if Assigned(OnSetEditText) then
-    OnSetEditText(Self, aCol - FixedCols, aRow - FixedRows, Value)
-  else begin
-    dc:=ColToDataCol(ACol);
-    if ARow >= FixedRows then
-      Items[dc, ARow - FixedRows]:=UTF8Decode(Value);
-  end;
-end;
-
-procedure TVarGrid.DoEditorShow;
-begin
-  inherited DoEditorShow;
-  if Assigned(OnEditorShow) then
-    OnEditorShow(Self);
-end;
-
-procedure TVarGrid.DoEditorHide;
-begin
-  try
-    inherited DoEditorHide;
-  finally
-    Options:=FOldOpt;
-  end;
-  if Assigned(OnEditorHide) then
-    OnEditorHide(Self);
 end;
 
 end.

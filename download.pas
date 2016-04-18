@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2010 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  httpsend, synsock, ExtCtrls, BaseForm, utils;
+  httpsend, synsock, ExtCtrls;
 
 resourcestring
   SDownloadProgress = '%s of %s downloaded';
@@ -36,7 +36,7 @@ type
 
   { TDownloadForm }
 
-  TDownloadForm = class(TBaseForm)
+  TDownloadForm = class(TForm)
     btCancel: TButton;
     UpdateTimer: TTimer;
     txPercent: TLabel;
@@ -69,7 +69,7 @@ type
     FForm: TDownloadForm;
     FUrl: string;
     FDestFileName: string;
-    FOut: TFileStreamUTF8;
+    FOut: TFileStream;
 
     procedure DoMonitor(Sender: TObject; Writing: Boolean; const Buffer: TMemory; Len: Integer);
     procedure WriteToFile;
@@ -77,28 +77,25 @@ type
     procedure Execute; override;
   end;
 
-function DownloadFile(const URL, DestFolder: string; const DestFileName: string = ''; const DisplayName: string = ''): boolean;
+function DownloadFile(const URL, DestFolder: string; const DestFileName: string = ''): boolean;
 
 implementation
 
 uses Main, rpc;
 
-function DownloadFile(const URL, DestFolder: string; const DestFileName, DisplayName: string): boolean;
+function DownloadFile(const URL, DestFolder: string; const DestFileName: string): boolean;
 var
   s: string;
 begin
   with TDownloadForm.Create(Application) do
   try
     s:=ExtractFileName(StringReplace(URL, '/', DirectorySeparator, [rfReplaceAll]));
-    if DisplayName <> '' then
-      txFileName.Caption:=DisplayName
-    else
-      txFileName.Caption:=s;
+    txFileName.Caption:=s;
     if DestFileName <> '' then
       s:=DestFileName;
     FThread.FUrl:=URL;
     FThread.FDestFileName:=IncludeTrailingPathDelimiter(DestFolder) + s;
-    FThread.Suspended:=False;
+    FThread.Resume;
     Result:=ShowModal = mrOk;
   finally
     Free;
@@ -124,7 +121,7 @@ end;
 procedure TDownloadThread.WriteToFile;
 begin
   if FOut = nil then
-    FOut:=TFileStreamUTF8.Create(FDestFileName, fmCreate);
+    FOut:=TFileStream.Create(FDestFileName, fmCreate);
 
   FHttp.Document.Position:=0;
   FOut.CopyFrom(FHttp.Document, FHttp.Document.Size);
@@ -147,14 +144,9 @@ begin
       end;
       FHttp.Sock.OnMonitor:=@DoMonitor;
       if FHttp.HTTPMethod('GET', FUrl) then begin
-        if FHttp.ResultCode = 200 then begin
-          FForm.FDownloaded:=FHttp.DownloadSize;
-          WriteToFile;
-          res:=2;
-        end
-        else
-          if not Terminated then
-            FForm.FError:=Format('HTTP error: %d', [FHttp.ResultCode]);
+        FForm.FDownloaded:=FHttp.DownloadSize;
+        WriteToFile;
+        res:=2;
       end
       else
         if not Terminated then
@@ -176,8 +168,7 @@ end;
 
 procedure TDownloadForm.FormCreate(Sender: TObject);
 begin
-  bidiMode := GetBiDi(); // PETROV
-
+  Font.Size:=MainForm.Font.Size;
   FThread:=TDownloadThread.Create(True);
   FThread.FreeOnTerminate:=True;
   FThread.FForm:=Self;

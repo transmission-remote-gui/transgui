@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 009.009.001 |
+| Project : Ararat Synapse                                       | 009.008.003 |
 |==============================================================================|
 | Content: Library base                                                        |
 |==============================================================================|
-| Copyright (c)1999-2013, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)1999-2013.                |
+| Portions created by Lukas Gebauer are Copyright (c)1999-2010.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -81,8 +81,6 @@ Core with implementation basic socket classes.
 {$Q-}
 {$H+}
 {$M+}
-{$TYPEDADDRESS OFF}
-
 
 //old Delphi does not have MSWINDOWS define.
 {$IFDEF WIN32}
@@ -113,7 +111,7 @@ uses
 
 const
 
-  SynapseRelease = '40';
+  SynapseRelease = '38';
 
   cLocalhost = '127.0.0.1';
   cAnyHost = '0.0.0.0';
@@ -206,13 +204,7 @@ type
    insert your code after TCP socket has been sucessfully connected.}
   THookAfterConnect = procedure(Sender: TObject) of object;
 
-  {:This procedural type is used for hook OnVerifyCert. By this hook you can
-   insert your additional certificate verification code. Usefull to verify server
-   CN against URL. }
-
-  THookVerifyCert = function(Sender: TObject):boolean of object;
-
- {:This procedural type is used for hook OnHeartbeat. By this hook you can
+  {:This procedural type is used for hook OnHeartbeat. By this hook you can
    call your code repeately during long socket operations.
    You must enable heartbeats by @Link(HeartbeatRate) property!}
   THookHeartbeat = procedure(Sender: TObject) of object;
@@ -244,7 +236,6 @@ type
     LT_SSLv3,
     LT_TLSv1,
     LT_TLSv1_1,
-    LT_TLSv1_2,
     LT_SSHv2
     );
 
@@ -315,10 +306,6 @@ type
     FStopFlag: Boolean;
     FNonblockSendTimeout: Integer;
     FHeartbeatRate: integer;
-    FConnectionTimeout: integer;
-    {$IFNDEF ONCEWINSOCK}
-    FWsaDataOnce: TWSADATA;
-    {$ENDIF}
     function GetSizeRecvBuffer: Integer;
     procedure SetSizeRecvBuffer(Size: Integer);
     function GetSizeSendBuffer: Integer;
@@ -833,10 +820,6 @@ type
     {:Timeout for data sending by non-blocking socket mode.}
     property NonblockSendTimeout: Integer read FNonblockSendTimeout Write FNonblockSendTimeout;
 
-    {:Timeout for @link(Connect) call. Default value 0 means default system timeout.
-     Non-zero value means timeout in millisecond.}
-    property ConnectionTimeout: Integer read FConnectionTimeout write FConnectionTimeout;
-
     {:This event is called by various reasons. It is good for monitoring socket,
      create gauges for data transfers, etc.}
     property OnStatus: THookSocketStatus read FOnStatus write FOnStatus;
@@ -1213,9 +1196,7 @@ type
    Warning: not all methods and propertis can work in all existing SSL plugins!
    Please, read documentation of used SSL plugin.}
   TCustomSSL = class(TObject)
-  private
   protected
-    FOnVerifyCert: THookVerifyCert;
     FSocket: TTCPBlockSocket;
     FSSLEnabled: Boolean;
     FLastError: integer;
@@ -1239,11 +1220,7 @@ type
     FSSHChannelType: string;
     FSSHChannelArg1: string;
     FSSHChannelArg2: string;
-    FCertComplianceLevel: integer;
-    FSNIHost: string;
     procedure ReturnError;
-    procedure SetCertCAFile(const Value: string); virtual;
-    function DoVerifyCert:boolean;
     function CreateSelfSignedCert(Host: string): Boolean; virtual;
   public
     {: Create plugin class. it is called internally from @link(TTCPBlockSocket)}
@@ -1305,19 +1282,12 @@ type
     {:Return subject of remote SSL peer.}
     function GetPeerSubject: string; virtual;
 
-    {:Return Serial number if remote X509 certificate.}
-    function GetPeerSerialNo: integer; virtual;
-
     {:Return issuer certificate of remote SSL peer.}
     function GetPeerIssuer: string; virtual;
 
     {:Return peer name from remote side certificate. This is good for verify,
      if certificate is generated for remote side IP name.}
     function GetPeerName: string; virtual;
-
-    {:Returns has of peer name from remote side certificate. This is good
-     for fast remote side authentication.}
-    function GetPeerNameHash: cardinal; virtual;
 
     {:Return fingerprint of remote SSL peer.}
     function GetPeerFingerprint: string; virtual;
@@ -1405,7 +1375,7 @@ type
 
     {:Used for loading CA certificates from disk file. See to plugin documentation
      if this method is supported and how!}
-    property CertCAFile: string read FCertCAFile write SetCertCAFile;
+    property CertCAFile: string read FCertCAFile write FCertCAFile;
 
     {:If @true, then is verified client certificate. (it is good for writing
      SSL/TLS servers.) When you are not server, but you are client, then if this
@@ -1420,20 +1390,6 @@ type
 
     {:Second argument of channel type for possible SSH connections}
     property SSHChannelArg2: string read FSSHChannelArg2 write FSSHChannelArg2;
-
-    {: Level of standards compliance level
-      (CryptLib: values in cryptlib.pas, -1: use default value )  }
-    property CertComplianceLevel:integer read FCertComplianceLevel write FCertComplianceLevel;
-
-    {:This event is called when verifying the server certificate immediatally after
-     a successfull verification in the ssl library.}
-    property OnVerifyCert: THookVerifyCert read FOnVerifyCert write FOnVerifyCert;
-
-    {: Server Name Identification. Host name to send to server. If empty the host name
-       found in URL will be used, which should be the normal use (http Header Host = SNI Host).
-       The value is cleared after the connection is established.
-      (SNI support requires OpenSSL 0.9.8k or later. Cryptlib not supported, yet )  }
-    property SNIHost:string read FSNIHost write FSNIHost;
   end;
 
   {:@abstract(Default SSL plugin with no SSL support.)
@@ -1553,7 +1509,6 @@ begin
   FStopFlag := False;
   FNonblockSendTimeout := 15000;
   FHeartbeatRate := 0;
-  FConnectionTimeout := 0;
   FOwner := nil;
 {$IFNDEF ONCEWINSOCK}
   if Stub = '' then
@@ -1921,26 +1876,13 @@ end;
 procedure TBlockSocket.Connect(IP, Port: string);
 var
   Sin: TVarSin;
-  b: boolean;
 begin
   SetSin(Sin, IP, Port);
   if FLastError = 0 then
   begin
     if FSocket = INVALID_SOCKET then
       InternalCreateSocket(Sin);
-    if FConnectionTimeout > 0 then
-    begin
-      // connect in non-blocking mode
-      b := NonBlockMode;
-      NonBlockMode := true;
-      SockCheck(synsock.Connect(FSocket, Sin));
-      if (FLastError = WSAEINPROGRESS) OR (FLastError = WSAEWOULDBLOCK) then
-        if not CanWrite(FConnectionTimeout) then
-          FLastError := WSAETIMEDOUT;
-      NonBlockMode := b;
-    end
-    else
-      SockCheck(synsock.Connect(FSocket, Sin));
+    SockCheck(synsock.Connect(FSocket, Sin));
     if FLastError = 0 then
       GetSins;
     FBuffer := '';
@@ -2711,7 +2653,7 @@ end;
 
 function TBlockSocket.ResolveIPToName(IP: string): string;
 begin
-  if not IsIP(IP) and not IsIp6(IP) then
+  if not IsIP(IP) or not IsIp6(IP) then
     IP := ResolveName(IP);
   Result := synsock.ResolveIPToName(IP, FamilyToAF(FFamily), GetSocketProtocol, GetSocketType);
 end;
@@ -3054,11 +2996,7 @@ end;
 
 function TBlockSocket.GetWsaData: TWSAData;
 begin
-  {$IFDEF ONCEWINSOCK}
   Result := WsaDataOnce;
-  {$ELSE}
-  Result := FWsaDataOnce;
-  {$ENDIF}
 end;
 
 function TBlockSocket.GetSocketType: integer;
@@ -3651,8 +3589,7 @@ begin
   else
   begin
     Multicast.imr_multiaddr.S_addr := swapbytes(strtoip(MCastIP));
-//    Multicast.imr_interface.S_addr := INADDR_ANY;
-    Multicast.imr_interface.S_addr := FLocalSin.sin_addr.S_addr;
+    Multicast.imr_interface.S_addr := INADDR_ANY;
     SockCheck(synsock.SetSockOpt(FSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP,
       PAnsiChar(@Multicast), SizeOf(Multicast)));
   end;
@@ -3678,8 +3615,7 @@ begin
   else
   begin
     Multicast.imr_multiaddr.S_addr := swapbytes(strtoip(MCastIP));
-//    Multicast.imr_interface.S_addr := INADDR_ANY;
-    Multicast.imr_interface.S_addr := FLocalSin.sin_addr.S_addr;
+    Multicast.imr_interface.S_addr := INADDR_ANY;
     SockCheck(synsock.SetSockOpt(FSocket, IPPROTO_IP, IP_DROP_MEMBERSHIP,
       PAnsiChar(@Multicast), SizeOf(Multicast)));
   end;
@@ -3907,7 +3843,7 @@ begin
       FHTTPTunnel := s[10] = '2';
   until (s = '') or (s = #$0d);
   if (FLasterror = 0) and not FHTTPTunnel then
-    FLastError := WSAECONNREFUSED;
+    FLastError := WSASYSNOTREADY;
   FHTTPTunnelRemoteIP := IP;
   FHTTPTunnelRemotePort := Port;
   ExceptCheck;
@@ -4151,8 +4087,6 @@ begin
   FSSHChannelType := '';
   FSSHChannelArg1 := '';
   FSSHChannelArg2 := '';
-  FCertComplianceLevel := -1; //default
-  FSNIHost := '';
 end;
 
 procedure TCustomSSL.Assign(const Value: TCustomSSL);
@@ -4173,8 +4107,6 @@ begin
   FPrivateKey := Value.PrivateKey;
   FPFX := Value.PFX;
   FPFXfile := Value.PFXfile;
-  FCertComplianceLevel := Value.CertComplianceLevel;
-  FSNIHost := Value.FSNIHost;
 end;
 
 procedure TCustomSSL.ReturnError;
@@ -4228,11 +4160,6 @@ begin
   Result := integer(SOCKET_ERROR);
 end;
 
-procedure TCustomSSL.SetCertCAFile(const Value: string);
-begin
-  FCertCAFile := Value;
-end;
-
 function TCustomSSL.RecvBuffer(Buffer: TMemory; Len: Integer): Integer;
 begin
   ReturnError;
@@ -4255,19 +4182,9 @@ begin
   Result := '';
 end;
 
-function TCustomSSL.GetPeerSerialNo: integer;
-begin
-  Result := -1;
-end;
-
 function TCustomSSL.GetPeerName: string;
 begin
   Result := '';
-end;
-
-function TCustomSSL.GetPeerNameHash: cardinal;
-begin
-  Result := 0;
 end;
 
 function TCustomSSL.GetPeerIssuer: string;
@@ -4305,17 +4222,6 @@ begin
   Result := 1;
 end;
 
-function TCustomSSL.DoVerifyCert:boolean;
-begin
-  if assigned(OnVerifyCert) then
-  begin
-    result:=OnVerifyCert(Self);
-  end
-  else
-    result:=true;
-end;
-
-
 {======================================================================}
 
 function TSSLNone.LibVersion: String;
@@ -4330,9 +4236,9 @@ end;
 
 {======================================================================}
 
+{$IFDEF ONCEWINSOCK}
 initialization
 begin
-{$IFDEF ONCEWINSOCK}
   if not InitSocketInterface(DLLStackName) then
   begin
     e := ESynapseError.Create('Error loading Socket interface (' + DLLStackName + ')!');
@@ -4341,8 +4247,8 @@ begin
     raise e;
   end;
   synsock.WSAStartup(WinsockLevel, WsaDataOnce);
-{$ENDIF}
 end;
+{$ENDIF}
 
 finalization
 begin

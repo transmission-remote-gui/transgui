@@ -1,11 +1,10 @@
-inherited ColSetupForm: TColSetupForm
-  Left = 401
+object ColSetupForm: TColSetupForm
+  Left = 404
   Height = 326
-  Top = 193
+  Top = 194
   Width = 355
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
-  AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Columns setup'
@@ -15,28 +14,27 @@ inherited ColSetupForm: TColSetupForm
   Constraints.MinWidth = 260
   OnCreate = FormCreate
   Position = poMainFormCenter
-  object Buttons: TButtonPanel[0]
-    Left = 8
+  LCLVersion = '0.9.30.1'
+  object Buttons: TButtonPanel
+    Left = 0
     Height = 36
     Top = 282
-    Width = 339
-    BorderSpacing.Left = 8
-    BorderSpacing.Right = 8
+    Width = 355
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
     OKButton.Name = 'OKButton'
-    OKButton.DefaultCaption = True
+    OKButton.Caption = '&OK'
     HelpButton.Name = 'HelpButton'
-    HelpButton.DefaultCaption = True
+    HelpButton.Caption = '&Help'
     CloseButton.Name = 'CloseButton'
-    CloseButton.DefaultCaption = True
+    CloseButton.Caption = '&Close'
     CancelButton.Name = 'CancelButton'
-    CancelButton.DefaultCaption = True
+    CancelButton.Caption = 'Cancel'
     TabOrder = 1
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]
   end
-  object Panel1: TPanel[1]
+  object Panel1: TPanel
     Left = 8
     Height = 266
     Top = 8
@@ -59,22 +57,26 @@ inherited ColSetupForm: TColSetupForm
       TabOrder = 0
     end
     object btUp: TButton
-      Left = 264
+      Left = 265
       Height = 23
       Top = 0
       Width = 75
       Anchors = [akTop, akRight]
+      AutoSize = True
       Caption = 'Up'
+      Constraints.MinWidth = 75
       OnClick = btUpClick
       TabOrder = 1
     end
     object btDown: TButton
-      Left = 264
+      Left = 265
       Height = 23
       Top = 28
       Width = 75
       Anchors = [akTop, akRight]
+      AutoSize = True
       Caption = 'Down'
+      Constraints.MinWidth = 75
       OnClick = btDownClick
       TabOrder = 2
     end

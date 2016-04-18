@@ -1,41 +1,41 @@
-inherited DaemonOptionsForm: TDaemonOptionsForm
+object DaemonOptionsForm: TDaemonOptionsForm
   Left = 354
-  Height = 345
+  Height = 349
   Top = 216
-  Width = 617
+  Width = 586
   HorzScrollBar.Page = 409
   VertScrollBar.Page = 302
   VertScrollBar.Range = 169
-  AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Transmission options'
-  ClientHeight = 345
-  ClientWidth = 617
+  ClientHeight = 349
+  ClientWidth = 586
   Constraints.MinHeight = 340
   Constraints.MinWidth = 400
   OnCreate = FormCreate
   Position = poMainFormCenter
-  object Page: TPageControl[0]
+  LCLVersion = '0.9.31'
+  object Page: TPageControl
     Left = 8
-    Height = 295
+    Height = 299
     Top = 8
-    Width = 601
-    ActivePage = tabNetwork
+    Width = 570
+    ActivePage = TabQueue
     Align = alClient
     BorderSpacing.Around = 8
-    TabIndex = 1
+    TabIndex = 3
     TabOrder = 0
     object tabDownload: TTabSheet
       Caption = 'Download'
-      ClientHeight = 269
-      ClientWidth = 593
+      ClientHeight = 273
+      ClientWidth = 562
       object txDownloadDir: TLabel
         Left = 8
         Height = 14
         Top = 8
-        Width = 196
-        Caption = 'Default download folder on remote host:'
+        Width = 67
+        Caption = 'Download dir:'
         ParentColor = False
       end
       object txCacheSize: TLabel
@@ -47,20 +47,18 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         ParentColor = False
       end
       object txMB: TLabel
-        Left = 507
+        Left = 476
         Height = 14
         Top = 191
         Width = 15
-        Anchors = [akTop, akRight]
         Caption = 'MB'
         ParentColor = False
       end
       object txMinutes: TLabel
-        Left = 507
+        Left = 476
         Height = 14
         Top = 164
         Width = 38
-        Anchors = [akTop, akRight]
         Caption = 'minutes'
         ParentColor = False
       end
@@ -68,7 +66,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 8
         Height = 21
         Top = 28
-        Width = 577
+        Width = 546
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 0
       end
@@ -76,7 +74,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 8
         Height = 17
         Top = 80
-        Width = 159
+        Width = 161
         Caption = 'Directory for incomplete files:'
         OnClick = cbIncompleteDirClick
         TabOrder = 2
@@ -85,7 +83,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 8
         Height = 21
         Top = 103
-        Width = 577
+        Width = 546
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 3
       end
@@ -93,7 +91,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 8
         Height = 17
         Top = 56
-        Width = 203
+        Width = 205
         Caption = 'Add .part extension to incomplete files'
         TabOrder = 1
       end
@@ -101,17 +99,16 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 8
         Height = 17
         Top = 134
-        Width = 71
+        Width = 73
         Caption = 'Seed ratio:'
         OnClick = cbSeedRatioClick
         TabOrder = 4
       end
       object edSeedRatio: TFloatSpinEdit
-        Left = 431
+        Left = 400
         Height = 21
         Top = 134
         Width = 66
-        Anchors = [akTop, akRight]
         Increment = 0.1
         MaxValue = 9999
         MinValue = 0
@@ -119,11 +116,10 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Value = 0
       end
       object edCacheSize: TSpinEdit
-        Left = 431
+        Left = 400
         Height = 21
         Top = 188
         Width = 66
-        Anchors = [akTop, akRight]
         MaxValue = 9999
         TabOrder = 8
       end
@@ -131,17 +127,16 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 8
         Height = 17
         Top = 163
-        Width = 170
+        Width = 172
         Caption = 'Stop seeding when inactive for:'
         OnClick = cbIdleSeedLimitClick
         TabOrder = 6
       end
       object edIdleSeedLimit: TSpinEdit
-        Left = 431
+        Left = 400
         Height = 21
         Top = 161
         Width = 66
-        Anchors = [akTop, akRight]
         MaxValue = 999999
         MinValue = 1
         TabOrder = 7
@@ -149,9 +144,9 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
       end
     end
     object tabNetwork: TTabSheet
-      Caption = 'Network (WAN)'
-      ClientHeight = 269
-      ClientWidth = 593
+      Caption = 'Network'
+      ClientHeight = 273
+      ClientWidth = 562
       object txPort: TLabel
         Left = 8
         Height = 14
@@ -190,7 +185,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 192
         Height = 21
         Top = 66
-        Width = 393
+        Width = 362
         Anchors = [akTop, akLeft, akRight]
         ItemHeight = 13
         Style = csDropDownList
@@ -200,7 +195,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 292
         Height = 17
         Top = 38
-        Width = 128
+        Width = 130
         Caption = 'Enable port forwarding'
         TabOrder = 3
       end
@@ -208,7 +203,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 192
         Height = 17
         Top = 126
-        Width = 125
+        Width = 127
         Caption = 'Enable Peer Exchange'
         TabOrder = 6
       end
@@ -218,7 +213,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Top = 96
         Width = 66
         MaxValue = 99999
-        MinValue = 1
+        MinValue = 0
         TabOrder = 5
         Value = 1
       end
@@ -226,7 +221,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 192
         Height = 17
         Top = 146
-        Width = 73
+        Width = 75
         Caption = 'Enable DHT'
         TabOrder = 7
       end
@@ -234,8 +229,8 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 292
         Height = 17
         Top = 13
-        Width = 211
-        Caption = 'Pick random port on Transmission launch'
+        Width = 195
+        Caption = 'Peek random port on daemon launch'
         OnClick = cbRandomPortClick
         TabOrder = 1
       end
@@ -252,7 +247,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 8
         Height = 17
         Top = 210
-        Width = 94
+        Width = 96
         Caption = 'Enable blocklist:'
         OnClick = cbBlocklistClick
         TabOrder = 10
@@ -261,7 +256,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 8
         Height = 21
         Top = 233
-        Width = 577
+        Width = 546
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 11
       end
@@ -269,7 +264,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 192
         Height = 17
         Top = 166
-        Width = 152
+        Width = 154
         Caption = 'Enable Local Peer Discovery'
         TabOrder = 8
       end
@@ -277,27 +272,27 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 192
         Height = 17
         Top = 186
-        Width = 71
+        Width = 73
         Caption = 'Enable µTP'
         TabOrder = 9
       end
     end
     object tabBandwidth: TTabSheet
       Caption = 'Bandwidth'
-      ClientHeight = 269
-      ClientWidth = 593
+      ClientHeight = 273
+      ClientWidth = 562
       object gbBandwidth: TGroupBox
         Left = 8
         Height = 76
         Top = 6
-        Width = 576
+        Width = 545
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Global bandwidth settings'
         ClientHeight = 58
-        ClientWidth = 572
+        ClientWidth = 541
         TabOrder = 0
         object txKbs1: TLabel
-          Left = 536
+          Left = 505
           Height = 14
           Top = 5
           Width = 22
@@ -306,7 +301,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
           ParentColor = False
         end
         object txKbs2: TLabel
-          Left = 536
+          Left = 505
           Height = 14
           Top = 32
           Width = 22
@@ -318,13 +313,13 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
           Left = 8
           Height = 17
           Top = 4
-          Width = 147
+          Width = 149
           Caption = 'Maximum download speed:'
           OnClick = cbMaxDownClick
           TabOrder = 0
         end
         object edMaxDown: TSpinEdit
-          Left = 455
+          Left = 424
           Height = 21
           Top = 2
           Width = 66
@@ -337,13 +332,13 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
           Left = 8
           Height = 17
           Top = 30
-          Width = 133
+          Width = 135
           Caption = 'Maximum upload speed:'
           OnClick = cbMaxUpClick
           TabOrder = 2
         end
         object edMaxUp: TSpinEdit
-          Left = 455
+          Left = 424
           Height = 21
           Top = 28
           Width = 66
@@ -357,14 +352,14 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         Left = 8
         Height = 175
         Top = 86
-        Width = 576
+        Width = 545
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Alternate bandwidth settings'
         ClientHeight = 157
-        ClientWidth = 572
+        ClientWidth = 541
         TabOrder = 1
         object txKbs3: TLabel
-          Left = 536
+          Left = 505
           Height = 14
           Top = 5
           Width = 22
@@ -373,7 +368,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
           ParentColor = False
         end
         object txKbs4: TLabel
-          Left = 536
+          Left = 505
           Height = 14
           Top = 32
           Width = 22
@@ -424,7 +419,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
           ParentColor = False
         end
         object edAltDown: TSpinEdit
-          Left = 455
+          Left = 424
           Height = 21
           Top = 2
           Width = 66
@@ -434,7 +429,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
           TabOrder = 0
         end
         object edAltUp: TSpinEdit
-          Left = 455
+          Left = 424
           Height = 21
           Top = 28
           Width = 66
@@ -447,7 +442,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
           Left = 8
           Height = 17
           Top = 54
-          Width = 177
+          Width = 179
           Caption = 'Use alternate bandwidth settings'
           TabOrder = 2
         end
@@ -455,7 +450,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
           Left = 8
           Height = 17
           Top = 76
-          Width = 252
+          Width = 254
           Caption = 'Apply alternate bandwidth settings automatically'
           OnClick = cbAutoAltClick
           TabOrder = 3
@@ -486,98 +481,113 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         end
       end
     end
-    object tabQueue: TTabSheet
+    object TabQueue: TTabSheet
       Caption = 'Queue'
-      ClientHeight = 269
-      ClientWidth = 593
-      object cbDownQueue: TCheckBox
-        Left = 8
+      ClientHeight = 273
+      ClientWidth = 562
+      object txQueueDownSize: TLabel
+        Left = 196
+        Height = 14
+        Top = 19
+        Width = 85
+        Caption = 'Queue Down Size'
+        ParentColor = False
+      end
+      object txQueueUpSize: TLabel
+        Left = 196
+        Height = 14
+        Top = 77
+        Width = 71
+        Caption = 'Queue Up Size'
+        ParentColor = False
+      end
+      object txStalledMinTime: TLabel
+        Left = 14
+        Height = 14
+        Top = 164
+        Width = 58
+        Caption = 'Stalled Time'
+        ParentColor = False
+      end
+      object cbQueueDownEnabled: TCheckBox
+        Left = 11
         Height = 17
-        Top = 12
+        Top = 19
         Width = 123
-        Caption = 'Download queue size:'
+        Caption = 'Queue Down Enabled'
         TabOrder = 0
       end
-      object edDownQueue: TSpinEdit
-        Left = 431
+      object cbQueueUpEnabled: TCheckBox
+        Left = 11
+        Height = 17
+        Top = 77
+        Width = 109
+        Caption = 'Queue Up Enabled'
+        TabOrder = 2
+      end
+      object edQueueDown: TSpinEdit
+        Left = 300
         Height = 21
-        Top = 10
+        Top = 15
         Width = 66
-        Anchors = [akTop, akRight]
         MaxValue = 999999
         MinValue = 1
         TabOrder = 1
         Value = 1
       end
-      object cbUpQueue: TCheckBox
-        Left = 8
-        Height = 17
-        Top = 40
-        Width = 109
-        Caption = 'Upload queue size:'
-        TabOrder = 2
-      end
-      object edUpQueue: TSpinEdit
-        Left = 431
+      object edIdleStalled: TSpinEdit
+        Left = 300
         Height = 21
-        Top = 38
+        Top = 162
         Width = 66
-        Anchors = [akTop, akRight]
-        MaxValue = 999999
-        MinValue = 1
-        TabOrder = 3
-        Value = 1
-      end
-      object cbStalled: TCheckBox
-        Left = 8
-        Height = 17
-        Hint = 'Torrents that are idle for N minuets aren''t counted toward the Download queue or Upload queue'
-        Top = 68
-        Width = 251
-        Caption = 'Consider active torrents as stalled when idle for:'
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 4
-      end
-      object edStalledTime: TSpinEdit
-        Left = 431
-        Height = 21
-        Top = 66
-        Width = 66
-        Anchors = [akTop, akRight]
         MaxValue = 999999
         MinValue = 1
         TabOrder = 5
         Value = 1
       end
-      object txMinutes1: TLabel
-        Left = 507
+      object txMinutes2: TLabel
+        Left = 372
         Height = 14
-        Top = 69
+        Top = 164
         Width = 38
-        Anchors = [akTop, akRight]
         Caption = 'minutes'
         ParentColor = False
       end
+      object edQueueUp: TSpinEdit
+        Left = 300
+        Height = 21
+        Top = 70
+        Width = 66
+        MaxValue = 999999
+        MinValue = 1
+        TabOrder = 3
+        Value = 1
+      end
+      object cbQueueStalledEnabled: TCheckBox
+        Left = 11
+        Height = 17
+        Top = 138
+        Width = 128
+        Caption = 'Queue Stalled Enabled'
+        TabOrder = 4
+      end
     end
   end
-  object Buttons: TButtonPanel[1]
-    Left = 8
+  object Buttons: TButtonPanel
+    Left = 0
     Height = 26
-    Top = 311
-    Width = 601
-    BorderSpacing.Left = 8
-    BorderSpacing.Right = 8
+    Top = 315
+    Width = 586
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
     OKButton.Name = 'OKButton'
-    OKButton.DefaultCaption = True
+    OKButton.Caption = '&OK'
     HelpButton.Name = 'HelpButton'
-    HelpButton.DefaultCaption = True
+    HelpButton.Caption = '&Help'
     CloseButton.Name = 'CloseButton'
-    CloseButton.DefaultCaption = True
+    CloseButton.Caption = '&Close'
     CancelButton.Name = 'CancelButton'
-    CancelButton.DefaultCaption = True
+    CancelButton.Caption = 'Cancel'
     TabOrder = 1
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]

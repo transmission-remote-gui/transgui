@@ -1,24 +1,24 @@
-inherited AddTorrentForm: TAddTorrentForm
-  Left = 494
-  Height = 488
-  Top = 276
+object AddTorrentForm: TAddTorrentForm
+  Left = 376
+  Height = 478
+  Top = 186
   Width = 497
   HorzScrollBar.Page = 505
   VertScrollBar.Page = 404
   VertScrollBar.Range = 92
-  AutoSize = True
   BorderIcons = [biSystemMenu]
   Caption = 'Add new torrent'
-  ClientHeight = 488
+  ClientHeight = 478
   ClientWidth = 497
   Constraints.MinHeight = 300
   Constraints.MinWidth = 470
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  object gbSaveAs: TGroupBox[0]
+  LCLVersion = '0.9.31'
+  object gbSaveAs: TGroupBox
     Left = 8
-    Height = 176
+    Height = 92
     Top = 8
     Width = 481
     Align = alTop
@@ -26,58 +26,65 @@ inherited AddTorrentForm: TAddTorrentForm
     BorderSpacing.Top = 8
     BorderSpacing.Right = 8
     Caption = ' '
-    ClientHeight = 156
+    ClientHeight = 74
     ClientWidth = 477
     TabOrder = 0
     object txDestFolder: TLabel
       Left = 10
-      Height = 15
+      Height = 14
       Top = 0
-      Width = 97
+      Width = 90
       Caption = 'Destination folder:'
       ParentColor = False
     end
     object txPeerLimit: TLabel
-      Left = 333
-      Height = 15
-      Top = 131
-      Width = 53
+      Left = 340
+      Height = 14
+      Top = 49
+      Width = 48
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
       Caption = 'Peer limit:'
       ParentColor = False
     end
+    object txCheatMode: TLabel
+      Left = 340
+      Height = 14
+      Top = 63
+      Width = 48
+      Alignment = taRightJustify
+      Anchors = [akTop, akRight]
+      Caption = 'To change MODES, UN-Check Start torrent then set modes with Torrent properties'
+      ParentColor = False
+    end
     object cbDestFolder: TComboBox
       Left = 10
-      Height = 23
+      Height = 21
       Top = 16
       Width = 360
       Anchors = [akTop, akLeft, akRight]
-      DropDownCount = 60
-      ItemHeight = 15
-      OnChange = cbDestFolderChange
-      Sorted = True
+      ItemHeight = 13
       TabOrder = 0
     end
     object cbStartTorrent: TCheckBox
-      Left = 8
-      Height = 19
-      Top = 129
-      Width = 83
+      Left = 10
+      Height = 17
+      Top = 47
+      Width = 81
       Caption = 'Start torrent'
       Checked = True
       State = cbChecked
-      TabOrder = 3
+      TabOrder = 2
     end
     object edPeerLimit: TSpinEdit
-      Left = 402
-      Height = 23
-      Top = 128
+      Left = 404
+      Height = 21
+      Top = 46
       Width = 62
       Anchors = [akTop, akRight]
-      MaxValue = 999
-      MinValue = 1
-      TabOrder = 4
+      MaxValue = 989
+      MinValue = 0
+      TabOrder = 3
       Value = 1
     end
     object btBrowse: TButton
@@ -90,51 +97,11 @@ inherited AddTorrentForm: TAddTorrentForm
       OnClick = btBrowseClick
       TabOrder = 1
     end
-    object txSaveAs: TLabel
-      Left = 10
-      Height = 15
-      Top = 80
-      Width = 41
-      Caption = 'Save as:'
-      ParentColor = False
-    end
-    object edSaveAs: TEdit
-      Left = 10
-      Height = 23
-      Top = 96
-      Width = 456
-      Anchors = [akTop, akLeft, akRight]
-      OnChange = edSaveAsChange
-      TabOrder = 2
-    end
-    object edExtension: TEdit
-      Left = 8
-      Height = 23
-      Hint = 'for example: *.avi *.mkv tom*jerry*.avi'
-      Top = 56
-      Width = 456
-      Anchors = [akTop, akLeft, akRight]
-      OnChange = edSaveAsChange
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 5
-    end
-    object txSaveAs1: TLabel
-      Left = 10
-      Height = 15
-      Hint = 'for example: *.avi *.mkv tom*jerry*.avi'
-      Top = 40
-      Width = 59
-      Caption = 'Template:  '
-      ParentColor = False
-      ParentShowHint = False
-      ShowHint = True
-    end
   end
-  object gbContents: TGroupBox[1]
+  object gbContents: TGroupBox
     Left = 8
-    Height = 258
-    Top = 188
+    Height = 366
+    Top = 104
     Width = 481
     Align = alClient
     BorderSpacing.Left = 8
@@ -142,14 +109,14 @@ inherited AddTorrentForm: TAddTorrentForm
     BorderSpacing.Right = 8
     BorderSpacing.Bottom = 8
     Caption = 'Torrent contents'
-    ClientHeight = 238
+    ClientHeight = 348
     ClientWidth = 477
     TabOrder = 1
     object txDiskSpace: TLabel
       Left = 10
-      Height = 15
+      Height = 14
       Top = 20
-      Width = 82
+      Width = 79
       Caption = 'Free disk space:'
       ParentColor = False
     end
@@ -162,7 +129,7 @@ inherited AddTorrentForm: TAddTorrentForm
     end
     object lvFiles: TVarGrid
       Left = 10
-      Height = 185
+      Height = 271
       Top = 40
       Width = 456
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -170,21 +137,28 @@ inherited AddTorrentForm: TAddTorrentForm
         item
           ReadOnly = True
           Title.Caption = 'File name'
+          
           Width = 350
         end      
         item
           ReadOnly = True
           Title.Caption = 'Size'
+          
           Width = 80
+        end      
+        item
+          Title.Caption = ' '
+          
+          Visible = False
         end>
       FixedCols = 0
-      Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goEditing, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
+      Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goEditing, goRowSelect, goThumbTracking, goDblClickAutoSize]
       RowCount = 1
       TabOrder = 0
       Images = MainForm.ImageList16
       MultiSelect = True
-      SortColumn = 0
       HideSelection = True
+      OnCellAttributes = lvFilesCellAttributes
     end
     object btSelectAll: TButton
       Left = 206
@@ -208,34 +182,35 @@ inherited AddTorrentForm: TAddTorrentForm
       OnClick = btSelectNoneClick
       TabOrder = 2
     end
-  end
-  object Buttons: TButtonPanel[2]
-    Left = 8
-    Height = 26
-    Top = 454
-    Width = 481
-    BorderSpacing.Left = 8
-    BorderSpacing.Right = 8
-    BorderSpacing.Bottom = 8
-    BorderSpacing.Around = 0
-    OKButton.Name = 'OKButton'
-    OKButton.DefaultCaption = True
-    OKButton.OnClick = OKButtonClick
-    HelpButton.Name = 'HelpButton'
-    HelpButton.DefaultCaption = True
-    CloseButton.Name = 'CloseButton'
-    CloseButton.DefaultCaption = True
-    CancelButton.Name = 'CancelButton'
-    CancelButton.DefaultCaption = True
-    TabOrder = 2
-    Spacing = 8
-    ShowButtons = [pbOK, pbCancel]
-    ShowBevel = False
-  end
-  object DiskSpaceTimer: TTimer[3]
-    Enabled = False
-    OnTimer = DiskSpaceTimerTimer
-    left = 44
-    top = 248
+    object Buttons: TButtonPanel
+      Left = 0
+      Height = 26
+      Top = 314
+      Width = 477
+      BorderSpacing.Bottom = 8
+      BorderSpacing.Around = 0
+      OKButton.Name = 'OKButton'
+      OKButton.Caption = '&OK'
+      HelpButton.Name = 'HelpButton'
+      HelpButton.Caption = '&Help'
+      CloseButton.Name = 'CloseButton'
+      CloseButton.Caption = '&Close'
+      CancelButton.Name = 'CancelButton'
+      CancelButton.Caption = 'Cancel'
+      TabOrder = 3
+      Spacing = 8
+      ShowButtons = [pbOK, pbCancel]
+      ShowBevel = False
+      object cbSkipMultiTorrents: TCheckBox
+        Left = 135
+        Height = 26
+        Top = 0
+        Width = 174
+        Align = alCustom
+        Caption = 'Skip this dialog for next torrents'
+        TabOrder = 4
+        Visible = False
+      end
+    end
   end
 end

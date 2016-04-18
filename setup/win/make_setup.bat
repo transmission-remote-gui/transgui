@@ -3,20 +3,13 @@
 if (%1) == () goto usage
 if (%2) == () goto usage
 
-set path=%1;%1\fpc\3.0.0\bin\i386-win32;%path%
-set LAZARUS_DIR=%1
-
-make -C ../.. clean all LAZARUS_DIR=%1
+make -C ../.. LAZARUS_DIR="%1"
 if errorlevel 1 goto err
 
-if not (%CODECERT%) == () (
-  signtool.exe sign /d "Transmission Remote GUI" /du "https://github.com/leonsoft-kras/transmisson-remote-gui" /f "%CODECERT%" /v ..\..\transgui.exe
-  if errorlevel 1 goto err
+set ISC=%~2
 )
 
-set ISC=%~2
-
-"%ISC%\iscc.exe" "/ssigntool=signtool.exe $p" setup.iss
+"%ISC%\iscc.exe" setup.iss
 if errorlevel 1 goto err
 
 exit /b 0

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -10,18 +10,15 @@
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
-      <UseAppBundle Value="False"/>
       <UseXPManifest Value="True"/>
-      <XPManifest>
-        <DpiAware Value="True"/>
-      </XPManifest>
       <Icon Value="0"/>
     </General>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MajorVersionNr Value="5"/>
-      <MinorVersionNr Value="3"/>
-      <StringTable CompanyName="Yury Sidorov" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2016 by Yury Sidorov &amp; Alexander Petrov" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion="5.3.0"/>
+      <MajorVersionNr Value="3"/>
+      <MinorVersionNr Value="2"/>
+      <RevisionNr Value="1"/>
+      <StringTable CompanyName="Yury Sidorov" ProductName="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2011 by Yury Sidorov" ProductVersion="" FileDescription="Transmission Remote GUI" OriginalFilename="transgui.exe"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="default" Default="True"/>
@@ -35,7 +32,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--home=home"/>
+        <CommandLineParams Value="--home=C:\Develop\Delphi\TransGUI\units\home"/>
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
@@ -48,28 +45,28 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="19">
+    <Units Count="18">
       <Unit0>
         <Filename Value="transgui.lpr"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="transgui"/>
       </Unit0>
       <Unit1>
         <Filename Value="main.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainForm"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main"/>
       </Unit1>
       <Unit2>
         <Filename Value="rpc.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="rpc"/>
       </Unit2>
       <Unit3>
         <Filename Value="addtorrent.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AddTorrentForm"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="AddTorrent"/>
       </Unit3>
@@ -77,19 +74,18 @@
         <Filename Value="connoptions.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ConnOptionsForm"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ConnOptions"/>
       </Unit4>
       <Unit5>
         <Filename Value="varlist.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="varlist"/>
       </Unit5>
       <Unit6>
         <Filename Value="torrprops.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="TorrPropsForm"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TorrProps"/>
       </Unit6>
@@ -97,7 +93,6 @@
         <Filename Value="daemonoptions.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DaemonOptionsForm"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="DaemonOptions"/>
       </Unit7>
@@ -105,7 +100,6 @@
         <Filename Value="about.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AboutForm"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="About"/>
       </Unit8>
@@ -118,20 +112,20 @@
         <Filename Value="download.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DownloadForm"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="download"/>
       </Unit10>
       <Unit11>
         <Filename Value="colsetup.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ColSetupForm"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ColSetup"/>
       </Unit11>
       <Unit12>
         <Filename Value="utils.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="utils"/>
       </Unit12>
       <Unit13>
         <Filename Value="restranslator.pas"/>
@@ -142,7 +136,6 @@
         <Filename Value="addlink.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AddLinkForm"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="AddLink"/>
       </Unit14>
@@ -150,7 +143,6 @@
         <Filename Value="movetorrent.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MoveTorrentForm"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="MoveTorrent"/>
       </Unit15>
@@ -158,7 +150,6 @@
         <Filename Value="addtracker.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AddTrackerForm"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="AddTracker"/>
       </Unit16>
@@ -166,22 +157,13 @@
         <Filename Value="options.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="OptionsForm"/>
-        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Options"/>
       </Unit17>
-      <Unit18>
-        <Filename Value="baseform.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="BaseForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="BaseForm"/>
-      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="11"/>
+    <Version Value="9"/>
     <PathDelim Value="\"/>
     <SearchPaths>
       <IncludeFiles Value="synapse\source\lib"/>
@@ -195,13 +177,24 @@
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
-      <SmallerCode Value="True"/>
+      <Checks>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="False"/>
-        <DebugInfoType Value="dsStabs"/>
+        <UseLineInfoUnit Value="False"/>
       </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
     </Linking>
     <Other>
       <Verbosity>

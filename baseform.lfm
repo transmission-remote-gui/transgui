@@ -1,7 +1,0 @@
-object BaseForm: TBaseForm
-  Left = 234
-  Height = 240
-  Top = 132
-  Width = 320
-  LCLVersion = '1.0.15.0'
-end

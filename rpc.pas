@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2010 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ const
   DefaultRpcPath = '/transmission/rpc';
 
 type
-  TAdvInfoType = (aiNone, aiGeneral, aiFiles, aiPeers, aiTrackers, aiStats);
+  TAdvInfoType = (aiNone, aiGeneral, aiFiles, aiPeers, aiTrackers);
   TRefreshTypes = (rtTorrents, rtDetails, rtSession);
   TRefreshType = set of TRefreshTypes;
 
@@ -56,7 +56,6 @@ type
     procedure GetPeers(TorrentId: integer);
     procedure GetFiles(TorrentId: integer);
     procedure GetTrackers(TorrentId: integer);
-    procedure GetStats;
     procedure GetInfo(TorrentId: integer);
     procedure GetSessionInfo;
 
@@ -65,7 +64,6 @@ type
     procedure DoFillFilesList;
     procedure DoFillInfo;
     procedure DoFillTrackersList;
-    procedure DoFillStats;
     procedure DoFillSessionInfo;
     procedure NotifyCheckStatus;
     procedure CheckStatusHandler(Data: PtrInt);
@@ -138,9 +136,6 @@ type
     property RpcPath: string read FRpcPath write FRpcPath;
   end;
 
-var
-  RemotePathDelimiter: char = '/';
-
 implementation
 
 uses Main, ssl_openssl_lib, synafpc, blcksock;
@@ -150,8 +145,6 @@ uses Main, ssl_openssl_lib, synafpc, blcksock;
 procedure TRpcThread.Execute;
 var
   t, tt: TDateTime;
-  i: integer;
-  ai: TAdvInfoType;
 begin
   try
     GetSessionInfo;
@@ -179,28 +172,19 @@ begin
         end
         else
           if rtDetails in FRpc.RefreshNow then begin
-            i:=CurTorrentId;
-            ai:=AdvInfo;
-            if i <> 0 then begin
-              case ai of
+            if CurTorrentId <> 0 then begin
+              case AdvInfo of
                 aiGeneral:
-                  GetInfo(i);
+                  GetInfo(CurTorrentId);
                 aiPeers:
-                  GetPeers(i);
+                  GetPeers(CurTorrentId);
                 aiFiles:
-                  GetFiles(i);
+                  GetFiles(CurTorrentId);
                 aiTrackers:
-                  GetTrackers(i);
+                  GetTrackers(CurTorrentId);
               end;
             end;
-
-            case ai of
-              aiStats:
-                GetStats;
-            end;
-
-            if (i = CurTorrentId) and (ai = AdvInfo) then
-              Exclude(FRpc.RefreshNow, rtDetails);
+            Exclude(FRpc.RefreshNow, rtDetails);
           end
           else
             if rtSession in FRpc.RefreshNow then begin
@@ -255,7 +239,7 @@ end;
 procedure TRpcThread.DoFillFilesList;
 var
   t: TJSONObject;
-  dir: widestring;
+  dir: string;
 begin
   if ResultData = nil then begin
     MainForm.ClearDetailsInfo;
@@ -266,7 +250,7 @@ begin
     dir:=t.Strings['downloadDir']
   else
     dir:='';
-  MainForm.FillFilesList(t.Integers['id'], t.Arrays['files'], t.Arrays['priorities'], t.Arrays['wanted'], dir);
+  MainForm.FillFilesList(t.Arrays['files'], t.Arrays['priorities'], t.Arrays['wanted'], dir);
 end;
 
 procedure TRpcThread.DoFillInfo;
@@ -276,12 +260,11 @@ end;
 
 procedure TRpcThread.DoFillTrackersList;
 begin
+  if ResultData = nil then begin
+    MainForm.ClearDetailsInfo;
+    exit;
+  end;
   MainForm.FillTrackersList(ResultData as TJSONObject);
-end;
-
-procedure TRpcThread.DoFillStats;
-begin
-  MainForm.FillStatistics(ResultData as TJSONObject);
 end;
 
 procedure TRpcThread.DoFillSessionInfo;
@@ -303,7 +286,7 @@ end;
 
 procedure TRpcThread.GetSessionInfo;
 var
-  req, args, args2: TJSONObject;
+  req, args: TJSONObject;
   s: string;
 begin
   req:=TJSONObject.Create;
@@ -322,26 +305,7 @@ begin
       else
         s:='';
       FRpc.InfoStatus:=Format(sTransmissionAt, [s, FRpc.Http.TargetHost, FRpc.Http.TargetPort]);
-      if FRpc.RPCVersion >= 15 then begin
-        // Requesting free space in download dir
-        req.Free;
-        req:=TJSONObject.Create;
-        req.Add('method', 'free-space');
-        args2:=TJSONObject.Create;
-        try
-          args2.Add('path', args.Strings['download-dir']);
-          req.Add('arguments', args2);
-          args2:=FRpc.SendRequest(req);
-          if args2 <> nil then
-            args.Floats['download-dir-free-space']:=args2.Floats['size-bytes']
-          else begin
-            args.Floats['download-dir-free-space']:=-1;
-            FRpc.Status:='';
-          end;
-        finally
-          args2.Free;
-        end;
-      end;
+
       ResultData:=args;
       if not Terminated then
         Synchronize(@DoFillSessionInfo);
@@ -392,6 +356,8 @@ begin
       if i >= 0 then
         sl.Delete(i);
 
+    if FRpc.RPCVersion>=14 then sl.Add('isStalled');
+
     SetLength(ExtraFields, sl.Count);
     for i:=0 to sl.Count - 1 do
       ExtraFields[i]:=sl[i];
@@ -400,8 +366,7 @@ begin
   end;
 
   args:=FRpc.RequestInfo(0, ['id', 'name', 'status', 'errorString', 'announceResponse', 'recheckProgress',
-                             'sizeWhenDone', 'leftUntilDone', 'rateDownload', 'rateUpload', 'trackerStats',
-                             'metadataPercentComplete'], ExtraFields);
+                             'sizeWhenDone', 'leftUntilDone', 'rateDownload', 'rateUpload', 'trackerStats', 'uploadedEver'], ExtraFields);
   try
     if (args <> nil) and not Terminated then begin
       FRpc.RequestFullInfo:=False;
@@ -440,7 +405,7 @@ var
   args: TJSONObject;
   t: TJSONArray;
 begin
-  args:=FRpc.RequestInfo(TorrentId, ['id', 'files','priorities','wanted','downloadDir']);
+  args:=FRpc.RequestInfo(TorrentId, ['files','priorities','wanted','downloadDir']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
@@ -477,39 +442,20 @@ begin
   end;
 end;
 
-procedure TRpcThread.GetStats;
-var
-  req, args: TJSONObject;
-begin
-  req:=TJSONObject.Create;
-  try
-    req.Add('method', 'session-stats');
-    args:=FRpc.SendRequest(req);
-    if args <> nil then
-    try
-      ResultData:=args;
-      if not Terminated then
-        Synchronize(@DoFillStats);
-    finally
-      args.Free;
-    end;
-  finally
-    req.Free;
-  end;
-end;
-
 procedure TRpcThread.GetInfo(TorrentId: integer);
 var
   args: TJSONObject;
   t: TJSONArray;
+  ExtraFields: array of string;
 begin
+  if FRpc.RPCVersion >=14 then begin SetLength(ExtraFields,2);ExtraFields[0]:='isStalled';ExtraFields[1]:='queuePosition';end;
   args:=FRpc.RequestInfo(TorrentId, ['totalSize', 'sizeWhenDone', 'leftUntilDone', 'pieceCount', 'pieceSize', 'haveValid',
                                      'hashString', 'comment', 'downloadedEver', 'uploadedEver', 'corruptEver', 'errorString',
                                      'announceResponse', 'downloadLimit', 'downloadLimitMode', 'uploadLimit', 'uploadLimitMode',
                                      'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
                                      'seeders','peersGettingFromUs','leechers', 'uploadRatio', 'addedDate', 'doneDate',
-                                     'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id', 'pieces',
-                                     'trackerStats', 'secondsDownloading', 'secondsSeeding']);
+                                     'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id','pieces',
+                                     'trackerStats', 'secondsDownloading', 'secondsSeeding', 'streamingMode', 'cheatMode'],ExtraFields);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
@@ -583,35 +529,22 @@ end;
 procedure TRpc.InitSSL;
 {$ifdef unix}
 {$ifndef darwin}
-  procedure CheckOpenSSL;
-  const
-    OpenSSLVersions: array[1..2] of string =
-      ('0.9.8', '1.0.0');
-  var
-    hLib1, hLib2: TLibHandle;
-    i: integer;
-  begin
-    for i:=Low(OpenSSLVersions) to High(OpenSSLVersions) do begin
-      hlib1:=LoadLibrary(PChar('libssl.so.' + OpenSSLVersions[i]));
-      hlib2:=LoadLibrary(PChar('libcrypto.so.' + OpenSSLVersions[i]));
-      if hLib2 <> 0 then
-        FreeLibrary(hLib2);
-      if hLib1 <> 0 then
-        FreeLibrary(hLib1);
-      if (hLib1 <> 0) and (hLib2 <> 0) then begin
-        DLLSSLName:='libssl.so.' + OpenSSLVersions[i];
-        DLLUtilName:='libcrypto.so.' + OpenSSLVersions[i];
-        break;
-      end;
-    end;
-  end;
+var
+  hLib1, hLib2: TLibHandle;
 {$endif darwin}
 {$endif unix}
 begin
   if IsSSLloaded then exit;
 {$ifdef unix}
 {$ifndef darwin}
-  CheckOpenSSL;
+  hlib1:=LoadLibrary('libssl.so.0.9.8');
+  hlib2:=LoadLibrary('libcrypto.so.0.9.8');
+  if (hLib1 <> 0) and (hLib2 <> 0) then begin
+    DLLSSLName:='libssl.so.0.9.8';
+    DLLUtilName:='libcrypto.so.0.9.8';
+  end;
+  FreeLibrary(hLib2);
+  FreeLibrary(hLib1);
 {$endif darwin}
 {$endif unix}
   if InitSSLInterface then
@@ -772,8 +705,7 @@ begin
                 if Result = nil then
                   Status:='Arguments object not found.'
                 else begin
-//                res.Extract(Result); // lazarus 1.2.6 ok
-                  res.Extract(res.IndexOf(Result)); // fix Tample :) lazarus 1.4.0 and high!
+                  res.Extract(Result);
                   FreeAndNil(obj);
                 end;
               end
@@ -936,7 +868,7 @@ begin
   with RpcThread do begin
     FreeOnTerminate:=True;
     FRpc:=Self;
-    Suspended:=False;
+    Resume;
   end;
 end;
 

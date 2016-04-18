@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2010 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, Spin, ComCtrls, CheckLst, EditBtn, MaskEdit,
-  ButtonPanel, BaseForm;
+  ButtonPanel;
 
 resourcestring
  sPortTestSuccess = 'Incoming port tested successfully.';
@@ -35,19 +35,18 @@ resourcestring
  sEncryptionRequired = 'Encryption required';
  SNoDownloadDir = 'The downloads directory was not specified.';
  SNoIncompleteDir = 'The directory for incomplete files was not specified.';
-// SNoBlocklistURL = 'The blocklist URL was not specified.';
+ SNoBlocklistURL = 'The blocklist URL is empty.';
  SInvalidTime = 'The invalid time value was entered.';
 
 type
 
   { TDaemonOptionsForm }
 
-  TDaemonOptionsForm = class(TBaseForm)
+  TDaemonOptionsForm = class(TForm)
     btTestPort: TButton;
     Buttons: TButtonPanel;
     cbBlocklist: TCheckBox;
     cbDHT: TCheckBox;
-    cbUpQueue: TCheckBox;
     cbEncryption: TComboBox;
     cbMaxDown: TCheckBox;
     cbMaxUp: TCheckBox;
@@ -61,14 +60,16 @@ type
     cbIdleSeedLimit: TCheckBox;
     cbAltEnabled: TCheckBox;
     cbAutoAlt: TCheckBox;
-    cbStalled: TCheckBox;
     cbUTP: TCheckBox;
-    cbDownQueue: TCheckBox;
+    cbQueueDownEnabled: TCheckBox;
+    cbQueueStalledEnabled: TCheckBox;
+    edQueueDown: TSpinEdit;
+    edQueueUp: TSpinEdit;
+    edIdleStalled: TSpinEdit;
+    txMinutes2: TLabel;
+    cbQueueUpEnabled: TCheckBox;
     edAltTimeEnd: TMaskEdit;
-    edDownQueue: TSpinEdit;
-    edUpQueue: TSpinEdit;
-    edStalledTime: TSpinEdit;
-    tabQueue: TTabSheet;
+    TabQueue: TTabSheet;
     txDays: TLabel;
     txFrom: TLabel;
     edDownloadDir: TEdit;
@@ -87,7 +88,9 @@ type
     edAltTimeBegin: TMaskEdit;
     txAltUp: TLabel;
     txAltDown: TLabel;
-    txMinutes1: TLabel;
+    txQueueDownSize: TLabel;
+    txQueueUpSize: TLabel;
+    txStalledMinTime: TLabel;
     txTo: TLabel;
     txKbs3: TLabel;
     txKbs4: TLabel;
@@ -202,6 +205,12 @@ begin
     exit;
   end;
   edBlocklistURL.Text:=Trim(edBlocklistURL.Text);
+  if cbBlocklist.Checked and edBlocklistURL.Visible and (edBlocklistURL.Text = '') then // begin
+//    Page.ActivePage:=tabNetwork;
+//    edBlocklistURL.SetFocus;
+    MessageDlg(SNoBlocklistURL, mtInformation, [mbOK], 0);
+//    exit;
+//  end;
   if cbAutoAlt.Checked then begin
      if StrToTimeDef(edAltTimeBegin.Text, -1) < 0 then begin
        Page.ActivePage:=tabBandwidth;
@@ -248,8 +257,8 @@ var
   i, j, x, wd: integer;
   cb: TCheckBox;
 begin
-  bidiMode := GetBiDi(); // PETROV
-
+  Font.Size:=MainForm.Font.Size;
+  AutoSizeForm(Self);
   Page.ActivePageIndex:=0;
   cbEncryption.Items.Add(sEncryptionDisabled);
   cbEncryption.Items.Add(sEncryptionEnabled);
@@ -265,7 +274,7 @@ begin
     j:=i + 1;
     if j > 7 then
       Dec(j, 7);
-    cb.Caption:=SysToUTF8(FormatSettings.ShortDayNames[j]);
+    cb.Caption:=SysToUTF8(ShortDayNames[j]);
     cb.Name:=Format('cbDay%d', [j]);
     cb.Left:=x;
     cb.Top:=txDays.Top - (cb.Height - txDays.Height) div 2;

@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2010 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,13 +24,13 @@ unit TorrProps;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ButtonPanel, ComCtrls, BaseForm;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, ButtonPanel;
 
 type
 
   { TTorrPropsForm }
 
-  TTorrPropsForm = class(TBaseForm)
+  TTorrPropsForm = class(TForm)
     Buttons: TButtonPanel;
     cbIdleSeedLimit: TCheckBox;
     cbMaxDown: TCheckBox;
@@ -40,17 +40,19 @@ type
     edMaxUp: TSpinEdit;
     edPeerLimit: TSpinEdit;
     edSeedRatio: TFloatSpinEdit;
+    gbOptions: TGroupBox;
     edMaxDown: TSpinEdit;
-    edTrackers: TMemo;
-    txTrackers: TLabel;
-    Page: TPageControl;
-    tabGeneral: TTabSheet;
-    tabAdvanced: TTabSheet;
     txKbs1: TLabel;
     txKbs2: TLabel;
+    txPeerLimitR: TLabel;
+    txSeedRatioR: TLabel;
     txMinutes: TLabel;
     txName: TLabel;
     txPeerLimit: TLabel;
+    txStreamingModeV: TLabel;
+    txStreamingMode: TLabel;
+    txCheatModeV: TLabel;
+    txCheatMode: TLabel;
     procedure cbIdleSeedLimitClick(Sender: TObject);
     procedure cbMaxDownClick(Sender: TObject);
     procedure cbMaxUpClick(Sender: TObject);
@@ -90,8 +92,11 @@ end;
 
 procedure TTorrPropsForm.FormCreate(Sender: TObject);
 begin
-  Page.ActivePageIndex:=0;
-  bidiMode := GetBiDi(); // PETROV
+  Font.Size:=MainForm.Font.Size;
+  AutoSizeForm(Self);
+{$ifdef windows}
+  gbOptions.Caption:='';
+{$endif windows}
 end;
 
 initialization

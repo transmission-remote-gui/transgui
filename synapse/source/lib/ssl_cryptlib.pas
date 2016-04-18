@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.001.001 |
+| Project : Ararat Synapse                                       | 001.001.000 |
 |==============================================================================|
 | Content: SSL/SSH support by Peter Gutmann's CryptLib                         |
 |==============================================================================|
-| Copyright (c)1999-2015, Lukas Gebauer                                        |
+| Copyright (c)1999-2005, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2005-2015.                |
+| Portions created by Lukas Gebauer are Copyright (c)2005.                     |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -84,7 +84,6 @@ unit ssl_cryptlib;
 interface
 
 uses
-  Windows,
   SysUtils,
   blcksock, synsock, synautil, synacode,
   cryptlib;
@@ -99,7 +98,6 @@ type
     FPrivateKeyLabel: string;
     FDelCert: Boolean;
     FReadBuffer: string;
-    FTrustedCAs: array of integer;
     function SSLCheck(Value: integer): Boolean;
     function Init(server:Boolean): Boolean;
     function DeInit: Boolean;
@@ -111,8 +109,6 @@ type
     {:See @inherited}
     constructor Create(const Value: TTCPBlockSocket); override;
     destructor Destroy; override;
-    {:Load trusted CA's in PEM format}
-    procedure SetCertCAFile(const Value: string); override;
     {:See @inherited}
     function LibVersion: String; override;
     {:See @inherited}
@@ -143,8 +139,6 @@ type
     function GetPeerName: string; override;
     {:See @inherited}
     function GetPeerFingerprint: string; override;
-    {:See @inherited}
-    function GetVerifyCert: integer; override;
   published
     {:name of certificate/key within PKCS#15 file. It can hold more then one
      certificate/key and each certificate/key must have unique label within one file.}
@@ -161,12 +155,10 @@ begin
   FcryptSession := CRYPT_SESSION(CRYPT_SESSION_NONE);
   FPrivateKeyLabel := 'synapse';
   FDelCert := false;
-  FTrustedCAs := nil;
 end;
 
 destructor TSSLCryptLib.Destroy;
 begin
-  SetCertCAFile('');  // destroy certificates
   DeInit;
   inherited Destroy;
 end;
@@ -219,11 +211,7 @@ begin
   if FLastError <> 0 then
   begin
     Result := False;
-{$IF CRYPTLIB_VERSION >= 3400}
-    FLastErrorDesc := GetString(FCryptSession, CRYPT_ATTRIBUTE_ERRORMESSAGE);
-{$ELSE}
     FLastErrorDesc := GetString(FCryptSession, CRYPT_ATTRIBUTE_INT_ERRORMESSAGE);
-{$IFEND}
   end;
 end;
 
@@ -234,6 +222,7 @@ var
   cert: CRYPT_CERTIFICATE;
   publicKey: CRYPT_CONTEXT;
 begin
+  Result := False;
   if FPrivatekeyFile = '' then
     FPrivatekeyFile := GetTempFile('', 'key');
   cryptCreateContext(privateKey, CRYPT_UNUSED, CRYPT_ALGO_RSA);
@@ -286,8 +275,6 @@ var
   keysetobj: CRYPT_KEYSET;
   cryptContext: CRYPT_CONTEXT;
   x: integer;
-  aUserName : AnsiString;
-  aPassword: AnsiString;
 begin
   Result := False;
   FLastErrorDesc := '';
@@ -326,16 +313,8 @@ begin
   if x >= 0 then
     if not SSLCheck(cryptSetAttribute(FCryptSession, CRYPT_SESSINFO_VERSION, x)) then
       Exit;
-
-  if (FCertComplianceLevel <> -1) then
-    if not SSLCheck(cryptSetAttribute (CRYPT_UNUSED, CRYPT_OPTION_CERT_COMPLIANCELEVEL,
-      FCertComplianceLevel)) then
-      Exit;
-
   if FUsername <> '' then
   begin
-    aUserName := fUserName;
-    aPassword := fPassword;
     cryptSetAttributeString(FcryptSession, CRYPT_SESSINFO_USERNAME,
       Pointer(FUsername), Length(FUsername));
     cryptSetAttributeString(FcryptSession, CRYPT_SESSINFO_PASSWORD,
@@ -406,7 +385,7 @@ begin
   FcryptSession := CRYPT_SESSION(CRYPT_SESSION_NONE);
   FSSLEnabled := False;
   if FDelCert then
-    SysUtils.DeleteFile(FPrivatekeyFile);
+    Deletefile(FPrivatekeyFile);
 end;
 
 function TSSLCryptLib.Prepare(server:Boolean): Boolean;
@@ -430,9 +409,6 @@ begin
       Exit;
     if not SSLCheck(cryptSetAttribute(FCryptSession, CRYPT_SESSINFO_ACTIVE, 1)) then
       Exit;
-    if FverifyCert then
-      if (GetVerifyCert <> 0) or (not DoVerifyCert) then
-        Exit;
     FSSLEnabled := True;
     Result := True;
     FReadBuffer := '';
@@ -482,6 +458,8 @@ begin
 end;
 
 function TSSLCryptLib.RecvBuffer(Buffer: TMemory; Len: Integer): Integer;
+var
+  l: integer;
 begin
   FLastError := 0;
   FLastErrorDesc := '';
@@ -533,7 +511,7 @@ begin
   if FcryptSession = CRYPT_SESSION(CRYPT_SESSION_NONE) then
     Exit;
   cryptGetAttribute(FCryptSession, CRYPT_SESSINFO_RESPONSE, cert);
-  cryptSetAttribute(cert, CRYPT_ATTRIBUTE_CURRENT, CRYPT_CERTINFO_SUBJECTNAME);
+  cryptSetAttribute(cert, CRYPT_CERTINFO_SUBJECTNAME, CRYPT_UNUSED);
   Result := GetString(cert, CRYPT_CERTINFO_DN);
   cryptDestroyCert(cert);
 end;
@@ -546,7 +524,7 @@ begin
   if FcryptSession = CRYPT_SESSION(CRYPT_SESSION_NONE) then
     Exit;
   cryptGetAttribute(FCryptSession, CRYPT_SESSINFO_RESPONSE, cert);
-  cryptSetAttribute(cert, CRYPT_ATTRIBUTE_CURRENT, CRYPT_CERTINFO_SUBJECTNAME);
+  cryptSetAttribute(cert, CRYPT_CERTINFO_ISSUERNAME, CRYPT_UNUSED);
   Result := GetString(cert, CRYPT_CERTINFO_COMMONNAME);
   cryptDestroyCert(cert);
 end;
@@ -559,8 +537,8 @@ begin
   if FcryptSession = CRYPT_SESSION(CRYPT_SESSION_NONE) then
     Exit;
   cryptGetAttribute(FCryptSession, CRYPT_SESSINFO_RESPONSE, cert);
-  cryptSetAttribute(cert, CRYPT_ATTRIBUTE_CURRENT, CRYPT_CERTINFO_ISSUERNAME);
-  Result := GetString(cert, CRYPT_CERTINFO_COMMONNAME);
+  cryptSetAttribute(cert, CRYPT_CERTINFO_ISSUERNAME, CRYPT_UNUSED);
+  Result := GetString(cert, CRYPT_CERTINFO_DN);
   cryptDestroyCert(cert);
 end;
 
@@ -573,109 +551,19 @@ begin
     Exit;
   cryptGetAttribute(FCryptSession, CRYPT_SESSINFO_RESPONSE, cert);
   Result := GetString(cert, CRYPT_CERTINFO_FINGERPRINT);
-  cryptDestroyCert(cert);
-end;
-
-
-procedure TSSLCryptLib.SetCertCAFile(const Value: string);
-
-var F:textfile;
-  bInCert:boolean;
-  s,sCert:string;
-  cert: CRYPT_CERTIFICATE;
-  idx:integer;
-
-begin
-if assigned(FTrustedCAs) then
-  begin
-  for idx := 0 to High(FTrustedCAs) do
-    cryptDestroyCert(FTrustedCAs[idx]);
-  FTrustedCAs:=nil;
-  end;
-if Value<>'' then
-  begin
-  AssignFile(F,Value);
-  reset(F);
-  bInCert:=false;
-  idx:=0;
-  while not eof(F) do
-    begin
-    readln(F,s);
-    if pos('-----END CERTIFICATE-----',s)>0 then
-      begin
-      bInCert:=false;
-      cert:=0;
-      if (cryptImportCert(PAnsiChar(sCert),length(sCert)-2,CRYPT_UNUSED,cert)=CRYPT_OK) then
-        begin
-        cryptSetAttribute( cert, CRYPT_CERTINFO_TRUSTED_IMPLICIT, 1 );
-        SetLength(FTrustedCAs,idx+1);
-        FTrustedCAs[idx]:=cert;
-        idx:=idx+1;
-        end;
-      end;
-    if bInCert then
-      sCert:=sCert+s+#13#10;
-    if pos('-----BEGIN CERTIFICATE-----',s)>0 then
-      begin
-      bInCert:=true;
-      sCert:='';
-      end;
-    end;
-  CloseFile(F);
-  end;
-end;
-
-function TSSLCryptLib.GetVerifyCert: integer;
-var
-  cert: CRYPT_CERTIFICATE;
-  itype,ilocus:integer;
-begin
-  Result := -1;
-  if FcryptSession = CRYPT_SESSION(CRYPT_SESSION_NONE) then
-    Exit;
-  cryptGetAttribute(FCryptSession, CRYPT_SESSINFO_RESPONSE, cert);
-  result:=cryptCheckCert(cert,CRYPT_UNUSED);
-  if result<>CRYPT_OK then
-    begin
-    //get extended error info if available
-    cryptGetAttribute(cert,CRYPT_ATTRIBUTE_ERRORtype,itype);
-    cryptGetAttribute(cert,CRYPT_ATTRIBUTE_ERRORLOCUS,ilocus);
-    cryptSetAttribute(cert, CRYPT_ATTRIBUTE_CURRENT, CRYPT_CERTINFO_SUBJECTNAME);
-    FLastError := Result;
-    FLastErrorDesc := format('SSL/TLS certificate verification failed for "%s"'#13#10'Status: %d. ERRORTYPE: %d. ERRORLOCUS: %d.',
-      [GetString(cert, CRYPT_CERTINFO_COMMONNAME),result,itype,ilocus]);
-    end;
+  Result := MD5(Result);
   cryptDestroyCert(cert);
 end;
 
 {==============================================================================}
 
-var imajor,iminor,iver:integer;
-//    e: ESynapseError;
-
 initialization
   if cryptInit = CRYPT_OK then
     SSLImplementation := TSSLCryptLib;
   cryptAddRandom(nil, CRYPT_RANDOM_SLOWPOLL);
-  cryptGetAttribute (CRYPT_UNUSED, CRYPT_OPTION_INFO_MAJORVERSION,imajor);
-  cryptGetAttribute (CRYPT_UNUSED, CRYPT_OPTION_INFO_MINORVERSION,iminor);
-// according to the documentation CRYPTLIB version has 3 digits. recent versions use 4 digits
-  if CRYPTLIB_VERSION >1000 then
-    iver:=CRYPTLIB_VERSION div 100
-  else
-    iver:=CRYPTLIB_VERSION div 10;
-  if (iver <> imajor*10+iminor) then
-  begin
-    SSLImplementation :=TSSLNone;
-//    e := ESynapseError.Create(format('Error wrong cryptlib version (is %d.%d expected %d.%d). ',
-//       [imajor,iminor,iver div 10, iver mod 10]));
-//    e.ErrorCode := 0;
-//    e.ErrorMessage := format('Error wrong cryptlib version (%d.%d expected %d.%d)',
-//       [imajor,iminor,iver div 10, iver mod 10]);
-//    raise e;
-  end;
+
 finalization
   cryptEnd;
-end.
 
+end.
 

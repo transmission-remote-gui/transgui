@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 004.000.000 |
+| Project : Ararat Synapse                                       | 003.000.010 |
 |==============================================================================|
 | Content: SNMP client                                                         |
 |==============================================================================|
-| Copyright (c)1999-2011, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2000-2011.                |
+| Portions created by Lukas Gebauer are Copyright (c)2000-2010.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -45,12 +45,9 @@
 
 {:@abstract(SNMP client)
 Supports SNMPv1 include traps, SNMPv2c and SNMPv3 include authorization
-and privacy encryption.
+ (encryption not yet supported!)
 
-Used RFC: RFC-1157, RFC-1901, RFC-3412, RFC-3414, RFC-3416, RFC-3826
-
-Supported Authorization hashes: MD5, SHA1
-Supported Privacy encryptions: DES, 3DES, AES
+Used RFC: RFC-1157, RFC-1901, RFC-3412, RFC-3414, RFC-3416
 }
 
 {$IFDEF FPC}
@@ -70,7 +67,7 @@ interface
 
 uses
   Classes, SysUtils,
-  blcksock, synautil, asn1util, synaip, synacode, synacrypt;
+  blcksock, synautil, asn1util, synaip, synacode;
 
 const
   cSnmpProtocol = '161';
@@ -128,12 +125,6 @@ type
     AuthMD5,
     AuthSHA1);
 
-  {:@abstract(Type of SNMPv3 privacy)}
-  TV3Priv = (
-    PrivDES,
-    Priv3DES,
-    PrivAES);
-
   {:@abstract(Data object with one record of MIB OID and corresponding values.)}
   TSNMPMib = class(TObject)
   protected
@@ -184,25 +175,19 @@ type
     FUserName: AnsiString;
     FPassword: AnsiString;
     FAuthKey: AnsiString;
-    FPrivMode: TV3Priv;
-    FPrivPassword: AnsiString;
     FPrivKey: AnsiString;
-    FPrivSalt: AnsiString;
-    FPrivSaltCounter: integer;
     FOldTrapEnterprise: AnsiString;
     FOldTrapHost: AnsiString;
     FOldTrapGen: Integer;
     FOldTrapSpec: Integer;
     FOldTrapTimeTicks: Integer;
     function Pass2Key(const Value: AnsiString): AnsiString;
-    function EncryptPDU(const value: AnsiString): AnsiString;
-    function DecryptPDU(const value: AnsiString): AnsiString;
   public
     constructor Create;
     destructor Destroy; override;
 
     {:Decode SNMP packet in buffer to object properties.}
-    function DecodeBuf(Buffer: AnsiString): Boolean;
+    function DecodeBuf(const Buffer: AnsiString): Boolean;
 
     {:Encode obeject properties to SNMP packet.}
     function EncodeBuf: AnsiString;
@@ -261,7 +246,8 @@ type
     {:Maximum message size in bytes for SNMPv3. For sending is default 1472 bytes.}
     property MaxSize: Integer read FMaxSize write FMaxSize;
 
-    {:Specify if message is authorised or encrypted. Used only in SNMPv3.}
+    {:Specify if message is authorised or encrypted. Used only in SNMPv3, and
+     encryption is not yet supported!}
     property Flags: TV3Flags read FFlags write FFlags;
 
     {:For SNMPv3.... If is @true, SNMP agent must send reply (at least with some
@@ -277,9 +263,6 @@ type
     {:For SNMPv3. Specify Authorization mode. (specify used hash for
      authorization)}
     property AuthMode: TV3Auth read FAuthMode write FAuthMode;
-
-    {:For SNMPv3. Specify Privacy mode.}
-    property PrivMode: TV3Priv read FPrivMode write FPrivMode;
 
     {:value used by SNMPv3 authorisation for synchronization with SNMP agent.}
     property AuthEngineID: AnsiString read FAuthEngineID write FAuthEngineID;
@@ -302,10 +285,7 @@ type
     {:For SNMPv3. Computed Athorization key from @link(password).}
     property AuthKey: AnsiString read FAuthKey write FAuthKey;
 
-    {:SNMPv3 privacy password}
-    property PrivPassword: AnsiString read FPrivPassword write FPrivPassword;
-
-    {:For SNMPv3. Computed Privacy key from @link(PrivPassword).}
+    {:For SNMPv3. Encryption key for message encryption. Not yet used!}
     property PrivKey: AnsiString read FPrivKey write FPrivKey;
 
     {:MIB value to identify the object that sent the TRAPv1.}
@@ -437,10 +417,6 @@ begin
   inherited Create;
   FSNMPMibList := TList.Create;
   Clear;
-  FAuthMode := AuthMD5;
-  FPassword := '';
-  FPrivMode := PrivDES;
-  FPrivPassword := '';
   FID := 1;
   FMaxSize := 1472;
 end;
@@ -476,66 +452,8 @@ begin
   end;
 end;
 
-function TSNMPRec.DecryptPDU(const value: AnsiString): AnsiString;
-var
-  des: TSynaDes;
-  des3: TSyna3Des;
-  aes: TSynaAes;
-  s: string;
-begin
-  FPrivKey := '';
-  if FFlags <> AuthPriv then
-    Result := value
-  else
-  begin
-    case FPrivMode of
-      Priv3DES:
-        begin
-          FPrivKey := Pass2Key(FPrivPassword);
-          FPrivKey := FPrivKey + Pass2Key(FPrivKey);
-          des3 := TSyna3Des.Create(PadString(FPrivKey, 24, #0));
-          try
-            s := PadString(FPrivKey, 32, #0);
-            delete(s, 1, 24);
-            des3.SetIV(xorstring(s, FPrivSalt));
-            s := des3.DecryptCBC(value);
-            Result := s;
-          finally
-            des3.free;
-          end;
-        end;
-      PrivAES:
-        begin
-          FPrivKey := Pass2Key(FPrivPassword);
-          aes := TSynaAes.Create(PadString(FPrivKey, 16, #0));
-          try
-            s := CodeLongInt(FAuthEngineBoots) + CodeLongInt(FAuthEngineTime) + FPrivSalt;
-            aes.SetIV(s);
-            s := aes.DecryptCFBblock(value);
-            Result := s;
-          finally
-            aes.free;
-          end;
-        end;
-    else //PrivDES as default
-      begin
-        FPrivKey := Pass2Key(FPrivPassword);
-        des := TSynaDes.Create(PadString(FPrivKey, 8, #0));
-        try
-          s := PadString(FPrivKey, 16, #0);
-          delete(s, 1, 8);
-          des.SetIV(xorstring(s, FPrivSalt));
-          s := des.DecryptCBC(value);
-          Result := s;
-        finally
-          des.free;
-        end;
-      end;
-    end;
-  end;
-end;
 
-function TSNMPRec.DecodeBuf(Buffer: AnsiString): Boolean;
+function TSNMPRec.DecodeBuf(const Buffer: AnsiString): Boolean;
 var
   Pos: Integer;
   EndPos: Integer;
@@ -590,24 +508,14 @@ begin
       FAuthEngineTimeStamp := GetTick;
       FUserName := ASNItem(SPos, s, Svt);
       FAuthKey := ASNItem(SPos, s, Svt);
-      FPrivSalt := ASNItem(SPos, s, Svt);
+      FPrivKey := ASNItem(SPos, s, Svt);
     end;
     //scopedPDU
-    if FFlags = AuthPriv then
+    s := ASNItem(Pos, Buffer, Svt);
+    if Svt = ASN1_OCTSTR then
     begin
-      x := Pos;
-      s := ASNItem(Pos, Buffer, Svt);
-      if Svt <> ASN1_OCTSTR then
-        exit;
-      s := DecryptPDU(s);
-      //replace encoded content by decoded version and continue
-      Buffer := copy(Buffer, 1, x - 1);
-      Buffer := Buffer + s;
-      Pos := x;
-      if length(Buffer) < EndPos then
-        EndPos := length(buffer);
+      //decrypt!
     end;
-    ASNItem(Pos, Buffer, Svt); //skip sequence mark
     FContextEngineID := ASNItem(Pos, Buffer, Svt);
     FContextName := ASNItem(Pos, Buffer, Svt);
   end
@@ -639,86 +547,9 @@ begin
     ASNItem(Pos, Buffer, Svt);
     Sm := ASNItem(Pos, Buffer, Svt);
     Sv := ASNItem(Pos, Buffer, Svt);
-    if sm <> '' then
-      Self.MIBAdd(sm, sv, Svt);
+    Self.MIBAdd(sm, sv, Svt);
   end;
   Result := True;
-end;
-
-function TSNMPRec.EncryptPDU(const value: AnsiString): AnsiString;
-var
-  des: TSynaDes;
-  des3: TSyna3Des;
-  aes: TSynaAes;
-  s: string;
-  x: integer;
-begin
-  FPrivKey := '';
-  if FFlags <> AuthPriv then
-    Result := Value
-  else
-  begin
-    case FPrivMode of
-      Priv3DES:
-        begin
-          FPrivKey := Pass2Key(FPrivPassword);
-          FPrivKey := FPrivKey + Pass2Key(FPrivKey);
-          des3 := TSyna3Des.Create(PadString(FPrivKey, 24, #0));
-          try
-            s := PadString(FPrivKey, 32, #0);
-            delete(s, 1, 24);
-            FPrivSalt := CodeLongInt(FAuthEngineBoots) + CodeLongInt(FPrivSaltCounter);
-            inc(FPrivSaltCounter);
-            s := xorstring(s, FPrivSalt);
-            des3.SetIV(s);
-            x := length(value) mod 8;
-            x := 8 - x;
-            if x = 8 then
-              x := 0;
-            s := des3.EncryptCBC(value + Stringofchar(#0, x));
-            Result := ASNObject(s, ASN1_OCTSTR);
-          finally
-            des3.free;
-          end;
-        end;
-      PrivAES:
-        begin
-          FPrivKey := Pass2Key(FPrivPassword);
-          aes := TSynaAes.Create(PadString(FPrivKey, 16, #0));
-          try
-            FPrivSalt := CodeLongInt(0) + CodeLongInt(FPrivSaltCounter);
-            inc(FPrivSaltCounter);
-            s := CodeLongInt(FAuthEngineBoots) + CodeLongInt(FAuthEngineTime) + FPrivSalt;
-            aes.SetIV(s);
-            s := aes.EncryptCFBblock(value);
-            Result := ASNObject(s, ASN1_OCTSTR);
-          finally
-            aes.free;
-          end;
-        end;
-    else //PrivDES as default
-      begin
-        FPrivKey := Pass2Key(FPrivPassword);
-        des := TSynaDes.Create(PadString(FPrivKey, 8, #0));
-        try
-          s := PadString(FPrivKey, 16, #0);
-          delete(s, 1, 8);
-          FPrivSalt := CodeLongInt(FAuthEngineBoots) + CodeLongInt(FPrivSaltCounter);
-          inc(FPrivSaltCounter);
-          s := xorstring(s, FPrivSalt);
-          des.SetIV(s);
-          x := length(value) mod 8;
-          x := 8 - x;
-          if x = 8 then
-            x := 0;
-          s := des.EncryptCBC(value + Stringofchar(#0, x));
-          Result := ASNObject(s, ASN1_OCTSTR);
-        finally
-          des.free;
-        end;
-      end;
-    end;
-  end;
 end;
 
 function TSNMPRec.EncodeBuf: AnsiString;
@@ -779,9 +610,8 @@ begin
     pdu := ASNObject(FContextEngineID, ASN1_OCTSTR)
       + ASNObject(FContextName, ASN1_OCTSTR)
       + pdu;
+    //maybe encrypt pdu... in future
     pdu := ASNObject(pdu, ASN1_SEQ);
-    //encrypt PDU if Priv mode is enabled
-    pdu := EncryptPDU(pdu);
 
     //prepare flags
     case FFlags of
@@ -803,10 +633,7 @@ begin
     head := head + ASNObject(s, ASN1_SEQ);
 
     //compute engine time difference
-    if FAuthEngineTimeStamp = 0 then //out of sync
-      x := 0
-    else
-      x := TickDelta(FAuthEngineTimeStamp, GetTick) div 1000;
+    x := TickDelta(FAuthEngineTimeStamp, GetTick) div 1000;
 
     authbeg := ASNObject(FAuthEngineID, ASN1_OCTSTR)
       + ASNObject(ASNEncInt(FAuthEngineBoots), ASN1_INT)
@@ -819,7 +646,7 @@ begin
       AuthPriv:
         begin
           s := authbeg + ASNObject(StringOfChar(#0, 12), ASN1_OCTSTR)
-             + ASNObject(FPrivSalt, ASN1_OCTSTR);
+             + ASNObject(FPrivKey, ASN1_OCTSTR);
           s := ASNObject(s, ASN1_SEQ);
           s := head + ASNObject(s, ASN1_OCTSTR);
           s := ASNObject(s + pdu, ASN1_SEQ);
@@ -845,7 +672,7 @@ begin
     end;
 
     auth := authbeg + ASNObject(FAuthKey, ASN1_OCTSTR)
-     + ASNObject(FPrivSalt, ASN1_OCTSTR);
+     + ASNObject(FPrivKey, ASN1_OCTSTR);
     auth := ASNObject(auth, ASN1_SEQ);
 
     head := head + ASNObject(auth, ASN1_OCTSTR);
@@ -867,6 +694,7 @@ begin
   FVersion := SNMP_V1;
   FCommunity := 'public';
   FUserName := '';
+  FPassword := '';
   FPDUType := 0;
   FErrorStatus := 0;
   FErrorIndex := 0;
@@ -882,14 +710,13 @@ begin
   FFlagReportable := false;
   FContextEngineID := '';
   FContextName := '';
+  FAuthMode := AuthMD5;
   FAuthEngineID := '';
   FAuthEngineBoots := 0;
   FAuthEngineTime := 0;
   FAuthEngineTimeStamp := 0;
   FAuthKey := '';
   FPrivKey := '';
-  FPrivSalt := '';
-  FPrivSaltCounter := random(maxint);
 end;
 
 procedure TSNMPRec.MIBAdd(const MIB, Value: AnsiString; ValueType: Integer);
@@ -986,10 +813,6 @@ end;
 function TSNMPSend.InternalSendRequest(const QValue, RValue: TSNMPRec): Boolean;
 begin
   Result := False;
-  RValue.AuthMode := QValue.AuthMode;
-  RValue.Password := QValue.Password;
-  RValue.PrivMode := QValue.PrivMode;
-  RValue.PrivPassword := QValue.PrivPassword;
   FSock.Bind(FIPInterface, cAnyPort);
   FSock.Connect(FTargetHost, FTargetPort);
   if InternalSendSnmp(QValue) then
@@ -1009,7 +832,10 @@ begin
     FQuery.AuthEngineTimeStamp := Sync.EngineStamp;
     FQuery.AuthEngineID := Sync.EngineID;
   end;
-  Result := InternalSendRequest(FQuery, FReply);
+  FSock.Bind(FIPInterface, cAnyPort);
+  FSock.Connect(FTargetHost, FTargetPort);
+  if InternalSendSnmp(FQuery) then
+    Result := InternalRecvSnmp(FReply);
 end;
 
 function TSNMPSend.SendTrap: Boolean;
@@ -1066,9 +892,6 @@ begin
       SyncQuery.Password := FQuery.Password;
       SyncQuery.FlagReportable := True;
       SyncQuery.Flags := FQuery.Flags;
-      SyncQuery.AuthMode := FQuery.AuthMode;
-      SyncQuery.PrivMode := FQuery.PrivMode;
-      SyncQuery.PrivPassword := FQuery.PrivPassword;
       SyncQuery.PDUType := PDUGetRequest;
       SyncQuery.AuthEngineID := FReply.FAuthEngineID;
       if InternalSendRequest(SyncQuery, FReply) then

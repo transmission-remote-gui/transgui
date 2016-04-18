@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 003.012.009 |
+| Project : Ararat Synapse                                       | 003.012.004 |
 |==============================================================================|
 | Content: HTTP client                                                         |
 |==============================================================================|
-| Copyright (c)1999-2015, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c) 1999-2015.               |
+| Portions created by Lukas Gebauer are Copyright (c) 1999-2010.               |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -106,9 +106,9 @@ type
     FRangeStart: integer;
     FRangeEnd: integer;
     FAddPortNumberToHost: Boolean;
-    function ReadUnknown: Boolean; virtual;
-    function ReadIdentity(Size: Integer): Boolean; virtual;
-    function ReadChunked: Boolean; virtual;
+    function ReadUnknown: Boolean;
+    function ReadIdentity(Size: Integer): Boolean;
+    function ReadChunked: Boolean;
     procedure ParseCookies;
     function PrepareHeaders: AnsiString;
     function InternalDoConnect(needssl: Boolean): Boolean;
@@ -117,53 +117,52 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    {:Reset headers, document and Mimetype.}
+    {:Reset headers and document and Mimetype.}
     procedure Clear;
 
     {:Decode ResultCode and ResultString from Value.}
     procedure DecodeStatus(const Value: string);
 
-    {:Connects to host defined in URL and accesses resource defined in URL by
-     method. If Document is not empty, send it to the server as part of the HTTP
-     request. Server response is in Document and headers. Connection may be
-     authorised by username and password in URL. If you define proxy properties,
-     connection is made by this proxy.
-     If all OK, result is @true, else result is @false.
+    {:Connects to host define in URL and access to resource defined in URL by
+     method. If Document is not empty, send it to server as part of HTTP request.
+     Server response is in Document and headers. Connection may be authorised
+     by username and password in URL. If you define proxy properties, connection
+     is made by this proxy. If all OK, result is @true, else result is @false.
 
-     If you use 'https:' instead of 'http:' in the URL, your request is made
-     by SSL/TLS connection (if you do not specify port, then port 443 is used
-     instead of standard port 80). If you use SSL/TLS request and you have
-     defined HTTP proxy, then HTTP-tunnel mode is automatically used .}
+     If you use in URL 'https:' instead only 'http:', then your request is made
+     by SSL/TLS connection (if you not specify port, then port 443 is used
+     instead standard port 80). If you use SSL/TLS request and you have defined
+     HTTP proxy, then HTTP-tunnel mode is automaticly used .}
     function HTTPMethod(const Method, URL: string): Boolean;
 
-    {:You can call this method from OnStatus event to break current data
+    {:You can call this method from OnStatus event for break current data
      transfer. (or from another thread.)}
     procedure Abort;
   published
     {:Before HTTP operation you may define any non-standard headers for HTTP
-     request, except: 'Expect: 100-continue', 'Content-Length', 'Content-Type',
+     request, except of: 'Expect: 100-continue', 'Content-Length', 'Content-Type',
      'Connection', 'Authorization', 'Proxy-Authorization' and 'Host' headers.
-     After HTTP operation, it contains full headers of the returned document.}
+     After HTTP operation contains full headers of returned document.}
     property Headers: TStringList read FHeaders;
 
-    {:Stringlist with name-value stringlist pairs. Each pair is one cookie.
-     After the HTTP request is returned, cookies are parsed to this stringlist.
-     You can leave these cookies untouched for next HTTP requests. You can also
+    {:This is stringlist with name-value stringlist pairs. Each this pair is one
+     cookie. After HTTP request is returned cookies parsed to this stringlist.
+     You can leave this cookies untouched for next HTTP request. You can also
      save this stringlist for later use.}
     property Cookies: TStringList read FCookies;
 
-    {:Stream with document to send (before request), or with document received
+    {:Stream with document to send (before request, or with document received
      from HTTP server (after request).}
     property Document: TMemoryStream read FDocument;
 
-    {:If you need to download only part of a requested document, specify here
-     the position of subpart begin. If 0, the full document is requested.}
+    {:If you need download only part of requested document, here specify
+     possition of subpart begin. If here 0, then is requested full document.}
     property RangeStart: integer read FRangeStart Write FRangeStart;
 
-    {:If you need to download only part of a requested document, specify here
-     the position of subpart end. If 0, the document from rangeStart to end of
-     document is requested.
-     (Useful for resuming broken downloads, for example.)}
+    {:If you need download only part of requested document, here specify
+     possition of subpart end. If here 0, then is requested document from
+     rangeStart to end of document. (for broken download restoration,
+     for example.)}
     property RangeEnd: integer read FRangeEnd Write FRangeEnd;
 
     {:Mime type of sending data. Default is: 'text/html'.}
@@ -179,8 +178,8 @@ type
     {:Define timeout for keepalives in seconds!}
     property KeepAliveTimeout: integer read FKeepAliveTimeout Write FKeepAliveTimeout;
 
-    {:if @true, then the server is requested for 100status capability when
-     uploading data. Default is @false (off).}
+    {:if @true, then server is requested for 100status capability when uploading
+     data. Default is @false (off).}
     property Status100: Boolean read FStatus100 Write FStatus100;
 
     {:Address of proxy server (IP address or domain name) where you want to
@@ -190,49 +189,50 @@ type
     {:Port number for proxy connection. Default value is 8080.}
     property ProxyPort: string read FProxyPort Write FProxyPort;
 
-    {:Username for connection to proxy server used in HTTPMethod method.}
+    {:Username for connect to proxy server where you want to connect in
+     HTTPMethod method.}
     property ProxyUser: string read FProxyUser Write FProxyUser;
 
-    {:Password for connection to proxy server used in HTTPMethod method.}
+    {:Password for connect to proxy server where you want to connect in
+     HTTPMethod method.}
     property ProxyPass: string read FProxyPass Write FProxyPass;
 
-    {:Here you can specify custom User-Agent identification.
-     Default: 'Mozilla/4.0 (compatible; Synapse)'}
+    {:Here you can specify custom User-Agent indentification. By default is
+     used: 'Mozilla/4.0 (compatible; Synapse)'}
     property UserAgent: string read FUserAgent Write FUserAgent;
 
-    {:Operation result code after successful @link(HTTPMethod) method.}
+    {:After successful @link(HTTPMethod) method contains result code of
+     operation.}
     property ResultCode: Integer read FResultCode;
 
-    {:Operation result string after successful @link(HTTPMethod) method.}
+    {:After successful @link(HTTPMethod) method contains string after result code.}
     property ResultString: string read FResultString;
 
-    {:if this value is not 0, then data download is pending. In this case you
-     have here the total size of downloaded data. Useful for drawing download
+    {:if this value is not 0, then data download pending. In this case you have
+     here total sice of downloaded data. It is good for draw download
      progressbar from OnStatus event.}
     property DownloadSize: integer read FDownloadSize;
 
-    {:if this value is not 0, then data upload is pending. In this case you have
-     here the total size of uploaded data. Useful for drawing upload progressbar
+    {:if this value is not 0, then data upload pending. In this case you have
+     here total sice of uploaded data. It is good for draw upload progressbar
      from OnStatus event.}
     property UploadSize: integer read FUploadSize;
-
-    {:Socket object used for TCP/IP operation.
-     Good for setting OnStatus hook, etc.}
+    {:Socket object used for TCP/IP operation. Good for seting OnStatus hook, etc.}
     property Sock: TTCPBlockSocket read FSock;
 
-    {:Allows to switch off port number in 'Host:' HTTP header. By default @TRUE.
-     Some buggy servers do not like port informations in this header.}
+    {:To have possibility to switch off port number in 'Host:' HTTP header, by
+    default @TRUE. Some buggy servers not like port informations in this header.}
     property AddPortNumberToHost: Boolean read FAddPortNumberToHost write FAddPortNumberToHost;
   end;
 
-{:A very useful function, and example of use can be found in the THTTPSend
+{:A very usefull function, and example of use can be found in the THTTPSend
  object. It implements the GET method of the HTTP protocol. This function sends
  the GET method for URL document to an HTTP server. Returned document is in the
  "Response" stringlist (without any headers). Returns boolean TRUE if all went
  well.}
 function HttpGetText(const URL: string; const Response: TStrings): Boolean;
 
-{:A very useful function, and example of use can be found in the THTTPSend
+{:A very usefull function, and example of use can be found in the THTTPSend
  object. It implements the GET method of the HTTP protocol. This function sends
  the GET method for URL document to an HTTP server. Returned document is in the
  "Response" stream. Returns boolean TRUE if all went well.}
@@ -241,7 +241,7 @@ function HttpGetBinary(const URL: string; const Response: TStream): Boolean;
 {:A very useful function, and example of use can be found in the THTTPSend
  object. It implements the POST method of the HTTP protocol. This function sends
  the SEND method for a URL document to an HTTP server. The document to be sent
- is located in the "Data" stream. The returned document is in the "Data" stream.
+ is located in "Data" stream. The returned document is in the "Data" stream.
  Returns boolean TRUE if all went well.}
 function HttpPostBinary(const URL: string; const Data: TStream): Boolean;
 
@@ -251,19 +251,18 @@ function HttpPostBinary(const URL: string; const Data: TStream): Boolean;
  an HTTP server. You must prepare the form data in the same manner as you would
  the URL data, and pass this prepared data to "URLdata". The following is
  a sample of how the data would appear: 'name=Lukas&field1=some%20data'.
- The information in the field must be encoded by the EncodeURLElement function.
+ The information in the field must be encoded by EncodeURLElement function.
  The returned document is in the "Data" stream. Returns boolean TRUE if all
  went well.}
 function HttpPostURL(const URL, URLData: string; const Data: TStream): Boolean;
 
 {:A very useful function, and example of use can be found in the THTTPSend
  object. It implements the POST method of the HTTP protocol. This function sends
- the POST method for a URL document to an HTTP server. This function simulates
- posting of file by HTML form using the 'multipart/form-data' method. The posted
- file is in the DATA stream. Its name is Filename string. Fieldname is for the
- name of the form field with the file. (simulates HTML INPUT FILE) The returned
- document is in the ResultData Stringlist. Returns boolean TRUE if all
- went well.}
+ the POST method for a URL document to an HTTP server. This function simulate
+ posting of file by HTML form used method 'multipart/form-data'. Posting file
+ is in DATA stream. Its name is Filename string. Fieldname is for name of
+ formular field with file. (simulate HTML INPUT FILE) The returned document is
+ in the ResultData Stringlist. Returns boolean TRUE if all went well.}
 function HttpPostFile(const URL, FieldName, FileName: string;
   const Data: TStream; const ResultData: TStrings): Boolean;
 
@@ -353,10 +352,7 @@ begin
     Exit;
   if needssl then
   begin
-    if (FSock.SSL.SNIHost='') then
-      FSock.SSL.SNIHost:=FTargetHost;
     FSock.SSLDoConnect;
-    FSock.SSL.SNIHost:=''; //don't need it anymore and don't wan't to reuse it in next connection
     if FSock.LastError <> 0 then
       Exit;
   end;
@@ -401,8 +397,6 @@ begin
   FUploadSize := 0;
 
   URI := ParseURL(URL, Prot, User, Pass, Host, Port, Path, Para);
-  User := DecodeURL(user);
-  Pass := DecodeURL(pass);
   if User = '' then
   begin
     User := FUsername;
@@ -478,12 +472,10 @@ begin
     s := '[' + Host + ']'
   else
     s := Host;
-  if FAddPortNumberToHost
-    and (((Port <> '80') and (UpperCase(Prot) = 'HTTP'))
-    or ((Port <> '443') and (UpperCase(Prot) = 'HTTPS'))) then
-    FHeaders.Insert(0, 'Host: ' + s + ':' + Port)
+  if FAddPortNumberToHost and (Port <> '80') then
+     FHeaders.Insert(0, 'Host: ' + s + ':' + Port)
   else
-    FHeaders.Insert(0, 'Host: ' + s);
+     FHeaders.Insert(0, 'Host: ' + s);
   if UsingProxy then
     URI := Prot + '://' + s + ':' + Port + URI;
   if URI = '/*' then
@@ -618,15 +610,15 @@ begin
         su := UpperCase(s);
         if Pos('CONTENT-LENGTH:', su) = 1 then
         begin
-          Size := StrToIntDef(Trim(SeparateRight(s, ':')), -1);
+          Size := StrToIntDef(Trim(SeparateRight(s, ' ')), -1);
           if (Size <> -1) and (FTransferEncoding = TE_UNKNOWN) then
             FTransferEncoding := TE_IDENTITY;
         end;
         if Pos('CONTENT-TYPE:', su) = 1 then
-          FMimeType := Trim(SeparateRight(s, ':'));
+          FMimeType := Trim(SeparateRight(s, ' '));
         if Pos('TRANSFER-ENCODING:', su) = 1 then
         begin
-          s := Trim(SeparateRight(su, ':'));
+          s := Trim(SeparateRight(su, ' '));
           if Pos('CHUNKED', s) > 0 then
             FTransferEncoding := TE_CHUNKED;
         end;
@@ -650,12 +642,7 @@ begin
 
   Result := FSock.LastError = 0;
   if not Result then
-  begin
-    FSock.CloseSocket;
-    FAliveHost := '';
-    FAlivePort := '';
     Exit;
-  end;
 
   {if need receive response body, read it}
   Receiving := Method <> 'HEAD';
@@ -683,7 +670,7 @@ end;
 
 function THTTPSend.ReadUnknown: Boolean;
 var
-  s: ansistring;
+  s: string;
 begin
   Result := false;
   repeat
@@ -713,7 +700,7 @@ end;
 
 function THTTPSend.ReadChunked: Boolean;
 var
-  s: ansistring;
+  s: string;
   Size: Integer;
 begin
   repeat

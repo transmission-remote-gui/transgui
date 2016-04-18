@@ -1,90 +1,90 @@
-inherited ConnOptionsForm: TConnOptionsForm
-  Left = 495
-  Height = 394
+object ConnOptionsForm: TConnOptionsForm
+  Left = 401
+  Height = 313
   Top = 186
-  Width = 529
+  Width = 471
   HorzScrollBar.Page = 349
   VertScrollBar.Page = 238
-  AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  Caption = 'Manage connections to Transmission'
-  ClientHeight = 394
-  ClientWidth = 529
+  Caption = 'Connection options'
+  ClientHeight = 313
+  ClientWidth = 471
   Constraints.MinHeight = 280
   Constraints.MinWidth = 471
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  object Page: TPageControl[0]
+  LCLVersion = '0.9.30.1'
+  object Page: TPageControl
     Left = 8
-    Height = 283
+    Height = 202
     Top = 69
-    Width = 513
-    ActivePage = tabConnection
+    Width = 455
+    ActivePage = tabMisc
     Align = alClient
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 1
     object tabConnection: TTabSheet
-      Caption = 'Transmission'
-      ClientHeight = 255
-      ClientWidth = 505
+      Caption = 'Connection'
+      ClientHeight = 176
+      ClientWidth = 447
       object txPassword: TLabel
-        Left = 24
-        Height = 15
-        Top = 157
-        Width = 53
+        Left = 8
+        Height = 14
+        Top = 97
+        Width = 51
         Caption = 'Password:'
         ParentColor = False
       end
       object txUserName: TLabel
-        Left = 24
-        Height = 15
-        Top = 128
-        Width = 59
+        Left = 8
+        Height = 14
+        Top = 69
+        Width = 56
         Caption = 'User name:'
         ParentColor = False
       end
       object txPort: TLabel
         Left = 8
-        Height = 15
-        Top = 76
+        Height = 14
+        Top = 41
         Width = 25
         Caption = 'Port:'
         ParentColor = False
       end
       object txHost: TLabel
         Left = 8
-        Height = 15
-        Top = 48
-        Width = 70
+        Height = 14
+        Top = 13
+        Width = 66
         Caption = 'Remote host:'
         ParentColor = False
       end
       object edPassword: TEdit
         Left = 180
-        Height = 23
-        Top = 153
-        Width = 316
+        Height = 21
+        Top = 94
+        Width = 258
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword
         PasswordChar = '*'
-        TabOrder = 5
+        TabOrder = 4
       end
       object edUserName: TEdit
         Left = 180
-        Height = 23
-        Top = 125
-        Width = 316
+        Height = 21
+        Top = 66
+        Width = 258
         Anchors = [akTop, akLeft, akRight]
-        TabOrder = 4
+        TabOrder = 3
       end
       object edPort: TSpinEdit
         Left = 180
-        Height = 23
-        Top = 73
+        Height = 21
+        Top = 38
         Width = 70
         MaxValue = 65535
         MinValue = 1
@@ -93,150 +93,78 @@ inherited ConnOptionsForm: TConnOptionsForm
       end
       object cbSSL: TCheckBox
         Left = 260
-        Height = 19
-        Top = 75
-        Width = 60
+        Height = 17
+        Top = 40
+        Width = 56
         Caption = 'Use SSL'
         TabOrder = 2
       end
       object edHost: TEdit
         Left = 180
-        Height = 23
-        Top = 45
-        Width = 316
+        Height = 21
+        Top = 10
+        Width = 258
         Anchors = [akTop, akLeft, akRight]
         OnChange = edHostChange
         TabOrder = 0
       end
-      object txConnHelp: TLabel
-        Left = 8
-        Height = 31
-        Top = 9
-        Width = 488
-        Anchors = [akTop, akLeft, akRight]
-        AutoSize = False
-        Caption = 'Please specify how %s will connect to a remote host running Transmission daemon (service).'
-        ParentColor = False
-        WordWrap = True
-      end
-      object cbAuth: TCheckBox
-        Left = 8
-        Height = 19
-        Top = 101
-        Width = 146
-        Caption = 'Authentication required'
-        OnClick = cbAuthClick
-        TabOrder = 3
-      end
-      object edRpcPath: TEdit
-        Left = 180
-        Height = 23
-        Top = 209
-        Width = 316
-        TabOrder = 9
-      end
-      object txRpcPath: TLabel
-        Left = 8
-        Height = 15
-        Top = 212
-        Width = 52
-        Caption = 'RPC path:'
-        ParentColor = False
-      end
-      object cbShowAdvanced: TCheckBox
-        Left = 8
-        Height = 19
-        Top = 232
-        Width = 146
-        Caption = 'Show advanced options'
-        OnClick = cbShowAdvancedClick
-        TabOrder = 8
-        Visible = False
-      end
-      object cbAskPassword: TCheckBox
-        Left = 180
-        Height = 19
-        Top = 181
-        Width = 110
-        Caption = 'Ask for password'
-        OnClick = cbAskPasswordClick
-        TabOrder = 6
-      end
-      object cbAutoReconnect: TCheckBox
-        Left = 180
-        Height = 19
-        Top = 101
-        Width = 268
-        AutoSize = False
-        Caption = 'Always auto-reconnect'
-        TabOrder = 7
-      end
     end
     object tabProxy: TTabSheet
       Caption = 'Proxy'
-      ClientHeight = 255
-      ClientWidth = 505
+      ClientHeight = 176
+      ClientWidth = 447
       object txProxy: TLabel
         Left = 8
-        Height = 15
+        Height = 14
         Top = 37
-        Width = 66
+        Width = 67
         Caption = 'Proxy server:'
         ParentColor = False
       end
       object txProxyPort: TLabel
         Left = 8
-        Height = 15
+        Height = 14
         Top = 65
-        Width = 57
+        Width = 56
         Caption = 'Proxy port:'
         ParentColor = False
       end
       object txProxyUserName: TLabel
-        Left = 24
-        Height = 15
-        Top = 116
-        Width = 90
+        Left = 8
+        Height = 14
+        Top = 93
+        Width = 86
         Caption = 'Proxy user name:'
         ParentColor = False
       end
       object txProxyPassword: TLabel
-        Left = 24
-        Height = 15
-        Top = 144
-        Width = 85
+        Left = 8
+        Height = 14
+        Top = 121
+        Width = 82
         Caption = 'Proxy password:'
         ParentColor = False
       end
       object cbUseProxy: TCheckBox
         Left = 8
-        Height = 19
+        Height = 17
         Top = 10
-        Width = 250
-        Caption = 'Connect to Transmission using proxy server'
+        Width = 101
+        Caption = 'Use proxy server'
         OnClick = cbUseProxyClick
         TabOrder = 0
       end
-      object cbUseSocks5: TCheckBox
-        Left = 260
-        Height = 19
-        Top = 64
-        Width = 65
-        Caption = 'SOCKS 5'
-        OnClick = cbUseProxyClick
-        TabOrder = 3
-      end
       object edProxy: TEdit
         Left = 180
-        Height = 23
+        Height = 21
         Top = 34
-        Width = 316
+        Width = 258
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 1
       end
       object edProxyPort: TSpinEdit
         Left = 180
-        Height = 23
+        Height = 21
         Top = 62
         Width = 70
         MaxValue = 65535
@@ -246,240 +174,150 @@ inherited ConnOptionsForm: TConnOptionsForm
       end
       object edProxyUserName: TEdit
         Left = 180
-        Height = 23
-        Top = 113
-        Width = 316
+        Height = 21
+        Top = 90
+        Width = 258
         Anchors = [akTop, akLeft, akRight]
-        TabOrder = 4
+        TabOrder = 3
       end
       object edProxyPassword: TEdit
         Left = 180
-        Height = 23
-        Top = 141
-        Width = 316
+        Height = 21
+        Top = 118
+        Width = 258
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword
         PasswordChar = '*'
-        TabOrder = 5
-      end
-      object cbProxyAuth: TCheckBox
-        Left = 8
-        Height = 19
-        Top = 89
-        Width = 146
-        Caption = 'Authentication required'
-        OnClick = cbProxyAuthClick
-        TabOrder = 6
+        TabOrder = 4
       end
     end
     object tabPaths: TTabSheet
       Caption = 'Paths'
-      ClientHeight = 255
-      ClientWidth = 505
+      ClientHeight = 176
+      ClientWidth = 447
       OnShow = tabPathsShow
       object txPaths: TLabel
         Left = 8
-        Height = 60
-        Top = 32
-        Width = 488
+        Height = 66
+        Top = 8
+        Width = 430
         Anchors = [akTop, akLeft, akRight]
-        Caption = 'Remote to local path mappings.'#13#10'Examples:'#13#10'/share=\\pch\share'#13#10'/var/downloads/music=Z:\music'
+        Caption = 'Remote to local path mappings.'#13#10#13#10'Examples:'#13#10'/share=\\pch\share'#13#10'/var/downloads/music=Z:\music'
         ParentColor = False
         WordWrap = True
       end
       object edPaths: TMemo
         Left = 8
-        Height = 137
-        Top = 96
-        Width = 488
+        Height = 82
+        Top = 82
+        Width = 430
         Anchors = [akTop, akLeft, akRight, akBottom]
         ScrollBars = ssAutoVertical
         TabOrder = 0
-        WordWrap = False
-      end
-      object edMaxFolder: TSpinEdit
-        Left = 8
-        Height = 23
-        Top = 8
-        Width = 70
-        MaxValue = 99
-        MinValue = 10
-        TabOrder = 1
-        Value = 50
-      end
-      object Label1: TLabel
-        Left = 88
-        Height = 23
-        Top = 9
-        Width = 385
-        Anchors = [akLeft]
-        AutoSize = False
-        Caption = 'The maximum history of directories for storage of torrents'
-        Layout = tlCenter
-        ParentColor = False
       end
     end
     object tabMisc: TTabSheet
       Caption = 'Misc'
-      ClientHeight = 255
-      ClientWidth = 505
+      ClientHeight = 176
+      ClientWidth = 447
       object gbSpeed: TGroupBox
         Left = 8
         Height = 125
         Top = 6
-        Width = 488
+        Width = 430
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Speed limit menu items'
-        ClientHeight = 105
-        ClientWidth = 484
+        ClientHeight = 107
+        ClientWidth = 426
         TabOrder = 0
         object txDownSpeeds: TLabel
           Left = 8
-          Height = 15
+          Height = 14
           Top = 4
-          Width = 131
+          Width = 121
           Caption = 'Download speeds (KB/s):'
           ParentColor = False
         end
         object txUpSpeeds: TLabel
           Left = 8
-          Height = 15
+          Height = 14
           Top = 52
-          Width = 115
+          Width = 107
           Caption = 'Upload speeds (KB/s):'
           ParentColor = False
         end
         object edDownSpeeds: TEdit
           Left = 8
-          Height = 23
+          Height = 21
           Top = 24
-          Width = 468
+          Width = 410
           Anchors = [akTop, akLeft, akRight]
           TabOrder = 0
         end
         object edUpSpeeds: TEdit
           Left = 8
-          Height = 23
+          Height = 21
           Top = 72
-          Width = 468
+          Width = 410
           Anchors = [akTop, akLeft, akRight]
           TabOrder = 1
         end
       end
-      object edTranslateForm: TCheckBox
-        Left = 18
-        Height = 19
-        Top = 136
-        Width = 444
-        Caption = 'Activate the translated version of the application (need to restart the application)'
-        OnChange = edTranslateFormChange
-        TabOrder = 1
-        Visible = False
-      end
-      object edTranslateMsg: TCheckBox
-        Left = 18
-        Height = 19
-        Top = 160
-        Width = 287
-        Caption = 'Activate the translation of the Transmission strings'
-        TabOrder = 2
-        Visible = False
-      end
-      object Label111: TLabel
-        Left = 18
-        Height = 15
-        Top = 189
-        Width = 55
-        Caption = 'Language:'
-        ParentColor = False
-        Visible = False
-      end
-      object edLanguage: TEdit
-        Left = 128
-        Height = 23
-        Top = 184
-        Width = 368
-        OnDblClick = edLanguageDoubleClick
-        ReadOnly = True
-        TabOrder = 3
-        Visible = False
-      end
-      object Label2: TLabel
-        Left = 18
-        Height = 15
-        Top = 216
-        Width = 58
-        Caption = 'Config file:'
-        ParentColor = False
-        Visible = False
-      end
-      object edIniFileName: TEdit
-        Left = 128
-        Height = 23
-        Top = 211
-        Width = 368
-        OnDblClick = edIniFileOpen
-        ReadOnly = True
-        TabOrder = 4
-        Visible = False
-      end
     end
   end
-  object Buttons: TButtonPanel[1]
-    Left = 8
+  object Buttons: TButtonPanel
+    Left = 0
     Height = 26
-    Top = 360
-    Width = 513
-    BorderSpacing.Left = 8
+    Top = 279
+    Width = 471
     BorderSpacing.Top = 8
-    BorderSpacing.Right = 8
     BorderSpacing.Bottom = 8
     BorderSpacing.Around = 0
     OKButton.Name = 'OKButton'
-    OKButton.DefaultCaption = True
+    OKButton.Caption = '&OK'
     HelpButton.Name = 'HelpButton'
-    HelpButton.DefaultCaption = True
+    HelpButton.Caption = '&Help'
     CloseButton.Name = 'CloseButton'
-    CloseButton.DefaultCaption = True
+    CloseButton.Caption = '&Close'
     CancelButton.Name = 'CancelButton'
-    CancelButton.DefaultCaption = True
+    CancelButton.Caption = 'Cancel'
     TabOrder = 2
     Spacing = 8
     ShowButtons = [pbOK, pbCancel]
     ShowBevel = False
   end
-  object panTop: TPanel[2]
+  object panTop: TPanel
     Left = 8
     Height = 53
     Top = 8
-    Width = 513
+    Width = 455
     Align = alTop
     BorderSpacing.Around = 8
     BevelOuter = bvNone
     ClientHeight = 53
-    ClientWidth = 513
+    ClientWidth = 455
     TabOrder = 0
-    object txConName: TLabel
+    object Label1: TLabel
       Left = 0
-      Height = 15
+      Height = 14
       Top = 4
-      Width = 98
-      Caption = 'Connection name:'
+      Width = 59
+      Caption = 'Connection:'
       ParentColor = False
     end
     object cbConnection: TComboBox
-      Left = 170
-      Height = 23
+      Left = 112
+      Height = 21
       Top = 1
-      Width = 342
+      Width = 343
       Anchors = [akTop, akLeft, akRight]
-      ItemHeight = 15
+      ItemHeight = 13
       OnSelect = cbConnectionSelect
       Style = csDropDownList
       TabOrder = 0
     end
     object btNew: TButton
-      Left = 170
+      Left = 112
       Height = 23
       Top = 28
       Width = 111
@@ -488,7 +326,7 @@ inherited ConnOptionsForm: TConnOptionsForm
       TabOrder = 1
     end
     object btDel: TButton
-      Left = 402
+      Left = 344
       Height = 23
       Top = 28
       Width = 111
@@ -497,7 +335,7 @@ inherited ConnOptionsForm: TConnOptionsForm
       TabOrder = 3
     end
     object btRename: TButton
-      Left = 286
+      Left = 228
       Height = 23
       Top = 28
       Width = 111

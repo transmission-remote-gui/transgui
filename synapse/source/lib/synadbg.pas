@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 001.001.002 |
+| Project : Ararat Synapse                                       | 001.001.001 |
 |==============================================================================|
 | Content: Socket debug tools                                                  |
 |==============================================================================|
-| Copyright (c)2008-2011, Lukas Gebauer                                        |
+| Copyright (c)2008-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2008-2011.                |
+| Portions created by Lukas Gebauer are Copyright (c)2008-2010.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -57,7 +57,7 @@ unit synadbg;
 interface
 
 uses
-  blcksock, synsock, synautil, classes, sysutils, synafpc;
+  blcksock, synsock, synautil, classes, sysutils;
 
 type
   TSynaDebug = class(TObject)
@@ -130,7 +130,7 @@ begin
   else
     s := '-unknown-';
   end;
-  s := inttohex(PtrInt(Sender), 8) + s + ': ' + value + CRLF;
+  s := inttohex(integer(Sender), 8) + s + ': ' + value + CRLF;
   AppendToLog(s);
 end;
 
@@ -144,7 +144,7 @@ begin
     d := '-> '
   else
     d := '<- ';
-  s :=inttohex(PtrInt(Sender), 8) + d + s + CRLF;
+  s :=inttohex(integer(Sender), 8) + d + s + CRLF;
   AppendToLog(s);
 end;
 

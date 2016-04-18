@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <Units Count="18">
+      <Unit0>
+        <Filename Value="transgui.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="transgui"/>
+        <UsageCount Value="20"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="main.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Main"/>
+        <UsageCount Value="20"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="rpc.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="rpc"/>
+        <UsageCount Value="20"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="addtorrent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AddTorrentForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="AddTorrent"/>
+        <UsageCount Value="20"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="connoptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ConnOptionsForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ConnOptions"/>
+        <UsageCount Value="20"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="varlist.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="varlist"/>
+        <UsageCount Value="20"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="torrprops.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TorrPropsForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TorrProps"/>
+        <UsageCount Value="20"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="daemonoptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DaemonOptionsForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="DaemonOptions"/>
+        <UsageCount Value="20"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="about.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="About"/>
+        <UsageCount Value="20"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="ipresolver.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="IpResolver"/>
+        <UsageCount Value="20"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="download.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DownloadForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="download"/>
+        <UsageCount Value="20"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="colsetup.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ColSetupForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ColSetup"/>
+        <UsageCount Value="20"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="utils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="utils"/>
+        <UsageCount Value="20"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="restranslator.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ResTranslator"/>
+        <UsageCount Value="20"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="addlink.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AddLinkForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="AddLink"/>
+        <UsageCount Value="20"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="movetorrent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MoveTorrentForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="MoveTorrent"/>
+        <UsageCount Value="20"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="addtracker.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AddTrackerForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="AddTracker"/>
+        <UsageCount Value="20"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="options.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="OptionsForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Options"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit17>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
+  </ProjectSession>
+</CONFIG>

@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 005.002.003 |
+| Project : Ararat Synapse                                       | 005.002.000 |
 |==============================================================================|
 | Content: Socket Independent Platform Layer                                   |
 |==============================================================================|
-| Copyright (c)1999-2013, Lukas Gebauer                                        |
+| Copyright (c)1999-2010, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,11 +33,10 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2001-2013.                |
+| Portions created by Lukas Gebauer are Copyright (c)2001-20010.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
-|   Tomas Hajny (OS2 support)                                                  |
 |==============================================================================|
 | History: see HISTORY.HTM from distribution package                           |
 |          (Found at URL: http://www.ararat.cz/synapse/)                       |
@@ -57,29 +56,21 @@ unit synsock;
 {$ENDIF}
 
 {$IFDEF CIL}
-  {$I ssdotnet.inc}
+  {$I ssdotnet.pas}
 {$ELSE}
   {$IFDEF MSWINDOWS}
-    {$I sswin32.inc}
+    {$I sswin32.pas}
   {$ELSE}
     {$IFDEF WINCE}
-      {$I sswin32.inc}  //not complete yet!
+      {$I sswin32.pas}  //not complete yet!
     {$ELSE}
       {$IFDEF FPC}
-       {$IFDEF OS2}
-         {$I ssos2ws1.inc}
-       {$ELSE OS2}
-        {$I ssfpc.inc}
-       {$ENDIF OS2}
+        {$I ssfpc.pas}
       {$ELSE}
-        {$I sslinux.inc}
+        {$I sslinux.pas}
       {$ENDIF}
     {$ENDIF}
   {$ENDIF}
-{$ENDIF}
-{$IFDEF POSIX}
-//Posix.SysSocket
-   {$I ssposix.inc} //experimental!
 {$ENDIF}
 
 end.

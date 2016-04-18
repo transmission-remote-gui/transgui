@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2013 by Yury Sidorov.
+  Copyright (c) 2008-2009 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,26 +17,17 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 *************************************************************************************}
 
-{$ifdef windows}
-{$apptype gui}
-{$endif windows}
-
 program transgui;
 
 {$mode objfpc}{$H+}
 
 uses
-{$ifdef UNIX}
+  {$IFDEF UNIX}
   cthreads,
-  {$ifdef darwin}
-  maclocale,
-  {$else}
-  clocale,
-  {$endif}
-{$endif}
+  {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms
-  { you can add units after this }, BaseForm, Main, rpc, AddTorrent, ConnOptions, varlist,
+  { you can add units after this }, Main, rpc, AddTorrent, ConnOptions, varlist,
   TorrProps, DaemonOptions, About, IpResolver, download, ColSetup, utils, ResTranslator, AddLink, MoveTorrent, AddTracker, Options;
 
 {$R *.res}

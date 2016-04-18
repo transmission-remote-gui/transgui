@@ -1,6 +1,6 @@
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
-  Copyright (c) 2008-2014 by Yury Sidorov.
+  Copyright (c) 2008-2010 by Yury Sidorov.
 
   Transmission Remote GUI is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ unit MoveTorrent;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ButtonPanel, ExtCtrls, BaseForm;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ButtonPanel, ExtCtrls;
 
 resourcestring
   SNoTorrentDir = 'No torrent location was specified.';
@@ -34,7 +34,7 @@ type
 
   { TMoveTorrentForm }
 
-  TMoveTorrentForm = class(TBaseForm)
+  TMoveTorrentForm = class(TForm)
     btBrowse: TButton;
     Buttons: TButtonPanel;
     cbMoveData: TCheckBox;
@@ -78,10 +78,10 @@ end;
 
 procedure TMoveTorrentForm.FormCreate(Sender: TObject);
 begin
+  Font.Size:=MainForm.Font.Size;
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@btOKClick;
-
-  bidiMode := GetBiDi(); // PETROV
+  AutoSizeForm(Self);
 end;
 
 initialization
