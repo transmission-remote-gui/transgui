@@ -1111,10 +1111,12 @@ inherited MainForm: TMainForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 2
+    OnContextPopup = MainToolBarContextPopup
     object ToolButton1: TToolButton
       Left = 44
       Top = 2
       Action = acAddTorrent
+      AutoSize = True
     end
     object ToolButton2: TToolButton
       Left = 90
@@ -1128,16 +1130,19 @@ inherited MainForm: TMainForm
       Left = 95
       Top = 2
       Action = acStartTorrent
+      AutoSize = True
     end
     object ToolButton4: TToolButton
       Left = 118
       Top = 2
       Action = acStopTorrent
+      AutoSize = True
     end
     object tbStopTorrent: TToolButton
       Left = 141
       Top = 2
       Action = acRemoveTorrent
+      AutoSize = True
     end
     object ToolButton6: TToolButton
       Left = 39
@@ -1159,16 +1164,19 @@ inherited MainForm: TMainForm
       Left = 248
       Top = 2
       Action = acDaemonOptions
+      AutoSize = True
     end
     object ToolButton9: TToolButton
       Left = 67
       Top = 2
       Action = acAddLink
+      AutoSize = True
     end
     object tbConnect: TToolButton
       Left = 4
       Top = 2
       Action = acConnect
+      AutoSize = True
       DropdownMenu = pmConnections
       Style = tbsDropDown
     end
@@ -1176,6 +1184,7 @@ inherited MainForm: TMainForm
       Left = 220
       Top = 2
       Action = acAltSpeed
+      AutoSize = True
     end
     object sepAltSpeed: TToolButton
       Left = 215
@@ -1197,17 +1206,20 @@ inherited MainForm: TMainForm
       Left = 169
       Top = 2
       Action = acQMoveUp
+      AutoSize = True
     end
     object tbQMoveDown: TToolButton
       Left = 192
       Top = 2
       Action = acQMoveDown
+      AutoSize = True
     end
     object ToolButton5: TToolButton
       Left = 271
       Hint = 'Application Options (Ctrl+F9)'
       Top = 2
       Action = acConnOptions
+      AutoSize = True
       Caption = 'Application option...'
       ImageIndex = 43
     end

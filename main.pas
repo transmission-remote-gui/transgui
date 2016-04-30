@@ -26,11 +26,11 @@ interface
 uses
   Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
   httpsend, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
-  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent;
+  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent, Types;
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.3.1';
+  AppVersion = '5.4.0';
 
 resourcestring
   sAll = 'All torrents';
@@ -558,6 +558,8 @@ type
     procedure lvTrackersDblClick(Sender: TObject);
     procedure lvTrackersKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure goDevelopmentSiteClick(Sender: TObject);
+    procedure MainToolBarContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
     procedure miHomePageClick(Sender: TObject);
     procedure PageInfoResize(Sender: TObject);
     procedure panReconnectResize(Sender: TObject);
@@ -817,7 +819,7 @@ uses
   urllistenerosx,
 {$endif darwin}
   synacode, ConnOptions, clipbrd, DateUtils, TorrProps, DaemonOptions, About,
-  ToolWin, download, ColSetup, types, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
+  ToolWin, download, ColSetup, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
   Options, ButtonPanel, BEncode, synautil;
 
 const
@@ -4135,6 +4137,20 @@ begin
   goGitHub;
 end;
 
+procedure TMainForm.MainToolBarContextPopup(Sender: TObject; MousePos: TPoint;
+  var Handled: Boolean);
+begin
+  if (MainToolBar.ButtonWidth = 23) then begin
+    MainToolBar.ButtonWidth:= 64;
+    MainToolBar.ButtonHeight:=64;
+    Ini.WriteBool('MainForm', 'BigToolbar', True)
+  end else begin
+    MainToolBar.ButtonWidth:= 23;
+    MainToolBar.ButtonHeight:=23;
+    Ini.WriteBool('MainForm', 'BigToolbar', False);
+  end;
+end;
+
 procedure TMainForm.miHomePageClick(Sender: TObject);
 begin
   GoHomePage;
@@ -6528,8 +6544,15 @@ begin
         pFD.Ext:= Ini.ReadString  (IniSec, Format('FolExt%d', [i]),'');
         pFD.Txt:= s; // petrov for debug
         lastDt := Ini.ReadString  (IniSec, Format('LastDt%d', [i]),'');
-        if (lastDt <> '') then
-           pFD.Lst := StrToDate(lastDt)
+
+        ShortDateFormat := 'dd.mm.yyyy';    // setting the date format by default
+        if (lastDt <> '') then begin
+           try
+              pFD.Lst := StrToDate(lastDt); // protection against incorrect date format
+           except
+              pFD.Lst := EncodeDate (2000,1,1);
+           end;
+        end
         else
            pFD.Lst := EncodeDate (2000,1,1); // last time folder
 
@@ -6556,6 +6579,7 @@ var
   i: integer;
   IniSec: string;
   tmp,selfolder : string;
+  strdate : string;
   pFD : FolderData;
 begin
   IniSec   := 'AddTorrent.' + FCurConn;
@@ -6571,7 +6595,7 @@ begin
       pFD.Hit:= 1;
       pFD.Ext:= '';
       pFD.Txt:= selfolder;
-      pFD.Lst:= SysUtils.Date+7; // дадим фору 7 дней
+      pFD.Lst:= SysUtils.Date+7; // +7 days
       CB.Items.Objects[i]:= pFD;
     end else begin
       pFD    := CB.Items.Objects[i] as FolderData;
@@ -6582,6 +6606,7 @@ begin
     end;
   end;
 
+  ShortDateFormat := 'dd.mm.yyyy';    // setting the date format by default
   Ini.WriteInteger(IniSec, 'FolderCount', CB.Items.Count);
   for i:=0 to CB.Items.Count - 1 do begin
     tmp := CorrectPath(CB.Items[i]); // PETROV
@@ -6589,7 +6614,10 @@ begin
     Ini.WriteString (IniSec, Format('Folder%d', [i]), tmp);
     Ini.WriteInteger(IniSec, Format('FolHit%d', [i]), pFD.Hit);
     Ini.WriteString (IniSec, Format('FolExt%d', [i]), pFD.Ext);
-    Ini.WriteString (IniSec, Format('LastDt%d', [i]), DateToStr (pFD.Lst));
+
+    DateTimeToString(strdate, 'dd.mm.yyyy', pFD.Lst);
+//  Ini.WriteString (IniSec, Format('LastDt%d', [i]), DateToStr (pFD.Lst));
+    Ini.WriteString (IniSec, Format('LastDt%d', [i]), strdate);
   end;
 
   // clear string

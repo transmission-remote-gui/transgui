@@ -20,8 +20,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="5"/>
-      <MinorVersionNr Value="3"/>
-      <StringTable CompanyName="Yury Sidorov" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2016 by Yury Sidorov &amp; Alexander Petrov" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion="5.3.0"/>
+      <MinorVersionNr Value="4"/>
+      <StringTable CompanyName="Yury Sidorov" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2016 by Yury Sidorov &amp; Alexander Petrov" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion="5.4.0"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="default" Default="True"/>
@@ -207,11 +207,7 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
       <CustomOptions Value="-Sa"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
 </CONFIG>

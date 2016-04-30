@@ -1,21 +1,21 @@
 inherited MoveTorrentForm: TMoveTorrentForm
-  Left = 354
+  Left = 476
   Height = 126
-  Top = 193
-  Width = 561
+  Top = 200
+  Width = 643
   AutoSize = True
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Torrent data location'
   ClientHeight = 126
-  ClientWidth = 561
+  ClientWidth = 643
   OnCreate = FormCreate
   Position = poMainFormCenter
   object Buttons: TButtonPanel[0]
     Left = 8
     Height = 36
     Top = 82
-    Width = 545
+    Width = 627
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
     BorderSpacing.Bottom = 8
@@ -36,52 +36,55 @@ inherited MoveTorrentForm: TMoveTorrentForm
     Left = 8
     Height = 74
     Top = 8
-    Width = 545
+    Width = 627
     Align = alClient
     BorderSpacing.Left = 8
     BorderSpacing.Top = 8
     BorderSpacing.Right = 8
     BevelOuter = bvNone
     ClientHeight = 74
-    ClientWidth = 545
+    ClientWidth = 627
     Constraints.MinWidth = 545
     TabOrder = 0
     object txTorrentDir: TLabel
       Left = 0
-      Height = 14
+      Height = 15
       Top = 0
-      Width = 145
+      Width = 156
       Caption = 'New location for torrent data:'
       ParentColor = False
     end
     object edTorrentDir: TComboBox
       Left = 0
-      Height = 21
+      Height = 23
       Top = 20
-      Width = 449
+      Width = 528
       Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
       DropDownCount = 60
-      ItemHeight = 13
+      ItemHeight = 15
+      Sorted = True
       TabOrder = 0
-	  Sorted = true
     end
     object cbMoveData: TCheckBox
       Left = 0
-      Height = 17
+      Height = 19
       Top = 47
-      Width = 285
+      Width = 316
+      AutoSize = False
       Caption = 'Move torrent data from current location to new location'
       Checked = True
       State = cbChecked
       TabOrder = 2
     end
     object btBrowse: TButton
-      Left = 454
+      Left = 536
       Height = 23
-      Top = 19
+      Top = 20
       Width = 91
       Anchors = [akTop, akRight]
       Caption = 'Browse...'
+      Constraints.MaxWidth = 91
       OnClick = btBrowseClick
       TabOrder = 1
     end

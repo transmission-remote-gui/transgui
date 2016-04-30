@@ -1,3 +1,8 @@
+5.4.0 (May 01, 2016)
+[-] Fixed the date format. Issue 883
+[-] Fixed bug 'Download directory path is not absolute'. Issue 891
+[+] Switching size toolbar on the right mouse button. Issue 889
+
 5.3.0 (Apr 01, 2016)
 [+] Add a column for 'download remaining'. Issue 881,898
 [-] Fix "Global Statistics" shown problem. Issue 897 
