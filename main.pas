@@ -612,6 +612,7 @@ const
   idxStreamingMode = 23;
   idxCheatMode = 24;
   idxSdRatio = 25;
+  idxSizeLeft = 26;
  
   idxTag = -1;
   idxSeedsTotal = -2;
@@ -691,11 +692,11 @@ const
 
   StatusFiltersCount = 7;
 
-  TorrentFieldsMap: array[idxName..idxSdRatio] of string =
+  TorrentFieldsMap: array[idxName..idxSizeLeft] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
      'peersGettingFromUs,leechers', 'rateDownload', 'rateUpload', 'eta', 'uploadRatio',
      'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority',
-     '', '', 'queuePosition', 'secondsSeeding', 'streamingMode', 'cheatMode', '');
+     '', '', 'queuePosition', 'secondsSeeding', 'streamingMode', 'cheatMode', 'leftUntilDone', '');
 
 implementation
 
@@ -3039,7 +3040,7 @@ begin
     case ADataCol of
       idxStatus:
         Text:=GetTorrentStatus(ARow);
-      idxSize, idxDownloaded, idxUploaded, idxSizeToDowload:
+      idxSize, idxDownloaded, idxUploaded, idxSizeToDowload, idxSizeLeft:
         Text:=GetHumanSize(Sender.Items[ADataCol, ARow]);
       idxDone:
         Text:=Format('%.1f%%', [double(Sender.Items[idxDone, ARow])]);
@@ -4247,6 +4248,7 @@ begin
       FTorrents[idxETA, row]:=MaxInt;
     GetTorrentValue(idxDownloaded, 'downloadedEver', vtExtended);
     GetTorrentValue(idxUploaded, 'uploadedEver', vtExtended);
+    GetTorrentValue(idxSizeLeft, 'leftUntilDone', vtExtended);
     GetTorrentValue(idxAddedOn, 'addedDate', vtExtended);
     GetTorrentValue(idxCompletedOn, 'doneDate', vtExtended);
     GetTorrentValue(idxLastActive, 'activityDate', vtExtended);
@@ -4822,7 +4824,7 @@ begin
   panTransfer.ChildSizing.Layout:=cclNone;
   txStatus.Caption:=GetTorrentStatus(idx);
   txError.Caption:=GetTorrentError(t);
-  txRemaining.Caption:=EtaToString(t.Integers['eta']);
+  txRemaining.Caption:=EtaToString(t.Integers['eta'])+' ('+GetHumanSize(t.Floats['leftUntilDone'])+')';
   txDownloaded.Caption:=GetHumanSize(t.Floats['downloadedEver']);
   txUploaded.Caption:=GetHumanSize(t.Floats['uploadedEver']);
   f:=t.Floats['pieceSize'];
