@@ -95,7 +95,7 @@ type
   TFilesTree = class(TComponent)
   private
     FCheckboxes: boolean;
-    FDownloadDir: string;
+    FDownloadDir: UnicodeString;
     FGrid: TVarGrid;
     FHasFolders: boolean;
     FIsPlain: boolean;
@@ -135,14 +135,14 @@ type
     procedure FillTree(ATorrentId: integer; files, priorities, wanted: TJSONArray);
     procedure SetStateAll(AState: TCheckBoxState);
     procedure EnsureRowVisible(ARow: integer);
-    function GetFullPath(ARow: integer; AbsolutePath: boolean = True): string;
+    function GetFullPath(ARow: integer; AbsolutePath: boolean = True): UnicodeString;
     function UpdateSummary: TFolderInfo;
     procedure Clear;
     property Grid: TVarGrid read FGrid;
     property HasFolders: boolean read FHasFolders;
     property Checkboxes: boolean read FCheckboxes write SetCheckboxes;
     property IsPlain: boolean read FIsPlain write SetIsPlain;
-    property DownloadDir: string read FDownloadDir write FDownloadDir;
+    property DownloadDir: UnicodeString read FDownloadDir write FDownloadDir;
     property Expanded[ARow: integer]: boolean read GetExpanded write SetExpanded;
     property Checked[ARow: integer]: TCheckBoxState read GetChecked write SetChecked;
     property RowLevel[ARow: integer]: integer read GetLevel;
@@ -225,9 +225,10 @@ end;
 
 procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJSONArray);
 
-  procedure _AddFolders(list: TVarList; const path: string; var idx: integer; cnt, level: integer);
+  procedure _AddFolders(list: TVarList; const path: UnicodeString; var idx: integer; cnt, level: integer);
   var
-    s, ss: string;
+//    s, ss: string;
+    s, ss: UnicodeString;
     j: integer;
     p: PChar;
   begin
@@ -267,7 +268,7 @@ var
   i, row: integer;
   FullRefresh: boolean;
   f: TJSONObject;
-  s, ss, path: string;
+  s, ss, path: UnicodeString;
   ff: double;
 begin
   if files = nil then begin
@@ -295,7 +296,7 @@ begin
     FCommonPathLen:=0;
      path:='';
     if files.Count > 0 then begin
-      s:=(files.Objects[0].Strings['name']); // Lazarus 1.4.4
+      s:=UnicodeString(files.Objects[0].Strings['name']); // Lazarus 1.4.4
       FCommonPathLen:=Pos(RemotePathDelimiter, s);
       if FCommonPathLen > 0 then
         path:=Copy(s, 1, FCommonPathLen);
@@ -316,7 +317,7 @@ begin
       SetRowOption(row, roTag, True);
       FFiles[idxFileId, row]:=i;
 
-      s:=(f.Strings['name']); // Lazarus 1.4.4
+      s:=UnicodeString(f.Strings['name']); // Lazarus 1.4.4
 
       FFiles[idxFileFullPath, row]:=(ExtractFilePath(s));                   // L1.4.4
 
@@ -426,7 +427,7 @@ begin
   FGrid.EnsureRowVisible(ARow);
 end;
 
-function TFilesTree.GetFullPath(ARow: integer; AbsolutePath: boolean): string;
+function TFilesTree.GetFullPath(ARow: integer; AbsolutePath: boolean): UnicodeString;
 begin
   if AbsolutePath then begin
     Result:=FDownloadDir;
@@ -774,7 +775,8 @@ begin
             State:=Checked[ARow];
           end;
           if IsPlain then begin
-            Text:=Copy((widestring(Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text; // Lazarus 1.4.4
+//          Text:=Copy((widestring(Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text; // Lazarus 1.4.4
+            Text:=Copy(((Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text; // Lazarus 1.4.4
 
           end
           else begin
@@ -790,16 +792,16 @@ begin
           end;
         end;
       idxFileSize, idxFileDone:
-        Text:=GetHumanSize(double(Sender.Items[ADataCol, ARow]));
+        Text:=(GetHumanSize(double(Sender.Items[ADataCol, ARow])));
       idxFileProgress:
-        Text:=Format('%.1f%%', [double(Sender.Items[ADataCol, ARow])]);
+        Text:=(Format('%.1f%%', [double(Sender.Items[ADataCol, ARow])]));
       idxFilePriority:
         begin
           i:=Sender.Items[idxFilePriority, ARow];
           if i = TR_PRI_MIXED then
             Text:=''
           else
-            Text:=PriorityToStr(i, ImageIndex);
+            Text:= (PriorityToStr(i, ImageIndex));
         end;
     end;
   end;

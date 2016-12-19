@@ -139,7 +139,7 @@ type
   end;
 
 var
-  RemotePathDelimiter: char = '/';
+  RemotePathDelimiter: widechar = '/';
 
 implementation
 
@@ -263,7 +263,7 @@ begin
   end;
   t:=ResultData as TJSONObject;
   if RpcObj.RPCVersion >= 4 then
-    dir:=t.Strings['downloadDir']
+    dir:=widestring(t.Strings['downloadDir'])
   else
     dir:='';
   MainForm.FillFilesList(t.Integers['id'], t.Arrays['files'], t.Arrays['priorities'], t.Arrays['wanted'], dir);
