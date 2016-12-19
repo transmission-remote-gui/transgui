@@ -3318,7 +3318,7 @@ end;
 
 procedure TMainForm.acShowCountryFlagExecute(Sender: TObject);
 const
-  FlagsURL = 'http://transmisson-remote-gui.googlecode.com/files/flags.zip';
+  FlagsURL = 'https://raw.githubusercontent.com/leonsoft-kras/transmisson-remote-gui/master/flags.zip';
 begin
   if not acShowCountryFlag.Checked then
     if GetFlagsArchive = '' then begin
