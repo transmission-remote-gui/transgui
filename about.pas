@@ -228,9 +228,7 @@ var
   s: string;
 {$endif lclcarbon}
 begin
-
-  bidiMode := GetBiDi(); // PETROV
-
+  bidiMode := GetBiDi();
   txAppName.Font.Size:=Font.Size + 2;
   txHomePage.Font.Size:=Font.Size;
   BorderStyle:=bsSizeable;

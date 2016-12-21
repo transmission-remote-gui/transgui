@@ -24,7 +24,7 @@ unit VarGrid;
 interface
 
 uses
-  Classes, SysUtils, Grids, VarList, Graphics, Controls, LMessages, Forms, StdCtrls, LCLType, ExtCtrls;
+  Classes, SysUtils, Grids, VarList, Graphics, Controls, LMessages, Forms, StdCtrls, LCLType, ExtCtrls,LazUTF8;
 
 type
   TVarGrid = class;
@@ -540,13 +540,13 @@ begin
   c:=SortColumn;
   if (c < 0) or (c >= Items.ColCnt) then
     c:=0;
-  ss:=UTF8UpperCase(SearchStr);
+  ss:= LazUTF8.UTF8UpperCase(SearchStr);
   for i:=StartRow to Items.Count - 1 do begin
     v:=Items[c, i];
     if VarIsNull(v) or VarIsEmpty(v) then
-      s:=''
+      s:= ''
     else
-      s:=UTF8UpperCase((widestring(v))); // Lazarus 1.4.4
+      s:= LazUTF8.UTF8UpperCase(UTF8Encode(widestring(v))); // Lazarus 1.4.4 - 162 OK
     if Copy(s, 1, Length(ss)) = ss then begin
       Result:=i;
       break;
@@ -1079,7 +1079,7 @@ begin
     if ARow >= FixedRows then begin
       v:=Items[dc, ARow - FixedRows];
       if not VarIsNull(v) and not VarIsEmpty(v) then
-        CellAttribs.Text:=(WideString(v)) // Lazarus 1.4.4
+        CellAttribs.Text:=UTF8Encode(WideString(v)) // Lazarus 1.4.4 * 162 OK
       else
         CellAttribs.Text:='';
     end
@@ -1411,7 +1411,7 @@ begin
   if ARow >= FixedRows then begin
     v:=Items[dc, ARow - FixedRows];
     if not VarIsNull(v) and not VarIsEmpty(v) then
-      Result:=(WideString(v)); // Lazarus 1.4.4
+      Result:=UTF8Encode(WideString(v)); // Lazarus 1.4.4 * 162 OK
   end;
 end;
 

@@ -176,8 +176,7 @@ end;
 
 procedure TDownloadForm.FormCreate(Sender: TObject);
 begin
-  bidiMode := GetBiDi(); // PETROV
-
+  bidiMode := GetBiDi(); 
   FThread:=TDownloadThread.Create(True);
   FThread.FreeOnTerminate:=True;
   FThread.FForm:=Self;

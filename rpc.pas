@@ -139,7 +139,7 @@ type
   end;
 
 var
-  RemotePathDelimiter: widechar = '/';
+  RemotePathDelimiter: char = '/';
 
 implementation
 

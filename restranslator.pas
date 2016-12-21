@@ -12,7 +12,7 @@ unit ResTranslator;
 interface
 
 uses
-  Classes, StrUtils, SysUtils, FileUtil, LResources, TypInfo, LCLProc;
+  Classes, StrUtils, SysUtils, FileUtil, LResources, TypInfo, LCLProc, LazUTF8;
 
 type
 

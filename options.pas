@@ -104,8 +104,7 @@ var
   s: string;
 {$endif mswindows}
 begin
-  bidiMode := GetBiDi(); // PETROV
-
+  bidiMode := GetBiDi();
   cbRegExt.Caption:=Format(cbRegExt.Caption, [AppName]);
   cbRegMagnet.Caption:=Format(cbRegMagnet.Caption, [AppName]);
 

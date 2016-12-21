@@ -333,8 +333,7 @@ var
   i, cnt: integer;
   s: string;
 begin
-  bidiMode := GetBiDi(); // PETROV
-
+  bidiMode := GetBiDi();
   Page.ActivePageIndex:=0;
   txConnHelp.Caption:=Format(txConnHelp.Caption, [AppName]);
   ActiveControl:=edHost;
@@ -361,7 +360,6 @@ begin
     edTranslateMsg.Enabled:=False;
   Main.LoadTranslation;
   edLanguage.Text:=Main.FTranslationLanguage;
-  //edIniFileName.Text:=Main.FHomeDir+ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.ini') + ' - ' + GetAppConfigDir(False)+ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.ini');
   edIniFileName.Text:=Main.FHomeDir+ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.ini');
 end;
 
@@ -559,8 +557,7 @@ begin
     if IsConnSettingsChanged(ConnName) then
       ActiveSettingChanged:=True;
 
-  Ini.WriteInteger('Interface','MaxFoldersHistory', edMaxFolder.Value); // PETROV
-
+  Ini.WriteInteger('Interface','MaxFoldersHistory', edMaxFolder.Value); 
   with Ini do begin
     Sec:='Connection.' + ConnName;
     WriteString(Sec, 'Host', Trim(edHost.Text));

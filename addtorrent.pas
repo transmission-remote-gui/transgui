@@ -25,7 +25,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, VarGrid, Grids,
-  ButtonPanel, ExtCtrls, BaseForm, varlist, fpjson, StrUtils,DateUtils;
+  ButtonPanel, ExtCtrls, BaseForm, varlist, fpjson, StrUtils,DateUtils,LazUTF8;
 
 resourcestring
   SSize = 'Size';
@@ -95,7 +95,7 @@ type
   TFilesTree = class(TComponent)
   private
     FCheckboxes: boolean;
-    FDownloadDir: UnicodeString;
+    FDownloadDir: string;
     FGrid: TVarGrid;
     FHasFolders: boolean;
     FIsPlain: boolean;
@@ -135,14 +135,14 @@ type
     procedure FillTree(ATorrentId: integer; files, priorities, wanted: TJSONArray);
     procedure SetStateAll(AState: TCheckBoxState);
     procedure EnsureRowVisible(ARow: integer);
-    function GetFullPath(ARow: integer; AbsolutePath: boolean = True): UnicodeString;
+    function GetFullPath(ARow: integer; AbsolutePath: boolean = True): string;
     function UpdateSummary: TFolderInfo;
     procedure Clear;
     property Grid: TVarGrid read FGrid;
     property HasFolders: boolean read FHasFolders;
     property Checkboxes: boolean read FCheckboxes write SetCheckboxes;
     property IsPlain: boolean read FIsPlain write SetIsPlain;
-    property DownloadDir: UnicodeString read FDownloadDir write FDownloadDir;
+    property DownloadDir: string read FDownloadDir write FDownloadDir;
     property Expanded[ARow: integer]: boolean read GetExpanded write SetExpanded;
     property Checked[ARow: integer]: TCheckBoxState read GetChecked write SetChecked;
     property RowLevel[ARow: integer]: integer read GetLevel;
@@ -225,15 +225,14 @@ end;
 
 procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJSONArray);
 
-  procedure _AddFolders(list: TVarList; const path: UnicodeString; var idx: integer; cnt, level: integer);
+  procedure _AddFolders(list: TVarList; const path: string; var idx: integer; cnt, level: integer);
   var
-//    s, ss: string;
-    s, ss: UnicodeString;
+    s, ss: string;
     j: integer;
     p: PChar;
   begin
     while idx < cnt do begin
-      s:=ExtractFilePath((widestring(list[idxFileFullPath, idx]))); // Lazarus 1.4.4
+      s:=ExtractFilePath(UTF8Encode(widestring(list[idxFileFullPath, idx])));
       if s = '' then begin
         Inc(idx);
         continue;
@@ -253,12 +252,10 @@ procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJ
           SetLength(ss, p - PChar(ss) + 1);
           j:=list.Count;
           list[idxFileLevel, j]:=level;
-
-          list[idxFileFullPath, j]:=(path + ss); // L1.4.4
-
+          list[idxFileFullPath, j]:=UTF8Decode(path + ss);
           _AddFolders(list, path + ss, idx, cnt, level + 1);
           ss:=ExcludeTrailingPathDelimiter(ss);
-          list[idxFileName, j]:=(ExtractFileName(ss)); // L1.4.4
+          list[idxFileName, j]:=UTF8Decode(ExtractFileName(ss));
         end;
       end;
     end;
@@ -268,7 +265,7 @@ var
   i, row: integer;
   FullRefresh: boolean;
   f: TJSONObject;
-  s, ss, path: UnicodeString;
+  s, ss, path: string;
   ff: double;
 begin
   if files = nil then begin
@@ -296,7 +293,7 @@ begin
     FCommonPathLen:=0;
      path:='';
     if files.Count > 0 then begin
-      s:=UnicodeString(files.Objects[0].Strings['name']); // Lazarus 1.4.4
+      s:=UTF8Encode(files.Objects[0].Strings['name']);
       FCommonPathLen:=Pos(RemotePathDelimiter, s);
       if FCommonPathLen > 0 then
         path:=Copy(s, 1, FCommonPathLen);
@@ -317,18 +314,15 @@ begin
       SetRowOption(row, roTag, True);
       FFiles[idxFileId, row]:=i;
 
-      s:=UnicodeString(f.Strings['name']); // Lazarus 1.4.4
-
-      FFiles[idxFileFullPath, row]:=(ExtractFilePath(s));                   // L1.4.4
-
+      s:=UTF8Encode(f.Strings['name']);
+      FFiles[idxFileFullPath, row]:=UTF8Decode(ExtractFilePath(s));
       if FCommonPathLen > 0 then
         s:=Copy(s, FCommonPathLen + 1, MaxInt);
       ss:=ExtractFileName(s);
       if ss <> s then
         FHasFolders:=True;
 
-      FFiles[idxFileName, row]:=(ss); // Lazarus 1.4.4
-
+      FFiles[idxFileName, row]:=UTF8Decode(ss);
       ff:=f.Floats['length'];
       FFiles[idxFileSize, row]:=ff;
 
@@ -427,7 +421,7 @@ begin
   FGrid.EnsureRowVisible(ARow);
 end;
 
-function TFilesTree.GetFullPath(ARow: integer; AbsolutePath: boolean): UnicodeString;
+function TFilesTree.GetFullPath(ARow: integer; AbsolutePath: boolean): string;
 begin
   if AbsolutePath then begin
     Result:=FDownloadDir;
@@ -436,15 +430,12 @@ begin
   end
   else
     Result:='';
-    Result:=Result + (widestring(FFiles[idxFileFullPath, ARow])); // Lazarus 1.4.4
-//  Result:=Result + UTF8Encode(widestring(FFiles[idxFileFullPath, ARow]));//??????????????????
-
+     Result:=Result + UTF8Encode(widestring(FFiles[idxFileFullPath, ARow]));
 
   if IsFolder(ARow) then
       Result:=Copy(Result, 1, Length(Result) - 1)
   else
-      Result:=Result + (widestring(FFiles[idxFileName, ARow])); // Lazarus 1.4.4
-//    Result:=Result + UTF8Encode(widestring(FFiles[idxFileName, ARow]));//??????????????????
+      Result:=Result + UTF8Encode(widestring(FFiles[idxFileName, ARow]));
 end;
 
 function TFilesTree.UpdateSummary: TFolderInfo;
@@ -775,9 +766,7 @@ begin
             State:=Checked[ARow];
           end;
           if IsPlain then begin
-//          Text:=Copy((widestring(Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text; // Lazarus 1.4.4
-            Text:=Copy(((Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text; // Lazarus 1.4.4
-
+            Text:=Copy(UTF8Encode(widestring(Sender.Items[idxFileFullPath, ARow])), FCommonPathLen + 1, MaxInt) + Text;
           end
           else begin
             Indent:=integer(Sender.Items[idxFileLevel, ARow])*16;
@@ -823,13 +812,12 @@ var
   s: string;
   v: variant;
 begin
-  s:=UTF8UpperCase(SearchText);
+  s:= LazUTF8.UTF8UpperCase(SearchText);
   for i:=ARow to Sender.Items.Count - 1 do begin
     v:=Sender.Items[idxFileName, i];
     if VarIsEmpty(v) or VarIsNull(v) or (IsPlain and IsFolder(i)) then
       continue;
-
-    if Pos(s, Trim(UTF8UpperCase((widestring(v))))) > 0 then begin // Lazarus 1.4.4
+    if Pos(s, Trim(LazUTF8.UTF8UpperCase((widestring(v))))) > 0 then begin
       ARow:=i;
       EnsureRowVisible(ARow);
       break;
@@ -884,25 +872,29 @@ begin
     max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
     Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max); // PETROV
 
-    while (cbDestFolder.Items.Count+maxdel) > max do begin
-       min := 9999999;
-       indx:=-1;
-       for i:=0 to cbDestFolder.Items.Count - 1 do begin
-         pFD := cbDestFolder.Items.Objects[i] as FolderData;
+    try
+      while (cbDestFolder.Items.Count+maxdel) > max do begin
+         min := 9999999;
+         indx:=-1;
+         for i:=0 to cbDestFolder.Items.Count - 1 do begin
+           pFD := cbDestFolder.Items.Objects[i] as FolderData;
 
-         fldr := DaysBetween(SysUtils.Date,pFD.Lst);
-         if SysUtils.Date > pFD.Lst then
-           fldr := 0- fldr;
+           fldr := DaysBetween(SysUtils.Date,pFD.Lst);
+           if SysUtils.Date > pFD.Lst then
+             fldr := 0- fldr;
 
-         fldr := fldr + pFD.Hit;
-         if fldr < min then begin
-           min := fldr;
-           indx:= i;
+           fldr := fldr + pFD.Hit;
+           if fldr < min then begin
+             min := fldr;
+             indx:= i;
+           end;
          end;
-       end;
 
-       if indx > -1 then
-         cbDestFolder.Items.Delete(indx);
+         if indx > -1 then
+           cbDestFolder.Items.Delete(indx);
+      end;
+    except
+      MessageDlg('Error: LS-001. Please contact the developer', mtError, [mbOK], 0);
     end;
 end;
 
@@ -916,24 +908,28 @@ begin
   s := CorrectPath(cbDestFolder.Text);
   e := edExtension.Text;
   i := cbDestFolder.Items.IndexOf(s);
-  if i < 0 then begin
-     DeleteDirs (1);               // prepare for new item
-     cbDestFolder.Items.Insert (0, s);
-     i:=cbDestFolder.Items.IndexOf(s);
-     pFD    := FolderData.create;
-     pFD.Hit:= 1;
-     pFD.Ext:= e;
-     pFD.Txt:= s;
-     pFD.Lst:= SysUtils.Date;
-     cbDestFolder.Items.Objects[i]:= pFD;
-  end else begin
-     pFD    := cbDestFolder.Items.Objects[i] as FolderData;
-     pFD.Hit:= pFD.Hit + 1;
-     pFD.Ext:= e;
-     pFD.Txt:= s;
-     pFD.Lst:= SysUtils.Date;
-     cbDestFolder.Items.Objects[i]:= pFD;
-     DeleteDirs (0);               // check count items
+  try
+    if i < 0 then begin
+       DeleteDirs (1);               // prepare for new item
+       cbDestFolder.Items.Insert (0, s);
+       i:=cbDestFolder.Items.IndexOf(s);
+       pFD    := FolderData.create;
+       pFD.Hit:= 1;
+       pFD.Ext:= e;
+       pFD.Txt:= s;
+       pFD.Lst:= SysUtils.Date;
+       cbDestFolder.Items.Objects[i]:= pFD;
+    end else begin
+       pFD    := cbDestFolder.Items.Objects[i] as FolderData;
+       pFD.Hit:= pFD.Hit + 1;
+       pFD.Ext:= e;
+       pFD.Txt:= s;
+       pFD.Lst:= SysUtils.Date;
+       cbDestFolder.Items.Objects[i]:= pFD;
+       DeleteDirs (0);               // check count items
+    end;
+  except
+    MessageDlg('Error: LS-002. Please contact the developer', mtError, [mbOK], 0);
   end;
 
   if edSaveAs.Enabled then begin
@@ -1022,9 +1018,7 @@ begin
     args:=TJSONObject.Create;
     try
       req.Add('method', 'free-space');
-
-      args.Add('path', (cbDestFolder.Text));          // L1.4.4
-
+      args.Add('path', UTF8Decode(cbDestFolder.Text));
       req.Add('arguments', args);
       args:=RpcObj.SendRequest(req);
       if args <> nil then
@@ -1154,38 +1148,46 @@ begin
     dTotalMax := 0;
     jMax      :=-1;
 
-    for j:=0 to cbDestFolder.Items.Count-1 do begin
-      pFD  := cbDestFolder.Items.Objects[j] as FolderData;
-      s    := Trim(pFD.Ext);
-      if s = '' then continue;
+    try
+      for j:=0 to cbDestFolder.Items.Count-1 do begin
+        pFD  := cbDestFolder.Items.Objects[j] as FolderData;
+        s    := Trim(pFD.Ext);
+        if s = '' then continue;
 
-      n      := GetTempate (AnsiLowerCase(s), e);
-      dTotal := 0;
-      torrMax:= lvFiles.Items.Count;
-      if torrMax > 100 then torrMax := 100;
+        n      := GetTempate (AnsiLowerCase(s), e);
+        dTotal := 0;
+        torrMax:= lvFiles.Items.Count;
+        if torrMax > 100 then torrMax := 100;
 
-      for i:=0 to torrMax - 1 do begin
-          if not FTree.IsFolder(i) then begin
-            filename := lvFiles.Items[idxFileName, i];
-            filesize := double(lvFiles.Items[idxFileSize, i]);
-            if IsFileTemplate(filename, n,e) = true then
-              dTotal := dTotal + filesize;
-          end;
+        for i:=0 to torrMax - 1 do begin
+            if not FTree.IsFolder(i) then begin
+              filename := lvFiles.Items[idxFileName, i];
+              filesize := double(lvFiles.Items[idxFileSize, i]);
+              if IsFileTemplate(filename, n,e) = true then
+                dTotal := dTotal + filesize;
+            end;
+        end;
+
+        if (dTotal > 0) and (dTotal > dTotalMax) then begin
+          dTotalMax := dTotal;
+          jMax      := j;
+        end;
       end;
-
-      if (dTotal > 0) and (dTotal > dTotalMax) then begin
-        dTotalMax := dTotal;
-        jMax      := j;
-      end;
+    except
+      MessageDlg('Error: LS-003. Please contact the developer', mtError, [mbOK], 0);
     end;
 
-    if jMax <> -1 then begin
-      pFD  := cbDestFolder.Items.Objects[jMax] as FolderData;
-      cbDestFolder.ItemIndex := jMax;
-      cbDestFolder.Text := pFD.Txt;
-      cbDestFolderChange(nil);
-    end else begin
-      cbDestFolderChange(nil);
+    try
+      if jMax <> -1 then begin
+        pFD  := cbDestFolder.Items.Objects[jMax] as FolderData;
+        cbDestFolder.ItemIndex := jMax;
+        cbDestFolder.Text := pFD.Txt;
+        cbDestFolderChange(nil);
+      end else begin
+        cbDestFolderChange(nil);
+      end;
+    except
+      MessageDlg('Error: LS-004. Please contact the developer', mtError, [mbOK], 0);
     end;
 end;
 
@@ -1198,9 +1200,7 @@ begin
   FTree.Checkboxes:=True;
   FTree.OnStateChange:=@TreeStateChanged;
   Buttons.OKButton.ModalResult:=mrNone;
-
-  bidiMode := GetBiDi(); // PETROV
-
+  bidiMode := GetBiDi();
 {$ifdef windows}
   gbSaveAs.Caption:='';
 {$endif windows}
