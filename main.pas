@@ -26,11 +26,11 @@ interface
 uses
   Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
   httpsend, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
-  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent, Types;
+  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent, Types, LazFileUtils, LazUTF8;
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.4.0';
+  AppVersion = '5.4.1';
 
 resourcestring
   sAll = 'All torrents';
@@ -117,7 +117,7 @@ resourcestring
 
 type
 
-  // PETROV - for torrent folder
+  // for torrent folder
   FolderData = class
   public
     Hit: integer;
@@ -696,7 +696,7 @@ type
     procedure ConnectionSettingsChanged(const ActiveConnection: string; ForceReconnect: boolean);
   end;
 
-function GetBiDi: TBiDiMode; // PETROV
+function GetBiDi: TBiDiMode; 
 function CheckAppParams: boolean;
 procedure LoadTranslation;
 function GetHumanSize(sz: double; RoundTo: integer = 0; const EmptyStr: string = '-'): string;
@@ -1128,7 +1128,7 @@ begin
 
   LoadTranslation;
 
-  GetBiDi; // PETROV
+  GetBiDi; 
 
   SizeNames[1]:=sByte;
   SizeNames[2]:=sKByte;
@@ -1430,10 +1430,10 @@ begin
   with gStats do begin
     BeginUpdate;
     try
-      Items[0, 0]:=(SDownloaded);
-      Items[0, 1]:=(SUploaded);
-      Items[0, 2]:=(SFilesAdded);
-      Items[0, 3]:=(SActiveTime);
+      Items[0, 0]:=UTF8Decode(SDownloaded);
+      Items[0, 1]:=UTF8Decode(SUploaded);
+      Items[0, 2]:=UTF8Decode(SFilesAdded);
+      Items[0, 3]:=UTF8Decode(SActiveTime);
     finally
       EndUpdate;
     end;
@@ -1502,7 +1502,7 @@ begin
   if i >= 0 then
     UpdateUIRpcVersion(i);
 
-  bidiMode := GetBiDi; // PETROV
+  bidiMode := GetBiDi; 
 
   acFolderGrouping.Checked:=Ini.ReadBool('Interface', 'FolderGrouping', True);
   acTrackerGrouping.Checked:=Ini.ReadBool('Interface', 'TrackerGrouping', True);
@@ -1629,8 +1629,7 @@ var
 begin
   id:=lvTrackers.Items[idxTrackerID, lvTrackers.Row];
   torid:=RpcObj.CurTorrentId;
-  if MessageDlg('', Format(SRemoveTracker, [(widestring(lvTrackers.Items[idxTrackersListName, lvTrackers.Row]))]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit; // Lazarus 1.4.4
-
+  if MessageDlg('', Format(SRemoveTracker, [UTF8Encode(widestring(lvTrackers.Items[idxTrackersListName, lvTrackers.Row]))]), mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then exit;
   AppBusy;
   Self.Update;
   req:=TJSONObject.Create;
@@ -1724,12 +1723,13 @@ begin
     if VarIsEmpty(gTorrents.Items[idxPath, i]) then
       exit;
 
-      edTorrentDir.Text:=(widestring(gTorrents.Items[idxPath, i])); // Lazarus 1.4.4
+    edTorrentDir.Text:=UTF8Encode(widestring(gTorrents.Items[idxPath, i]));
 
     if gTorrents.SelCount > 1 then
       s:=Format(sSeveralTorrents, [gTorrents.SelCount])
     else
-      s:=(widestring(gTorrents.Items[idxName, i])); // Lazarus 1.4.4
+      s:=UTF8Encode(widestring(gTorrents.Items[idxName, i]));
+
 
     Caption:=Caption + ' - ' + s;
     AppNormal;
@@ -1744,8 +1744,7 @@ begin
         for i:=VarArrayLowBound(ids, 1) to VarArrayHighBound(ids, 1) do
           aids.Add(integer(ids[i]));
         args.Add('ids', aids);
-        args.Add('location', TJSONString.Create((edTorrentDir.Text)));// Lazarus 1.4.4
-
+        args.Add('location', TJSONString.Create(UTF8Decode(edTorrentDir.Text)));
         args.Add('move', TJSONIntegerNumber.Create(integer(cbMoveData.Checked) and 1));
         req.Add('arguments', args);
         args:=RpcObj.SendRequest(req, False);
@@ -1770,7 +1769,7 @@ begin
             ok:=True;
             for i:=0 to Items.Count - 1 do
               if RowSelected[i] then begin
-                if VarIsEmpty(Items[idxPath, i]) or (AnsiCompareText((widestring(Items[idxPath, i])), edTorrentDir.Text) <> 0) then begin // Lazarus 1.4.4
+                if VarIsEmpty(Items[idxPath, i]) or (AnsiCompareText(UTF8Encode(widestring(Items[idxPath, i])), edTorrentDir.Text) <> 0) then begin
                   ok:=False;
                   break;
                 end;
@@ -1976,7 +1975,7 @@ var
     if TorrentId <> 0 then begin
       i:=SelectTorrent(TorrentId, 2000);
       if i >= 0 then
-        s:=Format(': %s', [(widestring(gTorrents.Items[idxName, i]))]); // Lazarus 1.4.4
+        s:=Format(': %s', [UTF8Encode(widestring(gTorrents.Items[idxName, i]))]);
 
     end;
     ForceAppNormal;
@@ -2093,7 +2092,7 @@ var
           trackers:=tt.Arrays['trackers'];
           // Deleting existing trackers from the list
           for i:=0 to trackers.Count - 1 do begin
-            s:=((Trackers.Items[i] as TJSONObject).Strings['announce']); // Lazarus 1.4.4
+            s:=UTF8Encode((Trackers.Items[i] as TJSONObject).Strings['announce']);
             j:=TrackersList.IndexOf(s);
             if j >= 0 then
               TrackersList.Delete(j);
@@ -2268,17 +2267,20 @@ begin
             CheckStatus(False);
             exit;
           end;
-
-          s:=CorrectPath ((args.Strings['download-dir']) ); // PETROV lazarus 1.4.4
-          if cbDestFolder.Items.IndexOf(s) < 0 then begin
-            pFD    := FolderData.create;
-            pFD.Hit:= 1;
-            pFD.Ext:= '';
-            pFD.Txt:= s;
-            pFD.Lst:= SysUtils.Date;
-            cbDestFolder.Items.Insert(0, s);
-            i := cbDestFolder.Items.IndexOf(s);
-            cbDestFolder.Items.Objects[i]:= pFD;
+          s:=CorrectPath (UTF8Encode(args.Strings['download-dir']) );
+          try
+            if cbDestFolder.Items.IndexOf(s) < 0 then begin
+              pFD    := FolderData.create;
+              pFD.Hit:= 1;
+              pFD.Ext:= '';
+              pFD.Txt:= s;
+              pFD.Lst:= SysUtils.Date;
+              cbDestFolder.Items.Insert(0, s);
+              i := cbDestFolder.Items.IndexOf(s);
+              cbDestFolder.Items.Objects[i]:= pFD;
+            end;
+          except
+            MessageDlg('Error: LS-005. Please contact the developer', mtError, [mbOK], 0);
           end;
 
           if RpcObj.RPCVersion < 15 then
@@ -2304,17 +2306,20 @@ begin
 
         // for larazur 1.4 and up.
         // data can be in the drop-down list, but no text is selected in the window
-        ss := cbDestFolder.Text;
-        if (ss = '') then begin
-          if (cbDestFolder.Items.Count = 0) then begin
-            ss := s;
-          end else begin
-            cbDestFolder.ItemIndex:=0;
-            ss := cbDestFolder.Text;
+        try
+          ss := cbDestFolder.Text;
+          if (ss = '') then begin
+            if (cbDestFolder.Items.Count = 0) then begin
+              ss := s;
+            end else begin
+              cbDestFolder.ItemIndex:=0;
+              ss := cbDestFolder.Text;
+            end;
           end;
+        except
+          MessageDlg('Error: LS-006. Please contact the developer', mtError, [mbOK], 0);
         end;
-
-        args.Add('download-dir', TJSONString.Create(ss));// Lazarus 1.4.4
+        args.Add('download-dir', TJSONString.Create(UTF8Decode(ss)));
         id:=_AddTorrent(args);
         if id = 0 then
           exit;
@@ -2331,7 +2336,7 @@ begin
           if t.Count = 0 then
             raise Exception.Create(sUnableGetFilesList);
 
-          OldName:=t.Objects[0].Strings['name'];        // Lazarus 1.4.4
+          OldName:=UTF8Encode(t.Objects[0].Strings['name']);
           edSaveAs.Caption:=OldName;
           if RpcObj.RPCVersion < 15 then begin
             edSaveAs.Enabled:=False;
@@ -2382,9 +2387,7 @@ begin
             args:=TJSONObject.Create;
             args.Add('paused', TJSONIntegerNumber.Create(1));
             args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
-
-            args.Add('download-dir', TJSONString.Create((cbDestFolder.Text))); // Lazarus 1.4.4
-
+            args.Add('download-dir', TJSONString.Create(UTF8Decode(cbDestFolder.Text)));
             id:=_AddTorrent(args);
             if id = 0 then
               exit;
@@ -2434,9 +2437,8 @@ begin
               req.Add('method', 'torrent-rename-path');
               args:=TJSONObject.Create;
               args.Add('ids', TJSONArray.Create([id]));
-              args.Add('path', (OldName));// Lazarus 1.4.4
-              args.Add('name', (edSaveAs.Text));// Lazarus 1.4.4
-
+              args.Add('path', UTF8Decode(OldName));
+              args.Add('name', UTF8Decode(edSaveAs.Text));
               req.Add('arguments', args);
               args:=nil;
               args:=RpcObj.SendRequest(req, False);
@@ -2946,9 +2948,7 @@ begin
       args:=RpcObj.SendRequest(req);
       if args <> nil then
         try
-
-          edDownloadDir.Text:= CorrectPath((args.Strings['download-dir'])); // Lazarus 1.4.4
-
+          edDownloadDir.Text:= CorrectPath(UTF8Encode(args.Strings['download-dir']));
           if RpcObj.RPCVersion >= 5 then begin
             // RPC version 5
             edPort.Value:=args.Integers['peer-port'];
@@ -2990,9 +2990,7 @@ begin
 
           if RpcObj.RPCVersion >= 7 then begin
             cbIncompleteDir.Checked:=args.Integers['incomplete-dir-enabled'] <> 0;
-
-            edIncompleteDir.Text:=args.Strings['incomplete-dir']; // Lazarus 1.4.4
-
+            edIncompleteDir.Text:=UTF8Encode(args.Strings['incomplete-dir']); 
             cbIncompleteDirClick(nil);
           end
           else begin
@@ -3026,7 +3024,7 @@ begin
           end;
 
           if args.IndexOfName('blocklist-url') >= 0 then
-            edBlocklistURL.Text:=args.Strings['blocklist-url']              // Lazarus 1.4.4
+            edBlocklistURL.Text:=UTF8Encode(args.Strings['blocklist-url']) 
           else begin
             edBlocklistURL.Visible:=False;
             cbBlocklist.Left:=cbPEX.Left;
@@ -3087,8 +3085,7 @@ begin
       try
         req.Add('method', 'session-set');
         args:=TJSONObject.Create;
-        args.Add('download-dir', (edDownloadDir.Text));// Lazarus 1.4.4
-
+        args.Add('download-dir', UTF8Decode(edDownloadDir.Text));
         args.Add('port-forwarding-enabled', integer(cbPortForwarding.Checked) and 1);
         case cbEncryption.ItemIndex of
           1: s:='preferred';
@@ -3136,7 +3133,7 @@ begin
         if RpcObj.RPCVersion >= 7 then begin
           args.Add('incomplete-dir-enabled', integer(cbIncompleteDir.Checked) and 1);
           if cbIncompleteDir.Checked then
-            args.Add('incomplete-dir', (edIncompleteDir.Text));// Lazarus 1.4.4
+            args.Add('incomplete-dir', UTF8Decode(edIncompleteDir.Text));
         end;
         if RpcObj.RPCVersion >= 8 then
           args.Add('rename-partial-files', integer(cbPartExt.Checked) and 1);
@@ -3149,7 +3146,7 @@ begin
         end;
         if edBlocklistURL.Visible then
           if cbBlocklist.Checked then
-            args.Add('blocklist-url', (edBlocklistURL.Text));// Lazarus 1.4.4
+            args.Add('blocklist-url', UTF8Decode(edBlocklistURL.Text));
         if RpcObj.RPCVersion >= 13 then
           args.Add('utp-enabled', integer(cbUTP.Checked) and 1);
         if RpcObj.RPCVersion >= 14 then begin
@@ -3405,7 +3402,7 @@ begin
       if gTorrents.SelCount > 1 then
         s:=Format(sSeveralTorrents, [gTorrents.SelCount])
       else
-        s:=t.Strings['name']; //  Lazarus 1.4.4
+        s:=UTF8Encode(t.Strings['name']);
 
       txName.Caption:=txName.Caption + ' ' + s;
       Caption:=Caption + ' - ' + s;
@@ -3471,7 +3468,7 @@ begin
         Trackers:=t.Arrays['trackers'];
         for i:=0 to Trackers.Count - 1 do begin
           tr:=Trackers[i] as TJSONObject;
-            trlist.AddObject((tr.Strings['announce']), TObject(PtrUInt(tr.Integers['id']))); // Lazarus 1.4.4
+            trlist.AddObject(UTF8Decode(tr.Strings['announce']), TObject(PtrUInt(tr.Integers['id'])));
         end;
         edTrackers.Lines.Assign(trlist);
       end
@@ -3572,11 +3569,11 @@ begin
                 s:=Trim(sl[i]);
                 if trlist.Count > 0 then begin
                   EditT.Add(PtrUInt(trlist.Objects[0]));
-                  EditT.Add((s)); // Lazarus 1.4.4
+                  EditT.Add(UTF8Decode(s));
                   trlist.Delete(0);
                 end
                 else
-                  AddT.Add((s));// Lazarus 1.4.4
+                  AddT.Add(UTF8Decode(s));
               end;
 
               for i:=0 to trlist.Count - 1 do
@@ -3673,7 +3670,7 @@ begin
     gTorrents.EnsureSelectionVisible;
     ids:=GetSelectedTorrents;
     if gTorrents.SelCount < 2 then
-      s:=Format(sTorrentVerification, [(widestring(gTorrents.Items[idxName, gTorrents.Items.IndexOf(idxTorrentId, ids[0])]))]) //  Lazarus 1.4.4
+      s:=Format(sTorrentVerification, [UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Items.IndexOf(idxTorrentId, ids[0])]))]) 
     else
       s:=Format(sTorrentsVerification, [gTorrents.SelCount]);
     if MessageDlg('', s, mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then
@@ -3874,8 +3871,7 @@ begin
       if res = nil then
         CheckStatus(False);
       with res.Arrays['torrents'].Objects[0] do
-        n:=IncludeProperTrailingPathDelimiter((Strings['downloadDir'])) + (widestring(gTorrents.Items[idxName, gTorrents.Row])); // Lazarus 1.4.4
-
+        n:=IncludeProperTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Row]));
       s:=MapRemoteToLocal(n);
       if s = '' then
         s:=n;
@@ -3922,7 +3918,7 @@ begin
     v:=gTorrents.Items[idxName, i];
     if VarIsEmpty(v) or VarIsNull(v) then
       continue;
-    if Pos(s, Trim(UTF8UpperCase((widestring(v))))) > 0 then begin  // Lazarus 1.4.4
+    if Pos(s, Trim(UTF8UpperCase(UTF8Encode(widestring(v))))) > 0 then begin  // Lazarus 1.4.4 1622
       ARow:=i;
       break;
     end;
@@ -3939,8 +3935,8 @@ end;
 
 procedure TMainForm.gTorrentsSetEditText(Sender: TObject; ACol, ARow: Integer; const Value: string);
 begin
-  if RenameTorrent(gTorrents.Items[idxTorrentId, ARow], (widestring(gTorrents.Items[idxName, ARow])), Trim(Value)) then begin //  Lazarus 1.4.4
-    gTorrents.Items[idxName, ARow]:=(Trim(Value));// Lazarus 1.4.4
+  if RenameTorrent(gTorrents.Items[idxTorrentId, ARow], UTF8Encode(widestring(gTorrents.Items[idxName, ARow])), Trim(Value)) then begin 
+    gTorrents.Items[idxName, ARow]:=UTF8Decode(Trim(Value));
     FFilesTree.Clear;
   end;
 end;
@@ -3987,8 +3983,7 @@ var
 begin
   p:=FFilesTree.GetFullPath(ARow, False);
   if RenameTorrent(gTorrents.Items[idxTorrentId, gTorrents.Row], p, Trim(Value)) then begin
-    FFiles[idxFileName, ARow]:=(Trim(Value));// Lazarus 1.4.4
-
+    FFiles[idxFileName, ARow]:=UTF8Decode(Trim(Value));
     if FFilesTree.IsFolder(ARow) then begin
       // Updating path for child elements
       len:=Length(p);
@@ -3996,11 +3991,10 @@ begin
       lvl:=FFilesTree.RowLevel[ARow];
       FFiles.BeginUpdate;
       try
-        FFiles[idxFileFullPath, ARow]:=(p + RemotePathDelimiter);// Lazarus 1.4.4
-
+        FFiles[idxFileFullPath, ARow]:=UTF8Decode(p + RemotePathDelimiter);
         for i:=ARow + 1 to FFiles.Count - 1 do
           if FFilesTree.RowLevel[i] > lvl then
-            FFiles[idxFileFullPath, i]:=(p + Copy((widestring(FFiles[idxFileFullPath, i])), len + 1, MaxInt)) //  Lazarus 1.4.4
+            FFiles[idxFileFullPath, i]:=UTF8Decode(p + Copy(UTF8Encode(widestring(FFiles[idxFileFullPath, i])), len + 1, MaxInt)) 
           else
             break;
       finally
@@ -4678,6 +4672,7 @@ var
 begin
   e:=((Screen.ActiveForm = Self) or not Visible or (WindowState = wsMinimized))
      and not gTorrents.EditorMode and not lvFiles.EditorMode;
+
   acConnect.Enabled:=e;
   acOptions.Enabled:=e;
   acConnOptions.Enabled:=e;
@@ -4880,8 +4875,7 @@ begin
         end
         else begin
           if not NoTrackerError and (Result = '') then
-            Result:=sTrackerError + ': ' + (err);            // Lazarus 1.4.4
-
+            Result:=sTrackerError + ': ' + UTF8Encode(err);
           // Workaround for transmission bug
           // If the global error string is equal to some tracker error string,
           // then igonore the global error string
@@ -4891,8 +4885,7 @@ begin
       end;
   end
   else begin
-    Result:=(t.Strings['announceResponse']); // Lazarus 1.4.4
-
+    Result:=UTF8Encode(t.Strings['announceResponse']); 
     if Result = 'Success' then
       Result:=''
     else
@@ -4907,7 +4900,7 @@ begin
   end;
 
   if (Result = '') or (Status = TR_STATUS_STOPPED) or (Status = TR_STATUS_FINISHED) then
-    Result:=(gerr); // Lazarus 1.4.4
+    Result:=UTF8Encode(gerr); 
 end;
 
 function TMainForm.SecondsToString(j: integer): string;
@@ -5099,11 +5092,11 @@ begin
     Dec(FilterIdx);
   if FilterIdx >= StatusFiltersCount then
     if not VarIsNull(lvFilter.Items[-1, FilterIdx]) then begin
-      PathFilter:=(widestring(lvFilter.Items[-1, FilterIdx])); //  Lazarus 1.4.4
+      PathFilter:=UTF8Encode(widestring(lvFilter.Items[-1, FilterIdx])); 
       FilterIdx:=fltAll;
     end
     else begin
-      TrackerFilter:=(widestring(lvFilter.Items[0, FilterIdx])); //  Lazarus 1.4.4
+      TrackerFilter:=UTF8Encode(widestring(lvFilter.Items[0, FilterIdx])); 
       FilterIdx:=fltAll;
       i:=RPos('(', TrackerFilter);
       if i > 0 then
@@ -5129,9 +5122,7 @@ begin
 
     j:=t.Integers['status'];
     if ExistingRow and (j = TR_STATUS_SEED) and (FTorrents[idxStatus, row] = TR_STATUS_DOWNLOAD) then
-      DownloadFinished((widestring(FTorrents[idxName, row]))); //  Lazarus 1.4.4
-
-
+      DownloadFinished(UTF8Encode(widestring(FTorrents[idxName, row]))); 
     FTorrents[idxStatus, row]:=j;
     if j = TR_STATUS_CHECK_WAIT  then StateImg:=imgDownQueue else
     if j = TR_STATUS_CHECK  then StateImg:=imgDownQueue else
@@ -5168,7 +5159,7 @@ begin
                 if Booleans['lastAnnounceSucceeded'] then
                   s:=sTrackerWorking
                 else
-                  s:=TranslateString((Strings['lastAnnounceResult']), True);
+                  s:=TranslateString(UTF8Encode(Strings['lastAnnounceResult']), True);
 
             if s = 'Success' then
               s:=sTrackerWorking;
@@ -5179,8 +5170,7 @@ begin
     end
     else
       s:='';
-
-    FTorrents[idxTrackerStatus, row]:=(s);
+    FTorrents[idxTrackerStatus, row]:=UTF8Decode(s); 
 
     if FTorrents[idxStatus, row] = TR_STATUS_CHECK then
       f:=t.Floats['recheckProgress']*100.0
@@ -5268,7 +5258,7 @@ begin
     end
     else
       if FieldExists[idxTracker] then
-        s:=(t.Arrays['trackers'].Objects[0].Strings['announce']) //  Lazarus 1.4.4
+        s:=UTF8Encode(t.Arrays['trackers'].Objects[0].Strings['announce']) 
       else begin
         s:='';
         if VarIsEmpty(FTorrents[idxTracker, row]) then
@@ -5294,20 +5284,17 @@ begin
       j:=Pos(':', s);
       if j > 0 then
         System.Delete(s, j, MaxInt);
-
-      FTorrents[idxTracker, row]:=(s);
+      FTorrents[idxTracker, row]:=UTF8Decode(s); 
     end;
 
     if FieldExists[idxPath] then
-      FTorrents[idxPath, row]:=(ExcludeTrailingPathDelimiter((t.Strings['downloadDir']))) //  Lazarus 1.4.4
+      FTorrents[idxPath, row]:=UTF8Decode(ExcludeTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir']))) 
     else
       if VarIsEmpty(FTorrents[idxPath, row]) then
         RpcObj.RequestFullInfo:=True;
 
     if not VarIsEmpty(FTorrents[idxPath, row]) then begin
-
-      s:=(widestring(FTorrents[idxPath, row])); //  Lazarus 1.4.4 !!!
-
+      s:=UTF8Encode(widestring(FTorrents[idxPath, row])); 
       j:=Paths.IndexOf(s);
       if j < 0 then
         Paths.AddObject(s, TObject(1))
@@ -5370,8 +5357,7 @@ begin
           Inc(ErrorCnt);
 
       if not VarIsEmpty(FTorrents[idxTracker, i]) then begin
-        s:=(widestring(FTorrents[idxTracker, i])); //  Lazarus 1.4.4
-
+        s:=UTF8Encode(widestring(FTorrents[idxTracker, i])); 
         j:=FTrackers.IndexOf(s);
         if j < 0 then
           j:=FTrackers.Add(s);
@@ -5380,7 +5366,7 @@ begin
           continue;
       end;
 
-      if (PathFilter <> '') and not VarIsEmpty(FTorrents[idxPath, i]) and ((PathFilter) <> FTorrents[idxPath, i]) then // Lazarus 1.4.4
+      if (PathFilter <> '') and not VarIsEmpty(FTorrents[idxPath, i]) and (UTF8Decode(PathFilter) <> FTorrents[idxPath, i]) then 
         continue;
 
       case FilterIdx of
@@ -5405,7 +5391,7 @@ begin
       end;
 
       if edSearch.Text <> '' then
-        if UTF8Pos(UTF8UpperCase(edSearch.Text), UTF8UpperCase((widestring(FTorrents[idxName, i])))) = 0 then // Lazarus 1.4.4
+        if UTF8Pos(UTF8UpperCase(edSearch.Text), UTF8UpperCase(UTF8Encode(widestring(FTorrents[idxName, i])))) = 0 then 
           continue;
 
       if not gTorrents.Items.Find(idxTorrentId, FTorrents[idxTorrentId, i], row) then
@@ -5445,13 +5431,13 @@ begin
   crow:=-1;
   lvFilter.Items.BeginUpdate;
   try
-    lvFilter.Items[0, 0]:=(Format('%s (%d)', [SAll, list.Count]));
-    lvFilter.Items[0, 1]:=(Format('%s (%d)', [SDownloading, DownCnt]));
-    lvFilter.Items[0, 2]:=(Format('%s (%d)', [SCompleted, CompletedCnt]));
-    lvFilter.Items[0, 3]:=(Format('%s (%d)', [SActive, ActiveCnt]));
-    lvFilter.Items[0, 4]:=(Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt - StoppedCnt])); // PETROV - остановленный торрент==неактивный!
-    lvFilter.Items[0, 5]:=(Format('%s (%d)', [sStopped, StoppedCnt]));
-    lvFilter.Items[0, 6]:=(Format('%s (%d)', [sErrorState, ErrorCnt]));
+    lvFilter.Items[0, 0]:=UTF8Decode(Format('%s (%d)', [SAll, list.Count]));
+    lvFilter.Items[0, 1]:=UTF8Decode(Format('%s (%d)', [SDownloading, DownCnt]));
+    lvFilter.Items[0, 2]:=UTF8Decode(Format('%s (%d)', [SCompleted, CompletedCnt]));
+    lvFilter.Items[0, 3]:=UTF8Decode(Format('%s (%d)', [SActive, ActiveCnt]));
+    lvFilter.Items[0, 4]:=UTF8Decode(Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt - StoppedCnt])); 
+    lvFilter.Items[0, 5]:=UTF8Decode(Format('%s (%d)', [sStopped, StoppedCnt]));
+    lvFilter.Items[0, 6]:=UTF8Decode(Format('%s (%d)', [sErrorState, ErrorCnt]));
 
     j:=StatusFiltersCount;
 
@@ -5462,14 +5448,12 @@ begin
       for i:=0 to Paths.Count - 1 do begin
         s:=ExtractFileName(Paths[i]);
         for row:=StatusFiltersCount + 1 to j - 1 do
-          if ExtractFileName((widestring(lvFilter.Items[-1, row]))) = s then begin //  Lazarus 1.4.4
+          if ExtractFileName(UTF8Encode(widestring(lvFilter.Items[-1, row]))) = s then begin 
             s:=Paths[i];
-            lvFilter.Items[0, row]:=(Format('%s (%d)', [(widestring(lvFilter.Items[-1, row])), ptruint(Paths.Objects[row - StatusFiltersCount - 1])])); //  Lazarus 1.4.4
+            lvFilter.Items[0, row]:=UTF8Decode(Format('%s (%d)', [UTF8Encode(widestring(lvFilter.Items[-1, row])), ptruint(Paths.Objects[row - StatusFiltersCount - 1])]));
           end;
-
-        lvFilter.Items[ 0, j]:=(Format('%s (%d)', [s, ptruint(Paths.Objects[i])])); // Lazarus 1.4.4
-        lvFilter.Items[-1, j]:=(Paths[i]);
-
+        lvFilter.Items[ 0, j]:=UTF8Decode(Format('%s (%d)', [s, ptruint(Paths.Objects[i])])); 
+        lvFilter.Items[-1, j]:=UTF8Decode(Paths[i]);
         if Paths[i] = PathFilter then
           crow:=j;
         Inc(j);
@@ -5488,8 +5472,7 @@ begin
       while i < FTrackers.Count do begin
         j:=ptruint(FTrackers.Objects[i]);
         if j > 0 then begin
-          lvFilter.Items[ 0, row]:=(Format('%s (%d)', [FTrackers[i], j])); // Lazarus 1.4.4
-
+          lvFilter.Items[ 0, row]:=UTF8Decode(Format('%s (%d)', [FTrackers[i], j])); 
           lvFilter.Items[-1, row]:=NULL;
           if FTrackers[i] = TrackerFilter then
             crow:=row;
@@ -5639,7 +5622,7 @@ begin
     d:=files[i];
     if not (d is TJSONObject) then continue;
     f:=d as TJSONObject;
-    s:=(f.Strings['name']); // Lazarus 1.4.4
+    s:=UTF8Encode(f.Strings['name']); 
     if i = 0 then
       Result:=ExtractFilePath(s)
     else begin
@@ -5670,7 +5653,7 @@ begin
     gTorrents.EnsureSelectionVisible;
     ids:=GetSelectedTorrents;
     if gTorrents.SelCount < 2 then
-      s:=Format(Msg, [(widestring(gTorrents.Items[idxName, gTorrents.Items.IndexOf(idxTorrentId, ids[0])]))]) // Lazarus 1.4.4
+      s:=Format(Msg, [UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Items.IndexOf(idxTorrentId, ids[0])]))])
     else
       s:=Format(MsgMulti, [gTorrents.SelCount]);
 
@@ -5735,8 +5718,7 @@ begin
 
   lvFiles.Enabled:=True;
   lvFiles.Color  :=clWindow;
-  FFilesTree.DownloadDir:=(DownloadDir); // Lazarus 1.4.4
-
+  FFilesTree.DownloadDir:=UTF8Encode(DownloadDir); 
   FFilesTree.FillTree(ATorrentId, list, priorities, wanted);
   tabFiles.Caption:=Format('%s (%d)', [FFilesCapt, list.Count]);
   DetailsUpdated;
@@ -5875,7 +5857,7 @@ begin
   else
     s:=DateTimeToStr(UnixToDateTime(Trunc(f)) + GetTimeZoneDelta);
   txTrackerUpdate.Caption:=s;
-  txTracker.Caption:=(widestring(gTorrents.Items[idxTracker, idx])); //  Lazarus 1.4.4
+  txTracker.Caption:=UTF8Encode(widestring(gTorrents.Items[idxTracker, idx])); 
   if RpcObj.RPCVersion >= 7 then
     if t.Arrays['trackerStats'].Count > 0 then
       i:=t.Arrays['trackerStats'].Objects[0].Integers['seederCount']
@@ -5902,11 +5884,11 @@ begin
 
   panGeneralInfo.ChildSizing.Layout:=cclNone;
 
-  s:=(widestring(gTorrents.Items[idxName, idx])); // Lazarus 1.4.4
+  s:=UTF8Encode(widestring(gTorrents.Items[idxName, idx])); 
   if RpcObj.RPCVersion >= 4 then
-    s:=IncludeProperTrailingPathDelimiter((t.Strings['downloadDir'])) + s; // Lazarus 1.4.4
+    s:=IncludeProperTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir'])) + s; 
   txTorrentName.Caption:=s;
-  s:=Trim((t.Strings['creator'])); // Lazarus 1.4.4
+  s:=Trim(UTF8Encode(t.Strings['creator']));
   if s <> '' then
     s:=' by ' + s;
   txCreated.Caption:=TorrentDateTimeToString(Trunc(t.Floats['dateCreated'])) + s;
@@ -5924,7 +5906,7 @@ begin
   end;
 
   txHash.Caption:=t.Strings['hashString'];
-  txComment.Caption:=(t.Strings['comment']); // Lazarus 1.4.4
+  txComment.Caption:=UTF8Encode(t.Strings['comment']); 
   if (AnsiCompareText(Copy(txComment.Caption, 1, 7), 'http://') = 0)
      or (AnsiCompareText(Copy(txComment.Caption, 1, 8), 'https://') = 0)
   then begin
@@ -6014,12 +5996,12 @@ begin
                   if Booleans['lastAnnounceSucceeded'] then
                     s:=sTrackerWorking
                   else
-                    s:=TranslateString((Strings['lastAnnounceResult']), True); // Lazarus 1.4.4
+                    s:=TranslateString(UTF8Encode(Strings['lastAnnounceResult']), True);
 
               if s = 'Success' then
                 s:=sTrackerWorking;
 
-              lvTrackers.Items[idxTrackersListStatus, row]:=(s); // UTF8Decode
+              lvTrackers.Items[idxTrackersListStatus, row]:=UTF8Decode(s); // UTF8Decode
               lvTrackers.Items[idxTrackersListSeeds, row]:=Integers['seederCount'];
 
               if integer(Integers['announceState']) in [2, 3] then
@@ -6136,10 +6118,10 @@ procedure TMainForm.FillStatistics(s: TJSONObject);
   procedure _Fill(idx: integer; s: TJSONObject);
   begin
     with gStats do begin
-      Items[idx, 0]:=(GetHumanSize(s.Floats['downloadedBytes'])); //UTF8Decode
-      Items[idx, 1]:=(GetHumanSize(s.Floats['uploadedBytes'])); //UTF8Decode
+      Items[idx, 0]:=UTF8Decode(GetHumanSize(s.Floats['downloadedBytes'])); //UTF8Decode
+      Items[idx, 1]:=UTF8Decode(GetHumanSize(s.Floats['uploadedBytes'])); //UTF8Decode
       Items[idx, 2]:=s.Integers['filesAdded'];
-      Items[idx, 3]:=(SecondsToString(s.Integers['secondsActive'])); //UTF8Decode
+      Items[idx, 3]:=UTF8Decode(SecondsToString(s.Integers['secondsActive'])); //UTF8Decode
     end;
   end;
 
@@ -6522,39 +6504,38 @@ var
 begin
   CB.Items.Clear;
 
-  IniSec   :='AddTorrent.' + FCurConn;
-  j        :=Ini.ReadInteger(IniSec, 'FolderCount', 0);
+  IniSec   := 'AddTorrent.' + FCurConn;
+  j        := Ini.ReadInteger(IniSec, 'FolderCount', 0);
 
   for i:=0 to j - 1 do begin
     s:=Ini.ReadString(IniSec, Format('Folder%d', [i]), '');
     if s <> '' then begin
-      s := CorrectPath (s); // PETROV
+      s := CorrectPath (s);
 
-      n := 0; // PETROV - 
+      n := 0;
       for xx:=0 to CB.Items.Count - 1 do begin
          if CB.Items[xx]=s then begin
            n := 1;
          end;
       end;
 
-      if n=0 then begin // PETROV
-        m := CB.Items.Add(s);
+      if n=0 then begin
+        m      := CB.Items.Add(s);
         pFD    := FolderData.create;
         pFD.Hit:= Ini.ReadInteger (IniSec, Format('FolHit%d', [i]), 1);
         pFD.Ext:= Ini.ReadString  (IniSec, Format('FolExt%d', [i]),'');
-        pFD.Txt:= s; // petrov for debug
         lastDt := Ini.ReadString  (IniSec, Format('LastDt%d', [i]),'');
+        pFD.Txt:= s; // for debug
 
-        ShortDateFormat := 'dd.mm.yyyy';    // setting the date format by default
-        if (lastDt <> '') then begin
-           try
-              pFD.Lst := StrToDate(lastDt); // protection against incorrect date format
-           except
-              pFD.Lst := EncodeDate (2000,1,1);
-           end;
-        end
-        else
-           pFD.Lst := EncodeDate (2000,1,1); // last time folder
+        try
+          if (lastDt <> '') then
+		  	pFD.Lst := StrToDate (lastDt,'dd.mm.yyyy')
+          else
+		  	pFD.Lst := EncodeDate(2000,1,1); // last time folder
+        except
+        	MessageDlg('Error: LS-007. Please contact the developer', mtError, [mbOK], 0);
+            pFD.Lst := EncodeDate(2000,1,1); // last time folder
+        end;
 
         CB.Items.Objects[m] := pFD;
       end;
@@ -6586,45 +6567,51 @@ begin
   selfolder:= CorrectPath(CB.Text);
   i        := CB.Items.IndexOf(selfolder);
 
-  if CurFolderParam = 'LastMoveDir' then begin
-  if i < 0 then begin
-      DeleteDirs (CB, 1);
-      CB.Items.Insert (0, selfolder);
-      i      :=CB.Items.IndexOf(selfolder);
-      pFD    := FolderData.create;
-      pFD.Hit:= 1;
-      pFD.Ext:= '';
-      pFD.Txt:= selfolder;
-      pFD.Lst:= SysUtils.Date+7; // +7 days
-      CB.Items.Objects[i]:= pFD;
-    end else begin
-      pFD    := CB.Items.Objects[i] as FolderData;
-      pFD.Hit:= pFD.Hit + 1;
-      pFD.Lst:= SysUtils.Date;
-      CB.Items.Objects[i]:= pFD;
-      DeleteDirs (CB, 0);
+  try
+    if CurFolderParam = 'LastMoveDir' then begin
+    if i < 0 then begin
+        DeleteDirs (CB, 1);
+        CB.Items.Insert (0, selfolder);
+        i      :=CB.Items.IndexOf(selfolder);
+        pFD    := FolderData.create;
+        pFD.Hit:= 1;
+        pFD.Ext:= '';
+        pFD.Txt:= selfolder;
+        pFD.Lst:= SysUtils.Date+7; // +7 days
+        CB.Items.Objects[i]:= pFD;
+      end else begin
+        pFD    := CB.Items.Objects[i] as FolderData;
+        pFD.Hit:= pFD.Hit + 1;
+        pFD.Lst:= SysUtils.Date;
+        CB.Items.Objects[i]:= pFD;
+        DeleteDirs (CB, 0);
+      end;
     end;
+  except
+    MessageDlg('Error: LS-008. Please contact the developer', mtError, [mbOK], 0);
   end;
 
-  ShortDateFormat := 'dd.mm.yyyy';    // setting the date format by default
-  Ini.WriteInteger(IniSec, 'FolderCount', CB.Items.Count);
-  for i:=0 to CB.Items.Count - 1 do begin
-    tmp := CorrectPath(CB.Items[i]); // PETROV
-    pFD := CB.Items.Objects[i] as FolderData;
-    Ini.WriteString (IniSec, Format('Folder%d', [i]), tmp);
-    Ini.WriteInteger(IniSec, Format('FolHit%d', [i]), pFD.Hit);
-    Ini.WriteString (IniSec, Format('FolExt%d', [i]), pFD.Ext);
+  try
+    Ini.WriteInteger(IniSec, 'FolderCount', CB.Items.Count);
+    for i:=0 to CB.Items.Count - 1 do begin
+      tmp := CorrectPath(CB.Items[i]); // PETROV
+      pFD := CB.Items.Objects[i] as FolderData;
+      Ini.WriteString (IniSec, Format('Folder%d', [i]), tmp);
+      Ini.WriteInteger(IniSec, Format('FolHit%d', [i]), pFD.Hit);
+      Ini.WriteString (IniSec, Format('FolExt%d', [i]), pFD.Ext);
 
-    DateTimeToString(strdate, 'dd.mm.yyyy', pFD.Lst);
-//  Ini.WriteString (IniSec, Format('LastDt%d', [i]), DateToStr (pFD.Lst));
-    Ini.WriteString (IniSec, Format('LastDt%d', [i]), strdate);
+      DateTimeToString(strdate, 'dd.mm.yyyy', pFD.Lst);
+      Ini.WriteString (IniSec, Format('LastDt%d', [i]), strdate);
+    end;
+
+    // clear string
+    Ini.WriteString (IniSec, Format('Folder%d', [i+1]), '' );
+    Ini.WriteInteger(IniSec, Format('FolHit%d', [i+1]), -1 );
+    Ini.WriteString (IniSec, Format('FolExt%d', [i+1]), '' );
+    Ini.WriteString (IniSec, Format('LastDt%d', [i+1]), '' );
+  except
+    MessageDlg('Error: LS-009. Please contact the developer', mtError, [mbOK], 0);
   end;
-
-  // clear string
-  Ini.WriteString (IniSec, Format('Folder%d', [i+1]), '' );
-  Ini.WriteInteger(IniSec, Format('FolHit%d', [i+1]), -1 );
-  Ini.WriteString (IniSec, Format('FolExt%d', [i+1]), '' );
-  Ini.WriteString (IniSec, Format('LastDt%d', [i+1]), '' );
 
   Ini.WriteString(IniSec, CurFolderParam, selfolder); // autosorting, valid from text
   Ini.UpdateFile;
@@ -6638,6 +6625,7 @@ begin
     max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
     Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max); // PETROV
 
+    try
     while (CB.Items.Count+maxdel) >= max do begin
        min := 9999999;
        indx:=-1;
@@ -6657,6 +6645,9 @@ begin
 
        if indx > -1 then
          CB.Items.Delete(indx);
+    end;
+    except
+      MessageDlg('Error: LS-010. Please contact the developer', mtError, [mbOK], 0);
     end;
 end;
 
@@ -6685,7 +6676,7 @@ begin
     torid:=RpcObj.CurTorrentId;
     if EditMode then begin
       Caption:=STrackerProps;
-      edTracker.Text:=(widestring(lvTrackers.Items[idxTrackersListName, lvTrackers.Row])); // Lazarus 1.4.4
+      edTracker.Text:=UTF8Encode(widestring(lvTrackers.Items[idxTrackersListName, lvTrackers.Row]));
       id:=lvTrackers.Items[idxTrackerID, lvTrackers.Row];
     end;
     AppNormal;
@@ -6698,10 +6689,9 @@ begin
         args:=TJSONObject.Create;
         args.Add('ids', TJSONArray.Create([torid]));
         if EditMode then
-          args.Add('trackerReplace', TJSONArray.Create([id, (edTracker.Text)])) //UTF8Decode
+          args.Add('trackerReplace', TJSONArray.Create([id, UTF8Decode(edTracker.Text)])) //UTF8Decode
         else
-          args.Add('trackerAdd', TJSONArray.Create([(edTracker.Text)])); //UTF8Decode
-
+          args.Add('trackerAdd', TJSONArray.Create([UTF8Decode(edTracker.Text)])); //UTF8Decode
 
         req.Add('arguments', args);
         args:=nil;
@@ -6905,7 +6895,7 @@ begin
     end;
     FileTruncate(h, 0);
     FileClose(h);
-    DeleteFileUTF8(FIPCFileName);
+    LazFileUtils.DeleteFileUTF8(FIPCFileName);
 
     if s = '' then begin
       ShowApp;
@@ -6960,7 +6950,7 @@ begin
     FLastClipboardLink:=s;
     if not IsProtocolSupported(s) then
       exit;
-    if (Pos('magnet:', UTF8LowerCase(s)) <> 1) and (UTF8LowerCase(Copy(s, Length(s) - Length(strTorrentExt) + 1, MaxInt)) <> strTorrentExt) then
+    if (Pos('magnet:', LazUTF8.UTF8LowerCase(s)) <> 1) and (LazUTF8.UTF8LowerCase(Copy(s, Length(s) - Length(strTorrentExt) + 1, MaxInt)) <> strTorrentExt) then
       exit;
 
     AddTorrentFile(s);
@@ -7011,8 +7001,8 @@ begin
   if ExtractFileName(OldPath) = NewName then
     exit;
   args:=TJSONObject.Create;
-  args.Add('path', (OldPath));
-  args.Add('name', (NewName));
+  args.Add('path', UTF8Decode(OldPath));
+  args.Add('name', UTF8Decode(NewName));
   Result:=TorrentAction(TorrentId, 'torrent-rename-path', args);
 end;
 
@@ -7073,7 +7063,7 @@ begin
           files:=Arrays['files'];
           if files.Count = 0 then exit;
           if files.Count = 1 then begin
-            p:=((files[0] as TJSONObject).Strings['name']); // Lazarus 1.4.4
+            p:=UTF8Encode((files[0] as TJSONObject).Strings['name']); 
             sel:=OpenFolderOnly;
           end
           else begin
@@ -7083,7 +7073,7 @@ begin
               s:=ExtractFilePath(p);
             until (s = '') or (s = p);
           end;
-          p:=IncludeTrailingPathDelimiter((Strings['downloadDir'])) + p; // Lazarus 1.4.4
+          p:=IncludeTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + p; 
         end;
       finally
         res.Free;

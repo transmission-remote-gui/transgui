@@ -21,7 +21,8 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="5"/>
       <MinorVersionNr Value="4"/>
-      <StringTable CompanyName="Yury Sidorov" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2016 by Yury Sidorov &amp; Alexander Petrov" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion="5.4.0"/>
+      <RevisionNr Value="1"/>
+      <StringTable CompanyName="Yury Sidorov" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2016 by Yury Sidorov &amp; Alexander Petrov" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion="5.4.1"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="default" Default="True"/>
@@ -191,15 +192,22 @@
     <Parsing>
       <SyntaxOptions>
         <CStyleOperator Value="False"/>
+        <IncludeAssertionCode Value="True"/>
         <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
       <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <DebugInfoType Value="dsDwarf2"/>
+        <TrashVariables Value="True"/>
       </Debugging>
     </Linking>
     <Other>
@@ -209,4 +217,14 @@
       <CustomOptions Value="-Sa"/>
     </Other>
   </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="2">
+      <Item1>
+        <Name Value="EInvalidCast"/>
+      </Item1>
+      <Item2>
+        <Name Value="RunError(219)"/>
+      </Item2>
+    </Exceptions>
+  </Debugging>
 </CONFIG>
