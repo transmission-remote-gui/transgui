@@ -1,3 +1,10 @@
+5.5.0 (Dec 27, 2016)
+[+] Build the project using the Lazarus 1.6.2 
+[+] Added SSL support ('0.9.8', '1.0.0', '1.0.2', '1.1.0')
+[-] Minor fixes
+[-] Fixed path to the flag of the country
+[-] Fixed Italian translation 
+
 5.4.0 (May 01, 2016)
 [-] Fixed the date format. Issue 883
 [-] Fixed bug 'Download directory path is not absolute'. Issue 891
