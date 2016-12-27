@@ -1,7 +1,7 @@
 5.5.0 (Dec 27, 2016)
 [+] Build the project using the Lazarus 1.6.2 
 [+] Added SSL support ('0.9.8', '1.0.0', '1.0.2', '1.1.0')
-[-] Minor fixes
+[-] Fixed minor bugs
 [-] Fixed path to the flag of the country
 [-] Fixed Italian translation 
 
