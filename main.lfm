@@ -1,7 +1,7 @@
 inherited MainForm: TMainForm
-  Left = 589
-  Height = 508
-  Top = 444
+  Left = 788
+  Height = 594
+  Top = 399
   Width = 881
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
@@ -9,7 +9,7 @@ inherited MainForm: TMainForm
   ActiveControl = panTop
   AllowDropFiles = True
   Caption = ' '
-  ClientHeight = 488
+  ClientHeight = 574
   ClientWidth = 881
   Constraints.MinHeight = 300
   Constraints.MinWidth = 300
@@ -24,18 +24,18 @@ inherited MainForm: TMainForm
   OnWindowStateChange = FormWindowStateChange
   object panTop: TPanel[0]
     Left = 0
-    Height = 127
+    Height = 193
     Top = 27
     Width = 881
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 127
+    ClientHeight = 193
     ClientWidth = 881
     Constraints.MinHeight = 80
     TabOrder = 0
     object HSplitter: TSplitter
       Left = 130
-      Height = 127
+      Height = 193
       Top = 0
       Width = 5
       AutoSnap = False
@@ -44,18 +44,18 @@ inherited MainForm: TMainForm
     end
     object panFilter: TPanel
       Left = 0
-      Height = 127
+      Height = 193
       Top = 0
       Width = 130
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 127
+      ClientHeight = 193
       ClientWidth = 130
       TabOrder = 2
       object panSearch: TPanel
         Left = 0
         Height = 23
-        Top = 102
+        Top = 168
         Width = 130
         Align = alBottom
         AutoSize = True
@@ -132,7 +132,7 @@ inherited MainForm: TMainForm
       end
       object lvFilter: TVarGrid
         Left = 0
-        Height = 100
+        Height = 166
         Top = 0
         Width = 130
         Align = alClient
@@ -158,7 +158,7 @@ inherited MainForm: TMainForm
     end
     object gTorrents: TVarGrid
       Left = 135
-      Height = 127
+      Height = 193
       Top = 0
       Width = 746
       Align = alClient
@@ -310,7 +310,7 @@ inherited MainForm: TMainForm
   object StatusBar: TStatusBar[1]
     Left = 0
     Height = 23
-    Top = 465
+    Top = 551
     Width = 881
     Panels = <    
       item
@@ -333,8 +333,8 @@ inherited MainForm: TMainForm
   end
   object PageInfo: TPageControl[2]
     Left = 0
-    Height = 306
-    Top = 159
+    Height = 326
+    Top = 225
     Width = 881
     ActivePage = tabGeneral
     Align = alBottom
@@ -346,25 +346,25 @@ inherited MainForm: TMainForm
     OnResize = PageInfoResize
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 278
+      ClientHeight = 298
       ClientWidth = 873
       ImageIndex = 4
       object sbGenInfo: TScrollBox
         Left = 0
-        Height = 252
+        Height = 272
         Top = 26
         Width = 873
         HorzScrollBar.Page = 721
-        VertScrollBar.Page = 231
+        VertScrollBar.Page = 268
         Align = alClient
-        ClientHeight = 248
-        ClientWidth = 869
+        ClientHeight = 268
+        ClientWidth = 852
         TabOrder = 0
         object panGeneralInfo: TPanel
           Left = 0
-          Height = 78
+          Height = 120
           Top = 153
-          Width = 869
+          Width = 852
           Align = alTop
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 4
@@ -373,8 +373,8 @@ inherited MainForm: TMainForm
           ChildSizing.VerticalSpacing = 4
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
           ChildSizing.ControlsPerLine = 4
-          ClientHeight = 78
-          ClientWidth = 869
+          ClientHeight = 120
+          ClientWidth = 852
           TabOrder = 0
           object txTorrentNameLabel: TLabel
             Left = 4
@@ -508,12 +508,31 @@ inherited MainForm: TMainForm
             Caption = 'txCompletedOn'
             ParentColor = False
           end
+          object txMagLabel: TLabel
+            Left = 4
+            Height = 15
+            Top = 86
+            Width = 69
+            Caption = 'Magnet Link:'
+            ParentColor = False
+          end
+          object txMagnetLink: TEdit
+            Left = 179
+            Height = 23
+            Top = 80
+            Width = 195
+            AutoSize = False
+            AutoSelect = False
+            BorderStyle = bsNone
+            ReadOnly = True
+            TabOrder = 0
+          end
         end
         object panTransfer: TPanel
           Left = 0
           Height = 111
           Top = 21
-          Width = 869
+          Width = 852
           Align = alTop
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 4
@@ -523,7 +542,7 @@ inherited MainForm: TMainForm
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
           ChildSizing.ControlsPerLine = 6
           ClientHeight = 111
-          ClientWidth = 869
+          ClientWidth = 852
           TabOrder = 1
           object txStatusLabel: TLabel
             Left = 4
@@ -816,7 +835,7 @@ inherited MainForm: TMainForm
           Left = 2
           Height = 17
           Top = 2
-          Width = 865
+          Width = 848
           Align = alTop
           Alignment = taLeftJustify
           BorderSpacing.Around = 2
@@ -832,7 +851,7 @@ inherited MainForm: TMainForm
           Left = 2
           Height = 17
           Top = 134
-          Width = 865
+          Width = 848
           Align = alTop
           Alignment = taLeftJustify
           BorderSpacing.Around = 2
@@ -1089,7 +1108,7 @@ inherited MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 154
+    Top = 220
     Width = 881
     Align = alBottom
     AutoSnap = False

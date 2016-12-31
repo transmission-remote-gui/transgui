@@ -509,7 +509,7 @@ begin
                                      'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
                                      'seeders','peersGettingFromUs','leechers', 'uploadRatio', 'addedDate', 'doneDate',
                                      'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id', 'pieces',
-                                     'trackerStats', 'secondsDownloading', 'secondsSeeding']);
+                                     'trackerStats', 'secondsDownloading', 'secondsSeeding', 'magnetLink']);									 
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];

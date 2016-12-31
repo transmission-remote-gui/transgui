@@ -988,22 +988,25 @@ begin
     if FSortColumn = ColToDataCol(aCol) then
       with Canvas do begin
         Pen.Color:=clGrayText;
-        i:=(R.Left + R.Right) div 2;
+        i:=(R.Left + R.Right ) div 2;
         if SortOrder = soAscending then begin
+          MoveTo(i + (i - R.Left) - 1, R.Bottom - 1);
+          LineTo(i, R.Top - 1);
           MoveTo(i, R.Top);
+          LineTo(i - (R.Right - i) + 1, R.Bottom);
           LineTo(R.Right, R.Bottom);
-          LineTo(R.Left, R.Bottom);
-          LineTo(i, R.Top);
         end
         else begin
-          MoveTo(R.TopLeft);
+          MoveTo(i + (i - R.Left) - 1, R.Top + 1);
+          LineTo(i, R.Bottom + 1);
+          MoveTo(i, R.Bottom);
+          LineTo(i - (R.Right - i) + 1, R.Top);
           LineTo(R.Right, R.Top);
-          LineTo(i, R.Bottom);
-          LineTo(R.TopLeft);
         end;
       end;
   end;
 end;
+
 
 procedure TVarGrid.DblClick;
 var

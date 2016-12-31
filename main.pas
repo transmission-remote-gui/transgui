@@ -18,7 +18,6 @@
 *************************************************************************************}
 
 unit Main;
-
 {$mode objfpc}{$H+}
 
 interface
@@ -220,6 +219,8 @@ type
     acVerifyTorrent: TAction;
     ActionList: TActionList;
     ApplicationProperties: TApplicationProperties;
+    txMagLabel: TLabel;
+    txMagnetLink: TEdit;
     edSearch: TEdit;
     imgSearch: TImage;
     imgFlags: TImageList;
@@ -243,6 +244,7 @@ type
     OpenDialog1: TOpenDialog;
     panDetailsWait: TPanel;
     SaveDialog1: TSaveDialog;
+    ToolButton5: TToolButton;
     txGlobalStats: TLabel;
     lvFilter: TVarGrid;
     lvTrackers: TVarGrid;
@@ -5766,6 +5768,7 @@ begin
   txRemaining.Caption:=EtaToString(i)+' ('+GetHumanSize(t.Floats['leftUntilDone'])+')';
   txDownloaded.Caption:=GetHumanSize(t.Floats['downloadedEver']);
   txUploaded.Caption:=GetHumanSize(t.Floats['uploadedEver']);
+
   f:=t.Floats['pieceSize'];
   if f > 0 then
     i:=Round(t.Floats['corruptEver']/f)
@@ -5881,6 +5884,10 @@ begin
   txMaxPeers.Caption:=t.Strings['maxConnectedPeers'];
   txLastActive.Caption:=TorrentDateTimeToString(Trunc(t.Floats['activityDate']));
   panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
+
+  if RpcObj.RPCVersion >= 7 then
+     txMagnetLink.Text := t.Strings['magnetLink'];
+
 
   panGeneralInfo.ChildSizing.Layout:=cclNone;
 
