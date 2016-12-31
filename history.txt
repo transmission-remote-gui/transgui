@@ -1,11 +1,11 @@
-5.5.0 (Dec 27, 2016)
+5.5.0 (Dec 31, 2016)
 [+] Build the project using the Lazarus 1.6.2 
-[*] Added SSL support ('0.9.8', '1.0.0', '1.0.2', '1.1.0'). Issue 922
 [+] Added copied magnet links. Issue 911
-[*] Support high DPI modes. Issue 918
-[-] Fixed minor bugs
+[?] Added SSL support ('0.9.8', '1.0.0', '1.0.2', '1.1.0'). Issue 922
+[?] Support high DPI modes. Issue 918
 [-] Fixed path to the flag of the country
 [-] Fixed Italian translation. Issue 917
+[-] Fixed minor bugs
 
 5.4.0 (May 01, 2016)
 [-] Fixed the date format. Issue 883
