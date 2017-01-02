@@ -29,7 +29,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.5.1';
+  AppVersion = '5.5.0';
 
 resourcestring
   sAll = 'All torrents';
@@ -219,8 +219,7 @@ type
     acVerifyTorrent: TAction;
     ActionList: TActionList;
     ApplicationProperties: TApplicationProperties;
-    txMagLabel: TLabel;
-    txMagnetLink: TEdit;
+    MenuItem101: TMenuItem;
     edSearch: TEdit;
     imgSearch: TImage;
     imgFlags: TImageList;
@@ -562,6 +561,7 @@ type
     procedure goDevelopmentSiteClick(Sender: TObject);
     procedure MainToolBarContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
+    procedure MenuItem101Click(Sender: TObject);
     procedure miHomePageClick(Sender: TObject);
     procedure PageInfoResize(Sender: TObject);
     procedure panReconnectResize(Sender: TObject);
@@ -4147,6 +4147,47 @@ begin
   end;
 end;
 
+procedure TMainForm.MenuItem101Click(Sender: TObject);
+var
+  req, args, tt: TJSONObject;
+  ids, t: TJSONArray;
+  i: Integer;
+  TorrentIds: Variant;
+  Magnets: TStringList;
+begin
+   TorrentIds:=GetSelectedTorrents;
+   req:=TJSONObject.Create;
+   args:=TJSONObject.Create;
+   Magnets:=TStringList.Create;
+try
+       req.Add('method', 'torrent-get');
+       ids:=TJSONArray.Create;
+       for i:=VarArrayLowBound(TorrentIds, 1) to VarArrayHighBound(TorrentIds, 1) do
+         ids.Add(integer(TorrentIds[i]));
+       args.Add('ids', ids);
+       args.Add('fields', TJSONArray.Create(['magnetLink']));
+       req.Add('arguments', args);
+       args:=RpcObj.SendRequest(req);
+       if args = nil then begin
+         CheckStatus(False);
+         exit;
+       end;
+       t:=TJSONArray.Create;
+       t:=args.Arrays['torrents'];
+       for i:= 0 to t.Count-1 do
+         begin
+           tt:=t.Objects[i] as TJSONObject;
+           Magnets.add(tt.Strings['magnetLink']);
+         end;
+       FLastClipboardLink := Magnets.Text;   // To Avoid TransGUI detect again this existing links
+       Clipboard.AsText := Magnets.Text;
+  finally
+       req.Free;
+       args.Free;
+       Magnets.Free;
+   end;
+end;
+
 procedure TMainForm.miHomePageClick(Sender: TObject);
 begin
   GoHomePage;
@@ -4582,8 +4623,6 @@ begin
     ProcessPieces('', 0, 0);
     txDownProgress.AutoSize:=False;
     txDownProgress.Caption:='';
-
-    txMagnetLink.Text := '';
   end;
   for i:=0 to PageInfo.PageCount - 1 do
     PageInfo.Pages[i].Tag:=t;
@@ -5887,10 +5926,6 @@ begin
   txLastActive.Caption:=TorrentDateTimeToString(Trunc(t.Floats['activityDate']));
   panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
 
-  if RpcObj.RPCVersion >= 7 then
-     txMagnetLink.Text := t.Strings['magnetLink'];
-
-
   panGeneralInfo.ChildSizing.Layout:=cclNone;
 
   s:=UTF8Encode(widestring(gTorrents.Items[idxName, idx])); 
@@ -6510,9 +6545,6 @@ var
   s, IniSec: string;
   lastDt:string;
   pFD : FolderData;
-
-  dd, mm, yy : string;
-  nd, nm, ny : integer;
 begin
   CB.Items.Clear;
 
@@ -6540,20 +6572,10 @@ begin
         pFD.Txt:= s; // for debug
 
         try
-		  pFD.Lst := EncodeDate(2000,1,1); // last time folder
-
-          if (lastDt <> '') then begin
-            dd := Copy (lastDt, 1, 2);
-            mm := Copy (lastDt, 4, 2);
-            yy := Copy (lastDt, 7, 4);
-            nd := StrToInt(dd);
-            nm := StrToInt(mm);
-            ny := StrToInt(yy);
-            if (nd < 1) or (nd > 31)   then nd := 1;
-            if (nm < 1) or (nm > 12)   then nm := 1;
-            if (ny < 1) or (ny > 2222) then ny := 2000;
-            pFD.Lst := EncodeDate(ny,nm,nd);
-          end
+          if (lastDt <> '') then
+		  	pFD.Lst := StrToDate (lastDt,'dd.mm.yyyy')
+          else
+		  	pFD.Lst := EncodeDate(2000,1,1); // last time folder
         except
         	MessageDlg('Error: LS-007. Please contact the developer', mtError, [mbOK], 0);
             pFD.Lst := EncodeDate(2000,1,1); // last time folder
@@ -6869,6 +6891,7 @@ begin
   acOpenFile.Visible:=acOpenContainingFolder.Visible;
   pmSepOpen1.Visible:=acOpenContainingFolder.Visible;
   pmSepOpen2.Visible:=acOpenContainingFolder.Visible;
+  MenuItem101.Visible:=RPCVersion >= 7;
 
   vc:=not sepAltSpeed.Visible and (RPCVersion >= 5);
   sepAltSpeed.Visible:=RPCVersion >= 5;

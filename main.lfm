@@ -1,7 +1,7 @@
 inherited MainForm: TMainForm
-  Left = 788
+  Left = 280
   Height = 594
-  Top = 399
+  Top = 101
   Width = 881
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
@@ -507,25 +507,6 @@ inherited MainForm: TMainForm
             Width = 84
             Caption = 'txCompletedOn'
             ParentColor = False
-          end
-          object txMagLabel: TLabel
-            Left = 4
-            Height = 15
-            Top = 86
-            Width = 69
-            Caption = 'Magnet Link:'
-            ParentColor = False
-          end
-          object txMagnetLink: TEdit
-            Left = 179
-            Height = 23
-            Top = 80
-            Width = 195
-            AutoSize = False
-            AutoSelect = False
-            BorderStyle = bsNone
-            ReadOnly = True
-            TabOrder = 0
           end
         end
         object panTransfer: TPanel
@@ -2924,6 +2905,10 @@ inherited MainForm: TMainForm
     object MenuItem11: TMenuItem
       Action = acVerifyTorrent
       OnClick = acVerifyTorrentExecute
+    end
+    object MenuItem101: TMenuItem
+      Caption = 'Copy Magnet Link(s)'
+      OnClick = MenuItem101Click
     end
     object MenuItem53: TMenuItem
       Action = acMoveTorrent
