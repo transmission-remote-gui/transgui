@@ -1,7 +1,7 @@
 inherited MainForm: TMainForm
-  Left = 280
+  Left = 788
   Height = 594
-  Top = 101
+  Top = 399
   Width = 881
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
