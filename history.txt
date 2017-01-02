@@ -1,3 +1,7 @@
+5.5.1 (Jan 2, 2017)
+[+] Added openssl library for SSL/TLS support functions
+[-] Fixed bug. Issue 928
+
 5.5.0 (Dec 31, 2016)
 [+] Build the project using the Lazarus 1.6.2 
 [+] Added copied magnet links. Issue 911
