@@ -1,5 +1,5 @@
 5.5.1 (Jan 2, 2017)
-[+] Added openssl library for SSL/TLS support functions
+[+] Added openssl library for SSL/TLS support functions (windows version)
 [-] Fixed bug. Issue 928
 
 5.5.0 (Dec 31, 2016)
