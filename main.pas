@@ -219,8 +219,7 @@ type
     acVerifyTorrent: TAction;
     ActionList: TActionList;
     ApplicationProperties: TApplicationProperties;
-    txMagLabel: TLabel;
-    txMagnetLink: TEdit;
+    MenuItem101: TMenuItem;
     edSearch: TEdit;
     imgSearch: TImage;
     imgFlags: TImageList;
@@ -562,6 +561,7 @@ type
     procedure goDevelopmentSiteClick(Sender: TObject);
     procedure MainToolBarContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
+    procedure MenuItem101Click(Sender: TObject);
     procedure miHomePageClick(Sender: TObject);
     procedure PageInfoResize(Sender: TObject);
     procedure panReconnectResize(Sender: TObject);
@@ -4147,6 +4147,47 @@ begin
   end;
 end;
 
+procedure TMainForm.MenuItem101Click(Sender: TObject);
+var
+ req, args, tt: TJSONObject;
+ ids, t: TJSONArray;
+ i: Integer;
+ TorrentIds: Variant;
+ Magnets: TStringList;
+begin
+  TorrentIds:=GetSelectedTorrents;
+  req:=TJSONObject.Create;
+  args:=TJSONObject.Create;
+  Magnets:=TStringList.Create;
+try
+      req.Add('method', 'torrent-get');
+      ids:=TJSONArray.Create;
+      for i:=VarArrayLowBound(TorrentIds, 1) to VarArrayHighBound(TorrentIds, 1) do
+        ids.Add(integer(TorrentIds[i]));
+      args.Add('ids', ids);
+      args.Add('fields', TJSONArray.Create(['magnetLink']));
+      req.Add('arguments', args);
+      args:=RpcObj.SendRequest(req);
+      if args = nil then begin
+        CheckStatus(False);
+        exit;
+      end;
+      t:=TJSONArray.Create;
+      t:=args.Arrays['torrents'];
+      for i:= 0 to t.Count-1 do
+        begin
+          tt:=t.Objects[i] as TJSONObject;
+          Magnets.add(tt.Strings['magnetLink']);
+        end;
+      FLastClipboardLink := Magnets.Text;   // To Avoid TransGUI detect again this existing links
+      Clipboard.AsText := Magnets.Text;
+ finally
+      req.Free;
+      args.Free;
+      Magnets.Free;
+  end;
+end;
+
 procedure TMainForm.miHomePageClick(Sender: TObject);
 begin
   GoHomePage;
@@ -4583,7 +4624,6 @@ begin
     txDownProgress.AutoSize:=False;
     txDownProgress.Caption:='';
 
-    txMagnetLink.Text := '';
   end;
   for i:=0 to PageInfo.PageCount - 1 do
     PageInfo.Pages[i].Tag:=t;
@@ -5887,10 +5927,6 @@ begin
   txLastActive.Caption:=TorrentDateTimeToString(Trunc(t.Floats['activityDate']));
   panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
 
-  if RpcObj.RPCVersion >= 7 then
-     txMagnetLink.Text := t.Strings['magnetLink'];
-
-
   panGeneralInfo.ChildSizing.Layout:=cclNone;
 
   s:=UTF8Encode(widestring(gTorrents.Items[idxName, idx])); 
@@ -6869,6 +6905,7 @@ begin
   acOpenFile.Visible:=acOpenContainingFolder.Visible;
   pmSepOpen1.Visible:=acOpenContainingFolder.Visible;
   pmSepOpen2.Visible:=acOpenContainingFolder.Visible;
+  MenuItem101.Visible:=RPCVersion >= 7;
 
   vc:=not sepAltSpeed.Visible and (RPCVersion >= 5);
   sepAltSpeed.Visible:=RPCVersion >= 5;
