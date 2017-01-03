@@ -29,7 +29,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.5.1';
+  AppVersion = '5.5.2';
 
 resourcestring
   sAll = 'All torrents';
@@ -219,6 +219,8 @@ type
     acVerifyTorrent: TAction;
     ActionList: TActionList;
     ApplicationProperties: TApplicationProperties;
+    txMagLabel: TLabel;
+    txMagnetLink: TEdit;
     MenuItem101: TMenuItem;
     edSearch: TEdit;
     imgSearch: TImage;
@@ -4624,6 +4626,7 @@ begin
     txDownProgress.AutoSize:=False;
     txDownProgress.Caption:='';
 
+    txMagnetLink.Text := '';
   end;
   for i:=0 to PageInfo.PageCount - 1 do
     PageInfo.Pages[i].Tag:=t;
@@ -5926,6 +5929,10 @@ begin
   txMaxPeers.Caption:=t.Strings['maxConnectedPeers'];
   txLastActive.Caption:=TorrentDateTimeToString(Trunc(t.Floats['activityDate']));
   panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
+
+  if RpcObj.RPCVersion >= 7 then
+     txMagnetLink.Text := t.Strings['magnetLink'];
+
 
   panGeneralInfo.ChildSizing.Layout:=cclNone;
 

@@ -508,6 +508,25 @@ inherited MainForm: TMainForm
             Caption = 'txCompletedOn'
             ParentColor = False
           end
+          object txMagLabel: TLabel
+            Left = 4
+            Height = 15
+            Top = 86
+            Width = 69
+            Caption = 'Magnet Link:'
+            ParentColor = False
+          end
+          object txMagnetLink: TEdit
+            Left = 179
+            Height = 23
+            Top = 80
+            Width = 195
+            AutoSize = False
+            AutoSelect = False
+            BorderStyle = bsNone
+            ReadOnly = True
+            TabOrder = 0
+          end
         end
         object panTransfer: TPanel
           Left = 0
