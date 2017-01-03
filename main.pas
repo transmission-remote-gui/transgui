@@ -6499,7 +6499,15 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
         p:='';
         s:=ExtractFilePath(s);
       end;
-    Result:=OpenURL(s, p);
+
+//{$ifdef mswindows}
+      Result:=OpenURL(s, p);
+//{$else}
+// using lclintf;
+//      //Result := OpenURL(s, p); // does not work in latest linux very well!!!!
+//      Result   := OpenDocument(s); // works better
+//{$endif mswindows}
+
     AppNormal;
     if not Result then begin
       ForceAppNormal;
