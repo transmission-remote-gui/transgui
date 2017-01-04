@@ -6762,10 +6762,9 @@ begin
         args:=TJSONObject.Create;
         args.Add('ids', TJSONArray.Create([torid]));
         if EditMode then
-          args.Add('trackerReplace', TJSONArray.Create([id, UTF8Decode(edTracker.Text)])) //UTF8Decode
+          args.Add('trackerReplace', TJSONArray.Create([id, UTF8Encode(edTracker.Text)]))  //fix bag
         else
-          args.Add('trackerAdd', TJSONArray.Create([UTF8Decode(edTracker.Text)])); //UTF8Decode
-
+          args.Add('trackerAdd', TJSONArray.Create([UTF8Encode(edTracker.Text)])); //fix bag
         req.Add('arguments', args);
         args:=nil;
         args:=RpcObj.SendRequest(req, False);
