@@ -20,15 +20,15 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="5"/>
-      <MinorVersionNr Value="5"/>
-      <RevisionNr Value="2"/>
-      <StringTable CompanyName="Yury Sidorov" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2017 by Yury Sidorov &amp; Alexander Petrov" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion="5.5.2"/>
+      <MinorVersionNr Value="6"/>
+      <StringTable CompanyName="Yury Sidorov" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2017 by Yury Sidorov &amp; Alexander Petrov" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion="5.6"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="default" Default="True"/>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
+      <DestinationDirectory Value="\home\pi\project\0"/>
       <IgnoreBinaries Value="False"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
       <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
@@ -37,7 +37,7 @@
       <local>
         <FormatVersion Value="1"/>
         <CommandLineParams Value="--home=home"/>
-        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+        <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="2">
@@ -192,22 +192,16 @@
     <Parsing>
       <SyntaxOptions>
         <CStyleOperator Value="False"/>
-        <IncludeAssertionCode Value="True"/>
         <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
-      <Checks>
-        <IOChecks Value="True"/>
-        <RangeChecks Value="True"/>
-        <OverflowChecks Value="True"/>
-        <StackChecks Value="True"/>
-      </Checks>
       <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <TrashVariables Value="True"/>
+        <GenerateDebugInfo Value="False"/>
+        <UseValgrind Value="True"/>
       </Debugging>
     </Linking>
     <Other>
@@ -218,13 +212,19 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="2">
+    <Exceptions Count="4">
       <Item1>
         <Name Value="EInvalidCast"/>
       </Item1>
       <Item2>
         <Name Value="RunError(219)"/>
       </Item2>
+      <Item3>
+        <Name Value="RunError(216)"/>
+      </Item3>
+      <Item4>
+        <Name Value="EAccessViolation"/>
+      </Item4>
     </Exceptions>
   </Debugging>
 </CONFIG>
