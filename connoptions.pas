@@ -549,7 +549,7 @@ procedure TConnOptionsForm.SaveConnSettings(const ConnName: string);
 var
   Sec: string;
   i: integer;
-  s: string;
+  s,ss: string;
 begin
   if ConnName = '' then
     exit;
@@ -574,6 +574,11 @@ begin
       WriteString(Sec, 'Password', '-')
     else
       if edPassword.Text <> '******' then begin
+        ss := edPassword.Text;
+        if (Pos('{', ss) > 0) or (Pos('}', ss) > 0) then begin
+          MessageDlg('The password can''t contain the characters: { }', mtError, [mbOK], 0);
+        end;
+
         if edPassword.Text = '' then
           s:=''
         else
