@@ -4350,7 +4350,7 @@ procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
 {$ifdef CPUARM}
   CloseAction:=caMinimize;
-  BeforeCloseApp
+  BeforeCloseApp;
   exit;
 {$endif CPUARM}
 
