@@ -1495,7 +1495,7 @@ var
    tt: TJSONObject;
    trackers: TJSONArray;
    i, j, TorrentId: Integer;
-   s:String;
+   s, tfn:String;
    TrackersList: TStringList;
    AnnData: TBEncoded;
 
@@ -1536,12 +1536,18 @@ var
       end
       else
       try
-     if   IsProtocolSupported(FileName) then
-       //TODO: Need download torrent file...
-     else
+        if IsProtocolSupported(FileName) then begin
+          // Downloading torrent file
+          tfn:=SysToUTF8(FHomeDir) + 'remote-torrent.torrent';
+          if not DownloadFile(FileName, ExtractFilePath(tfn), ExtractFileName(tfn)) then
+            exit;
+       end
+       else
+          tfn:=FileName;
+        // Read trackers from the torrent file...
        AppBusy;
        TorData:=nil;
-       fs:=TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyNone);
+       fs:=TFileStreamUTF8.Create(tfn, fmOpenRead or fmShareDenyNone);
        try
          TorData:=TBEncoded.Create(fs);
          InfoData:=(TorData.ListData.FindElement('info')as TBEncoded);
@@ -1567,7 +1573,11 @@ var
           fs.Free;
         end;
       finally
+        // Delete temp file
+        if (tfn <> '') and (tfn <> FileName) then
+          DeleteFileUTF8(tfn);
      end;
+
       // Request trackers from the existing torrent
       req:=TJSONObject.Create;
       try
@@ -2642,7 +2652,7 @@ end;
 
 procedure TMainForm.acShowCountryFlagExecute(Sender: TObject);
 const
-  FlagsURL = 'http://transmisson-remote-gui.googlecode.com/files/flags.zip';
+  FlagsURL = 'http://transmissionbt.net/flags.zip';
 begin
   if not acShowCountryFlag.Checked then
     if GetFlagsArchive = '' then begin
