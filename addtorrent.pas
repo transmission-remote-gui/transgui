@@ -230,9 +230,12 @@ procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJ
     s, ss: string;
     j: integer;
     p: PChar;
+    ww: widestring;
   begin
     while idx < cnt do begin
-      s:=ExtractFilePath(UTF8Encode(widestring(list[idxFileFullPath, idx])));
+
+      ww := widestring(list[idxFileFullPath, idx]);
+      s  := ExtractFilePath(UTF8Encode(ww));
       if s = '' then begin
         Inc(idx);
         continue;
@@ -315,6 +318,10 @@ begin
       FFiles[idxFileId, row]:=i;
 
       s:=UTF8Encode(f.Strings['name']);
+
+      // petrov - Exclude prohibited characters
+      s := ExcludeInvalidChar(s);
+
       FFiles[idxFileFullPath, row]:=UTF8Decode(ExtractFilePath(s));
       if FCommonPathLen > 0 then
         s:=Copy(s, FCommonPathLen + 1, MaxInt);
@@ -932,8 +939,12 @@ begin
     MessageDlg('Error: LS-002. Please contact the developer', mtError, [mbOK], 0);
   end;
 
+  // petrov - Exclude prohibited characters
+  edSaveAs.Text := ExcludeInvalidChar(edSaveAs.Text);
+
   if edSaveAs.Enabled then begin
     edSaveAs.Text:=Trim(edSaveAs.Text);
+
     if edSaveAs.Text = '' then begin
       edSaveAs.SetFocus;
       MessageDlg(SInvalidName, mtError, [mbOK], 0);

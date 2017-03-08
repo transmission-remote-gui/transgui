@@ -700,6 +700,7 @@ type
     procedure ConnectionSettingsChanged(const ActiveConnection: string; ForceReconnect: boolean);
   end;
 
+function ExcludeInvalidChar (path: string): string; // PETROV
 function GetBiDi: TBiDiMode; 
 function CheckAppParams: boolean;
 procedure LoadTranslation;
@@ -2342,6 +2343,10 @@ begin
 
           OldName:=UTF8Encode(t.Objects[0].Strings['name']);
           edSaveAs.Caption:=OldName;
+
+          // petrov - Exclude prohibited characters
+          edSaveAs.Caption := ExcludeInvalidChar(edSaveAs.Caption);
+
           if RpcObj.RPCVersion < 15 then begin
             edSaveAs.Enabled:=False;
             edSaveAs.ParentColor:=True;
@@ -2434,6 +2439,10 @@ begin
             args.Free;
 
             edSaveAs.Text:=Trim(edSaveAs.Text);
+
+            // petrov - Exclude prohibited characters
+            edSaveAs.Text := ExcludeInvalidChar(edSaveAs.Text);
+
             if OldName <> edSaveAs.Text then begin
               // Changing torrent name
               req.Free;
@@ -4890,6 +4899,23 @@ begin
     4: Result := bdRightToLeftReadingOnly;
   end;
 end;
+
+
+//----------------------------------------------------------------
+function ExcludeInvalidChar (path: string): string; // PETROV
+var
+  l_old: integer;
+begin
+  path  := StringReplace(path, ':', '_', [rfReplaceAll, rfIgnoreCase]);
+  path  := StringReplace(path, '*', '_', [rfReplaceAll, rfIgnoreCase]);
+  path  := StringReplace(path, '?', '_', [rfReplaceAll, rfIgnoreCase]);
+  path  := StringReplace(path, '|', '_', [rfReplaceAll, rfIgnoreCase]);
+  path  := StringReplace(path, '<', '_', [rfReplaceAll, rfIgnoreCase]);
+  path  := StringReplace(path, '>', '_', [rfReplaceAll, rfIgnoreCase]);
+  path  := StringReplace(path, '"', '_', [rfReplaceAll, rfIgnoreCase]);
+  Result:= path;
+end;
+
 
 
 //----------------------------------------------------------------
