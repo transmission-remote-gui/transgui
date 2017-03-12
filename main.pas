@@ -2343,7 +2343,6 @@ begin
 
           OldName:=UTF8Encode(t.Objects[0].Strings['name']);
           edSaveAs.Caption:=OldName;
-
           // petrov - Exclude prohibited characters
           edSaveAs.Caption := ExcludeInvalidChar(edSaveAs.Caption);
 
@@ -4913,6 +4912,8 @@ begin
   path  := StringReplace(path, '<', '_', [rfReplaceAll, rfIgnoreCase]);
   path  := StringReplace(path, '>', '_', [rfReplaceAll, rfIgnoreCase]);
   path  := StringReplace(path, '"', '_', [rfReplaceAll, rfIgnoreCase]);
+  path  := StringReplace(path, '~', '_', [rfReplaceAll, rfIgnoreCase]);
+  path  := StringReplace(path, '..','_', [rfReplaceAll, rfIgnoreCase]);
   Result:= path;
 end;
 

@@ -297,6 +297,7 @@ begin
      path:='';
     if files.Count > 0 then begin
       s:=UTF8Encode(files.Objects[0].Strings['name']);
+      s:=ExcludeInvalidChar(s); // petrov - Exclude prohibited characters
       FCommonPathLen:=Pos(RemotePathDelimiter, s);
       if FCommonPathLen > 0 then
         path:=Copy(s, 1, FCommonPathLen);
@@ -318,9 +319,7 @@ begin
       FFiles[idxFileId, row]:=i;
 
       s:=UTF8Encode(f.Strings['name']);
-
-      // petrov - Exclude prohibited characters
-      s := ExcludeInvalidChar(s);
+      s:=ExcludeInvalidChar(s); // petrov - Exclude prohibited characters
 
       FFiles[idxFileFullPath, row]:=UTF8Decode(ExtractFilePath(s));
       if FCommonPathLen > 0 then
