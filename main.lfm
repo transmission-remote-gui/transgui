@@ -13,12 +13,14 @@ inherited MainForm: TMainForm
   ClientWidth = 881
   Constraints.MinHeight = 300
   Constraints.MinWidth = 300
+  KeyPreview = True
   Menu = MainMenu
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnDropFiles = FormDropFiles
+  OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
   OnWindowStateChange = FormWindowStateChange
@@ -127,6 +129,7 @@ inherited MainForm: TMainForm
           Width = 106
           Align = alClient
           OnChange = edSearchChange
+          OnKeyDown = edSearchKeyDown
           TabOrder = 0
         end
       end
@@ -326,7 +329,16 @@ inherited MainForm: TMainForm
         Width = 120
       end    
       item
-        Width = 50
+        Width = 100
+      end    
+      item
+        Width = 120
+      end    
+      item
+        Width = 100
+      end    
+      item
+        Width = 120
       end>
     SimplePanel = False
     OnMouseDown = StatusBarMouseDown
@@ -1953,6 +1965,9 @@ inherited MainForm: TMainForm
       object MenuItem96: TMenuItem
         Action = acStatusBar
       end
+      object MenuItem102: TMenuItem
+        Action = acStatusBarSizes
+      end
     end
     object miTools: TMenuItem
       Caption = 'T&ools'
@@ -2437,6 +2452,12 @@ inherited MainForm: TMainForm
       OnExecute = acRenameExecute
       ShortCut = 113
       Visible = False
+    end
+    object acStatusBarSizes: TAction
+      Category = 'View'
+      Caption = 'Status bar - Sizes'
+      Checked = True
+      OnExecute = acStatusBarSizesExecute
     end
   end
   object TorrentsListTimer: TTimer[9]

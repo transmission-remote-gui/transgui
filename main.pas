@@ -23,9 +23,13 @@ unit Main;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus, ActnList,
+  Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, 
+  {$ifdef windows}
+  windows,
+  {$endif windows}
+  Graphics, Dialogs, ComCtrls, Menus, ActnList,
   httpsend, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
-  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent, Types, LazFileUtils, LazUTF8;
+  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent, Types, LazFileUtils, LazUTF8, StringToVK;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -113,6 +117,10 @@ resourcestring
   SUploaded = 'Uploaded';
   SFilesAdded = 'Files added';
   SActiveTime = 'Active time';
+  STotalSize = 'Total: %s';
+  sTotalSizeToDownload = 'Selected: %s';
+  sTotalDownloaded = 'Done: %s';
+  sTotalRemain = 'Remaining: %s';
 
 type
 
@@ -212,6 +220,7 @@ type
     acStatusBar: TAction;
     acCopyPath: TAction;
     acRename: TAction;
+    acStatusBarSizes: TAction;
     acTrackerGrouping: TAction;
     acUpdateBlocklist: TAction;
     acUpdateGeoIP: TAction;
@@ -222,6 +231,7 @@ type
     txMagLabel: TLabel;
     txMagnetLink: TEdit;
     MenuItem101: TMenuItem;
+    MenuItem102: TMenuItem;
     edSearch: TEdit;
     imgSearch: TImage;
     imgFlags: TImageList;
@@ -522,6 +532,7 @@ type
     procedure acStartAllTorrentsExecute(Sender: TObject);
     procedure acStartTorrentExecute(Sender: TObject);
     procedure acStatusBarExecute(Sender: TObject);
+    procedure acStatusBarSizesExecute(Sender: TObject);
     procedure acStopAllTorrentsExecute(Sender: TObject);
     procedure acStopTorrentExecute(Sender: TObject);
     procedure acTorrentPropsExecute(Sender: TObject);
@@ -535,8 +546,10 @@ type
     procedure ApplicationPropertiesMinimize(Sender: TObject);
     procedure ApplicationPropertiesRestore(Sender: TObject);
     procedure edSearchChange(Sender: TObject);
+    procedure edSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure FormActivate(Sender: TObject);
     procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormWindowStateChange(Sender: TObject);
     procedure gTorrentsCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure gTorrentsClick(Sender: TObject);
@@ -561,8 +574,7 @@ type
     procedure lvTrackersDblClick(Sender: TObject);
     procedure lvTrackersKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure goDevelopmentSiteClick(Sender: TObject);
-    procedure MainToolBarContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
+    procedure MainToolBarContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure MenuItem101Click(Sender: TObject);
     procedure miHomePageClick(Sender: TObject);
     procedure PageInfoResize(Sender: TObject);
@@ -610,6 +622,12 @@ type
     FPendingTorrents: TStringList;
     FLinksFromClipboard: boolean;
     FLastClipboardLink: string;
+{$ifdef windows}
+    FFileManagerDefault: string;
+    FFileManagerDefaultParam: string;
+    FGlobalHotkey: string;
+    fGlobalHotkeyMod: string;
+{$endif windows}
 {$ifdef LCLcarbon}
     FFormActive: boolean;
 {$endif LCLcarbon}
@@ -660,9 +678,10 @@ type
     procedure ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
     function ExecRemoteFile(const FileName: string; SelectFile: boolean): boolean;
     function GetSelectedTorrents: variant;
+    function GetDisplayedTorrents: variant;
     procedure FillDownloadDirs(CB: TComboBox; const CurFolderParam: string);
     procedure SaveDownloadDirs(CB: TComboBox; const CurFolderParam: string);
-    procedure DeleteDirs(CB: TComboBox; maxdel : Integer);          // PETROV
+    procedure DeleteDirs(CB: TComboBox; maxdel : Integer); 
     procedure SetRefreshInterval;
     procedure AddTracker(EditMode: boolean);
     procedure UpdateConnections;
@@ -698,6 +717,7 @@ type
     procedure ClearDetailsInfo(Skip: TAdvInfoType = aiNone);
     function SelectRemoteFolder(const CurFolder, DialogTitle: string): string;
     procedure ConnectionSettingsChanged(const ActiveConnection: string; ForceReconnect: boolean);
+    procedure StatusBarSizes;
   end;
 
 function ExcludeInvalidChar (path: string): string; // PETROV
@@ -717,6 +737,10 @@ var
   IsUnity: boolean;
   Ini: TIniFileUtf8;
   FHomeDir: string;
+  {$ifdef windows}
+   PrevWndProc: windows.WNDPROC;
+   HotKeyID: Integer;
+  {$endif windows}
 
 const
   // Torrents list
@@ -855,6 +879,24 @@ const
 
 var
   TR_STATUS_STOPPED, TR_STATUS_CHECK_WAIT, TR_STATUS_CHECK, TR_STATUS_DOWNLOAD_WAIT, TR_STATUS_DOWNLOAD, TR_STATUS_SEED_WAIT, TR_STATUS_SEED: integer;
+
+
+  {$ifdef windows}
+function WndCallback(Ahwnd: HWND; uMsg: UINT; wParam: WParam; lParam: LParam):LRESULT; stdcall;
+begin
+  if (uMsg=WM_HOTKEY) and (WParam=HotKeyID) then
+    begin
+      if (MainForm.Visible = false) or (MainForm.WindowState = wsMinimized) then
+          MainForm.ShowApp
+          else
+          MainForm.HideApp;
+    end;
+  result:=CallWindowProc(PrevWndProc,Ahwnd, uMsg, WParam, LParam);
+end;
+
+  {$endif windows}
+
+
 
 function GetHumanSize(sz: double; RoundTo: integer; const EmptyStr: string): string;
 var
@@ -1322,6 +1364,7 @@ var
   i, j: integer;
   R: TRect;
   bigt: boolean;
+  SL: TStringList;
 
 {$ifdef darwin}
   s: string;
@@ -1512,9 +1555,26 @@ begin
   acFolderGrouping.Checked:=Ini.ReadBool('Interface', 'FolderGrouping', True);
   acTrackerGrouping.Checked:=Ini.ReadBool('Interface', 'TrackerGrouping', True);
   FLinksFromClipboard:=Ini.ReadBool('Interface', 'LinksFromClipboard', True);
-
   Application.OnActivate:=@FormActivate;
   Application.OnException:=@ApplicationPropertiesException;
+  {$ifdef windows}
+   FFileManagerDefault:=Ini.ReadString('Interface','FileManagerDefault','explorer.exe');
+   FFileManagerDefaultParam:=Ini.ReadString('Interface', 'FileManagerDefaultParam', '/select,"%s"');
+   FGlobalHotkey:=Ini.ReadString('Interface','GlobalHotkey','');
+   FGlobalHotkeyMod:=Ini.ReadString('Interface','GlobalHotkeyMod','0');
+   HotKeyID := GlobalAddAtom('TransGUIHotkey');
+   PrevWndProc:=windows.WNDPROC(SetWindowLongPtr(Self.Handle,GWL_WNDPROC,PtrInt(@WndCallback)));
+   RegisterHotKey(Self.Handle,HotKeyID, VKStringToWord(FGlobalHotkeyMod), VKStringToWord(FGlobalHotkey));
+  {$endif windows}
+//Dynamic Associations of ShortCuts to Actions/Menus
+  SL := TStringList.Create;
+  try
+  Ini.ReadSectionValues('ShortCuts', SL);
+  for i := 0 to SL.Count - 1 do
+        TAction(ActionList.ActionbyName('ac'+SL.Names[i])).ShortCut:=TextToShortcut(SL.ValueFromIndex[i]);
+  finally
+    SL.Free;
+  end;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -1559,6 +1619,11 @@ begin
     Ini.UpdateFile;
   except
   end;
+  {$ifdef windows}
+   UnRegisterHotkey(Self.Handle,HotKeyID);
+   GlobalDeleteAtom(HotKeyID);
+  {$endif windows}
+
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -2342,9 +2407,8 @@ begin
             raise Exception.Create(sUnableGetFilesList);
 
           OldName:=UTF8Encode(t.Objects[0].Strings['name']);
-          edSaveAs.Caption:=OldName;
-          // petrov - Exclude prohibited characters
-          edSaveAs.Caption := ExcludeInvalidChar(edSaveAs.Caption);
+          edSaveAs.Caption:=OldName;          
+          edSaveAs.Caption := ExcludeInvalidChar(edSaveAs.Caption); // petrov - Exclude prohibited characters
 
           if RpcObj.RPCVersion < 15 then begin
             edSaveAs.Enabled:=False;
@@ -2438,10 +2502,7 @@ begin
             args.Free;
 
             edSaveAs.Text:=Trim(edSaveAs.Text);
-
-            // petrov - Exclude prohibited characters
-            edSaveAs.Text := ExcludeInvalidChar(edSaveAs.Text);
-
+            edSaveAs.Text := ExcludeInvalidChar(edSaveAs.Text); // petrov - Exclude prohibited characters
             if OldName <> edSaveAs.Text then begin
               // Changing torrent name
               req.Free;
@@ -3360,7 +3421,29 @@ begin
   acStatusBar.Checked:=not acStatusBar.Checked;
   StatusBar.Visible:=acStatusBar.Checked;
   if StatusBar.Visible then
-    StatusBar.Top:=ClientHeight;
+      StatusBar.Top:=ClientHeight 
+  else
+      begin
+        acStatusBarSizes.Checked := true;
+        acStatusBarSizesExecute(nil);
+      end;
+end;
+
+procedure TMainForm.acStatusBarSizesExecute(Sender: TObject);
+begin
+   acStatusBarSizes.Checked := not acStatusBarSizes.Checked;
+   if acStatusBarSizes.Checked then
+     begin
+          acStatusBar.Checked:=false;
+          acStatusBarExecute(nil);
+     end
+       else
+        begin
+          StatusBar.Panels[4].Text:= '';
+          StatusBar.Panels[5].Text:= '';
+          StatusBar.Panels[6].Text:= '';
+          StatusBar.Panels[7].Text:= '';
+        end;
 end;
 
 procedure TMainForm.acStopAllTorrentsExecute(Sender: TObject);
@@ -3770,6 +3853,12 @@ begin
   DoRefresh(True);
 end;
 
+procedure TMainForm.edSearchKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_ESCAPE then edSearch.Text:='';
+end;
+
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
   CheckClipboardLink;
@@ -3781,6 +3870,34 @@ var
 begin
   for i:=Low(FileNames) to High(FileNames) do
     AddTorrentFile(FileNames[i]);
+end;
+
+procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+  Keypressed: Word;
+begin
+     if (Shift = [ssAlt]) then
+     begin
+       Keypressed := Key;
+       Key := 0;
+        case Keypressed of
+           VK_S: edSearch.SetFocus;
+           VK_G: PageInfo.PageIndex:=0;
+           VK_K: PageInfo.PageIndex:=1;
+           VK_P: PageInfo.PageIndex:=2;
+           VK_F: PageInfo.PageIndex:=3;
+           VK_1: lvFilter.Row:=0;
+           VK_2: lvFilter.Row:=1;
+           VK_3: lvFilter.Row:=2;
+           VK_4: lvFilter.Row:=3;
+           VK_5: lvFilter.Row:=4;
+           VK_6: lvFilter.Row:=5;
+           VK_7: lvFilter.Row:=6;
+        else Key := KeyPressed;
+        end;
+     end;
+
 end;
 
 procedure TMainForm.FormWindowStateChange(Sender: TObject);
@@ -3869,6 +3986,7 @@ begin
     RpcObj.CurTorrentId:=i;
   finally
     RpcObj.Unlock;
+    if acStatusBarSizes.Checked then StatusBarSizes;
   end;
 
   ClearDetailsInfo(GetPageInfoType(PageInfo.ActivePage));
@@ -3939,7 +4057,7 @@ begin
     v:=gTorrents.Items[idxName, i];
     if VarIsEmpty(v) or VarIsNull(v) then
       continue;
-    if Pos(s, Trim(UTF8UpperCase(UTF8Encode(widestring(v))))) > 0 then begin  // Lazarus 1.4.4 1622
+    if Pos(s, Trim(UTF8UpperCase(UTF8Encode(widestring(v))))) > 0 then begin  
       ARow:=i;
       break;
     end;
@@ -4561,13 +4679,13 @@ begin
   lvFilter.Enabled:=False;
   lvFilter.Color:=gTorrents.Color;
   with lvFilter do begin
-    Items[0, 0]:=(SAll);
-    Items[0, 1]:=(SDownloading);
-    Items[0, 2]:=(SCompleted);
-    Items[0, 3]:=(SActive);
-    Items[0, 4]:=(SInactive);
-    Items[0, 5]:=(sStopped);
-    Items[0, 6]:=(sErrorState);
+    Items[0, 0]:=UTF8Decode(SAll); // ALERT - VERIFY - PETROV
+    Items[0, 1]:=UTF8Decode(SDownloading);
+    Items[0, 2]:=UTF8Decode(SCompleted);
+    Items[0, 3]:=UTF8Decode(SActive);
+    Items[0, 4]:=UTF8Decode(SInactive);
+    Items[0, 5]:=UTF8Decode(sStopped);
+    Items[0, 6]:=UTF8Decode(sErrorState);
   end;
   edSearch.Enabled:=False;
   edSearch.Color:=gTorrents.Color;
@@ -6532,6 +6650,8 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
 {$ifdef mswindows}
         p:=Format('/select,"%s"', [s]);
         s:='explorer.exe';
+           p:=Format(FFileManagerDefaultParam, [s]); // ALERT
+           s:=FFileManagerDefault;
 {$else}
         p:='';
         s:=ExtractFilePath(s);
@@ -6595,6 +6715,66 @@ begin
         end;
     end;
   end;
+end;
+
+function TMainForm.GetDisplayedTorrents: variant;
+var
+  i,j : integer;
+begin
+  with gTorrents do begin
+    if Items.Count = 0 then begin
+      Result:=Unassigned;
+      exit;
+    end;
+        Result:=VarArrayCreate([0, gTorrents.Items.Count - 1], varinteger);
+        j:=0;
+        for i:=0 to gTorrents.Items.Count - 1 do
+          if gTorrents.RowVisible[i] then begin
+            Result[j]:=Items[idxTorrentId, i];
+            Inc(j);
+          end;
+  end;
+end;
+
+procedure TMainform.StatusBarSizes;
+var
+   ids: variant;
+   TotalSize, TotalDownloaded, TotalSizeToDownload, TorrentDownloaded, TorrentSizeToDownload: Int64;
+   i: Integer;
+begin
+    try
+    if gTorrents.Items.Count > 0 then
+    begin
+        if gTorrents.SelCount > 0 then
+            ids := GetSelectedTorrents
+        else  ids := GetDisplayedTorrents;
+        TotalSize := 0;
+        TotalDownloaded := 0;
+        TotalSizeToDownload := 0;
+        for i:=VarArrayLowBound(ids, 1) to VarArrayHighBound(ids, 1) do
+        begin
+             TotalSize             := TotalSize + FTorrents.Items[idxSize, FTorrents.IndexOf(idxTorrentId, ids[i])];
+             TorrentSizeToDownload := FTorrents.Items[idxSizetoDowload, FTorrents.IndexOf(idxTorrentId, ids[i])];
+             TorrentDownloaded     := TorrentSizeToDownload * (FTorrents.Items[idxDone, FTorrents.IndexOf(idxTorrentId, ids[i])] / 100);
+             TotalSizeToDownload   := TotalSizeToDownload + TorrentSizeToDownload;
+             TotalDownloaded       := TotalDownloaded + TorrentDownloaded;
+        end;
+        StatusBar.Panels[4].Text:=Format(sTotalSize,[GetHumanSize(TotalSize, 0, '?')]);
+        StatusBar.Panels[5].Text:=Format(sTotalSizeToDownload,[GetHumanSize(TotalSizeToDownload, 0, '?')]);
+        StatusBar.Panels[6].Text:=Format(sTotalDownloaded,[GetHumanSize(TotalDownloaded, 0, '?')]);
+        StatusBar.Panels[7].Text:=Format(sTotalRemain,[GetHumanSize(TotalSizeToDownload - TotalDownloaded, 0, '?')]);
+    end
+    else
+    begin
+      StatusBar.Panels[4].Text:=Format(sTotalSize,[GetHumanSize(0, 0, '?')]);
+      StatusBar.Panels[5].Text:=Format(sTotalSizeToDownload,[GetHumanSize(0, 0, '?')]);
+      StatusBar.Panels[6].Text:=Format(sTotalDownloaded,[GetHumanSize(0, 0, '?')]);
+      StatusBar.Panels[7].Text:=Format(sTotalRemain,[GetHumanSize(0, 0, '?')]);
+    end;
+    except
+         gTorrents.Refresh;
+    end;
+
 end;
 
 procedure TMainForm.FillDownloadDirs(CB: TComboBox; const CurFolderParam: string);
