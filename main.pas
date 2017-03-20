@@ -6330,10 +6330,10 @@ procedure TMainForm.FillStatistics(s: TJSONObject);
   procedure _Fill(idx: integer; s: TJSONObject);
   begin
     with gStats do begin
-      Items[idx, 0]:=UTF8Decode(GetHumanSize(s.Floats['downloadedBytes'])); //UTF8Decode
-      Items[idx, 1]:=UTF8Decode(GetHumanSize(s.Floats['uploadedBytes'])); //UTF8Decode
+      Items[idx, 0]:=UTF8Decode(GetHumanSize(s.Floats['downloadedBytes']));
+      Items[idx, 1]:=UTF8Decode(GetHumanSize(s.Floats['uploadedBytes'])); 
       Items[idx, 2]:=s.Integers['filesAdded'];
-      Items[idx, 3]:=UTF8Decode(SecondsToString(s.Integers['secondsActive'])); //UTF8Decode
+      Items[idx, 3]:=UTF8Decode(SecondsToString(s.Integers['secondsActive']));
     end;
   end;
 
@@ -6645,25 +6645,30 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
     p: string;
   begin
     AppBusy;
-    if SelectFile then
+    if SelectFile then begin
       if FileExistsUTF8(s) then begin
 {$ifdef mswindows}
-        p:=Format('/select,"%s"', [s]);
-        s:='explorer.exe';
-           p:=Format(FFileManagerDefaultParam, [s]); // ALERT
-           s:=FFileManagerDefault;
+        p:=Format(FFileManagerDefaultParam, [s]); // ALERT  //      p:=Format('/select,"%s"', [s]);
+        s:=FFileManagerDefault;                             //      s:='explorer.exe';
 {$else}
         p:='';
         s:=ExtractFilePath(s);
 {$endif mswindows}
-      end
-      else begin
+      end else begin
         p:='';
         s:=ExtractFilePath(s);
       end;
+    end else begin
+{$ifdef mswindows}
+        p:=Format(FFileManagerDefaultParam, [s]); // ALERT
+        s:=FFileManagerDefault;
+{$endif mswindows}
+    end;
 
 //{$ifdef mswindows}
+
       Result:=OpenURL(s, p);
+
 //{$else}
 // using lclintf;
 //      //Result := OpenURL(s, p); // does not work in latest linux very well!!!!
