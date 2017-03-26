@@ -1568,7 +1568,7 @@ begin
    PrevWndProc:=windows.WNDPROC(SetWindowLongPtr(Self.Handle,GWL_WNDPROC,PtrInt(@WndCallback)));
    RegisterHotKey(Self.Handle,HotKeyID, VKStringToWord(FGlobalHotkeyMod), VKStringToWord(FGlobalHotkey));
   {$else}
-   FLinuxOpenDoc := Ini.ReadString('Interface','FileOpenDoc','1');
+   FLinuxOpenDoc := Ini.ReadInteger('Interface','FileOpenDoc','1');
   {$endif windows}
 //Dynamic Associations of ShortCuts to Actions/Menus
   SL := TStringList.Create;
