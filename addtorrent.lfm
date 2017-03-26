@@ -51,7 +51,7 @@ inherited AddTorrentForm: TAddTorrentForm
       Left = 10
       Height = 23
       Top = 16
-      Width = 360
+      Width = 324
       Anchors = [akTop, akLeft, akRight]
       DropDownCount = 60
       ItemHeight = 15
@@ -67,7 +67,7 @@ inherited AddTorrentForm: TAddTorrentForm
       Caption = 'Start torrent'
       Checked = True
       State = cbChecked
-      TabOrder = 3
+      TabOrder = 4
     end
     object edPeerLimit: TSpinEdit
       Left = 402
@@ -77,18 +77,21 @@ inherited AddTorrentForm: TAddTorrentForm
       Anchors = [akTop, akRight]
       MaxValue = 999
       MinValue = 1
-      TabOrder = 4
+      TabOrder = 5
       Value = 1
     end
     object btBrowse: TButton
       Left = 375
       Height = 23
+      Hint = 'Browse folder'
       Top = 15
       Width = 91
       Anchors = [akTop, akRight]
       Caption = 'Browse...'
       OnClick = btBrowseClick
-      TabOrder = 1
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 2
     end
     object txSaveAs: TLabel
       Left = 10
@@ -105,7 +108,7 @@ inherited AddTorrentForm: TAddTorrentForm
       Width = 456
       Anchors = [akTop, akLeft, akRight]
       OnChange = edSaveAsChange
-      TabOrder = 2
+      TabOrder = 3
     end
     object edExtension: TEdit
       Left = 8
@@ -117,7 +120,7 @@ inherited AddTorrentForm: TAddTorrentForm
       OnChange = edSaveAsChange
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 5
+      TabOrder = 6
     end
     object txSaveAs1: TLabel
       Left = 10
@@ -129,6 +132,19 @@ inherited AddTorrentForm: TAddTorrentForm
       ParentColor = False
       ParentShowHint = False
       ShowHint = True
+    end
+    object DelButton: TButton
+      Left = 340
+      Height = 23
+      Hint = 'Delete Destination Path'
+      Top = 15
+      Width = 32
+      Anchors = [akTop, akRight]
+      Caption = 'D'
+      OnClick = DelButtonClick
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 1
     end
   end
   object gbContents: TGroupBox[1]

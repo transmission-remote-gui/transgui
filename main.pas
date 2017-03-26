@@ -622,6 +622,7 @@ type
     FPendingTorrents: TStringList;
     FLinksFromClipboard: boolean;
     FLastClipboardLink: string;
+    FLinuxOpenDoc: integer;
 {$ifdef windows}
     FFileManagerDefault: string;
     FFileManagerDefaultParam: string;
@@ -1557,6 +1558,7 @@ begin
   FLinksFromClipboard:=Ini.ReadBool('Interface', 'LinksFromClipboard', True);
   Application.OnActivate:=@FormActivate;
   Application.OnException:=@ApplicationPropertiesException;
+
   {$ifdef windows}
    FFileManagerDefault:=Ini.ReadString('Interface','FileManagerDefault','explorer.exe');
    FFileManagerDefaultParam:=Ini.ReadString('Interface', 'FileManagerDefaultParam', '/select,"%s"');
@@ -1565,6 +1567,8 @@ begin
    HotKeyID := GlobalAddAtom('TransGUIHotkey');
    PrevWndProc:=windows.WNDPROC(SetWindowLongPtr(Self.Handle,GWL_WNDPROC,PtrInt(@WndCallback)));
    RegisterHotKey(Self.Handle,HotKeyID, VKStringToWord(FGlobalHotkeyMod), VKStringToWord(FGlobalHotkey));
+  {$else}
+   FLinuxOpenDoc := Ini.ReadString('Interface','FileOpenDoc','1');
   {$endif windows}
 //Dynamic Associations of ShortCuts to Actions/Menus
   SL := TStringList.Create;
@@ -6665,15 +6669,15 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
 {$endif mswindows}
     end;
 
-//{$ifdef mswindows}
-
+{$ifdef mswindows}
       Result:=OpenURL(s, p);
-
-//{$else}
-// using lclintf;
-//      //Result := OpenURL(s, p); // does not work in latest linux very well!!!!
-//      Result   := OpenDocument(s); // works better
-//{$endif mswindows}
+{$else}
+       if FLinuxOpenDoc == 0 then
+          Result := OpenURL(s, p);   // does not work in latest linux very well!!!! old.vers
+       else
+          Result := OpenDocument(s); // works better - new.vers
+       end;
+{$endif mswindows}
 
     AppNormal;
     if not Result then begin

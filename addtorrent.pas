@@ -41,6 +41,7 @@ type
     btSelectAll: TButton;
     btSelectNone: TButton;
     btBrowse: TButton;
+    DelButton: TButton;
     Buttons: TButtonPanel;
     cbStartTorrent: TCheckBox;
     cbDestFolder: TComboBox;
@@ -61,6 +62,7 @@ type
     procedure btSelectAllClick(Sender: TObject);
     procedure btSelectNoneClick(Sender: TObject);
     procedure cbDestFolderChange(Sender: TObject);
+    procedure DelButtonClick(Sender: TObject);
     procedure DiskSpaceTimerTimer(Sender: TObject);
     procedure edSaveAsChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -1011,6 +1013,20 @@ begin
     edExtension.Text:= pFD.Ext;
   end;
   DiskSpaceTimer.Enabled:=True;
+end;
+
+procedure TAddTorrentForm.DelButtonClick(Sender: TObject);
+var
+  i,min,max,indx, fldr: integer;
+  pFD : FolderData;
+  s : string;
+begin
+    s := CorrectPath(cbDestFolder.Text);
+    i := cbDestFolder.Items.IndexOf(s);
+    if i > -1 then begin
+      cbDestFolder.Items.Delete(i);
+      cbDestFolder.ItemIndex:=0;
+    end;
 end;
 
 procedure TAddTorrentForm.DiskSpaceTimerTimer(Sender: TObject);
