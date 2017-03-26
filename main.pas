@@ -26,6 +26,8 @@ uses
   Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, 
   {$ifdef windows}
   windows,
+  {$else}
+  lclintf,
   {$endif windows}
   Graphics, Dialogs, ComCtrls, Menus, ActnList,
   httpsend, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
@@ -1568,7 +1570,7 @@ begin
    PrevWndProc:=windows.WNDPROC(SetWindowLongPtr(Self.Handle,GWL_WNDPROC,PtrInt(@WndCallback)));
    RegisterHotKey(Self.Handle,HotKeyID, VKStringToWord(FGlobalHotkeyMod), VKStringToWord(FGlobalHotkey));
   {$else}
-   FLinuxOpenDoc := Ini.ReadInteger('Interface','FileOpenDoc','1');
+   FLinuxOpenDoc := Ini.ReadInteger('Interface','FileOpenDoc',1);
   {$endif windows}
 //Dynamic Associations of ShortCuts to Actions/Menus
   SL := TStringList.Create;
@@ -6672,8 +6674,8 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
 {$ifdef mswindows}
       Result:=OpenURL(s, p);
 {$else}
-       if FLinuxOpenDoc == 0 then
-          Result := OpenURL(s, p);   // does not work in latest linux very well!!!! old.vers
+       if FLinuxOpenDoc = 0 then
+          Result := OpenURL(s, p)    // does not work in latest linux very well!!!! old.vers
        else
           Result := OpenDocument(s); // works better - new.vers
        end;
