@@ -6672,13 +6672,12 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
     end;
 
 {$ifdef mswindows}
-      Result:=OpenURL(s, p);
+       Result:=OpenURL(s, p);
 {$else}
        if FLinuxOpenDoc = 0 then
           Result := OpenURL(s, p)    // does not work in latest linux very well!!!! old.vers
        else
           Result := OpenDocument(s); // works better - new.vers
-       end;
 {$endif mswindows}
 
     AppNormal;
