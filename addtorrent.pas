@@ -24,8 +24,9 @@ unit AddTorrent;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, VarGrid, Grids,
-  ButtonPanel, ExtCtrls, BaseForm, varlist, fpjson, StrUtils,DateUtils,LazUTF8;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
+  StdCtrls, Spin, VarGrid, Grids, ButtonPanel, ExtCtrls, Buttons, BaseForm,
+  varlist, fpjson, StrUtils, DateUtils, LazUTF8;
 
 resourcestring
   SSize = 'Size';
@@ -38,10 +39,10 @@ type
   { TAddTorrentForm }
 
   TAddTorrentForm = class(TBaseForm)
+    DelButton: TBitBtn;
     btSelectAll: TButton;
     btSelectNone: TButton;
     btBrowse: TButton;
-    DelButton: TButton;
     Buttons: TButtonPanel;
     cbStartTorrent: TCheckBox;
     cbDestFolder: TComboBox;
@@ -1021,11 +1022,13 @@ var
   pFD : FolderData;
   s : string;
 begin
-    s := CorrectPath(cbDestFolder.Text);
-    i := cbDestFolder.Items.IndexOf(s);
-    if i > -1 then begin
-      cbDestFolder.Items.Delete(i);
-      cbDestFolder.ItemIndex:=0;
+    if cbDestFolder.Items.Count > 1 then begin
+        s := CorrectPath(cbDestFolder.Text);
+        i := cbDestFolder.Items.IndexOf(s);
+        if i > -1 then begin
+              cbDestFolder.Items.Delete(i);
+              cbDestFolder.ItemIndex:=0;
+        end;
     end;
 end;
 

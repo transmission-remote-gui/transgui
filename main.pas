@@ -6665,10 +6665,12 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
         s:=ExtractFilePath(s);
       end;
     end else begin
-{$ifdef mswindows}
-        p:=Format(FFileManagerDefaultParam, [s]); // ALERT
-        s:=FFileManagerDefault;
-{$endif mswindows}
+
+//{$ifdef mswindows}
+//        p:=Format(FFileManagerDefaultParam, [s]); // ALERT
+//        s:=FFileManagerDefault;
+//{$endif mswindows}
+
     end;
 
 {$ifdef mswindows}
