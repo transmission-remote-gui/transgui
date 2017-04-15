@@ -1,7 +1,16 @@
-5.6.0 (Mar 26, 2017)
-[+] ***
-[+] ***
-[+] ***
+5.6.0 (Apr 15, 2017)
+[+] Added a delete button from the list of destination directories when adding a torrent. Issue #760
+[+] Added replacement of invalid characters in torrent files (replacement with "_"). Issue #929
+[+] Added warning about using an invalid character "{" in the password. Issue #931
+[+] Added output of additional information to the status bar. Issue #924
+[+] Added the ability to assign their own shortcut keys to access the functions of the program. Issue #924
+[+] Added the ability to assign its file manager to open the torrent directory. Issue #924
+[+] Added the ability to compile and run the program on Raspberry PI 3.
+[+] Added the ability to copy Magnet Links from the popup menu. Issue #930
+[?] Changed the function of opening files in Linux. To select the old option, specify FileOpenDoc=0.
+[-] Fixed add / replace torrent tracker. Issue #929.
+[?] Fixed compilation of the program from the command line in Linux.
+[+] In the Installation for downloading SSL libraries added Visual Redistributable Package (For pure Windows systems. For Linux it would be necessary to make similar)
 
 5.5.1 (Jan 2, 2017)
 [+] Added openssl library for SSL/TLS support functions (windows version)
