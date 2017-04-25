@@ -1570,9 +1570,15 @@ begin
    PrevWndProc:=windows.WNDPROC(SetWindowLongPtr(Self.Handle,GWL_WNDPROC,PtrInt(@WndCallback)));
    RegisterHotKey(Self.Handle,HotKeyID, VKStringToWord(FGlobalHotkeyMod), VKStringToWord(FGlobalHotkey));
   {$else}
-   FLinuxOpenDoc := Ini.ReadInteger('Interface','FileOpenDoc',1);
+     {$ifdef darwin}
+     FLinuxOpenDoc := Ini.ReadInteger('Interface','FileOpenDoc',0);  // macOS - OpenURL(s, p) = Original version TRGUI
+     {$else}
+     FLinuxOpenDoc := Ini.ReadInteger('Interface','FileOpenDoc',1);
+     {$endif darwin}
+     Ini.WriteInteger('Interface','FileOpenDoc',FLinuxOpenDoc);
   {$endif windows}
-//Dynamic Associations of ShortCuts to Actions/Menus
+
+  //Dynamic Associations of ShortCuts to Actions/Menus
   SL := TStringList.Create;
   try
   Ini.ReadSectionValues('ShortCuts', SL);
