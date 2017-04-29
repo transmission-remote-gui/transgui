@@ -452,7 +452,7 @@ begin
 {$endif mswindows}
 
 {$ifdef darwin}
-  Result:=fpSystem('Open "' + URL + '"') = 0;
+  Result:=fpSystem('open "' + URL + '"') = 0;
 {$else darwin}
 
   {$ifdef unix}
