@@ -103,8 +103,8 @@ uses
 {$IFDEF CIL}
 const
   {$IFDEF LINUX}
-  DLLSSLName = 'libssl.so';
-  DLLUtilName = 'libcrypto.so';
+  DLLSSLName = 'libssl.so.1.0.0';
+  DLLUtilName = 'libcrypto.so.1.0.0';
   {$ELSE}
   DLLSSLName = 'ssleay32.dll';
   DLLUtilName = 'libeay32.dll';
@@ -125,8 +125,8 @@ var
     DLLUtilName: string = 'crypto.dll';
       {$ENDIF OS2GCC}
      {$ELSE OS2}
-    DLLSSLName: string = 'libssl.so';
-    DLLUtilName: string = 'libcrypto.so';
+    DLLSSLName: string = 'libssl.so.1.0.0';
+    DLLUtilName: string = 'libcrypto.so.1.0.0';
      {$ENDIF OS2}
     {$ENDIF}
   {$ELSE}
