@@ -110,7 +110,7 @@ Ratio=Коэффициент
 Reconnect in %d seconds=Повтор подключения через %d секунд
 Remaining=Осталось
 Remote host=Удаленный узел
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Сопоставление локальных путей удаленным.~~Например:~/share=\\pch\share~/var/downloads/music=Z:\music"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Сопоставление локальных путей удаленным. Например:~/share=\\pch\share~или~/var/downloads/music=Z:\music"
 Remove torrent and Data=Удалить торрент и файлы
 Remove torrent=Удалить торрент
 Remove=Удалить
@@ -346,3 +346,12 @@ Torrent not registered with this tracker==Торрент не зарегистр
 Unable to find path mapping.~Use the application's options to setup path mappings=Невозможно найти сопоставление путей.~Используйте параметры приложения для настройки сопоставления путей
 Update trackers for the existing torrent?=Обновить трекеры для существующего торрента?
 You need to restart the application to apply changes=Необходимо перезапустить приложение для применения изменений
+Export settings=Экспорт настроек
+Import settings=Импорт настроек
+Development site=Сайт разработчика
+Always auto-reconnect=Всегда переподключаться
+The maximum history of directories for storage of torrents=Максимальное количество каталогов для хранения торрентов в списке
+Size left=Размер оставшегося
+Status bar - Sizes=Размер в строке состояния
+Remote to local path mappings.=Соответствие удаленных путей локальным.
+Examples:=Примеры:
