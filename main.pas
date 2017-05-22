@@ -3889,7 +3889,7 @@ procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
 var
   Keypressed: Word;
 begin
-     if (Shift = [ssAlt]) then
+     if (Shift = [ssAlt]) and not (MainForm.ActiveControl is TVarGridStringEditor) then
      begin
        Keypressed := Key;
        Key := 0;
