@@ -1578,12 +1578,21 @@ begin
      Ini.WriteInteger('Interface','FileOpenDoc',FLinuxOpenDoc);
   {$endif windows}
 
-  //Dynamic Associations of ShortCuts to Actions/Menus
+//Dynamic Associations of ShortCuts to Actions/Menus
   SL := TStringList.Create;
   try
-  Ini.ReadSectionValues('ShortCuts', SL);
-  for i := 0 to SL.Count - 1 do
-        TAction(ActionList.ActionbyName('ac'+SL.Names[i])).ShortCut:=TextToShortcut(SL.ValueFromIndex[i]);
+    Ini.ReadSectionValues('ShortCuts', SL);
+    if SL.Text = ''  then
+      begin
+          for i := 0 to ActionList.ActionCount-1 do
+          Ini.WriteString('Shortcuts',StringReplace(ActionList.Actions[i].Name,'ac','',[]),ShortcutToText(TAction(ActionList.Actions[i]).ShortCut));
+      end
+      else
+         for i := 0 to SL.Count - 1 do
+              try
+                  TAction(ActionList.ActionbyName('ac'+SL.Names[i])).ShortCut := TextToShortcut(SL.ValueFromIndex[i]);
+              except
+              end;
   finally
     SL.Free;
   end;
