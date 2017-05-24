@@ -92,14 +92,13 @@ MaxFoldersHistory=10
 
 [Interface]
 ;Alternate File Manager (Windows Only)
-FileManagerDefault={Full path to your File}
+FileManagerDefault={Full path to your File Manager .exe}
 FileManagerDefaultParam={Alternate parameters, could be left blank}
 
 [Interface]
 ;System Wide Shortcut key (Windows Only)
 GlobalHotkey={Virtual Key Code} full list here http://docwiki.embarcadero.com/RADStudio/Seattle/en/Virtual_Key_Codes (Plus VK_A...VK_Z and VK_0..VK_9)
-GlobalHotkeyMod={Modifier Key} [Set of MOD_SHIFT , MOD_CONTROL , MOD_ALT , MOD_WIN alone or combined with + sign]
+GlobalHotkeyMod={Modifier Key} [MOD_SHIFT , MOD_CONTROL , MOD_ALT , MOD_WIN alone or combined with + sign]
 
 [Shortcuts]
 ;Modify all the shortcuts of the GUI here
-
