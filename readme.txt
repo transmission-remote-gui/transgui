@@ -65,10 +65,41 @@ PORTABLE MODE
 
 If the program finds the transgui.ini file in the same folder as the binary file, then it will store all configuration and data files in the program's folder, instead of the folder in a user profile.
 
+FIXED SHORTCUTS
+
+Alt + 1 : All Torrents
+Alt + 2 : Downloading
+Alt + 3 : Completed
+Alt + 4 : Active
+Alt + 5 : Inactive
+Alt + 6 : Stopped
+Alt + 7 : Error
+Alt + S : Searchbox (filter torrents by keywords) - Esc cancel filter and clean the box.
+Alt + G : Info Pane - General Tab
+Alt + K : Info Pane - Trackers Tab
+Alt + P : Info Pane - Peers Tab
+Alt + F : Info Pane - Files Tab
+
+
 ADVANCED PARAMETERS
 
-There are some parameters in the tramsgui.ini file, that can not be modified via the GUI.
+There are some parameters in the transgui.ini file, that can not be modified via the GUI.
+More info on: https://github.com/leonsoft-kras/transmisson-remote-gui/issues/924
 
 [Interface]
 ; Maximum number of elements in the folder history list
 MaxFoldersHistory=10
+
+[Interface]
+;Alternate File Manager (Windows Only)
+FileManagerDefault={Full path to your File}
+FileManagerDefaultParam={Alternate parameters, could be left blank}
+
+[Interface]
+;System Wide Shortcut key (Windows Only)
+GlobalHotkey={Virtual Key Code} full list here http://docwiki.embarcadero.com/RADStudio/Seattle/en/Virtual_Key_Codes (Plus VK_A...VK_Z and VK_0..VK_9)
+GlobalHotkeyMod={Modifier Key} [Set of MOD_SHIFT , MOD_CONTROL , MOD_ALT , MOD_WIN alone or combined with + sign]
+
+[Shortcuts]
+;Modify all the shortcuts of the GUI here
+
