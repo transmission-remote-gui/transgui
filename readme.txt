@@ -91,6 +91,10 @@ More info on: https://github.com/leonsoft-kras/transmisson-remote-gui/issues/924
 MaxFoldersHistory=10
 
 [Interface]
+;In Linux/MacOs Only if "Open Container Folder" give you error
+FileOpenDoc=0
+
+[Interface]
 ;Alternate File Manager (Windows Only)
 FileManagerDefault={Full path to your File Manager .exe}
 FileManagerDefaultParam={Alternate parameters, could be left blank}
