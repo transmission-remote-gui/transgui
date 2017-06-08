@@ -123,6 +123,9 @@ var
   v: PVariant;
   sz: integer;
 begin
+
+  if ARow < 0 then ARow := 0;
+
   if ARow >= Count then
     SetRowCnt(ARow + 1);
   v:=Get(ARow);
