@@ -420,18 +420,12 @@ begin
   FLastError := 0;
   Fctx := nil;
   case FSSLType of
-    LT_SSLv2:
-      Fctx := SslCtxNew(SslMethodV2);
-    LT_SSLv3:
-      Fctx := SslCtxNew(SslMethodV3);
     LT_TLSv1:
       Fctx := SslCtxNew(SslMethodTLSV1);
     LT_TLSv1_1:
       Fctx := SslCtxNew(SslMethodTLSV11);
     LT_TLSv1_2:
       Fctx := SslCtxNew(SslMethodTLSV12);
-    LT_all:
-      Fctx := SslCtxNew(SslMethodV23);
   else
     Exit;
   end;
