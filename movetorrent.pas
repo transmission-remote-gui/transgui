@@ -77,10 +77,13 @@ begin
 end;
 
 procedure TMoveTorrentForm.FormCreate(Sender: TObject);
+var
+    c,c1,c2: integer;
 begin
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@btOKClick;
   bidiMode := GetBiDi();
+  btBrowse.Left := edTorrentDir.Left + edTorrentDir.Width + 8; // fix button
 end;
 
 initialization

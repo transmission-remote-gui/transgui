@@ -13,8 +13,8 @@ inherited MoveTorrentForm: TMoveTorrentForm
   Position = poMainFormCenter
   object Buttons: TButtonPanel[0]
     Left = 8
-    Height = 36
-    Top = 82
+    Height = 40
+    Top = 78
     Width = 627
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
@@ -34,7 +34,7 @@ inherited MoveTorrentForm: TMoveTorrentForm
   end
   object Panel1: TPanel[1]
     Left = 8
-    Height = 74
+    Height = 70
     Top = 8
     Width = 627
     Align = alClient
@@ -42,15 +42,16 @@ inherited MoveTorrentForm: TMoveTorrentForm
     BorderSpacing.Top = 8
     BorderSpacing.Right = 8
     BevelOuter = bvNone
-    ClientHeight = 74
+    ClientHeight = 70
     ClientWidth = 627
     Constraints.MinWidth = 545
     TabOrder = 0
     object txTorrentDir: TLabel
       Left = 0
-      Height = 15
+      Height = 21
       Top = 0
-      Width = 156
+      Width = 528
+      AutoSize = False
       Caption = 'New location for torrent data:'
       ParentColor = False
     end
@@ -62,7 +63,7 @@ inherited MoveTorrentForm: TMoveTorrentForm
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       DropDownCount = 60
-      ItemHeight = 15
+      ItemHeight = 0
       Sorted = True
       TabOrder = 0
     end
@@ -70,7 +71,7 @@ inherited MoveTorrentForm: TMoveTorrentForm
       Left = 0
       Height = 19
       Top = 47
-      Width = 316
+      Width = 528
       AutoSize = False
       Caption = 'Move torrent data from current location to new location'
       Checked = True
@@ -85,6 +86,7 @@ inherited MoveTorrentForm: TMoveTorrentForm
       Anchors = [akTop, akRight]
       Caption = 'Browse...'
       Constraints.MaxWidth = 91
+      Constraints.MinWidth = 91
       OnClick = btBrowseClick
       TabOrder = 1
     end
