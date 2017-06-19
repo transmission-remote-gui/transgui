@@ -39,7 +39,9 @@ uses
   { you can add units after this }, BaseForm, Main, rpc, AddTorrent, ConnOptions, varlist,
   TorrProps, DaemonOptions, About, IpResolver, download, ColSetup, utils, ResTranslator, AddLink, MoveTorrent, AddTracker, Options;
 
+{$ifdef windows}
 {$R *.res}
+{$endif}
 
 begin
   if not CheckAppParams then exit;
