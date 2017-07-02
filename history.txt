@@ -1,3 +1,13 @@
+5.7.0 (Jul 1, 2017)
+[+] Removed support for SSL 2,3.
+[+] Changed script for compiling the program for the Mac.
+[-] Fixed Russian,Ukrainian,Hungarian translation.
+[-] Fixed the "Browse" button in the "Torrent data location" window (Linux)
+[-] Fixed processing of the FileOpenDoc ini-parameter.
+[-] Fixed dynamic associations of ShortCuts to Actions/Menus.
+[-] Fixed display of program icons in Linux.
+[-] Fixed minor bugs.
+
 5.6.0 (Apr 15, 2017)
 [+] Added a delete button from the list of destination directories when adding a torrent. Issue #760
 [+] Added replacement of invalid characters in torrent files (replacement with "_"). Issue #929
