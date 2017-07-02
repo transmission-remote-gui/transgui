@@ -3,8 +3,7 @@
 if (%1) == () goto usage
 if (%2) == () goto usage
 
-set path=%1;%1\fpc\3.0.0\bin\i386-win32;%path%
-rem set path=%1;%1\fpc\3.0.0\bin\x86_64-win64;%path%
+set path=%1;%1\fpc\3.0.2\bin\i386-win32;%path%
 set LAZARUS_DIR=%1
 
 make -C ../.. clean all LAZARUS_DIR=%1
