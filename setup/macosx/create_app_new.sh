@@ -6,7 +6,7 @@ exename=../../transgui
 appname="Transmission Remote GUI"
 dmgfolder=./Release
 appfolder="$dmgfolder/$appname.app"
-lazdir=$1
+lazdir="${1:-/Developer/lazarus/}"
 
 ./compilers.sh
 
