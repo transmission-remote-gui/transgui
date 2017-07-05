@@ -321,7 +321,7 @@ begin
     LT_TLSv1_1:
       x := 1;
     LT_TLSv1_2:
-      x := 3;
+      x := 2;
   end;
   if x >= 0 then
     if not SSLCheck(cryptSetAttribute(FCryptSession, CRYPT_SESSINFO_VERSION, x)) then
