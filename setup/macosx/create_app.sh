@@ -4,7 +4,7 @@ prog_ver="$(cat ../../VERSION.txt)"
 exename=../../transgui
 appname="Transmission Remote GUI"
 appfolder="../../$appname.app"
-lazdir=$1
+lazdir="${1:-/Developer/lazarus/}"
 
 if [ ! "$lazdir" = "" ]
 then
