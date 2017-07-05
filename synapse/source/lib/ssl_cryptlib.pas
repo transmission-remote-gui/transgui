@@ -296,7 +296,7 @@ begin
   FcryptSession := CRYPT_SESSION(CRYPT_SESSION_NONE);
   if server then
     case FSSLType of
-      LT_TLSv1, LT_TLSv1_1, LT_TLSv1_2:
+      LT_all, LT_TLSv1, LT_TLSv1_1, LT_TLSv1_2:
         st := CRYPT_SESSION_SSL_SERVER;
       LT_SSHv2:
         st := CRYPT_SESSION_SSH_SERVER;
@@ -305,7 +305,7 @@ begin
     end
   else
     case FSSLType of
-      LT_TLSv1, LT_TLSv1_1, TL_TLSv1_2:
+      LT_all, LT_TLSv1, LT_TLSv1_1, LT_TLSv1_2:
         st := CRYPT_SESSION_SSL;
       LT_SSHv2:
         st := CRYPT_SESSION_SSH;
@@ -507,7 +507,7 @@ begin
   if FcryptSession = CRYPT_SESSION(CRYPT_SESSION_NONE) then
     Exit;
   cryptGetAttribute(FCryptSession, CRYPT_SESSINFO_VERSION, x);
-  if FSSLType in [LT_TLSv1, LT_TLSv1_1, LT_TLSv1_2] then
+  if FSSLType in [LT_TLSv1, LT_TLSv1_1, LT_TLSv1_2, LT_all] then
     case x of
       0:
         Result := 'TLSv1';
