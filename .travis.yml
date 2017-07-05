@@ -1,14 +1,15 @@
 language: generic
 sudo: required
 osx_image: xcode8.3
+git:
+  depth: 10
 
 os:
   - osx
 env:
   - PROG_VER=$(cat VERSION.txt)
 before_install:
-  - brew update
-  - brew install gnu-sed --with-default-names
+  - brew install --force-bottle gnu-sed --with-default-names
 install:
   - sh -c 'cd setup/macosx && ./compilers.sh'
 script:
