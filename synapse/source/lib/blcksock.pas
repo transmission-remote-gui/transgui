@@ -239,6 +239,7 @@ type
 
   {:Specify requested SSL/TLS version for secure connection.}
   TSSLType = (
+    LT_all,
     LT_TLSv1,
     LT_TLSv1_1,
     LT_TLSv1_2,
@@ -4132,7 +4133,7 @@ begin
   FLastError := 0;
   FLastErrorDesc := '';
   FVerifyCert := False;
-  FSSLType := LT_TLSv1;
+  FSSLType := LT_all;
   FKeyPassword := '';
   FCiphers := '';
   FCertificateFile := '';
