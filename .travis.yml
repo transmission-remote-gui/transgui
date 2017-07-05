@@ -1,6 +1,8 @@
 language: generic
 sudo: required
 osx_image: xcode8.3
+git:
+  depth: 10
 
 os:
   - osx
