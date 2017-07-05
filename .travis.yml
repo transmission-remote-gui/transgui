@@ -9,7 +9,6 @@ os:
 env:
   - PROG_VER=$(cat VERSION.txt)
 before_install:
-  - brew update
   - brew install gnu-sed --with-default-names
 install:
   - sh -c 'cd setup/macosx && ./compilers.sh'
