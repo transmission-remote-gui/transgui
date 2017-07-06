@@ -2097,7 +2097,7 @@ begin
     _SslMethodTLSV11 := nil;
     _SslMethodTLSV12 := nil;
     _SslMethodV23 := nil;
-    _SslMethodV23 := nil;
+    _SslMethodTLS := nil;
     _SslCtxUsePrivateKey := nil;
     _SslCtxUsePrivateKeyASN1 := nil;
     _SslCtxUsePrivateKeyFile := nil;
