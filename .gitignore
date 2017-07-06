@@ -32,7 +32,14 @@ lib/
 *.app/
 
 
+# Free Pascal compiler made files
+fpcmade*
 
-fpcmade\.i386-darwin
-
+# MacOS dmg file
 *.dmg
+
+# Release files
+Release/
+
+# transgui binary
+/transgui
