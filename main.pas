@@ -35,7 +35,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.7.0';
+  AppVersion = '5.8.0';
 
 resourcestring
   sAll = 'All torrents';
