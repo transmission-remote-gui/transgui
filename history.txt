@@ -1,5 +1,7 @@
 5.8.0 (Jul 6, 2017)
-[-] Fixed support for SSL
+[-] Fixed TLS 1.2 support on non-MacOS platforms
+[+] Updated Traditional Chinese translation
+[+] Re-compressed all png images and zip archive 
 
 5.7.0 (Jul 1, 2017)
 [+] Removed support for SSL 2,3.
