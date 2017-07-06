@@ -1,3 +1,6 @@
+5.8.0 (Jul 6, 2017)
+[-] Fixed support for SSL
+
 5.7.0 (Jul 1, 2017)
 [+] Removed support for SSL 2,3.
 [+] Changed script for compiling the program for the Mac.
