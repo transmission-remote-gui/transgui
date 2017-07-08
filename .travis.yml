@@ -14,14 +14,31 @@ matrix:
   include:
     - os: linux
       dist: trusty
-      env: arch=amd64
+      env:
+      - task=shellcheck
+      addons:
+        apt:
+          sources:
+            - debian-sid
+          packages:
+            - shellcheck
 
     - os: linux
       dist: trusty
-      env: arch=i386
+      env:
+      - task=build
+      - arch=amd64
+
+    - os: linux
+      dist: trusty
+      env:
+      - task=build
+      - arch=i386
 
     - os: osx
       osx_image: xcode8.3
+      env:
+      - task=build
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install --force-bottle gnu-sed --with-default-names ; fi
@@ -30,10 +47,15 @@ install:
 script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sh -c 'cd setup/macosx && ./create_app_travis.sh' ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      if [[ "$arch" == "amd64" ]]; then
-        docker run -i -v "${PWD}:/transgui" ubuntu:16.04 bash -c "cd /transgui/setup/debian-ubuntu/ && ./install_deps.sh && ./build.sh";
-      elif [[ "$arch" == "i386" ]]; then
-        docker run -i -v "${PWD}:/transgui" i386/ubuntu:16.04 linux32 --32bit i386 bash -c "cd /transgui/setup/debian-ubuntu/ && ./install_deps.sh && ./build.sh";
+      if [[ "$task" == "build" ]]; then
+        if [[ "$arch" == "amd64" ]]; then
+          docker run -i -v "${PWD}:/transgui" ubuntu:16.04 bash -c "cd /transgui/setup/debian-ubuntu/ && ./install_deps.sh && ./build.sh";
+        elif [[ "$arch" == "i386" ]]; then
+          docker run -i -v "${PWD}:/transgui" i386/ubuntu:16.04 linux32 --32bit i386 bash -c "cd /transgui/setup/debian-ubuntu/ && ./install_deps.sh && ./build.sh";
+        fi;
+      elif [[ "$task" == "shellcheck" ]]; then
+        shellcheck -V;
+        find . -type f -name "*.sh" | xargs -n 1 shellcheck ;
       fi;
     fi
 
