@@ -39,7 +39,7 @@ mkdir "$appfolder/Contents/MacOS/lang"
 cp ../../lang/transgui.* "$appfolder/Contents/MacOS/lang"
 
 cp ../../history.txt "$dmgfolder"
-cp ../../readme.txt "$dmgfolder"
+cp ../../README.md "$dmgfolder"
 
 cp PkgInfo "$appfolder/Contents"
 cp transgui.icns "$appfolder/Contents/Resources"

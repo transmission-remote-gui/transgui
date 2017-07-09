@@ -2272,7 +2272,7 @@ zipdist: all
 	$(MKDIRPROG) ./Release/dist/lang
 	-strip ./transgui$(EXEEXT)
 	$(CPPROG) ./transgui$(EXEEXT) ./Release/dist
-	$(CPPROG) ./readme.txt ./Release/dist
+	$(CPPROG) ./README.md ./Release/dist
 	$(CPPROG) ./history.txt ./Release/dist
 	$(CPPROG) ./LICENSE.txt ./Release/dist
 	$(CPPROG) ./transgui.png ./Release/dist

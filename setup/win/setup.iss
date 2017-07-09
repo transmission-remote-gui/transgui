@@ -90,7 +90,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 [Files]
 Source: "..\..\transgui.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: app
 Source: "..\..\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
-Source: "..\..\readme.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
+Source: "..\..\README.md"; DestDir: "{app}"; Flags: ignoreversion; Components: app
 Source: "..\..\history.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
 Source: "..\..\lang\transgui.*"; DestDir: "{app}\lang"; Flags: ignoreversion; Components: lang
 ; OpenSSL
@@ -101,7 +101,7 @@ Source: "openssl\vcredist_x86(2008SP1).exe"; DestDir: {tmp}; Flags: deleteafteri
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: {app}
 Name: "{group}\History"; Filename: "{app}\history.txt"; WorkingDir: {app}
-Name: "{group}\Read me"; Filename: "{app}\readme.txt"; WorkingDir: {app}
+Name: "{group}\Read me"; Filename: "{app}\README.md"; WorkingDir: {app}
 Name: "{group}\License"; Filename: "{app}\LICENSE.txt"; WorkingDir: {app}
 Name: "{group}\Home page"; Filename: "{#AppURL}"; WorkingDir: {app}
 Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"; WorkingDir: {app}

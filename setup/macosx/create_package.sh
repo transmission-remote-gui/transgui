@@ -30,7 +30,7 @@ rm -r ./Resources
 rm -r "$proot"
 
 cp ../../history.txt ./image
-cp ../../readme.txt ./image
+cp ../../README.md ./image
 
 echo Creating disk image...
 mkdir -p "../../Release"
