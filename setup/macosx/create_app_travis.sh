@@ -18,8 +18,8 @@ fi
 sed -i.bak "s/'Version %s'/'Version %s Build $build'/" ../../about.lfm
 
 # Building Intel version
-make -C ../.. clean CPU_TARGET=i386 "$lazdir"
-make -C ../.. CPU_TARGET=i386 "$lazdir"
+make -j"$(sysctl -n hw.ncpu)" -C ../.. clean CPU_TARGET=i386 "$lazdir"
+make -j"$(sysctl -n hw.ncpu)" -C ../.. CPU_TARGET=i386 "$lazdir"
 
 if ! [ -e $exename ]
 then
