@@ -346,3 +346,4 @@ Torrent not registered with this tracker==种子未在此 Tracker 服务器注�
 Unable to find path mapping.~Use the application's options to setup path mappings=找不到路径映射。请使用“应用程序选项”设置路径映射。
 Update trackers for the existing torrent?=需要为所有种子更新 Tracker 服务器吗？
 You need to restart the application to apply changes=请重新启动应用程序以使更改生效。
+Copy Magnet Link(s)=复制 Magnet 磁力链接
