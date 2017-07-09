@@ -120,8 +120,7 @@ end;
 procedure GoGitHub;
 begin
   AppBusy;
-  //OpenURL('http://code.google.com/p/transmisson-remote-gui/wiki/Donate');
-  //OpenURL('https://github.com/xorkrus/transmisson-remote-gui');
+  OpenURL('https://github.com/xorkrus/transmisson-remote-gui');
   AppNormal;
 end;
 
