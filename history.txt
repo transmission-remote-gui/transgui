@@ -1,3 +1,13 @@
+5.8.1 (Jyl 10, 2017)
+[+] Updated Chinese translation and translation template.
+[+] Improved macOS build process on Travis CI with some minor bug fixes.
+[+] Changed to use UDBZ as default format of macOS release for smaller size.
+[+] Added setup script for Debian/Ubuntu GNU/Linux.
+[+] Added automatic build for Linux i386/amd64 release using Debian/Ubuntu script on Travis CI.
+[+] Added git commit hash as build serial for offcial release using Debian/Ubuntu script.
+[+] Updated README with markdown format.
+[-] Fixed minor bugs.
+
 5.8.0 (Jul 6, 2017)
 [-] Fixed TLS 1.2 support on non-MacOS platforms
 [+] Updated Traditional Chinese translation
