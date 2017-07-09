@@ -52,8 +52,6 @@ matrix:
       env:
       - task=build
       - arch=osx
-      before_install:
-      - brew install --force-bottle gnu-sed --with-default-names
       install:
       - sh -c 'cd setup/macosx && ./compilers.sh'
       script:

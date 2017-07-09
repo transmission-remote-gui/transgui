@@ -15,7 +15,7 @@ then
   lazdir=LAZARUS_DIR=$lazdir
 fi
 
-sed -i "s/'Version %s'/'Version %s Build $build'/" ../../about.lfm
+sed -i.bak "s/'Version %s'/'Version %s Build $build'/" ../../about.lfm
 
 # Building Intel version
 make -C ../.. clean CPU_TARGET=i386 "$lazdir"
@@ -48,4 +48,5 @@ sed -e "s/@prog_ver@/$prog_ver/" Info.plist > "$appfolder/Contents/Info.plist"
 hdiutil create -ov -anyowners -volname "transgui-$prog_ver" -imagekey zlib-level=9 -format UDZO -srcfolder ./Release "transgui-$prog_ver.dmg"
 
 rm -r "$dmgfolder"
+mv ../../about.lfm.bak ../../about.lfm
 open "transgui-$prog_ver.dmg"
