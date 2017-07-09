@@ -35,6 +35,6 @@ cp ../../readme.txt ./image
 echo Creating disk image...
 mkdir -p "../../Release"
 
-hdiutil create -ov -anyowners -volname "transgui-$prog_ver" -imagekey zlib-level=9 -format UDZO -srcfolder ./image "../../Release/transgui-$prog_ver.dmg"
+hdiutil create -ov -anyowners -volname "transgui-$prog_ver" -imagekey zlib-level=9 -format UDBZ -srcfolder ./image "../../Release/transgui-$prog_ver.dmg"
 
 rm -r ./image

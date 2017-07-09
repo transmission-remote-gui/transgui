@@ -45,7 +45,7 @@ cp PkgInfo "$appfolder/Contents"
 cp transgui.icns "$appfolder/Contents/Resources"
 sed -e "s/@prog_ver@/$prog_ver/" Info.plist > "$appfolder/Contents/Info.plist"
 
-hdiutil create -ov -anyowners -volname "transgui-$prog_ver" -imagekey zlib-level=9 -format UDZO -srcfolder ./Release "transgui-$prog_ver.dmg"
+hdiutil create -ov -anyowners -volname "transgui-$prog_ver" -imagekey zlib-level=9 -format UDBZ -srcfolder ./Release "transgui-$prog_ver.dmg"
 
 rm -r "$dmgfolder"
 mv ../../about.lfm.bak ../../about.lfm
