@@ -45,7 +45,20 @@ cp PkgInfo "$appfolder/Contents"
 cp transgui.icns "$appfolder/Contents/Resources"
 sed -e "s/@prog_ver@/$prog_ver/" Info.plist > "$appfolder/Contents/Info.plist"
 
-hdiutil create -ov -anyowners -volname "transgui-$prog_ver" -imagekey zlib-level=9 -format UDBZ -srcfolder ./Release "transgui-$prog_ver.dmg"
+ln -s /Applications "$dmgfolder/Drag \"Transmission Remote GUI\" here!"
 
+hdiutil create -ov -anyowners -volname "transgui-v$prog_ver" -format UDRW -srcfolder ./Release "tmp.dmg"
+
+mount_device="$(hdiutil attach -readwrite -noautoopen "tmp.dmg" | awk 'NR==1{print$1}')"
+mount_volume="$(mount | grep "$mount_device" | sed 's/^[^ ]* on //;s/ ([^)]*)$//')"
+cp transgui.icns "$mount_volume/.VolumeIcon.icns"
+SetFile -c icnC "$mount_volume/.VolumeIcon.icns"
+SetFile -a C "$mount_volume"
+
+hdiutil detach "$mount_device"
+rm -f "transgui-$prog_ver.dmg"
+hdiutil convert tmp.dmg -format UDBZ -imagekey zlib-level=9 -o "transgui-$prog_ver.dmg"
+
+rm tmp.dmg
 rm -rf "$dmgfolder"
 mv ../../about.lfm.bak ../../about.lfm
