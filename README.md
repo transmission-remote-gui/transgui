@@ -1,6 +1,8 @@
 # Transmission Remote GUI
 [![Build Status](https://travis-ci.org/leonsoft-kras/transmisson-remote-gui.svg?branch=master)](https://travis-ci.org/leonsoft-kras/transmisson-remote-gui)
 
+![Screenshot](http://i.imgur.com/Dum7Oka.png)
+
 ## Table of Contents
 
 - [Introduction](#introduction)
