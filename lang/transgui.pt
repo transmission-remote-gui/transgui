@@ -1,12 +1,12 @@
 TranslationLanguage=Português
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapeamentos de caminho  remoto para local. Examplo:~/share=\\pch\share~/var/downloads/musicas=Z:\musicas"
+"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapeamentos de caminhos remotos para locais. Examplo:~/share=\\pch\share~/var/downloads/musicas=Z:\musicas"
 %d x %s (have %d)=%d x %s (têm %d)
 %ds=%ds
 %s (%d hashfails)=%s (%d falhas)
 %s (%s done)=%s (%s concluido)
-'%s' has finished downloading='%s' terminou de baixar
-%s%s%d downloading, %d seeding%s%s, %s=%s%s%d a transferir, %d a semear%s%s, %s
+'%s' has finished downloading='%s' terminou de transferir
+%s%s%d downloading, %d seeding%s%s, %s=%s%s%d a transferir, %d a enviar%s%s, %s
 &All=&Todos
 &Close=&Fechar
 &Help=&Ajuda
