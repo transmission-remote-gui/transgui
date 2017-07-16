@@ -27,6 +27,26 @@ matrix:
 
     - os: linux
       dist: trusty
+      sudo: false
+      env:
+      - task=doctoc-check
+      install:
+      - nvm install 4
+      - npm i -g doctoc
+      before_script:
+      - node --version
+      - npm  --version
+      - type doctoc
+      script:
+      - cp README.md README.md.toc
+      - doctoc --title "## Table of Contents" --github README.md.toc > /dev/null
+      - if ! diff -q README.md README.md.toc > /dev/null; then
+          >&2 echo 'README.md "Table of Contents" dated! Please update it';
+          exit 1;
+        fi
+
+    - os: linux
+      dist: trusty
       sudo: required
       services:
       - docker
