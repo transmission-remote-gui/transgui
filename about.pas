@@ -120,7 +120,8 @@ end;
 procedure GoGitHub;
 begin
   AppBusy;
-  OpenURL('https://github.com/xorkrus/transmisson-remote-gui');
+//  OpenURL('https://github.com/xorkrus/transmisson-remote-gui'); = ???
+  OpenURL('https://github.com/leonsoft-kras/transmisson-remote-gui');
   AppNormal;
 end;
 
