@@ -8,11 +8,13 @@ dmgfolder=./Release
 appfolder="$dmgfolder/$appname.app"
 lazdir="${1:-/Developer/lazarus/}"
 
-./compilers.sh
+if [ -z "${CI-}" ]; then
+    ./compilers.sh
+fi
 
 if [ ! "$lazdir" = "" ]
 then
-  lazdir=LAZARUS_DIR=$lazdir
+  lazdir=LAZARUS_DIR="$lazdir"
 fi
 
 sed -i.bak "s/'Version %s'/'Version %s Build $build'/" ../../about.lfm
@@ -60,6 +62,9 @@ rm -f "transgui-$prog_ver.dmg"
 hdiutil convert tmp.dmg -format UDBZ -imagekey zlib-level=9 -o "transgui-$prog_ver.dmg"
 
 rm tmp.dmg
-rm -r "$dmgfolder"
+rm -rf "$dmgfolder"
 mv ../../about.lfm.bak ../../about.lfm
-open "transgui-$prog_ver.dmg"
+
+if [ -z "${CI-}" ]; then
+    open "transgui-$prog_ver.dmg"
+fi

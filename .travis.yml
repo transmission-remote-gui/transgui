@@ -55,7 +55,7 @@ matrix:
       install:
       - sh -c 'cd setup/macosx && ./compilers.sh'
       script:
-      - sh -c 'cd setup/macosx && ./create_app_travis.sh'
+      - sh -c 'cd setup/macosx && ./create_app_new.sh'
 
 notifications:
   email:
