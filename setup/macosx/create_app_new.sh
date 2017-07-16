@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -x
+
 prog_ver="$(cat ../../VERSION.txt)"
 build="$(git rev-list --abbrev-commit --max-count=1 HEAD ../..)"
 exename=../../transgui
@@ -33,11 +35,10 @@ strip "$exename"
 rm -rf "$appfolder"
 
 echo "Creating $appfolder..."
-mkdir -p "$appfolder/Contents/MacOS"
+mkdir -p "$appfolder/Contents/MacOS/lang"
 mkdir -p "$appfolder/Contents/Resources"
 
 mv "$exename" "$appfolder/Contents/MacOS"
-mkdir "$appfolder/Contents/MacOS/lang"
 cp ../../lang/transgui.* "$appfolder/Contents/MacOS/lang"
 
 cp ../../history.txt "$dmgfolder"

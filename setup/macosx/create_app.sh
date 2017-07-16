@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -x
+
 prog_ver="$(cat ../../VERSION.txt)"
 exename=../../transgui
 appname="Transmission Remote GUI"
@@ -12,14 +14,14 @@ then
 fi
 
 # Building Intel version
-make -C ../.. clean CPU_TARGET=i386 "$lazdir"
-make -C ../.. CPU_TARGET=i386 "$lazdir"
+make -j"$(sysctl -n hw.ncpu)" -C ../.. clean CPU_TARGET=i386 "$lazdir"
+make -j"$(sysctl -n hw.ncpu)" -C ../.. CPU_TARGET=i386 "$lazdir"
 strip "$exename"
 mv "$exename" "$exename.386"
 
 # Building PowerPC version
-make -C ../.. clean CPU_TARGET=powerpc "$lazdir"
-make -C ../.. CPU_TARGET=powerpc "$lazdir"
+make -j"$(sysctl -n hw.ncpu)" -C ../.. clean CPU_TARGET=powerpc "$lazdir"
+make -j"$(sysctl -n hw.ncpu)" -C ../.. CPU_TARGET=powerpc "$lazdir"
 strip "$exename"
 mv "$exename" "$exename.ppc"
 
@@ -36,11 +38,10 @@ fi
 rm -rf "$appfolder"
 
 echo "Creating $appfolder..."
-mkdir -p "$appfolder/Contents/MacOS"
+mkdir -p "$appfolder/Contents/MacOS/lang"
 mkdir -p "$appfolder/Contents/Resources"
 
 mv "$exename" "$appfolder/Contents/MacOS"
-mkdir "$appfolder/Contents/MacOS/lang"
 cp ../../lang/transgui.* "$appfolder/Contents/MacOS/lang"
 
 cp PkgInfo "$appfolder/Contents"
