@@ -19,7 +19,7 @@ then
   lazdir=LAZARUS_DIR="$lazdir"
 fi
 
-sed -i.bak "s/'Version %s'/'Version %s Build $build'/" ../../about.lfm
+sed -i.bak "s/'Version %s'/'Version %s Build $build'#13#10'Compiled by: $(fpc -i V | head -n 1)'/" ../../about.lfm
 
 # Building Intel version
 make -j"$(sysctl -n hw.ncpu)" -C ../.. clean CPU_TARGET=i386 "$lazdir"
