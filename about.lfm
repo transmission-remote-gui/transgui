@@ -488,7 +488,7 @@ inherited AboutForm: TAboutForm
       object txAuthor: TLabel
         Left = 86
         Height = 32
-        Top = 56
+        Top = 74
         Width = 307
         AutoSize = False
         Caption = 'Copyright (c) 2008-2017 by Yury Sidorov, '#13#10'Alexander Petrov'
