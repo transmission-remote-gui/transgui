@@ -4,6 +4,8 @@ set -x
 
 prog_ver="$(cat ../../VERSION.txt)"
 build="$(git rev-list --abbrev-commit --max-count=1 HEAD ../..)"
+lazarus_ver="$(lazbuild -v)"
+fpc_ver="$(fpc -i V | head -n 1)"
 exename=../../transgui
 appname="Transmission Remote GUI"
 dmgfolder=./Release
@@ -19,7 +21,7 @@ then
   lazdir=LAZARUS_DIR="$lazdir"
 fi
 
-sed -i.bak "s/'Version %s'/'Version %s Build $build'#13#10'Compiled by: $(fpc -i V | head -n 1)'/" ../../about.lfm
+sed -i.bak "s/'Version %s'/'Version %s Build $build'#13#10'Compiled by: $fpc_ver, Lazarus v$lazarus_ver'/" ../../about.lfm
 
 # Building Intel version
 make -j"$(sysctl -n hw.ncpu)" -C ../.. clean CPU_TARGET=i386 "$lazdir"
