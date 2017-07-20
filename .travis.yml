@@ -61,6 +61,10 @@ matrix:
       script:
       - docker run -i -v "${PWD}:/transgui" ubuntu:16.04 bash -c "cd /transgui/setup/debian-ubuntu/ && ./install_deps.sh && ./build.sh"
       deploy:
+      - provider: script
+        script: setup/upload_asset.sh ./Release/transgui-$PROG_VER-x86_64-linux.zip
+        on:
+          tags: false
       - provider: releases
         api_key:
           secure: XfbJq1d1kstUAGoaW9NeiOOufiu/hsWgQONnTdf2fDESZSOAMR11x8bnsySlywDh2qwO3/GC1RbgTY/7ZXuzzm4vJgtl+dcxtclh4qi+hNEEkUpPWWaY0ov+45s6eR/B9H4R+7tm4ISiVgK6cgOrQQhI0AePh5/sJLBR5yVfCM9mDIoaNj0oES+oTjRixnk8srbLga6rH47xrkVTnQhWuUTQnfse1r1JgiN92lbZ1gVQGeOGdbuhztU8rcIMQEj+Nu/ub6hglf/zIPzA5D2sZnUNhURoPAb27eqWX7bXrliEXhhpCX7KTAe/wEkjtOb8LCEuSSahEAvYTXbfOBpe8AZb5tXzg2mxv0dEJLfInoSDhtZVeEBtS+q4BwVT8xLgVfRdAOUFBoKhgcayP1gL//VS1fvGEUiSh0KykDTOBBZOPfN7uu8x2nX/AZmEuwojaQ6r0UY2q1gD1d4zpfLlqCz8+RFuT9BQ9vfVdHAeO3VnDbTTQjUQNVNrDmp5yJ2b721BMXrehlqvjPoDQCPgRbxeWik4jcJKMVi3GGultCj7wmtFhuWYTf9LpSygPivBTlJggndpx8UWC/N19h/tJb2ULdVQtrmuWjs5168psQi2Eh0yjAwRQPQ3Hj5ZK9CrRy7Pic4+wh2cOjoCV1N2N5+Ky5CHyjQ8wZY4U3auAxI=
@@ -83,6 +87,10 @@ matrix:
       script:
       - docker run -i -v "${PWD}:/transgui" i386/ubuntu:16.04 linux32 --32bit i386 bash -c "cd /transgui/setup/debian-ubuntu/ && ./install_deps.sh && ./build.sh"
       deploy:
+      - provider: script
+        script: setup/upload_asset.sh ./Release/transgui-$PROG_VER-i386-linux.zip
+        on:
+          tags: false
       - provider: releases
         api_key:
           secure: XfbJq1d1kstUAGoaW9NeiOOufiu/hsWgQONnTdf2fDESZSOAMR11x8bnsySlywDh2qwO3/GC1RbgTY/7ZXuzzm4vJgtl+dcxtclh4qi+hNEEkUpPWWaY0ov+45s6eR/B9H4R+7tm4ISiVgK6cgOrQQhI0AePh5/sJLBR5yVfCM9mDIoaNj0oES+oTjRixnk8srbLga6rH47xrkVTnQhWuUTQnfse1r1JgiN92lbZ1gVQGeOGdbuhztU8rcIMQEj+Nu/ub6hglf/zIPzA5D2sZnUNhURoPAb27eqWX7bXrliEXhhpCX7KTAe/wEkjtOb8LCEuSSahEAvYTXbfOBpe8AZb5tXzg2mxv0dEJLfInoSDhtZVeEBtS+q4BwVT8xLgVfRdAOUFBoKhgcayP1gL//VS1fvGEUiSh0KykDTOBBZOPfN7uu8x2nX/AZmEuwojaQ6r0UY2q1gD1d4zpfLlqCz8+RFuT9BQ9vfVdHAeO3VnDbTTQjUQNVNrDmp5yJ2b721BMXrehlqvjPoDQCPgRbxeWik4jcJKMVi3GGultCj7wmtFhuWYTf9LpSygPivBTlJggndpx8UWC/N19h/tJb2ULdVQtrmuWjs5168psQi2Eh0yjAwRQPQ3Hj5ZK9CrRy7Pic4+wh2cOjoCV1N2N5+Ky5CHyjQ8wZY4U3auAxI=
@@ -101,6 +109,10 @@ matrix:
       script:
       - sh -c 'cd setup/macosx && ./create_app_new.sh'
       deploy:
+      - provider: script
+        script: setup/upload_asset.sh ./setup/macosx/transgui-$PROG_VER.dmg
+        on:
+          tags: false
       - provider: releases
         api_key:
           secure: XfbJq1d1kstUAGoaW9NeiOOufiu/hsWgQONnTdf2fDESZSOAMR11x8bnsySlywDh2qwO3/GC1RbgTY/7ZXuzzm4vJgtl+dcxtclh4qi+hNEEkUpPWWaY0ov+45s6eR/B9H4R+7tm4ISiVgK6cgOrQQhI0AePh5/sJLBR5yVfCM9mDIoaNj0oES+oTjRixnk8srbLga6rH47xrkVTnQhWuUTQnfse1r1JgiN92lbZ1gVQGeOGdbuhztU8rcIMQEj+Nu/ub6hglf/zIPzA5D2sZnUNhURoPAb27eqWX7bXrliEXhhpCX7KTAe/wEkjtOb8LCEuSSahEAvYTXbfOBpe8AZb5tXzg2mxv0dEJLfInoSDhtZVeEBtS+q4BwVT8xLgVfRdAOUFBoKhgcayP1gL//VS1fvGEUiSh0KykDTOBBZOPfN7uu8x2nX/AZmEuwojaQ6r0UY2q1gD1d4zpfLlqCz8+RFuT9BQ9vfVdHAeO3VnDbTTQjUQNVNrDmp5yJ2b721BMXrehlqvjPoDQCPgRbxeWik4jcJKMVi3GGultCj7wmtFhuWYTf9LpSygPivBTlJggndpx8UWC/N19h/tJb2ULdVQtrmuWjs5168psQi2Eh0yjAwRQPQ3Hj5ZK9CrRy7Pic4+wh2cOjoCV1N2N5+Ky5CHyjQ8wZY4U3auAxI=
