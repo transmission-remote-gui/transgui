@@ -110,7 +110,9 @@ matrix:
       - brew install jq
       - sh -c 'cd setup/macosx && ./compilers.sh'
       script:
+      - echo -en 'travis_fold:start:build'
       - sh -c 'cd setup/macosx && ./create_app_new.sh'
+      - echo -en 'travis_fold:end:build'
       deploy:
       - provider: script
         script: setup/upload_asset.sh ./setup/macosx/transgui-$PROG_VER.dmg
