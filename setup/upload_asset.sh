@@ -1,6 +1,6 @@
 #!/bin/bash
 
-error() { >&2 echo -e "\e[1;31m$*\e[m"; exit 1; }
+error() { >&2 echo -e "\033[1;31m$*\033[m"; exit 1; }
 
 rm -rf upload.log
 
@@ -13,11 +13,11 @@ elif [ ! -e "$1" ]; then
 elif [ ! -r "$1" ]; then
     error "'$1' not readable"
 else
-    echo -e "\e[36mUploading $1 ...\e[m";
+    echo -e "\033[36mUploading $1 ...\033[m";
     if ! curl -F "file=@$1" "https://file.io/?expires=8d" > upload.log; then
         error "$1 upload failed!!!"
     fi
-    echo -e "\e[32m$1 uploaded with success!!!\e[m";
-    echo -e "\e[32mDownload url:\e[m $(jq -r .link upload.log) \e[33m(expires in 1 week)\e[m";
+    echo -e "\033[32m$1 uploaded with success!!!\033[m";
+    echo -e "\033[32mDownload url:\033[m $(jq -r .link upload.log) \033[33m(expires in 1 week)\033[m";
     rm upload.log
 fi
