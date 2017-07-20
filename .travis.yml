@@ -42,6 +42,7 @@ matrix:
       - doctoc --title "## Table of Contents" --github README.md.toc > /dev/null
       - if ! diff -q README.md README.md.toc > /dev/null; then
           >&2 echo 'README.md "Table of Contents" dated! Please update it';
+          >&2 diff README.md README.md.toc
           exit 1;
         fi
 
