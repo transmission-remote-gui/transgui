@@ -54,6 +54,10 @@ matrix:
       env:
       - task=build
       - arch=amd64
+      addons:
+        apt:
+          packages:
+          - jq
       script:
       - docker run -i -v "${PWD}:/transgui" ubuntu:16.04 bash -c "cd /transgui/setup/debian-ubuntu/ && ./install_deps.sh && ./build.sh"
       deploy:
@@ -72,6 +76,10 @@ matrix:
       env:
       - task=build
       - arch=i386
+      addons:
+        apt:
+          packages:
+          - jq
       script:
       - docker run -i -v "${PWD}:/transgui" i386/ubuntu:16.04 linux32 --32bit i386 bash -c "cd /transgui/setup/debian-ubuntu/ && ./install_deps.sh && ./build.sh"
       deploy:
@@ -88,6 +96,7 @@ matrix:
       - task=build
       - arch=osx
       install:
+      - brew install jq
       - sh -c 'cd setup/macosx && ./compilers.sh'
       script:
       - sh -c 'cd setup/macosx && ./create_app_new.sh'
