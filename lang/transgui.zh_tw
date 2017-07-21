@@ -2,7 +2,7 @@ TranslationLanguage=正體中文
 
 "Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="遠端路徑映射.~~例如:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (下載了 %d)
-%ds=%ds
+%ds=%d 秒
 %s (%d hashfails)=%s (%d 個無效的區塊)
 %s (%s done)=%s (%s 已完成)
 '%s' has finished downloading='%s' 已完成下載
@@ -246,7 +246,7 @@ From=來自
 minutes=分
 Misc=雜項
 New connection=新連線
-New=新建
+New=新增
 No tracker URL was specified=沒有指定 Tracker
 Proxy=代理伺服器
 Remove tracker=移除 Tracker
