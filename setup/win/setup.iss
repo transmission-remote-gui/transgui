@@ -54,9 +54,9 @@ InfoAfterFile=..\..\history.txt
 OutputDir=..\..\Release
 OutputBaseFilename=transgui-{#AppVersion}-setup
 
-Compression=lzma/max
-InternalCompressLevel=max
-SolidCompression=no
+Compression=lzma2/ultra64
+InternalCompressLevel=ultra64
+SolidCompression=yes
 
 PrivilegesRequired=poweruser
 ChangesAssociations=yes
