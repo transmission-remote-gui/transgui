@@ -212,7 +212,7 @@ end;
 procedure TAboutForm.imgSynapseClick(Sender: TObject);
 begin
   AppBusy;
-  OpenURL('http://synapse.ararat.cz');
+  OpenURL('http://synapse.ararat.cz/doku.php');
   AppNormal;
 end;
 
@@ -251,7 +251,7 @@ end;
 procedure TAboutForm.imgLazarusClick(Sender: TObject);
 begin
   AppBusy;
-  OpenURL('http://www.lazarus.freepascal.org');
+  OpenURL('https://www.lazarus-ide.org');
   AppNormal;
 end;
 
