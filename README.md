@@ -63,7 +63,15 @@ Build the program by yourself.
 
 ### Windows
 
- - Directly download the installer
+#### Portable zip tarball (recommended)
+
+Zip tarball release is much more small than the installer one, which can save you some bandwidth, disk space and time.
+
+ - Directly download the zip tarball.
+ - Extract the files to wherever you want.
+
+#### Installer
+ - Directly download the installer.
  - Run the installer and follow the steps to install it on your system.
 
 ### macOS
