@@ -2,7 +2,7 @@
 [+] Added Portuguese translation.
 [+] Added app screenshot in README.md.
 [+] Added readme.txt back for Windows release.
-[+] Added fpc and Lararus in the "about" dialog in Linux and macOS builds.
+[+] Added fpc and Lazarus in the "about" dialog in Linux and macOS builds.
 [+] Now assets of every commit would be uploaded to the cloud for testing.
 [+] Refactored macOS build script.
 [+] Refactored build process on Travis CI.
