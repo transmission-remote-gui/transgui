@@ -3,4 +3,4 @@
 set -ex
 
 apt update -yqq
-apt install -yqq lazarus zip realpath git
+apt install -yqq lazarus xz-utils realpath git
