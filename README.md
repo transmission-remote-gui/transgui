@@ -13,6 +13,8 @@
     - [Easy way (recommended)](#easy-way-recommended)
     - [Harder way](#harder-way)
   - [Windows](#windows)
+    - [Portable zip tarball (recommended)](#portable-zip-tarball-recommended)
+    - [Installer](#installer)
   - [macOS](#macos)
 - [Command line parameters](#command-line-parameters)
 - [Portable mode](#portable-mode)
