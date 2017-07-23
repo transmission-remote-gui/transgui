@@ -58,7 +58,7 @@ matrix:
           packages:
           - jq
       script:
-      - docker run -i -v "${PWD}:/transgui" ubuntu:16.04 bash -c "cd /transgui/setup/debian-ubuntu/ && ./install_deps.sh && ./build.sh"
+      - docker run -i -v "${PWD}:/transgui" ubuntu:16.04 bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
       deploy:
       - provider: script
         script: setup/upload_asset.sh ./Release/transgui-$PROG_VER-x86_64-linux.zip
@@ -86,7 +86,7 @@ matrix:
           packages:
           - jq
       script:
-      - docker run -i -v "${PWD}:/transgui" i386/ubuntu:16.04 linux32 --32bit i386 bash -c "cd /transgui/setup/debian-ubuntu/ && ./install_deps.sh && ./build.sh"
+      - docker run -i -v "${PWD}:/transgui" i386/ubuntu:16.04 linux32 --32bit i386 bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
       deploy:
       - provider: script
         script: setup/upload_asset.sh ./Release/transgui-$PROG_VER-i386-linux.zip
