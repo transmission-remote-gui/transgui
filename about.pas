@@ -212,7 +212,7 @@ end;
 procedure TAboutForm.imgSynapseClick(Sender: TObject);
 begin
   AppBusy;
-  OpenURL('http://synapse.ararat.cz/doku.php');
+  OpenURL('http://synapse.ararat.cz');
   AppNormal;
 end;
 
