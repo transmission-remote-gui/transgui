@@ -60,6 +60,9 @@ matrix:
       script:
       - docker run -i -v "${PWD}:/transgui" ubuntu:17.04 bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
       after_success:
+      - md5sum ./Release/transgui-$PROG_VER-x86_64-Linux.txz
+      - sha1sum ./Release/transgui-$PROG_VER-x86_64-Linux.txz
+      - sha256sum ./Release/transgui-$PROG_VER-x86_64-Linux.txz
       - if [ -n "$TRAVIS_TAG" ] ; then curl -F "file=@./Release/transgui-$PROG_VER-x86_64-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ; fi
       deploy:
       - provider: script
@@ -90,6 +93,9 @@ matrix:
       script:
       - docker run -i -v "${PWD}:/transgui" i386/ubuntu:17.04 linux32 --32bit i386 bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
       after_success:
+      - md5sum ./Release/transgui-$PROG_VER-i686-Linux.txz
+      - sha1sum ./Release/transgui-$PROG_VER-i686-Linux.txz
+      - sha256sum ./Release/transgui-$PROG_VER-i686-Linux.txz
       - if [ -n "$TRAVIS_TAG" ] ; then curl -F "file=@./Release/transgui-$PROG_VER-i686-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ; fi
       deploy:
       - provider: script
@@ -121,6 +127,9 @@ matrix:
       script:
       - docker run -i -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static resin/rpi-raspbian:stretch bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
       after_success:
+      - md5sum ./Release/transgui-$PROG_VER-armv6l-Linux.txz
+      - sha1sum ./Release/transgui-$PROG_VER-armv6l-Linux.txz
+      - sha256sum ./Release/transgui-$PROG_VER-armv6l-Linux.txz
       - if [ -n "$TRAVIS_TAG" ] ; then curl -F "file=@./Release/transgui-$PROG_VER-armv6l-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ; fi
       deploy:
       - provider: script
@@ -149,6 +158,9 @@ matrix:
       - sh -c 'cd setup/macosx && ./create_app_new.sh'
       - echo -en 'travis_fold:end:build'
       after_success:
+      - md5 ./setup/macosx/transgui-$PROG_VER.dmg
+      - shasum -a 1 ./setup/macosx/transgui-$PROG_VER.dmg
+      - shasum -a 256 ./setup/macosx/transgui-$PROG_VER.dmg
       - if [ -n "$TRAVIS_TAG" ] ; then curl -F "file=@./setup/macosx/transgui-$PROG_VER.dmg" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ; fi
       deploy:
       - provider: script
