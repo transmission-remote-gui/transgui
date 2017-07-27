@@ -58,7 +58,7 @@ matrix:
           packages:
           - jq
       script:
-      - docker run -i -v "${PWD}:/transgui" ubuntu:16.04 bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
+      - docker run -i -v "${PWD}:/transgui" ubuntu:17.04 bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
       after_success:
       - if [ -n "$TRAVIS_TAG" ] ; then curl -F "file=@./Release/transgui-$PROG_VER-x86_64-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ; fi
       deploy:
@@ -88,7 +88,7 @@ matrix:
           packages:
           - jq
       script:
-      - docker run -i -v "${PWD}:/transgui" i386/ubuntu:16.04 linux32 --32bit i386 bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
+      - docker run -i -v "${PWD}:/transgui" i386/ubuntu:17.04 linux32 --32bit i386 bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
       after_success:
       - if [ -n "$TRAVIS_TAG" ] ; then curl -F "file=@./Release/transgui-$PROG_VER-i686-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ; fi
       deploy:
