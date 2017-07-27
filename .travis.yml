@@ -57,8 +57,10 @@ matrix:
         apt:
           packages:
           - jq
+      before_script:
+      - export ubuntu_mirror="$(awk '/ubuntu/ {if ($1=="deb") print $2}' /etc/apt/sources.list | sort | uniq -c | sort -n | tail -n 1 | awk '{print $2}' | awk -F '/' '{print $3}')"
       script:
-      - docker run -i -v "${PWD}:/transgui" ubuntu:17.04 bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
+      - docker run -i -v "${PWD}:/transgui" ubuntu:17.04 bash -c "sed -E 's/archive.ubuntu.com/$ubuntu_mirror/g' -i /etc/apt/sources.list && cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
       after_success:
       - md5sum ./Release/transgui-$PROG_VER-x86_64-Linux.txz
       - sha1sum ./Release/transgui-$PROG_VER-x86_64-Linux.txz
@@ -90,8 +92,10 @@ matrix:
         apt:
           packages:
           - jq
+      before_script:
+      - export ubuntu_mirror="$(awk '/ubuntu/ {if ($1=="deb") print $2}' /etc/apt/sources.list | sort | uniq -c | sort -n | tail -n 1 | awk '{print $2}' | awk -F '/' '{print $3}')"
       script:
-      - docker run -i -v "${PWD}:/transgui" i386/ubuntu:17.04 linux32 --32bit i386 bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
+      - docker run -i -v "${PWD}:/transgui" i386/ubuntu:17.04 linux32 --32bit i386 bash -c "sed -E 's/archive.ubuntu.com/$ubuntu_mirror/g' -i /etc/apt/sources.list && cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
       after_success:
       - md5sum ./Release/transgui-$PROG_VER-i686-Linux.txz
       - sha1sum ./Release/transgui-$PROG_VER-i686-Linux.txz
@@ -125,7 +129,7 @@ matrix:
           - jq
           - qemu-user-static
       script:
-      - docker run -i -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static resin/rpi-raspbian:stretch bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
+      - docker run -i -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static resin/rpi-raspbian:stretch bash -c "sed -i 's/archive.raspbian.org/mirrors.ocf.berkeley.edu\/raspbian/g' /etc/apt/sources.list && cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && ./build.sh"
       after_success:
       - md5sum ./Release/transgui-$PROG_VER-armv6l-Linux.txz
       - sha1sum ./Release/transgui-$PROG_VER-armv6l-Linux.txz
