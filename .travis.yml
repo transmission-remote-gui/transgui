@@ -150,6 +150,7 @@ matrix:
       env:
       - task=build
       - arch=osx
+      - sourceforge_mirror=pilotfiber
       install:
       - brew install jq
       - sh -c 'cd setup/macosx && ./compilers.sh'
