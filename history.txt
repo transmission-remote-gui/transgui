@@ -1,3 +1,18 @@
+5.8.3 (Jul 28, 2017)
+[+] Updated Korean translation thanks to @bluenlive (#987)
+[+] Updated url in "about" to avoid redirects (#984)
+[+] Updated README.md for Windows release
+[+] Updated Linux building environment to Ubuntu 17.04 (#919)
+[+] Updated unix build script to include txz tarball packaging
+[+] Added "make" to Debian / Ubuntu dependencies
+[+] Added Raspbery Pi / armv6l automatic build on Travis CI
+[+] Added SourceForge mirror specify feature in macOS compiler script
+[+] Fixed readme.txt file format for Windows platform
+[+] Moved directory setup/debian-ubuntu to setup/unix
+[+] Increased Windows installer compression level
+[+] Many tuning on Travis CI for release building
+[+] Now use txz instead zip for unix releases
+
 5.8.2 (Jul 22, 2017)
 [+] Added Portuguese translation.
 [+] Added app screenshot in README.md.
