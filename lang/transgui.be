@@ -110,7 +110,7 @@ Ratio=Суадносіны
 Reconnect in %d seconds=Спроба падлучэньня празь %d сэкундаў
 Remaining=Засталося
 Remote host=Аддалены хост
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Супастаўленьне лакальных шляхоў аддаленым.~~Напрыклад:~/share=\\pch\share~/var/downloads/music=Z:\music"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Супастаўленьне лакальных шляхоў аддаленым.~Напрыклад:~/share=\\pch\share~/var/downloads/music=Z:\music"
 Remove torrent and Data=Выдаліць торэнт і файлы
 Remove torrent=Выдаліць торэнт
 Remove=Выдаліць
@@ -265,7 +265,7 @@ Browse=Агляд
 Enable µTP=Дазволіць µTP
 Select a folder for download=Абярыце шлях для запампоўкі
 Select torrent location=Абярыце месцазнаходжаньне торэнту
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=Дасяжна новая вэрсія %s.~Вашая бягучая вэрсія: %s~Новая вэрсія: %s~~Перайсьці на старонку запампоўкі?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=Дасяжна новая вэрсія %s.~Вашая бягучая вэрсія: %s~Новая вэрсія: %s~Перайсьці на старонку запампоўкі?
 Advanced=Дадаткова
 Check for new version every=Правяраць наяўнасьць абнаўленьняў кожныя
 Check for updates=Праверыць наяўнасьць абнаўленьня

@@ -1,6 +1,6 @@
 TranslationLanguage=Português
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapeamentos de caminhos remotos para locais. Examplo:~/share=\\pch\share~/var/downloads/musicas=Z:\musicas"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapeamentos de caminhos remotos para locais. Examplo:~/share=\\pch\share~/var/downloads/musicas=Z:\musicas"
 %d x %s (have %d)=%d x %s (têm %d)
 %ds=%ds
 %s (%d hashfails)=%s (%d falhas)
@@ -265,7 +265,7 @@ Browse=Navegar
 Enable µTP=Ativar µTP
 Select a folder for download=Seleccionar a pasta para a transferência
 Select torrent location=Seleccionar a localização do torrent
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=Uma nova versão: %s, está disponivel.~A sua versão atual: %s~A nova versão: %s~~Deseja abrir a página web das transferências?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=Uma nova versão: %s, está disponivel.~A sua versão atual: %s~A nova versão: %s~Deseja abrir a página web das transferências?
 Advanced=Avançado
 Check for new version every=Verificar por atualizações a cada
 Check for updates=Verificar por atualizações

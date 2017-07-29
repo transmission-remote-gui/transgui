@@ -1,6 +1,6 @@
 TranslationLanguage=Català
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapejat de rutes remotes a locals.~~Exemples:~/share=\\pch\share~/var/downloads/music=Z:\music"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mapejat de rutes remotes a locals.~Exemples:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (descarregades %d)
 %ds=%ds
 %s (%d hashfails)=%s (%d fallades de hash)
@@ -265,7 +265,7 @@ Browse=buscar
 Enable µTP=Activa µTP
 Select a folder for download=Selecciona carpeta per descàrregues
 Select torrent location=Selecciona lloc per els torrents
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=Una versió nova de %s està disponible.~La teva actual versió: %s~La nova versió: %s~~Vols obrir la pàgina web de descàrregues?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=Una versió nova de %s està disponible.~La teva actual versió: %s~La nova versió: %s~Vols obrir la pàgina web de descàrregues?
 Advanced=Avançat
 Check for new version every=Cerca una nova versió cada
 Check for updates=Cerca actualitzacions

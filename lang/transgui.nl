@@ -1,6 +1,6 @@
 TranslationLanguage=Nederlands
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Remote naar lokale path mappings.~~Voorbeelden:~/share=\\pch\share~/var/downloads/muziek=Z:\muziek"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Remote naar lokale path mappings.~Voorbeelden:~/share=\\pch\share~/var/downloads/muziek=Z:\muziek"
 %d x %s (have %d)=%d x %s (heb %d)
 %ds=%ds
 %s (%d hashfails)=%s (%d hashfails)
@@ -264,7 +264,7 @@ average=gemiddelde
 Browse=Bladeren
 Select a folder for download=Selecteer een map voor download
 Select torrent location=Selecteer torrent locatie
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=Er is een nieuwe versie van %s beschikbaar.~Je huidige versie: %s~De nieuwe versie: %s~~Wil je de Download pagina openen?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=Er is een nieuwe versie van %s beschikbaar.~Je huidige versie: %s~De nieuwe versie: %s~Wil je de Download pagina openen?
 Advanced=Geavanceerd
 Check for new version every=Controleer op nieuwe versies iedere
 Check for updates=Controleer op updates

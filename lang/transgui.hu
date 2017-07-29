@@ -1,6 +1,6 @@
 TranslationLanguage=Magyar
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Távoli és helyi elérési utak kapcsolata.~~Példák:~/share=\\pch\share~/var/downloads/music=Z:\music"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Távoli és helyi elérési utak kapcsolata.~Példák:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (megvan %d)
 %ds=%ds
 %s (%d hashfails)=%s (%d hibás)
@@ -265,7 +265,7 @@ Browse=Böngész
 Enable µTP=Engedd a µTP-t
 Select a folder for download=Letöltési könyvtár kiválasztása
 Select torrent location=A torrent helyének kiválasztása
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=Elérhető a %s új verziója.~Jelenlegi verzió: %s~Az új verzió: %s~~Letöltöd a friss verziót?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=Elérhető a %s új verziója.~Jelenlegi verzió: %s~Az új verzió: %s~Letöltöd a friss verziót?
 Advanced=Haladó
 Check for new version every=Új programverzió keresése 
 Check for updates=Frissités keresése

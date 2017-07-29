@@ -1,6 +1,6 @@
 TranslationLanguage=German
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Pfadzuordnung Remote zu lokal.~~Beispiel:~/share=\\pch\share~/var/downloads/music=Z:\music"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Pfadzuordnung Remote zu lokal.~Beispiel:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (noch %d)
 %ds=%ds
 %s (%d hashfails)=%s (%d Prüfsummenfehler)
@@ -265,7 +265,7 @@ Browse=Browse
 Enable µTP=µTP aktivieren
 Select a folder for download=Ordner für Download wählen
 Select torrent location=Ort für torrent wählen
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=Eine neue Version von %s ist verfügbar.~Ihre derzeitige Version: %s~Die neue Version: %s~~Möchten Sie die Download-Seite öffnen?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=Eine neue Version von %s ist verfügbar.~Ihre derzeitige Version: %s~Die neue Version: %s~Möchten Sie die Download-Seite öffnen?
 Advanced=Fortgeschritten
 Check for new version every=Auf neue Version prüfen
 Consider active torrents as stalled when idle for=Aktive Torrents gelten als blockiert, wenn inaktiv für

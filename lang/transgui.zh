@@ -1,6 +1,6 @@
 TranslationLanguage=简体中文
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="远程路径映射.~~比如:~/share=\\pch\share~/var/downloads/music=Z:\music"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="远程路径映射.~比如:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (下载了 %d)
 %ds=%d 秒
 %s (%d hashfails)=%s (%d 丢弃的块)
@@ -260,7 +260,7 @@ Tracker properties=Tracker 服务器选项
 Unlimited=无限制
 Upload speeds (KB/s)=上传速度 (KB/s)
 Use alternate bandwidth settings=使用备用带宽设置
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=%s 的更新可用。~当前版本号： %s~新版本号： %s~~你想打开下载页吗？
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=%s 的更新可用。~当前版本号： %s~新版本号： %s~你想打开下载页吗？
 Advanced=高级
 average=平均
 Browse=浏览
