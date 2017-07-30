@@ -364,3 +364,4 @@ for example: *.avi *.mkv tom*jerry*.avi=例如: *.avi *.mkv tom*jerry*.avi
 Copy Magnet Link(s)=複製 Magnet 磁力連結
 Application Options (Ctrl+F9)=應用程式選項 (Ctrl+F9)
 Connection refused=無法建立連線：連線被拒絕
+Access violation=記憶體存取異常
