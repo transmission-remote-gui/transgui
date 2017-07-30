@@ -17,7 +17,6 @@ make -C "$ROOT" -j"$(nproc)" clean all
 mv "$ROOT/about.lfm.bak" "$ROOT/about.lfm"
 
 cd "$ROOT" || exit 1
-FILENAME="transgui-${VERSION}-$(uname -m)-$(uname).txz"
-XZ_OPT=-9 tar cJf "$FILENAME" transgui README.md history.txt LICENSE.txt transgui.png lang
 mkdir -p Release/
-mv "$FILENAME" Release/
+FILENAME="transgui-${VERSION}-$(uname -m)-$(uname).txz"
+XZ_OPT=-9 tar cJf "Release/$FILENAME" transgui README.md history.txt LICENSE.txt transgui.png lang
