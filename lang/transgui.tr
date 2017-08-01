@@ -1,6 +1,6 @@
 TranslationLanguage=Turkish
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Uzak klasöre yerel yol atama.~~Örnek:~/share=\\pch\share~/var/downloads/music=Z:\music"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Uzak klasöre yerel yol atama.~Örnek:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (%d sahip)
 %ds=%ds
 %s (%d hashfails)=%s (%d hash hatası)
@@ -264,7 +264,7 @@ average=ortalama
 Browse=Tara
 Select a folder for download=İndirmeler için dizin seç
 Select torrent location=Torrent dizinini seç
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=%s yeni bir sürümü kullanılabilinir.~Sizin sürümünüz: %s~Yeni sürüm: %s~~İndirme sayfasını açmak ister misiniz?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=%s yeni bir sürümü kullanılabilinir.~Sizin sürümünüz: %s~Yeni sürüm: %s~İndirme sayfasını açmak ister misiniz?
 Advanced=Gelişmiş
 Check for new version every=Yeni sürüm kaç günde bir kontrol edilsin
 Check for updates=Güncellemeleri kontrol et

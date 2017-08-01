@@ -1,6 +1,6 @@
 TranslationLanguage=Ελληνικά
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Χαρτογράφηση μονοπατιού απομακρυσμένο σε τοπικό.~~Παραδείγματα:~/share=\\pch\share~/var/downloads/music=Z:\music"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Χαρτογράφηση μονοπατιού απομακρυσμένο σε τοπικό.~Παραδείγματα:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (έχω %d)
 %ds=%ds
 %s (%d hashfails)=%s (%d hashfails)
@@ -265,7 +265,7 @@ Browse=Αναζήτηση
 Enable µTP=Ενεργοποίηση µTP
 Select a folder for download=Επιλέξτε ένα φάκελο για λήψη
 Select torrent location=Επιλέξτε τη θέση του αρχείου torrent
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=Μια νέα έκδοση του %s είναι διαθέσιμη.~Εγκατεστημένη έκδοση : %s~Νέα έκδοση: %s~~Να ανοίξει η ιστοσελίδα λήψης της νέας έκδοσης;
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=Μια νέα έκδοση του %s είναι διαθέσιμη.~Εγκατεστημένη έκδοση : %s~Νέα έκδοση: %s~Να ανοίξει η ιστοσελίδα λήψης της νέας έκδοσης;
 Advanced=Για προχωρημένους
 Check for new version every=Έλεγχος για νέα έκδοση κάθε
 Check for updates=Έλεγχος για ενημερώσεις
