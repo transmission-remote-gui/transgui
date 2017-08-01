@@ -348,11 +348,11 @@ inherited MainForm: TMainForm
     Height = 326
     Top = 225
     Width = 881
-    ActivePage = tabGeneral
+    ActivePage = tabTrackers
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 1
     OnChange = PageInfoChange
     OnResize = PageInfoResize
@@ -924,14 +924,14 @@ inherited MainForm: TMainForm
     end
     object tabTrackers: TTabSheet
       Caption = 'Trackers'
-      ClientHeight = 558
-      ClientWidth = 1544
+      ClientHeight = 298
+      ClientWidth = 873
       ImageIndex = 5
       object lvTrackers: TVarGrid
         Left = 0
-        Height = 279
+        Height = 298
         Top = 0
-        Width = 772
+        Width = 873
         Align = alClient
         Columns = <        
           item
@@ -1962,6 +1962,14 @@ inherited MainForm: TMainForm
         Action = acInfoPane
         ShortCut = 123
       end
+      object MenuItem501: TMenuItem
+        Action = acToolbarShow
+        ShortCut = 16506
+      end
+      object MenuItem502: TMenuItem
+        Action = acMenuShow
+        ShortCut = 16507
+      end
       object MenuItem96: TMenuItem
         Action = acStatusBar
       end
@@ -2458,6 +2466,18 @@ inherited MainForm: TMainForm
       Caption = 'Status bar - Sizes'
       Checked = True
       OnExecute = acStatusBarSizesExecute
+    end
+    object acToolbarShow: TAction
+      Category = 'View'
+      Caption = 'Toolbar'
+      Checked = True
+      OnExecute = acToolbarShowExecute
+    end
+    object acMenuShow: TAction
+      Category = 'View'
+      Caption = 'Menu'
+      Checked = True
+      OnExecute = acMenuShowExecute
     end
   end
   object TorrentsListTimer: TTimer[9]
@@ -4902,5 +4922,13 @@ inherited MainForm: TMainForm
   object SaveDialog1: TSaveDialog[28]
     left = 832
     top = 152
+  end
+  object ActionList1: TActionList[29]
+    left = 840
+    object MenuShow: TAction
+      Caption = 'MenuShow'
+      OnExecute = MenuShowExecute
+      ShortCut = 16507
+    end
   end
 end

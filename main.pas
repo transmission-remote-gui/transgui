@@ -35,7 +35,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.8.3';
+  AppVersion = '5.9';
 
 resourcestring
   sAll = 'All torrents';
@@ -218,6 +218,10 @@ type
     acFolderGrouping: TAction;
     acAdvEditTrackers: TAction;
     acFilterPane: TAction;
+    acMenuShow :  TAction;
+    MenuShow: TAction;
+    ActionList1: TActionList;
+    acToolbarShow :  TAction;
     acInfoPane: TAction;
     acStatusBar: TAction;
     acCopyPath: TAction;
@@ -230,6 +234,8 @@ type
     acVerifyTorrent: TAction;
     ActionList: TActionList;
     ApplicationProperties: TApplicationProperties;
+    MenuItem501: TMenuItem;
+    MenuItem502: TMenuItem;
     txMagLabel: TLabel;
     txMagnetLink: TEdit;
     MenuItem101: TMenuItem;
@@ -503,6 +509,7 @@ type
     procedure acForceStartTorrentExecute(Sender: TObject);
     procedure acHideAppExecute(Sender: TObject);
     procedure acInfoPaneExecute(Sender: TObject);
+    procedure acMenuShowExecute(Sender: TObject);
     procedure acMoveTorrentExecute(Sender: TObject);
     procedure acNewConnectionExecute(Sender: TObject);
     procedure acOpenContainingFolderExecute(Sender: TObject);
@@ -537,6 +544,8 @@ type
     procedure acStatusBarSizesExecute(Sender: TObject);
     procedure acStopAllTorrentsExecute(Sender: TObject);
     procedure acStopTorrentExecute(Sender: TObject);
+    procedure MenuShowExecute(Sender: TObject);
+    procedure acToolbarShowExecute(Sender: TObject);
     procedure acTorrentPropsExecute(Sender: TObject);
     procedure acTrackerGroupingExecute(Sender: TObject);
     procedure acUpdateBlocklistExecute(Sender: TObject);
@@ -1786,6 +1795,15 @@ begin
     PageInfoChange(nil)
   else
     RpcObj.AdvInfo:=aiNone;
+end;
+
+procedure TMainForm.acMenuShowExecute(Sender: TObject);
+begin
+    acMenuShow.Checked:=not acMenuShow.Checked;
+    if acMenuShow.Checked = false then
+       MainForm.Menu := nil
+    else
+       MainForm.Menu := MainMenu;
 end;
 
 procedure TMainForm.acMoveTorrentExecute(Sender: TObject);
@@ -3475,6 +3493,25 @@ end;
 procedure TMainForm.acStopTorrentExecute(Sender: TObject);
 begin
   TorrentAction(GetSelectedTorrents, 'torrent-stop');
+end;
+
+procedure TMainForm.MenuShowExecute(Sender: TObject);
+begin
+ acMenuShow.Checked:=not acMenuShow.Checked;
+ if acMenuShow.Checked = false then
+   MainForm.Menu := nil
+ else
+   MainForm.Menu := MainMenu;
+end;
+
+procedure TMainForm.acToolbarShowExecute(Sender: TObject);
+begin
+
+  acToolbarShow.Checked:=not acToolbarShow.Checked;
+  if acToolbarShow.Checked = false then
+      MainToolBar.Visible:= false
+  else
+      MainToolBar.Visible:= true;
 end;
 
 procedure TMainForm.acTorrentPropsExecute(Sender: TObject);
