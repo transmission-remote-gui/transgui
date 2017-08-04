@@ -18,6 +18,6 @@ else
         error "$1 upload failed!!!"
     fi
     echo -e "\033[32m$1 uploaded with success!!!\033[m";
-    echo -e "\033[32mDownload url:\033[m $(jq -r .link upload.log || awk -F'"' '{print $10}' upload.log) \033[33m(expires in 1 week)\033[m";
+    echo -e "\033[32mDownload url:\033[m $(jq -r .link upload.log 2>/dev/null || awk -F'"' '{print $10}' upload.log) \033[33m(expires in 1 week)\033[m";
     rm upload.log
 fi
