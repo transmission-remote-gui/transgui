@@ -1,6 +1,6 @@
 TranslationLanguage=Română
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Maparea căilor de la distanţă către local.~~Exemple:~/share=\\pch\share~/var/downloads/muzica=Z:\muzica"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Maparea căilor de la distanţă către local.~Exemple:~/share=\\pch\share~/var/downloads/muzica=Z:\muzica"
 %d x %s (have %d)=%d x %s (complet %d)
 %ds=%ds
 %s (%d hashfails)=%s (%d hashfails)
@@ -263,7 +263,7 @@ Browse=Navighează
 Enable µTP=Permite µTP
 Select a folder for download=Alege director pentru descărcare
 Select torrent location=Alege locație torent
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?
 Advanced=Advanced
 Check for new version every=Check for new version every
 Check for updates=Check for updates

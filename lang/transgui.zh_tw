@@ -1,6 +1,6 @@
 TranslationLanguage=正體中文
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="遠端路徑映射.~~例如:~/share=\\pch\share~/var/downloads/music=Z:\music"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="遠端路徑映射.~例如:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (下載了 %d)
 %ds=%d 秒
 %s (%d hashfails)=%s (%d 個無效的區塊)
@@ -265,7 +265,7 @@ Browse=瀏覽
 Enable µTP=開啟 µTP
 Select a folder for download=選擇下載資料夾
 Select torrent location=選擇 Torrent 檔案位置
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=新版本 %s 已經可以下載~現在的版本為: %s~新版本為: %s~~是否要開啟下載網頁?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=新版本 %s 已經可以下載~現在的版本為: %s~新版本為: %s~是否要開啟下載網頁?
 Advanced=進階
 Check for new version every=檢查新版本間隔時間
 Check for updates=檢查更新

@@ -1,6 +1,6 @@
 TranslationLanguage=한국어
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="리모트와 로컬간의 경로 맵핑.~~사용 예:~/share=\\pch\share~/var/downloads/music=Z:\music"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="리모트와 로컬간의 경로 맵핑.~사용 예:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (%d 소유)
 %ds=%d초
 %s (%d hashfails)=%s (%d 해쉬실패)
@@ -265,7 +265,7 @@ Browse=찾아보기
 Enable μTP=μTP 사용
 Select a folder for download=다운로드할 폴더를 지정하세요
 Select torrent location=토렌트 위치를 지정하세요
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=%s의 새 버전이 나왔습니다.~현재 버젼: %s~새 버젼: %s~~다운로드 페이지로 접속하시겠습니까?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=%s의 새 버전이 나왔습니다.~현재 버젼: %s~새 버젼: %s~다운로드 페이지로 접속하시겠습니까?
 Advanced=고급
 Check for new version every=새 버전 확인 간격:
 Check for updates=업데이트 확인

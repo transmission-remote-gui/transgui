@@ -1,6 +1,6 @@
 TranslationLanguage=Suomi
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Etäsijaintien määrittäminen paikallisten kanssa.~~Esimerkkejä:~/share=\\pch\share~/var/downloads/music=Z:\music"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Etäsijaintien määrittäminen paikallisten kanssa.~Esimerkkejä:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %d x %s (have %d)=%d x %s (valmiina %d)
 %ds=%ds
 %s (%d hashfails)=%s (%d tarkistusvirhettä)
@@ -264,7 +264,7 @@ Browse=Selaa
 Enable µTP=Käytä µTP
 Select a folder for download=Valitse kansio johon torrentti ladataan
 Select torrent location=Valitse uusi sijainti torrentille
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=Uusi versio %s on saatavilla.~Nykyinen versio: %s~Uusi versio: %s~~Haluatko avata lataussivun?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=Uusi versio %s on saatavilla.~Nykyinen versio: %s~Uusi versio: %s~Haluatko avata lataussivun?
 Advanced=Edistyneet
 Check for new version every=Tarkista päivitykset joka
 Check for updates=Tarkista päivitykset

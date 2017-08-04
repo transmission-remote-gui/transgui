@@ -1,6 +1,6 @@
 TranslationLanguage=Norsk (Bokmål)
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Knytt ekstern tjeners filbane mot en lokal filbane.~~For eksempel:~/deling=\\pch\deling~/var/nedlastinger/musikk=Z:\musikk"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Knytt ekstern tjeners filbane mot en lokal filbane.~For eksempel:~/deling=\\pch\deling~/var/nedlastinger/musikk=Z:\musikk"
 %d x %s (have %d)=%d x %s (har %d)
 %ds=%ds
 %s (%d hashfails)=%s (%d sjekksumfeil)
@@ -265,7 +265,7 @@ Browse=Bla gjennom
 Enable µTP=Aktiver µTP
 Select a folder for download=Velg en mappe for nedlasting
 Select torrent location=Velg plassering for torrent
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=En ny versjon av %s er tilgjengelig.~Din versjon er: %s~Den nye versjonen er: %s~~Ønsker du å gå til web-siden for nedlasting?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=En ny versjon av %s er tilgjengelig.~Din versjon er: %s~Den nye versjonen er: %s~Ønsker du å gå til web-siden for nedlasting?
 Advanced=Avansert
 Check for new version every=Se etter en ny versjon hver
 Check for updates=Se etter oppdatering

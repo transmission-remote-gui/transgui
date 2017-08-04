@@ -1,6 +1,6 @@
 TranslationLanguage=Svenska
 
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mappning remote til lokala sökvägar.~~Till exempel:~/share=\\pch\share~/var/downloads/musik=Z:\musik"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Mappning remote til lokala sökvägar.~Till exempel:~/share=\\pch\share~/var/downloads/musik=Z:\musik"
 %d x %s (have %d)=%d x %s (har %d)
 %ds=%ds
 %s (%d hashfails)=%s (%d checksummefel)
@@ -265,7 +265,7 @@ Browse=Bläddra
 Enable µTP=Aktivera µTP
 Select a folder for download=Välj nedladdningsmapp
 Select torrent location=Välj torrentplats
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?
 Advanced=Avancerad
 Check for new version every=Sök efter nya versioner varje
 Check for updates=Sök efter uppdateringar

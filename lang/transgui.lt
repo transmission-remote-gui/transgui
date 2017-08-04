@@ -23,7 +23,7 @@ TranslationLanguage=Lietuvių
 %s downloaded=%s atsiųsta
 %s of %s downloaded=%s iš %s atsiųsta
 %s%s%d downloading, %d seeding%s%s, %s=%s%s%d atsiunčiama, %d išsiunčiama%s%s, %s
-A new version of %s is available.~Your current version: %s~The new version: %s~~Do you wish to open the Downloads web page?=Pasiekiama nauja versija %s.~Jūsų dabartinė versija: %s~Nauja versija: %s~~Ar norite pereiti į atsiuntimo puslapį?
+A new version of %s is available.~Your current version: %s~The new version: %s~Do you wish to open the Downloads web page?=Pasiekiama nauja versija %s.~Jūsų dabartinė versija: %s~Nauja versija: %s~Ar norite pereiti į atsiuntimo puslapį?
 Abort=Atšaukti
 About=Apie
 Active time=Aktyvumo laikas
@@ -302,7 +302,7 @@ Waiting=Laukiama
 Warning=Perspėjimas
 Wasted=Panaudota
 Working=Dirba
-"Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Remote to local path mappings.~~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"
+"Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"="Remote to local path mappings.~Examples:~/share=\\pch\share~/var/downloads/music=Z:\music"
 %dd=%dd
 %dh=%dh
 %dm=%dm
