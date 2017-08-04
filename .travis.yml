@@ -153,7 +153,6 @@ matrix:
       - arch=osx
       - sourceforge_mirror=pilotfiber
       install:
-      - brew install jq
       - sh -c 'cd setup/macosx && ./compilers.sh'
       script:
       - echo -en 'travis_fold:start:build'
