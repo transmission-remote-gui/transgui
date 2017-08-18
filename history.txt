@@ -1,3 +1,10 @@
+5.9.0 (Aug 18, 2017)
+[+] Added missing string "Access violation" in lang
+[+] Added menu and toolbar hiding/showing option
+[+] Fixed language files, ~~ should be ~ (#990)
+[+] Fixed RevisionNumber
+[+] Improved CI config and build scripts
+
 5.8.3 (Jul 28, 2017)
 [+] Updated Korean translation thanks to @bluenlive (#987)
 [+] Updated url in "about" to avoid redirects (#984)
