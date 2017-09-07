@@ -23,7 +23,7 @@ unit Main;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls, 
+  Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls,
   {$ifdef windows}
   windows,
   {$else}
@@ -35,7 +35,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.9';
+  AppVersion = '5.10';
 
 resourcestring
   sAll = 'All torrents';
@@ -1377,7 +1377,6 @@ var
   R: TRect;
   bigt: boolean;
   SL: TStringList;
-
 {$ifdef darwin}
   s: string;
   pic: TPicture;
@@ -1536,6 +1535,12 @@ begin
     acInfoPane.Execute;
   if Ini.ReadBool('MainForm', 'StatusBar', acStatusBar.Checked) <> acStatusBar.Checked then
     acStatusBar.Execute;
+
+  if Ini.ReadBool('MainForm', 'Menu', acMenuShow.Checked) <> acMenuShow.Checked then
+    acMenuShow.Execute;
+  if Ini.ReadBool('MainForm', 'Toolbar', acToolbarShow.Checked) <> acToolbarShow.Checked then
+    acToolbarShow.Execute;
+
 
   LoadColumns(gTorrents, 'TorrentsList');
   TorrentColumnsChanged;
@@ -2736,6 +2741,10 @@ begin
   Ini.WriteBool('MainForm', 'FilterPane', acFilterPane.Checked);
   Ini.WriteBool('MainForm', 'InfoPane', acInfoPane.Checked);
   Ini.WriteBool('MainForm', 'StatusBar', acStatusBar.Checked);
+
+  Ini.WriteBool('MainForm', 'Menu', acMenuShow.Checked);
+  Ini.WriteBool('MainForm', 'Toolbar', acToolbarShow.Checked);
+
 
   SaveColumns(gTorrents, 'TorrentsList');
   SaveColumns(lvFiles, 'FilesList');
@@ -5089,7 +5098,7 @@ begin
   path  := StringReplace(path, '>', '_', [rfReplaceAll, rfIgnoreCase]);
   path  := StringReplace(path, '"', '_', [rfReplaceAll, rfIgnoreCase]);
   path  := StringReplace(path, '~', '_', [rfReplaceAll, rfIgnoreCase]);
-  path  := StringReplace(path, '..','_', [rfReplaceAll, rfIgnoreCase]);
+//path  := StringReplace(path, '..','_', [rfReplaceAll, rfIgnoreCase]); bag
   Result:= path;
 end;
 

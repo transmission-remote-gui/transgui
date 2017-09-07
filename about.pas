@@ -24,7 +24,7 @@ unit About;
 interface
 
 uses
-  BaseForm, Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, ExtCtrls, ButtonPanel,
+  BaseForm, Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, ExtCtrls, ButtonPanel, lclversion,
     ssl_openssl, ssl_openssl_lib;
 
 resourcestring
@@ -43,11 +43,9 @@ type
     Bevel1: TBevel;
     Buttons: TButtonPanel;
     edLicense: TMemo;
-    imgDonate: TImage;
     imgTransmission: TImage;
     imgSynapse: TImage;
     imgLazarus: TImage;
-    txDonate: TLabel;
     txHomePage: TLabel;
     txAuthor: TLabel;
     txVersion: TLabel;
@@ -55,6 +53,7 @@ type
     Page: TPageControl;
     tabAbout: TTabSheet;
     tabLicense: TTabSheet;
+    txVersFPC: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure imgDonateClick(Sender: TObject);
     procedure imgLazarusClick(Sender: TObject);
@@ -234,6 +233,9 @@ begin
   txAppName.Caption:=AppName;
   txVersion.Caption:=Format(txVersion.Caption, [AppVersion]);
   Page.ActivePageIndex:=0;
+
+  txVersFPC.caption := 'Fpc : ' + {$I %FPCVERSION%} + '   Lazarus : ' +lcl_version;
+
 {$ifdef lclcarbon}
   s:=edLicense.Text;
   edLicense.Text:='';
