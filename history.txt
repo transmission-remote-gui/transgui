@@ -1,3 +1,8 @@
+5.10.0 (Sep 16, 2017)
+[+] Updated Korean translation (#1002, #1003)
+[+] Add armv7l build on Travis CI
+[+] Save Menu and toolbar display option in config (#1004)
+
 5.9.0 (Aug 18, 2017)
 [+] Added missing string "Access violation" in lang
 [+] Added menu and toolbar hiding/showing option
