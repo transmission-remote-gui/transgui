@@ -67,6 +67,7 @@ matrix:
       - sha256sum ./Release/transgui-$PROG_VER-x86_64-Linux.txz
       - if [ -n "$TRAVIS_TAG" ] ; then
           curl -F "file=@./Release/transgui-$PROG_VER-x86_64-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+          curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
         else
           setup/upload_asset.sh ./Release/transgui-$PROG_VER-x86_64-Linux.txz ;
         fi
@@ -101,6 +102,7 @@ matrix:
       - sha256sum ./Release/transgui-$PROG_VER-i686-Linux.txz
       - if [ -n "$TRAVIS_TAG" ] ; then
           curl -F "file=@./Release/transgui-$PROG_VER-i686-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+          curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
         else
           setup/upload_asset.sh ./Release/transgui-$PROG_VER-i686-Linux.txz ;
         fi
@@ -134,6 +136,7 @@ matrix:
       - sha256sum ./Release/transgui-$PROG_VER-armv6l-Linux.txz
       - if [ -n "$TRAVIS_TAG" ] ; then
           curl -F "file=@./Release/transgui-$PROG_VER-armv6l-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+          curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
         else
           setup/upload_asset.sh ./Release/transgui-$PROG_VER-armv6l-Linux.txz ;
         fi
@@ -167,6 +170,7 @@ matrix:
       - sha256sum ./Release/transgui-$PROG_VER-armv7l-Linux.txz
       - if [ -n "$TRAVIS_TAG" ] ; then
           curl -F "file=@./Release/transgui-$PROG_VER-armv7l-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+          curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
         else
           setup/upload_asset.sh ./Release/transgui-$PROG_VER-armv7l-Linux.txz ;
         fi
@@ -197,6 +201,7 @@ matrix:
       - shasum -a 256 ./setup/macosx/transgui-$PROG_VER.dmg
       - if [ -n "$TRAVIS_TAG" ] ; then
           curl -F "file=@./setup/macosx/transgui-$PROG_VER.dmg" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+          curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
         else
           setup/upload_asset.sh ./setup/macosx/transgui-$PROG_VER.dmg ;
         fi
