@@ -81,8 +81,9 @@ type
 
   {:abstract(Implementation of HTTP protocol.)}
   THTTPSend = class(TSynaClient)
-  protected
+  public
     FSock: TTCPBlockSocket;
+  protected
     FTransferEncoding: TTransferEncoding;
     FAliveHost: string;
     FAlivePort: string;

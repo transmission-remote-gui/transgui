@@ -907,11 +907,23 @@ begin
 end;
 
 procedure TRpc.CreateHttp;
+var
+  i : integer;
 begin
   Http.Free;
   Http:=THTTPSend.Create;
   Http.Protocol:='1.1';
-  Http.Timeout:=30000;
+
+  i := Ini.ReadInteger('NetWork', 'HttpTimeout', 30);
+  if (i < 2) or (i > 999) then i:= 30; // default
+  Ini.WriteInteger('NetWork', 'HttpTimeout', i);
+  Http.Timeout:= i * 1000;
+
+  i := Ini.ReadInteger('NetWork', 'ConnectTimeout', 0);
+  if (i < 0) or (i > 999) then i:= 0; // default
+  Ini.WriteInteger('NetWork', 'ConnectTimeout', i);
+  Http.FSock.ConnectionTimeout := i * 1000;
+
   Http.Headers.NameValueSeparator:=':';
 end;
 

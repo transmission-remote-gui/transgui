@@ -35,7 +35,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.10';
+  AppVersion = '5.11';
 
 resourcestring
   sAll = 'All torrents';
@@ -1401,7 +1401,7 @@ begin
 
   RegisterURLHandler(@AddTorrentFile);
 {$endif darwin}
-  Application.Title:=AppName;
+  Application.Title:=AppName + ' v.' + AppVersion;
   Caption:=Application.Title;
   txTransferHeader.Font.Size:=Font.Size + 2;
   txTorrentHeader.Font.Size:=txTransferHeader.Font.Size;
