@@ -15,12 +15,6 @@ matrix:
       sudo: false
       env:
       - task=shellcheck
-      addons:
-        apt:
-          sources:
-            - debian-sid
-          packages:
-            - shellcheck
       script:
       - shellcheck -V
       - find . -type f -name "*.sh" | xargs -n 1 shellcheck
