@@ -27,6 +27,7 @@
 backup/
 *.bak
 lib/
+units/
 
 # Application bundle for Mac OS
 *.app/
