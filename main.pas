@@ -1990,8 +1990,10 @@ begin
   if (Sender is TMenuItem) and (TMenuItem(Sender).Tag > 999) then
     begin
          UserDef := true;
+         {$ifdef windows}
          FUserDefinedMenuEx    := Ini.ReadString('UserMenu','ExeName'+IntToStr(TMenuItem(Sender).Tag-1000),'');
          FUserDefinedMenuParam := Ini.ReadString('UserMenu','Params'+IntToStr(TMenuItem(Sender).Tag-1000),'');
+         {$endif windows}
     end
       else UserDef := false;
   if lvFiles.Focused then begin
