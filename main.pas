@@ -25,7 +25,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, zstream, LResources, Forms, Controls,
   {$ifdef windows}
-  windows,
+  windows, ShellApi,
   {$else}
   lclintf,
   {$endif windows}
@@ -639,6 +639,8 @@ type
     FFileManagerDefaultParam: string;
     FGlobalHotkey: string;
     fGlobalHotkeyMod: string;
+    FUserDefinedMenuEx: string;
+    FUserDefinedMenuParam: string;
 {$endif windows}
 {$ifdef LCLcarbon}
     FFormActive: boolean;
@@ -688,7 +690,7 @@ type
     procedure UrlLabelClick(Sender: TObject);
     procedure CenterReconnectWindow;
     procedure ProcessPieces(const Pieces: string; PieceCount: integer; const Done: double);
-    function ExecRemoteFile(const FileName: string; SelectFile: boolean): boolean;
+    function ExecRemoteFile(const FileName: string; SelectFile: boolean; Userdef: boolean= false): boolean;
     function GetSelectedTorrents: variant;
     function GetDisplayedTorrents: variant;
     procedure FillDownloadDirs(CB: TComboBox; const CurFolderParam: string);
@@ -712,7 +714,7 @@ type
     function RenameTorrent(TorrentId: integer; const OldPath, NewName: string): boolean;
     procedure FilesTreeStateChanged(Sender: TObject);
     function SelectTorrent(TorrentId, TimeOut: integer): integer;
-    procedure OpenCurrentTorrent(OpenFolderOnly: boolean);
+    procedure OpenCurrentTorrent(OpenFolderOnly: boolean; UserDef: boolean=false);
   public
     procedure FillTorrentsList(list: TJSONArray);
     procedure FillPeersList(list: TJSONArray);
@@ -1377,6 +1379,10 @@ var
   R: TRect;
   bigt: boolean;
   SL: TStringList;
+  miUserFiles, miUserTorrents, MI, MI2: TMenuItem;
+  Ico: TIcon;
+  LargeIco, SmallIco : hIcon;
+  MenuCaption: String;
 {$ifdef darwin}
   s: string;
   pic: TPicture;
@@ -1583,6 +1589,63 @@ begin
    HotKeyID := GlobalAddAtom('TransGUIHotkey');
    PrevWndProc:=windows.WNDPROC(SetWindowLongPtr(Self.Handle,GWL_WNDPROC,PtrInt(@WndCallback)));
    RegisterHotKey(Self.Handle,HotKeyID, VKStringToWord(FGlobalHotkeyMod), VKStringToWord(FGlobalHotkey));
+   // Create UserMenus if any in [UserMenu]
+      j:= 1;
+       repeat
+             MenuCaption := Ini.ReadString('UserMenu','Caption'+IntToStr(j),'nocaption');
+             inc(J);
+       until MenuCaption = 'nocaption';
+       dec(j);
+       if j > 0 then
+         begin
+           if J > 2 then
+             begin
+                  MI := TMenuItem.Create(Self);
+                  MI.Caption:= 'User Menu';
+                  MI.ImageIndex:=6;
+                  pmFiles.Items.Insert(4,MI);
+                  MI2 := TMenuItem.Create(Self);
+                  MI2.Caption:= 'User Menu';
+                  MI2.ImageIndex:=6;
+                  pmTorrents.Items.Insert(2,MI2);
+             end;
+           for i := 1 to j-1 do
+             begin
+                MI := TMenuItem.Create(Self);
+                MI2 := TMenuItem.Create(Self);
+                MI.Caption:= Ini.ReadString('UserMenu','Caption'+IntToStr(i),'');
+                if MI.Caption <> '-' then
+                begin
+                  MI.Tag:= 1000+i;
+                  MI.OnClick:= @acOpenFileExecute;
+                end;
+                try
+                if ExtractIconEx(PChar(Ini.ReadString('UserMenu','ExeName'+IntToStr(i),'')), 0, LargeIco, SmallIco, 1) > null then
+                   begin
+                        Ico := TIcon.Create;
+                        try
+                           Ico.Handle := SmallIco;
+                           Ico.Transparent := True;
+                           Ico.Masked:=True;
+                        finally
+                           ImageList16.AddIcon(Ico);
+                           Ico.Free;
+                           MI.ImageIndex := ImageList16.Count-1;
+                        end;
+                   end;
+                except
+                end;
+                MI2.Caption:= MI.Caption;
+                MI2.Tag:= MI.Tag;
+                MI2.OnClick:=MI.OnClick;
+                MI2.ImageIndex:= MI.ImageIndex;
+                if j > 2 then pmFiles.Items[4].Add(MI)
+                         else pmFiles.Items.Insert(4,MI);
+                if j > 2 then pmTorrents.Items[2].Add(MI2)
+                         else pmTorrents.Items.Insert(2,MI2);
+             end;
+         end;
+   // end Create UserMenu
   {$else}
      {$ifdef darwin}
      FLinuxOpenDoc := Ini.ReadInteger('Interface','FileOpenDoc',0);  // macOS - OpenURL(s, p) = Original version TRGUI
@@ -1917,16 +1980,26 @@ begin
 end;
 
 procedure TMainForm.acOpenFileExecute(Sender: TObject);
+var UserDef: boolean;
+    i: integer;
+    s: string;
 begin
   if gTorrents.Items.Count = 0 then
     exit;
   Application.ProcessMessages;
+  if (Sender is TMenuItem) and (TMenuItem(Sender).Tag > 999) then
+    begin
+         UserDef := true;
+         FUserDefinedMenuEx    := Ini.ReadString('UserMenu','ExeName'+IntToStr(TMenuItem(Sender).Tag-1000),'');
+         FUserDefinedMenuParam := Ini.ReadString('UserMenu','Params'+IntToStr(TMenuItem(Sender).Tag-1000),'');
+    end
+      else UserDef := false;
   if lvFiles.Focused then begin
     if lvFiles.Items.Count = 0 then exit;
-    ExecRemoteFile(FFilesTree.GetFullPath(lvFiles.Row), False);
+    ExecRemoteFile(FFilesTree.GetFullPath(lvFiles.Row), False, Userdef)
   end
   else
-    OpenCurrentTorrent(False);
+    OpenCurrentTorrent(False, UserDef);
 end;
 
 procedure TMainForm.acOptionsExecute(Sender: TObject);
@@ -6705,7 +6778,7 @@ begin
   end;
 end;
 
-function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): boolean;
+function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean; Userdef: boolean): boolean;
 
   procedure _Exec(s: string);
   var
@@ -6715,8 +6788,16 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
     if SelectFile then begin
       if FileExistsUTF8(s) then begin
 {$ifdef mswindows}
-        p:=Format(FFileManagerDefaultParam, [s]); // ALERT  //      p:=Format('/select,"%s"', [s]);
-        s:=FFileManagerDefault;                             //      s:='explorer.exe';
+if Userdef then
+               begin
+                     p:=Format(FUserDefinedMenuParam, [s]);
+                     s:=FUserDefinedMenuEx;
+               end
+               else
+               begin
+                     p:=Format(FFileManagerDefaultParam, [s]); ; // ALERT  //      p:=Format('/select,"%s"', [s]);
+                     s:=FFileManagerDefault;                               //      s:='explorer.exe';
+               end;
 {$else}
         p:='';
         s:=ExtractFilePath(s);
@@ -6730,7 +6811,12 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
     end;
 
 {$ifdef mswindows}
-       Result:=OpenURL(s, p);
+if Userdef then
+               begin
+                     p := Format(FUserDefinedMenuParam, [s]);
+                     s := FUserDefinedMenuEx;
+               end ;
+                    Result:=OpenURL(s, p);
 {$else}
        if FLinuxOpenDoc = 0 then
           Result := OpenURL(s, p)    // does not work in latest linux very well!!!! old.vers
@@ -6746,10 +6832,23 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean): 
   end;
 
 var
-  s: string;
+  s,r: string;
+  i: integer;
 begin
   s:=MapRemoteToLocal(FileName);
   if s <> '' then begin
+    if Userdef then
+      begin
+       if (lvFiles.Focused) and (lvFiles.SelCount > 1) then
+          begin
+                r := '';
+                for i := 0 to lvFiles.Items.Count-1 do
+                  if lvFiles.RowSelected[i] then
+                     r := r + ' "'+ MapRemoteToLocal(FFilesTree.GetFullPath(i)) + '"';
+                s := r;
+          end;
+         // else s := '"' + s + '"';
+      end;
     _Exec(s);
     exit;
   end;
@@ -7403,7 +7502,7 @@ begin
   end;
 end;
 
-procedure TMainForm.OpenCurrentTorrent(OpenFolderOnly: boolean);
+procedure TMainForm.OpenCurrentTorrent(OpenFolderOnly: boolean; UserDef: boolean);
 var
   res: TJSONObject;
   p, s: string;
@@ -7442,7 +7541,7 @@ begin
       finally
         res.Free;
       end;
-    ExecRemoteFile(p, sel);
+    ExecRemoteFile(p, sel, Userdef);
   finally
     AppNormal;
   end;
