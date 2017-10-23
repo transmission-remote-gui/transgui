@@ -367,3 +367,4 @@ Connection refused=無法建立連線：連線被拒絕
 Access violation=記憶體存取異常
 Menu=選單
 Toolbar=工具列
+Connection timed out=連線逾時
