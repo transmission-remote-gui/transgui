@@ -367,3 +367,4 @@ Connection refused=Connection refused
 Access violation=Access violation
 Menu=Menu
 Toolbar=Toolbar
+Connection timed out=Connection timed out
