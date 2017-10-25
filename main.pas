@@ -1407,7 +1407,7 @@ begin
 
   RegisterURLHandler(@AddTorrentFile);
 {$endif darwin}
-  Application.Title:=AppName + ' v.' + AppVersion;
+  Application.Title:=AppName + ' v' + AppVersion;
   Caption:=Application.Title;
   txTransferHeader.Font.Size:=Font.Size + 2;
   txTorrentHeader.Font.Size:=txTransferHeader.Font.Size;
