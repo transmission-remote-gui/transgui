@@ -6846,7 +6846,8 @@ begin
                 r := '';
                 for i := 0 to lvFiles.Items.Count-1 do
                   if lvFiles.RowSelected[i] then
-                     r := r + ' "'+ MapRemoteToLocal(FFilesTree.GetFullPath(i)) + '"';
+                    if r = '' then r := MapRemoteToLocal(FFilesTree.GetFullPath(i)) + '"'  else
+                       r := r + ' "'+ MapRemoteToLocal(FFilesTree.GetFullPath(i)) + '"';
                 s := r;
           end;
          // else s := '"' + s + '"';
