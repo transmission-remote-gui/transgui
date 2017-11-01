@@ -368,3 +368,4 @@ Access violation=記憶體存取異常
 Menu=選單
 Toolbar=工具列
 Connection timed out=連線逾時
+Other Winsock error=未知的 Winsock 錯誤
