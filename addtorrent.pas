@@ -63,6 +63,7 @@ type
     procedure btSelectAllClick(Sender: TObject);
     procedure btSelectNoneClick(Sender: TObject);
     procedure cbDestFolderChange(Sender: TObject);
+    procedure cbStartTorrentChange(Sender: TObject);
     procedure DelButtonClick(Sender: TObject);
     procedure DiskSpaceTimerTimer(Sender: TObject);
     procedure edSaveAsChange(Sender: TObject);
@@ -1016,6 +1017,11 @@ begin
   DiskSpaceTimer.Enabled:=True;
 end;
 
+procedure TAddTorrentForm.cbStartTorrentChange(Sender: TObject);
+begin
+     Ini.WriteBool('Interface', 'StartTorrentOnAdd', cbStartTorrent.Checked);
+end;
+
 procedure TAddTorrentForm.DelButtonClick(Sender: TObject);
 var
   i,min,max,indx, fldr: integer;
@@ -1230,6 +1236,7 @@ begin
   FTree.OnStateChange:=@TreeStateChanged;
   Buttons.OKButton.ModalResult:=mrNone;
   bidiMode := GetBiDi();
+  cbStartTorrent.Checked := Ini.ReadBool('Interface', 'StartTorrentOnAdd', true);
 {$ifdef windows}
   gbSaveAs.Caption:='';
 {$endif windows}

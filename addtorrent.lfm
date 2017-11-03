@@ -66,6 +66,7 @@ inherited AddTorrentForm: TAddTorrentForm
       Width = 83
       Caption = 'Start torrent'
       Checked = True
+      OnChange = cbStartTorrentChange
       State = cbChecked
       TabOrder = 3
     end
