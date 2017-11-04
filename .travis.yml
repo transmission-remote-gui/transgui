@@ -23,6 +23,21 @@ matrix:
       dist: trusty
       sudo: false
       env:
+      - task=markdown-link-check
+      install:
+      - nvm install 4
+      - npm i -g markdown-link-check
+      before_script:
+      - node --version
+      - npm  --version
+      - type markdown-link-check
+      script:
+      - find . -type f -name "*.md" | xargs -n 1 markdown-link-check
+
+    - os: linux
+      dist: trusty
+      sudo: false
+      env:
       - task=doctoc-check
       install:
       - nvm install 4
