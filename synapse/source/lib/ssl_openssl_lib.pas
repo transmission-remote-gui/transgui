@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 003.007.002 |
+| Project : Ararat Synapse                                       | 003.008.000 |
 |==============================================================================|
 | Content: SSL support by OpenSSL                                              |
 |==============================================================================|
-| Copyright (c)1999-2013, Lukas Gebauer                                        |
+| Copyright (c)1999-2017, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2002-2013.                |
+| Portions created by Lukas Gebauer are Copyright (c)2002-2017.                |
 | Portions created by Petr Fejfar are Copyright (c)2011-2012.                  |
 | All Rights Reserved.                                                         |
 |==============================================================================|
@@ -103,8 +103,8 @@ uses
 {$IFDEF CIL}
 const
   {$IFDEF LINUX}
-  DLLSSLName = 'libssl.so.1.0.0';
-  DLLUtilName = 'libcrypto.so.1.0.0';
+  DLLSSLName = 'libssl.so';
+  DLLUtilName = 'libcrypto.so';
   {$ELSE}
   DLLSSLName = 'ssleay32.dll';
   DLLUtilName = 'libeay32.dll';
@@ -125,8 +125,8 @@ var
     DLLUtilName: string = 'crypto.dll';
       {$ENDIF OS2GCC}
      {$ELSE OS2}
-    DLLSSLName: string = 'libssl.so.1.0.0';
-    DLLUtilName: string = 'libcrypto.so.1.0.0';
+    DLLSSLName: string = 'libssl.so';
+    DLLUtilName: string = 'libcrypto.so';
      {$ENDIF OS2}
     {$ENDIF}
   {$ELSE}
@@ -315,7 +315,9 @@ var
     SetLastError = False, CallingConvention= CallingConvention.cdecl,
     EntryPoint = 'TLS_method')]
     function SslMethodTLS : PSSL_METHOD; external;
+
   [DllImport(DLLSSLName, CharSet = CharSet.Ansi,
+    SetLastError = False, CallingConvention= CallingConvention.cdecl,
     EntryPoint = 'SSL_CTX_use_PrivateKey')]
     function SslCtxUsePrivateKey(ctx: PSSL_CTX; pkey: SslPtr):Integer;  external;
 

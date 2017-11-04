@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 004.015.006 |
+| Project : Ararat Synapse                                       | 004.015.007 |
 |==============================================================================|
 | Content: support procedures and functions                                    |
 |==============================================================================|
-| Copyright (c)1999-2013, Lukas Gebauer                                        |
+| Copyright (c)1999-2017, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c) 1999-2013.               |
+| Portions created by Lukas Gebauer are Copyright (c) 1999-2017.               |
 | Portions created by Hernan Sanchez are Copyright (c) 2000.                   |
 | Portions created by Petr Fejfar are Copyright (c)2011-2012.                  |
 | All Rights Reserved.                                                         |
@@ -1842,16 +1842,16 @@ begin
     {$ELSE}
   if Dir = '' then
   begin
-    SetLength(Path, MAX_PATH);
+    Path := StringOfChar(#0, MAX_PATH);
 	  x := GetTempPath(Length(Path), PChar(Path));
-  	SetLength(Path, x);
+    Path := PChar(Path);
   end
   else
     Path := Dir;
   x := Length(Path);
   if Path[x] <> '\' then
     Path := Path + '\';
-  SetLength(Result, MAX_PATH + 1);
+  Result := StringOfChar(#0, MAX_PATH);
   GetTempFileName(PChar(Path), PChar(Prefix), 0, PChar(Result));
   Result := PChar(Result);
   SetFileattributes(PChar(Result), GetFileAttributes(PChar(Result)) or FILE_ATTRIBUTE_TEMPORARY);

@@ -1,9 +1,9 @@
 {==============================================================================|
-| Project : Ararat Synapse                                       | 007.006.000 |
+| Project : Ararat Synapse                                       | 007.006.001 |
 |==============================================================================|
 | Content: Serial port support                                                 |
 |==============================================================================|
-| Copyright (c)2001-2015, Lukas Gebauer                                        |
+| Copyright (c)2001-2017, Lukas Gebauer                                        |
 | All rights reserved.                                                         |
 |                                                                              |
 | Redistribution and use in source and binary forms, with or without           |
@@ -33,7 +33,7 @@
 | DAMAGE.                                                                      |
 |==============================================================================|
 | The Initial Developer of the Original Code is Lukas Gebauer (Czech Republic).|
-| Portions created by Lukas Gebauer are Copyright (c)2001-2015.                |
+| Portions created by Lukas Gebauer are Copyright (c)2001-2017.                |
 | All Rights Reserved.                                                         |
 |==============================================================================|
 | Contributor(s):                                                              |
@@ -2308,7 +2308,7 @@ begin
     reg.OpenKey('\HARDWARE\DEVICEMAP\SERIALCOMM', false);
     reg.GetValueNames(l);
     for n := 0 to l.Count - 1 do
-      v.Add(reg.ReadString(l[n]));
+      v.Add(PChar(reg.ReadString(l[n])));
     Result := v.CommaText;
   finally
     reg.Free;
