@@ -43,6 +43,8 @@ Features:
 
 ## Installation
 
+The installers are listed on the GitHub [Releases](https://github.com/leonsoft-kras/transmisson-remote-gui/releases/latest) page, and the installation instructions for different platform are listed as below :arrow_down:
+
 ### Linux
 
 #### Easy way (recommended)
