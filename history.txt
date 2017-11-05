@@ -1,3 +1,29 @@
+5.11.0 (Nov 6, 2017)
+ - Update translation template for missing terms
+ - Update Traditional Chinese translation
+ - Update Simplified Chinese translation (#1024)
+ - Update Nederlands translation
+ - Update README.md(#924, #1001, #1012, #1017, #1020)
+ - Updated the Ararat Synapse library to the latest revision
+ - Update Visual C++ Redistributable to 2013 (12.0.40660)
+ - Update Windows installer logic for Visual C++ Redistributable package
+ - Update the Ararat Synapse library to the latest revision
+ - Upgrade OpenSSL dll for Windows from 1.0.2j to 1.0.2m
+ - Download vcredist on the fly using Inno Download Plugin, solve #1013
+ - Add version number on application window title
+ - Add the user customizable menu option (#1020)
+ - Add the ability to configure the network timeout (#1007)
+ - Add the ability to add new torrents in a stopped state (#1022)
+ - Add simple ISSUE_TEMPLATE.md to decrease false bug alarm (#1012)
+ - Add more Inno Setup official languages for Windows
+ - Add markdown-link-check test on Travis CI
+ - Move macOS environment on Travis CI to xcode9.1
+ - Set DEBIAN_FRONTEND=noninteractive on Travis CI Linux environment
+ - Run apt upgrade on Travis CI before Linux package build
+ - Remove jq on Travis CI, let the script use awk, to speed up
+ - Do not manually install ShellCheck on Travis CI now
+ - Also upload "transgui" single binary to VirusTotal on Travis CI
+
 5.10.0 (Sep 16, 2017)
 [+] Updated Korean translation (#1002, #1003)
 [+] Add armv7l build on Travis CI
