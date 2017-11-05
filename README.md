@@ -71,12 +71,14 @@ Build the program by yourself.
 
 #### Portable zip tarball (recommended)
 
-Zip tarball release is much more small than the installer one, which can save you some bandwidth, disk space and time.
+Zip tarball release is much more small than the installer one, which can save you some bandwidth, disk space and time, just simply download and extract the zip tarball to wherever you want.
 
- - Directly download the zip tarball.
- - Extract the files to wherever you want.
+**Note**: The first time you use this program, you may need to install some additional dependencies, like [Visual C++ Redistributable Package](https://www.microsoft.com/en-US/download/details.aspx?id=26368)([Direct link](https://download.microsoft.com/download/5/D/8/5D8C65CB-C849-4025-8E95-C3966CAFD8AE/vcredist_x86.exe)) and [OpenSSL libs](https://wiki.openssl.org/index.php/Binaries)([Direct link](https://slproweb.com/download/Win64OpenSSL_Light-1_0_2m.exe)), this only needs to be done once.
 
 #### Installer
+
+This installer currently includes **Visual C++ Redistributable** and OpenSSL libraries, so the size would be much bigger than the zip tarball, but you don't need to take care of the dependencies.
+
  - Directly download the installer.
  - Run the installer and follow the steps to install it on your system.
 
