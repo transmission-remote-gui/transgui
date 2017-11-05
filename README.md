@@ -51,36 +51,37 @@ The installers are listed on the GitHub [Releases](https://github.com/leonsoft-k
 
 There are precompiled program's binaries for i386 and x86_64 Linux architectures.
 
- - Download and extract release for your architecture.
- - Create a desktop or menu shortcut to the transgui executable.
-   * (If needed, change the transgui file permissions to executable).
- - Run the program using the created shortcut.
+ - Download and extract the release for your architecture.
+
+Now you can execute the `transgui` binary. *(Change the `transgui` file permissions to executable if needed)*
+
+Additionally, you can create a desktop or menu shortcut to the transgui executable, and run the program using the created shortcut.
 
 #### Harder way
 
 Build the program by yourself.
 
- - Make sure you have working Lazarus and Free Pascal compiler installed.
+ 1. Make sure you have working Lazarus and Free Pascal compiler installed.
    * Free Pascal Compiler 2.6.2+ and Lazarus 1.0 is used to develop Transmission Remote GUI.
- - Download the sources archive and extract it to some folder or perform svn checkout.
- - Open terminal/command line prompt and cd to the sources folder;
- - Execute "make" command to build the application;
- - Execute "make zipdist" command to create a release .zip archive in the "Release" sub-folder.
+ 2. Download the sources archive and extract it to some folder or perform svn checkout.
+ 3. Open terminal/command line prompt and cd to the sources folder.
+ 4. Execute `make` command to build the application.
+ 5. Execute `make zipdist` command to create a release .zip archive in the `Release` sub-folder.
 
 ### Windows
 
 #### Portable zip tarball (recommended)
 
-Zip tarball release is much more small than the installer one, which can save you some bandwidth, disk space and time, just simply download and extract the zip tarball to wherever you want.
+ - Zip tarball release is much more small than the installer one, which can save you some bandwidth, disk space and time, just simply download and extract the zip tarball to wherever you want.
 
-**Note**: The first time you use this program, you may need to install some additional dependencies, like [Visual C++ Redistributable Package](https://www.microsoft.com/en-US/download/details.aspx?id=26368)([Direct link](https://download.microsoft.com/download/5/D/8/5D8C65CB-C849-4025-8E95-C3966CAFD8AE/vcredist_x86.exe)) and [OpenSSL libs](https://wiki.openssl.org/index.php/Binaries)([Direct link](https://slproweb.com/download/Win64OpenSSL_Light-1_0_2m.exe)), this only needs to be done once.
+**Note**: The first time you use this program, you may need to install some additional dependencies, like [Visual C++ Redistributable Package](https://www.microsoft.com/download/details.aspx?id=40784)([Direct link](http://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe)) and [OpenSSL libs](https://wiki.openssl.org/index.php/Binaries)([Direct link](https://slproweb.com/download/Win64OpenSSL_Light-1_0_2m.exe)), this only needs to be done once.
 
 #### Installer
 
 This installer currently includes **Visual C++ Redistributable** and OpenSSL libraries, so the size would be much bigger than the zip tarball, but you don't need to take care of the dependencies.
 
- - Directly download the installer.
- - Run the installer and follow the steps to install it on your system.
+ 1. Directly download the installer.
+ 2. Run the installer and follow the steps to install it on your system.
 
 ### macOS
 
