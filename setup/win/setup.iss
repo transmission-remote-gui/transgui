@@ -97,7 +97,7 @@ Source: "..\..\lang\transgui.*"; DestDir: "{app}\lang"; Flags: ignoreversion; Co
 ; OpenSSL
 Source: "openssl\libeay32.dll"; DestDir: "{app}"; Components: app
 Source: "openssl\ssleay32.dll"; DestDir: "{app}"; Components: app
-Source: "openssl\vcredist_x86(2008SP1).exe"; DestDir: {tmp}; Flags: deleteafterinstall
+Source: "openssl\vcredist_x86.exe"; DestDir: {tmp}; Flags: deleteafterinstall
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: {app}
@@ -216,7 +216,7 @@ end;
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here
 ; the conditional installation Check
-Filename: "{tmp}\vcredist_x86(2008SP1).exe"; Parameters: "/q"; Check: VCRedistNeedsInstall
+Filename: "{tmp}\vcredist_x86"; Parameters: "/q"; Check: VCRedistNeedsInstall
 
 [UninstallDelete]
 Type: filesandordirs ; Name: "{localappdata}\{#AppName}"
