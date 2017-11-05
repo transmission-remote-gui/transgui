@@ -74,7 +74,7 @@ Build the program by yourself.
 
  - Zip tarball release is much more small than the installer one, which can save you some bandwidth, disk space and time, just simply download and extract the zip tarball to wherever you want.
 
-**Note**: The first time you use this program, you may need to install some additional dependencies, like [Visual C++ Redistributable Package](https://www.microsoft.com/download/details.aspx?id=40784)([Direct link](http://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe)) and [OpenSSL libs](https://wiki.openssl.org/index.php/Binaries)([Direct link](https://slproweb.com/download/Win64OpenSSL_Light-1_0_2m.exe)), this only needs to be done once.
+**Note**: The first time you use this program, you may need to install some additional dependencies, like [Visual C++ Redistributable Package](https://www.microsoft.com/download/details.aspx?id=40784)([Direct link](http://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe)) and [OpenSSL libs](https://wiki.openssl.org/index.php/Binaries)([Direct link](https://slproweb.com/download/Win32OpenSSL_Light-1_0_2m.exe)), this only needs to be done once.
 
 #### Installer
 
