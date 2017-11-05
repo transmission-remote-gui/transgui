@@ -15,6 +15,7 @@
 #define AppURL "https://github.com/leonsoft-kras/transmisson-remote-gui"
 #define AppExeName "transgui.exe"
 #define CurYear GetDateTimeString('yyyy', '', '')
+#include <idp.iss>
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -97,7 +98,6 @@ Source: "..\..\lang\transgui.*"; DestDir: "{app}\lang"; Flags: ignoreversion; Co
 ; OpenSSL
 Source: "openssl\libeay32.dll"; DestDir: "{app}"; Components: app
 Source: "openssl\ssleay32.dll"; DestDir: "{app}"; Components: app
-Source: "openssl\vcredist_x86.exe"; DestDir: {tmp}; Flags: deleteafterinstall
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: {app}
@@ -163,6 +163,16 @@ begin
     VCVersionInstalled(VC_2013_REDIST_X86_ADD_40660)));
 end;
 
+
+procedure InitializeWizard();
+begin
+  if VCRedistNeedsInstall then
+  begin
+    idpAddFileSize('https://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe', ExpandConstant('{tmp}\vcredist_x86.exe'), 6510544);
+    idpAddMirror('https://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe', 'http://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe');
+  end;
+  idpDownloadAfter(wpReady);
+end;
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
