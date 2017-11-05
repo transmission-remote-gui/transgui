@@ -116,18 +116,18 @@ If the program finds the transgui.ini file in the same folder as the binary file
 
 ## Fixed hotkeys
 
- - Alt + 1 : All Torrents
- - Alt + 2 : Downloading
- - Alt + 3 : Completed
- - Alt + 4 : Active
- - Alt + 5 : Inactive
- - Alt + 6 : Stopped
- - Alt + 7 : Error
- - Alt + S : Searchbox (filter torrents by keywords) - Esc cancel filter and clean the box.
- - Alt + G : Info Pane - General Tab
- - Alt + K : Info Pane - Trackers Tab
- - Alt + P : Info Pane - Peers Tab
- - Alt + F : Info Pane - Files Tab
+ - <kbd>Alt</kbd> + <kbd>1</kbd> : All Torrents
+ - <kbd>Alt</kbd> + <kbd>2</kbd> : Downloading
+ - <kbd>Alt</kbd> + <kbd>3</kbd> : Completed
+ - <kbd>Alt</kbd> + <kbd>4</kbd> : Active
+ - <kbd>Alt</kbd> + <kbd>5</kbd> : Inactive
+ - <kbd>Alt</kbd> + <kbd>6</kbd> : Stopped
+ - <kbd>Alt</kbd> + <kbd>7</kbd> : Error
+ - <kbd>Alt</kbd> + <kbd>S</kbd> : Searchbox (filter torrents by keywords) - Esc cancel filter and clean the box.
+ - <kbd>Alt</kbd> + <kbd>G</kbd> : Info Pane - General Tab
+ - <kbd>Alt</kbd> + <kbd>K</kbd> : Info Pane - Trackers Tab
+ - <kbd>Alt</kbd> + <kbd>P</kbd> : Info Pane - Peers Tab
+ - <kbd>Alt</kbd> + <kbd>F</kbd> : Info Pane - Files Tab
 
 ## Advanced parameters
 
