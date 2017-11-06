@@ -124,6 +124,8 @@ resourcestring
   sTotalDownloaded = 'Done: %s';
   sTotalRemain = 'Remaining: %s';
 
+  sUserMenu = 'User Menu';
+
 type
 
   // for torrent folder
@@ -1601,11 +1603,11 @@ begin
            if J > 2 then
              begin
                   MI := TMenuItem.Create(Self);
-                  MI.Caption:= 'User Menu';
+                  MI.Caption:= sUserMenu;
                   MI.ImageIndex:=6;
                   pmFiles.Items.Insert(4,MI);
                   MI2 := TMenuItem.Create(Self);
-                  MI2.Caption:= 'User Menu';
+                  MI2.Caption:= sUserMenu;
                   MI2.ImageIndex:=6;
                   pmTorrents.Items.Insert(2,MI2);
              end;
@@ -5845,8 +5847,8 @@ begin
 
   CheckStatus;
 
-  StatusBar.Panels[1].Text:=Format(sDownSpeed, [GetHumanSize(DownSpeed, 1)]);
-  StatusBar.Panels[2].Text:=Format(sUpSpeed, [GetHumanSize(UpSpeed, 1)]);
+  StatusBar.Panels[1].Text:=Format(sDownSpeed, [GetHumanSize(DownSpeed, 1)]) + ' (' + GetHumanSize(FCurDownSpeedLimit*1024,2,sUnlimited+')' + Space(50)) + '/s)' ;
+  StatusBar.Panels[2].Text:=Format(sUpSpeed, [GetHumanSize(UpSpeed, 1)]) + ' (' + GetHumanSize(FCurUpSpeedLimit*1024,2,SUnlimited+')' + Space(50)) + '/s)';
 
 {$ifndef LCLcarbon}
   // There is memory leak in TTrayIcon implementation for Mac.

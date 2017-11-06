@@ -320,7 +320,10 @@ inherited MainForm: TMainForm
         Width = 300
       end    
       item
-        Width = 120
+        Width = 140
+      end    
+      item
+        Width = 140
       end    
       item
         Width = 120
@@ -329,13 +332,10 @@ inherited MainForm: TMainForm
         Width = 120
       end    
       item
-        Width = 100
-      end    
-      item
         Width = 120
       end    
       item
-        Width = 100
+        Width = 120
       end    
       item
         Width = 120
