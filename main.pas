@@ -1675,6 +1675,13 @@ begin
   finally
     SL.Free;
   end;
+  // StatusBar Panels width
+  for i := 0 to StatusBar.Panels.Count-1 do
+  begin
+        j := Ini.ReadInteger('StatusBarPanels',IntToStr(i),0);
+        if j <> 0 then StatusBar.Panels[i].Width:=j else
+                  Ini.WriteInteger('StatusBarPanels',IntToStr(i),Statusbar.Panels[i].Width);
+  end;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
