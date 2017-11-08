@@ -115,3 +115,15 @@ Params1="%s" {Usually "%s" but some programs may require additional parameters}
 Caption2={same for item 2}
 ExeName2={same for item 2}
 Params2={same for item 2}
+
+[StatusBarPanels]
+;Customize the width of the statusbar panels to fit your language
+;0 is the left most panel and 7 is the right most panel.
+0=327
+1=152
+2=152
+3=130
+4=130
+5=130
+6=130
+7=130
