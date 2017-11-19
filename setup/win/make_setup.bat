@@ -10,7 +10,7 @@ make -C ../.. clean all LAZARUS_DIR=%1
 if errorlevel 1 goto err
 
 if not (%CODECERT%) == () (
-  signtool.exe sign /d "Transmission Remote GUI" /du "https://github.com/leonsoft-kras/transmisson-remote-gui" /f "%CODECERT%" /v ..\..\transgui.exe
+  signtool.exe sign /d "Transmission Remote GUI" /du "https://github.com/transmission-remote-gui/transgui" /f "%CODECERT%" /v ..\..\transgui.exe
   if errorlevel 1 goto err
 )
 

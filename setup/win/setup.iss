@@ -12,7 +12,7 @@
 #define AppName "Transmission Remote GUI"
 #define AppVerName AppName + " " + AppVersion
 #define AppPublisher "Yury Sidorov & Alexander Petrov"
-#define AppURL "https://github.com/leonsoft-kras/transmisson-remote-gui"
+#define AppURL "https://github.com/transmission-remote-gui/transgui"
 #define AppExeName "transgui.exe"
 #define CurYear GetDateTimeString('yyyy', '', '')
 #include <idp.iss>

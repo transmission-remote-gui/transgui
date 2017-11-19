@@ -3525,7 +3525,7 @@ end;
 
 procedure TMainForm.acShowCountryFlagExecute(Sender: TObject);
 const
-  FlagsURL = 'https://raw.githubusercontent.com/leonsoft-kras/transmisson-remote-gui/master/flags.zip';
+  FlagsURL = 'https://raw.githubusercontent.com/transmission-remote-gui/transgui/master/flags.zip';
 begin
   if not acShowCountryFlag.Checked then
     if GetFlagsArchive = '' then begin

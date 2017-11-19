@@ -84,8 +84,8 @@ Alt + F : Info Pane - Files Tab
 ADVANCED PARAMETERS
 
 There are some parameters in the transgui.ini file, that can not be modified via the GUI.
-More info on: https://github.com/leonsoft-kras/transmisson-remote-gui/issues/924  (File Manager & Shortcuts)
-and https://github.com/leonsoft-kras/transmisson-remote-gui/issues/1020  (User Defined Menu -Windows Only-)
+More info on: https://github.com/transmission-remote-gui/transgui/issues/924  (File Manager & Shortcuts)
+and https://github.com/transmission-remote-gui/transgui/issues/1020  (User Defined Menu -Windows Only-)
 
 [Interface]
 ; Maximum number of elements in the folder history list

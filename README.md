@@ -1,5 +1,5 @@
 # Transmission Remote GUI
-[![Build Status](https://travis-ci.org/leonsoft-kras/transmisson-remote-gui.svg?branch=master)](https://travis-ci.org/leonsoft-kras/transmisson-remote-gui)
+[![Build Status](https://travis-ci.org/transmission-remote-gui/transgui.svg?branch=master)](https://travis-ci.org/transmission-remote-gui/transgui)
 
 ![Screenshot](http://i.imgur.com/Dum7Oka.png)
 
@@ -43,7 +43,7 @@ Features:
 
 ## Installation
 
-The installers are listed on the GitHub [Releases](https://github.com/leonsoft-kras/transmisson-remote-gui/releases/latest) page, and the installation instructions for different platform are listed as below :arrow_down:
+The installers are listed on the GitHub [Releases](https://github.com/transmission-remote-gui/transgui/releases/latest) page, and the installation instructions for different platform are listed as below :arrow_down:
 
 ### Linux
 
@@ -132,7 +132,7 @@ If the program finds the transgui.ini file in the same folder as the binary file
 ## Advanced parameters
 
 There are some parameters in the `transgui.ini file`, that can not be modified via the GUI.
-More info on: [#924](https://github.com/leonsoft-kras/transmisson-remote-gui/issues/924) (File Manager & Shortcuts) and [#1020](https://github.com/leonsoft-kras/transmisson-remote-gui/issues/1020) (User Defined Menu *Windows Only*)
+More info on: [#924](https://github.com/transmission-remote-gui/transgui/issues/924) (File Manager & Shortcuts) and [#1020](https://github.com/transmission-remote-gui/transgui/issues/1020) (User Defined Menu *Windows Only*)
 
 ```
 [Interface]
