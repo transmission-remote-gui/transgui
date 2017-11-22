@@ -546,6 +546,10 @@ type
     procedure acStatusBarSizesExecute(Sender: TObject);
     procedure acStopAllTorrentsExecute(Sender: TObject);
     procedure acStopTorrentExecute(Sender: TObject);
+    procedure gTorrentsMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure lvFilesMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure MenuShowExecute(Sender: TObject);
     procedure acToolbarShowExecute(Sender: TObject);
     procedure acTorrentPropsExecute(Sender: TObject);
@@ -1676,6 +1680,12 @@ begin
     SL.Free;
   end;
   // StatusBar Panels width
+  i := Ini.ReadInteger('StatusBarPanels','ScreenWidth',0);
+  if Screen.Width <> i then
+      begin
+        Ini.EraseSection('StatusBarPanels');
+        Ini.WriteInteger('StatusBarPanels','ScreenWidth',Screen.Width);
+      end;
   for i := 0 to StatusBar.Panels.Count-1 do
   begin
         j := Ini.ReadInteger('StatusBarPanels',IntToStr(i),0);
@@ -3586,6 +3596,18 @@ end;
 procedure TMainForm.acStopTorrentExecute(Sender: TObject);
 begin
   TorrentAction(GetSelectedTorrents, 'torrent-stop');
+end;
+
+procedure TMainForm.gTorrentsMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+     if Button = mbRight then pmTorrents.PopUp;
+end;
+
+procedure TMainForm.lvFilesMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+     if Button = mbRight then pmFiles.PopUp;
 end;
 
 procedure TMainForm.MenuShowExecute(Sender: TObject);

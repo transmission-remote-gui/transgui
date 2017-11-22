@@ -297,6 +297,7 @@ inherited MainForm: TMainForm
       TabOrder = 0
       OnClick = gTorrentsClick
       OnDblClick = gTorrentsDblClick
+      OnMouseUp = gTorrentsMouseUp
       OnResize = gTorrentsResize
       OnSetEditText = gTorrentsSetEditText
       Images = ImageList16
@@ -1062,6 +1063,7 @@ inherited MainForm: TMainForm
         RowCount = 1
         TabOrder = 0
         OnDblClick = lvFilesDblClick
+        OnMouseUp = lvFilesMouseUp
         OnSetEditText = lvFilesSetEditText
         Images = ImageList16
         MultiSelect = True
@@ -2496,6 +2498,7 @@ inherited MainForm: TMainForm
   end
   object pmTorrents: TPopupMenu[11]
     Images = ImageList16
+    AutoPopup = False
     OnPopup = pmTorrentsPopup
     left = 149
     top = 55
@@ -3003,6 +3006,7 @@ inherited MainForm: TMainForm
   end
   object pmFiles: TPopupMenu[13]
     Images = ImageList16
+    AutoPopup = False
     OnPopup = pmFilesPopup
     left = 304
     top = 92
