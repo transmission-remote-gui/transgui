@@ -1,3 +1,15 @@
+5.12.0 (Nov 25, 2017)
+ - Move repository to organization account
+ - Update README.md
+ - Update translation template
+ - Update Korean translation
+ - Update Spanish translation
+ - Update Traditional Chinese translation
+ - Replace Ubuntu 1704 Travis build env w/ Debian stretch
+ - Show global bandwidth limits in status bar (#993)
+ - Add Option to change Statusbar Panels widths (#953)
+ - Fix wrongly disabled menu items for renamed torrents (#884)
+
 5.11.0 (Nov 6, 2017)
  - Update translation template for missing terms
  - Update Traditional Chinese translation
