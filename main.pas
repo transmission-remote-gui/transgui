@@ -1547,6 +1547,8 @@ begin
     acInfoPane.Execute;
   if Ini.ReadBool('MainForm', 'StatusBar', acStatusBar.Checked) <> acStatusBar.Checked then
     acStatusBar.Execute;
+  if Ini.ReadBool('MainForm', 'StatusBarSizes', acStatusBarSizes.Checked) <> acStatusBarSizes.Checked then
+    acStatusBarSizes.Execute;
 
   if Ini.ReadBool('MainForm', 'Menu', acMenuShow.Checked) <> acMenuShow.Checked then
     acMenuShow.Execute;
@@ -3586,6 +3588,7 @@ begin
           StatusBar.Panels[6].Text:= '';
           StatusBar.Panels[7].Text:= '';
         end;
+        Ini.WriteBool('MainForm','StatusBarSizes',acStatusBarSizes.Checked);
 end;
 
 procedure TMainForm.acStopAllTorrentsExecute(Sender: TObject);
