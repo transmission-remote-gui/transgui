@@ -221,6 +221,9 @@ type
     acAdvEditTrackers: TAction;
     acFilterPane: TAction;
     acMenuShow :  TAction;
+    acBigToolbar: TAction;
+    ImageList32: TImageList;
+    MenuItem103: TMenuItem;
     MenuShow: TAction;
     ActionList1: TActionList;
     acToolbarShow :  TAction;
@@ -238,6 +241,8 @@ type
     ApplicationProperties: TApplicationProperties;
     MenuItem501: TMenuItem;
     MenuItem502: TMenuItem;
+    SearchToolbar: TToolBar;
+    tbSearchCancel: TToolButton;
     txMagLabel: TLabel;
     txMagnetLink: TEdit;
     MenuItem101: TMenuItem;
@@ -500,6 +505,7 @@ type
     procedure acAddTrackerExecute(Sender: TObject);
     procedure acAdvEditTrackersExecute(Sender: TObject);
     procedure acAltSpeedExecute(Sender: TObject);
+    procedure acBigToolbarExecute(Sender: TObject);
     procedure acCheckNewVersionExecute(Sender: TObject);
     procedure acConnectExecute(Sender: TObject);
     procedure acConnOptionsExecute(Sender: TObject);
@@ -609,6 +615,7 @@ type
     procedure miAboutClick(Sender: TObject);
     procedure miCopyLabelClick(Sender: TObject);
     procedure PageInfoChange(Sender: TObject);
+    procedure tbSearchCancelClick(Sender: TObject);
     procedure TorrentsListTimerTimer(Sender: TObject);
     procedure pmFilesPopup(Sender: TObject);
     procedure pmTorrentsPopup(Sender: TObject);
@@ -1383,7 +1390,6 @@ var
   ws: TWindowState;
   i, j: integer;
   R: TRect;
-  bigt: boolean;
   SL: TStringList;
   miUserFiles, miUserTorrents, MI, MI2: TMenuItem;
   Ico: TIcon;
@@ -1452,17 +1458,6 @@ begin
     Left:=MainToolBar.ClientWidth;
     Parent:=MainToolBar;
   end;
-
-  bigt := Ini.ReadBool('MainForm', 'BigToolbar', False);
-  Ini.WriteBool('MainForm', 'BigToolbar', bigt);
-  if (bigt = True) then begin
-    MainToolBar.ButtonWidth:= 64;      
-    MainToolBar.ButtonHeight:=64
-  end else begin
-    MainToolBar.ButtonWidth:= 23; 
-    MainToolBar.ButtonHeight:=23;
-  end;
-
 
   FDetailsWait:=TProgressImage.Create(panDetailsWait);
   with FDetailsWait do begin
@@ -1554,6 +1549,8 @@ begin
     acMenuShow.Execute;
   if Ini.ReadBool('MainForm', 'Toolbar', acToolbarShow.Checked) <> acToolbarShow.Checked then
     acToolbarShow.Execute;
+  if Ini.ReadBool('MainForm', 'BigToolbar', acBigToolBar.Checked)  <> acBigToolBar.Checked then
+    acBigToolbar.Execute;
 
 
   LoadColumns(gTorrents, 'TorrentsList');
@@ -1667,10 +1664,11 @@ begin
   SL := TStringList.Create;
   try
     Ini.ReadSectionValues('ShortCuts', SL);
-    if SL.Text = ''  then
+    if (SL.Text = '') or (SL.Count <> ActionList.ActionCount) then
       begin
           for i := 0 to ActionList.ActionCount-1 do
           Ini.WriteString('Shortcuts',StringReplace(ActionList.Actions[i].Name,'ac','',[]),ShortcutToText(TAction(ActionList.Actions[i]).ShortCut));
+          if (i<SL.Count-1) and (SL.Text <> '') and (ActionList.ActionByName(SL.Names[i]) = nil) then Ini.WriteString('Shortcuts',StringReplace(ActionList.Actions[i].Name,'ac','',[]),ShortcutToText(TAction(ActionList.Actions[i]).ShortCut));
       end
       else
          for i := 0 to SL.Count - 1 do
@@ -2139,6 +2137,21 @@ begin
   end;
   RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
   AppNormal;
+end;
+
+procedure TMainForm.acBigToolbarExecute(Sender: TObject);
+begin
+   acBigToolbar.Checked:=not acBigToolbar.Checked;
+   if acBigToolbar.Checked then begin
+     MainToolBar.ButtonWidth:= Ini.ReadInteger('MainForm','BigToolBarHeight',64);
+     MainToolBar.ButtonHeight:= MainToolBar.ButtonWidth;
+     MainToolBar.Images:= ImageList32;
+   end else begin
+     MainToolBar.ButtonWidth:= 23;
+     MainToolBar.ButtonHeight:=23;
+     MainToolBar.Images:= ImageList16;
+     end;
+   Ini.WriteBool('MainForm', 'BigToolbar', acBigToolbar.Checked);
 end;
 
 procedure TMainForm.acCheckNewVersionExecute(Sender: TObject);
@@ -4027,6 +4040,8 @@ end;
 procedure TMainForm.edSearchChange(Sender: TObject);
 begin
   DoRefresh(True);
+  if edSearch.Text=  '' then tbSearchCancel.Enabled:=false
+                     else tbSearchCancel.Enabled:=true;
 end;
 
 procedure TMainForm.edSearchKeyDown(Sender: TObject; var Key: Word;
@@ -4449,15 +4464,7 @@ end;
 procedure TMainForm.MainToolBarContextPopup(Sender: TObject; MousePos: TPoint;
   var Handled: Boolean);
 begin
-  if (MainToolBar.ButtonWidth = 23) then begin
-    MainToolBar.ButtonWidth:= 64;
-    MainToolBar.ButtonHeight:=64;
-    Ini.WriteBool('MainForm', 'BigToolbar', True)
-  end else begin
-    MainToolBar.ButtonWidth:= 23;
-    MainToolBar.ButtonHeight:=23;
-    Ini.WriteBool('MainForm', 'BigToolbar', False);
-  end;
+     acBigToolBar.Execute;
 end;
 
 procedure TMainForm.MenuItem101Click(Sender: TObject);
@@ -4689,6 +4696,11 @@ begin
   end;
 end;
 
+procedure TMainForm.tbSearchCancelClick(Sender: TObject);
+begin
+      edSearch.Text:='';
+end;
+
 procedure TMainForm.TorrentsListTimerTimer(Sender: TObject);
 begin
   TorrentsListTimer.Enabled:=False;
@@ -4833,6 +4845,7 @@ begin
       pmConnections.Items[0].Checked:=True;
       miConnect.Items[0].Checked:=True;
     end;
+  tbConnect.Caption := pmConnections.Items[0].Caption;
 end;
 
 procedure TMainForm.DoDisconnect;
@@ -4898,6 +4911,7 @@ begin
   FCurDownSpeedLimit:=-2;
   FCurUpSpeedLimit:=-2;
   FillSpeedsMenu;
+  tbConnect.Caption := Format(SConnectTo,['Transmission']);
 end;
 
 procedure TMainForm.ClearDetailsInfo(Skip: TAdvInfoType);

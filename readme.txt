@@ -127,3 +127,19 @@ Params2={same for item 2}
 5=130
 6=130
 7=130
+
+[MainForm]
+BigToolBarHeight=48 {Height of the Big Icon Toolbar if missing default is 64}
+
+*********************************************************************************
+Big Icons
+
+Farm-Fresh Fatcow Web Hosting
+http://www.fatcow.com/
+License Creative Commons (Attribution 3.0 United States)
+https://creativecommons.org/licenses/by/3.0/us/legalcode
+
+Visual Farm
+http://icons8.com/
+License Creative Commons Attribution-No Derivative Works 3.0 Unported
+https://creativecommons.org/licenses/by-nd/3.0/legalcode

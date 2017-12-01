@@ -175,6 +175,9 @@ Params2={same for item 2}
 5=130
 6=130
 7=130
+
+[MainForm]
+BigToolBarHeight=48 {Height of the Big Icon Toolbar if missing default is 64}
 ```
 
 ## License
