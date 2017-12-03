@@ -5893,8 +5893,12 @@ begin
 
   CheckStatus;
 
-  StatusBar.Panels[1].Text:=Format(sDownSpeed, [GetHumanSize(DownSpeed, 1)]) + ' (' + GetHumanSize(FCurDownSpeedLimit*1024,2,sUnlimited+')' + Space(50)) + '/s)' ;
-  StatusBar.Panels[2].Text:=Format(sUpSpeed, [GetHumanSize(UpSpeed, 1)]) + ' (' + GetHumanSize(FCurUpSpeedLimit*1024,2,SUnlimited+')' + Space(50)) + '/s)';
+  s := GetHumanSize(FCurDownSpeedLimit*1024,2,'');
+  if s = '' then s := Format(SUnlimited,[]) else s := s + '/s';
+  ss := GetHumanSize(FCurUpSpeedLimit*1024,2,'');
+  if ss = '' then ss := Format(SUnlimited,[]) else ss := ss + '/s';
+  StatusBar.Panels[1].Text:=Format(sDownSpeed, [GetHumanSize(DownSpeed, 1)]) + ' (' + s + ')';
+  StatusBar.Panels[2].Text:=Format(sUpSpeed, [GetHumanSize(UpSpeed, 1)]) + ' (' + ss + ')';
 
 {$ifndef LCLcarbon}
   // There is memory leak in TTrayIcon implementation for Mac.
