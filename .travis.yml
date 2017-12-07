@@ -179,7 +179,7 @@ matrix:
           tags: true
 
     - os: osx
-      osx_image: xcode9.1
+      osx_image: xcode9.2
       env:
       - task=build
       - arch=osx
