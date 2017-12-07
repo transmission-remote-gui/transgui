@@ -104,7 +104,7 @@ uses
 {$ifdef CALLSTACK}
   lineinfo2,
 {$endif CALLSTACK}
-  FileUtil, StdCtrls, Graphics;
+  FileUtil, LazUTF8, LazFileUtils, StdCtrls, Graphics;
 
 {$ifdef windows}
 function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
@@ -174,7 +174,7 @@ var
   s: widestring;
 begin
   if Win32Platform <> VER_PLATFORM_WIN32_NT then begin
-    Result:=FileUtil.ParamStrUTF8(Param);
+    Result:=LazUTF8.ParamStrUTF8(Param);
     exit;
   end;
 
@@ -239,7 +239,7 @@ end;
 
 function ParamStrUTF8(Param: Integer): utf8string;
 begin
-  Result:=FileUtil.ParamStrUTF8(Param);
+  Result:=LazUTF8.ParamStrUTF8(Param);
 end;
 
 function ParamCount: integer;
