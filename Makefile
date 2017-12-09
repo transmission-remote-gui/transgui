@@ -2275,7 +2275,7 @@ zipdist: all
 	$(CPPROG) ./readme.txt ./Release/dist
 	$(CPPROG) ./README.md ./Release/dist
 	$(CPPROG) ./history.txt ./Release/dist
-	$(CPPROG) ./LICENSE.txt ./Release/dist
+	$(CPPROG) ./LICENSE ./Release/dist
 	$(CPPROG) ./transgui.png ./Release/dist
 	$(CPPROG) ./lang/transgui.* ./Release/dist/lang
 	-$(DEL) ./Release/transgui-$(PROG_VER)-$(FULL_TARGET).zip

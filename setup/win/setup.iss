@@ -64,7 +64,7 @@ VersionInfoTextVersion={#GetFileVersion(SourcePath+'..\..\transgui.exe')}
 DefaultDirName={pf}\{#AppName}
 DefaultGroupName={#AppName}
 AllowNoIcons=yes
-LicenseFile=..\..\LICENSE.txt
+LicenseFile=..\..\LICENSE
 InfoAfterFile=..\..\history.txt
 OutputDir=..\..\Release
 OutputBaseFilename=transgui-{#AppVersion}-setup
@@ -104,7 +104,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: "..\..\transgui.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: app
-Source: "..\..\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
+Source: "..\..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion; Components: app
 Source: "..\..\README.md"; DestDir: "{app}"; Flags: ignoreversion; Components: app
 Source: "..\..\README.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
 Source: "..\..\history.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app

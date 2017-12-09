@@ -19,4 +19,4 @@ mv "$ROOT/about.lfm.bak" "$ROOT/about.lfm"
 cd "$ROOT" || exit 1
 mkdir -p Release/
 FILENAME="transgui-${VERSION}-$(uname -m)-$(uname).txz"
-XZ_OPT=-9 tar cJf "Release/$FILENAME" transgui README.md history.txt LICENSE.txt transgui.png lang
+XZ_OPT=-9 tar cJf "Release/$FILENAME" transgui README.md history.txt LICENSE transgui.png lang

@@ -20,7 +20,7 @@ find "$proot" -perm +o+x -exec chmod a+x {} \;
 find "$proot" -type d -exec chmod a+x {} \;
 
 mkdir ./Resources
-cp ../../LICENSE.txt ./Resources/License.txt
+cp ../../LICENSE ./Resources/License.txt
 
 echo Creating package...
 
