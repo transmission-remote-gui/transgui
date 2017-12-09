@@ -60,6 +60,16 @@ matrix:
       services:
       - docker
       env:
+      - task=build-zip-tarball-test
+      script:
+      - docker run -e DEBIAN_FRONTEND=noninteractive -i --rm -v "${PWD}:/transgui" debian:stretch-backports bash -c "cd /transgui/ && ./setup/unix/debian-ubuntu-install_deps.sh && make zipdist && ls -al ./Release/transgui-$PROG_VER-x86_64-linux.zip"
+
+    - os: linux
+      dist: trusty
+      sudo: required
+      services:
+      - docker
+      env:
       - task=build
       - arch=amd64
       script:
