@@ -375,3 +375,5 @@ Right->Left=오른쪽에서 왼쪽으로
 Right->Left (No Align)=오른쪽에서 왼쪽으로 (정렬 없음)
 Right->Left (Reading Only)=오른쪽에서 왼쪽으로 (읽기 전용)
 Host not found=호스트를 찾을 수 없음
+User Menu=사용자 메뉴
+Unauthorized User=비인가 사용자
