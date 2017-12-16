@@ -62,7 +62,7 @@ Additionally, you can create a desktop or menu shortcut to the transgui executab
 Build the program by yourself.
 
  1. Make sure you have working Lazarus and Free Pascal compiler installed.
-   * Free Pascal Compiler 2.6.2+ and Lazarus 1.0 is used to develop Transmission Remote GUI.
+   * Free Pascal Compiler 2.6.2+ and Lazarus 1.6 is used to develop Transmission Remote GUI.
  2. Download the sources archive and extract it to some folder or perform svn checkout.
  3. Open terminal/command line prompt and cd to the sources folder.
  4. Execute `make` command to build the application.
