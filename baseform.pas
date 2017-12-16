@@ -52,11 +52,11 @@ implementation
 uses LCLType, ButtonPanel, VarGrid, ComCtrls, StdCtrls, ExtCtrls, lclversion;
 
 var
-  ScaleM, ScaleD: integer;
+  ScaleMultiplier, ScaleDivider: integer;
 
 function ScaleInt(i: integer): integer;
 begin
-  Result:=i*ScaleM div ScaleD;
+  Result:=i*ScaleMultiplier div ScaleDivider;
 end;
 
 type THackControl = class(TWinControl) end;
@@ -117,8 +117,8 @@ begin
     if C is TWinControl then
       TWinControl(C).DisableAlign;
     try
-      if ScaleM <> ScaleD then begin
-        ScaleConstraints(ScaleM, ScaleD);
+      if ScaleMultiplier <> ScaleDivider then begin
+        ScaleConstraints(ScaleMultiplier, ScaleDivider);
         R := BaseBounds;
         R.Left := ScaleInt(R.Left);
         R.Top := ScaleInt(R.Top);
@@ -237,26 +237,26 @@ var
   i: integer;
   tm: TLCLTextMetric;
 begin
-  if ScaleD <> 0 then exit;
-  ScaleD:=11;
+  if ScaleDivider <> 0 then exit;
+  ScaleDivider:=11;
   i:=Screen.SystemFont.Height;
   if i = 0 then begin
     if Canvas.GetTextMetrics(tm) then begin
-      ScaleM:=tm.Ascender;
-      if ScaleM < 11 then
-        ScaleM:=11;
+      ScaleMultiplier:=tm.Ascender;
+      if ScaleMultiplier < 11 then
+        ScaleMultiplier:=11;
     end
     else begin
-      ScaleM:=Canvas.TextHeight('Wy');
-      ScaleD:=13;
+      ScaleMultiplier:=Canvas.TextHeight('Wy');
+      ScaleDivider:=13;
     end;
-    if ScaleM = 0 then
-      ScaleM:=ScaleD;
+    if ScaleMultiplier = 0 then
+      ScaleMultiplier:=ScaleDivider;
   end
   else
-    ScaleM:=Abs(i);
-  ScaleM:=ScaleM*IntfScale;
-  ScaleD:=ScaleD*100;
+    ScaleMultiplier:=Abs(i);
+  ScaleMultiplier:=ScaleMultiplier*IntfScale;
+  ScaleDivider:=ScaleDivider*100;
 end;
 
 initialization

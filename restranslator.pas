@@ -12,7 +12,7 @@ unit ResTranslator;
 interface
 
 uses
-  Classes, StrUtils, SysUtils, FileUtil, LResources, TypInfo, LCLProc, LazUTF8;
+  Classes, StrUtils, SysUtils, FileUtil, LazFileUtils, LResources, TypInfo, LCLProc, LazUTF8;
 
 type
 
@@ -243,7 +243,7 @@ procedure MakeTranslationFile(Language: AnsiString); overload;
 var
   lLang, sLang, s: string;
 begin
-  LCLGetLanguageIDs(lLang, sLang);
+  LazGetLanguageIDs(lLang, sLang);
   sLang:=AnsiLowerCase(sLang);
   s:=ExtractFileNameOnly(ParamStrUtf8(0));
   if (sLang <> '') and not FileExistsUTF8(DefaultLangDir + s + '.' + sLang) then
@@ -335,7 +335,7 @@ var
   lLang, sLang, s: string;
   i: integer;
 begin
-  LCLGetLanguageIDs(lLang, sLang);
+  LazGetLanguageIDs(lLang, sLang);
   lLang:=LowerCase(lLang);
   sLang:=LowerCase(sLang);
 {$ifdef windows}
