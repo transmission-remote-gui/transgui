@@ -196,6 +196,10 @@
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
+      <Optimizations>
+        <OptimizationLevel Value="4"/>
+      </Optimizations>^
+      <UnitOutputDirectory Value="units"/>
       <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
