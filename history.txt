@@ -13,6 +13,9 @@
  - Fix Upload speed display in tray tooltip (#1036)
  - Make the StatusBarSizes Menu Option persistent (save in transgui.ini)
  - Update Lazarus version in README, should be v1.6
+ - Update Hungarian translation (#976)
+ - Update Korean translation (#1042)
+ - Upgrade OpenSSL dll for Windows from 1.0.2m to 1.0.2n
 
 5.12.0 (Nov 25, 2017)
  - Move repository to organization account
