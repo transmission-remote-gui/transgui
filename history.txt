@@ -1,3 +1,19 @@
+5.13.0 (Dec 20, 2017)
+
+ - Add Lazarus v1.8 support (#1040)
+ - Add `-t` to Docker engine in .travis.yml
+ - Add a warning that the torrent start is disabled
+ - Add `zip` package as part unix dependency/requirement
+ - Add an "x" button to help easily clear the search string (#985)
+ - Add bigger toolbar buttons and menu support for touchscreen (#990)
+ - Add connexion name support (#982)
+ - Rename LICENSE.txt -> LICENSE
+ - Retab LICENSE (1 Tab -> 8 Spaces)
+ - Move Travis CI macOS xcode from v9.1 to v9.2
+ - Fix Upload speed display in tray tooltip (#1036)
+ - Make the StatusBarSizes Menu Option persistent (save in transgui.ini)
+ - Update Lazarus version in README, should be v1.6
+
 5.12.0 (Nov 25, 2017)
  - Move repository to organization account
  - Update README.md
