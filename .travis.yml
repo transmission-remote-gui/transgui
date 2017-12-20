@@ -62,7 +62,7 @@ matrix:
       env:
       - task=build-zip-tarball-test
       script:
-      - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" debian:stretch-backports bash -c "cd /transgui/ && ./setup/unix/debian-ubuntu-install_deps.sh && make zipdist && ls -al ./Release/transgui-$PROG_VER-x86_64-linux.zip"
+      - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" debian:stretch-backports bash -c "cd /transgui/ && ./setup/unix/debian-ubuntu-install_deps.sh && lazbuild -B transgui.lpi --lazarusdir=/usr/lib/lazarus/default/ && make zipdist && ls -al ./Release/transgui-$PROG_VER-x86_64-linux.zip"
 
     - os: linux
       dist: trusty
