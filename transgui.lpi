@@ -187,7 +187,6 @@
     <SearchPaths>
       <IncludeFiles Value="synapse\source\lib"/>
       <OtherUnitFiles Value="synapse\source\lib;json"/>
-      <UnitOutputDirectory Value="units"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
