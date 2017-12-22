@@ -46,8 +46,8 @@ Name: "ne"; MessagesFile: "compiler:Languages\Nepali.islu"
 Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl"
 Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 Name: "pt"; MessagesFile: "compiler:Languages\Portuguese.isl"
-Name: "zh_tw"; MessagesFile: "..\..\lang\Inno Setup\ChineseTraditional.isl"
-Name: "zh_cn"; MessagesFile: "..\..\lang\Inno Setup\ChineseSimplified.isl"
+Name: "zh_tw"; MessagesFile: "..\..\Inno Setup lang\ChineseTraditional.isl"
+Name: "zh_cn"; MessagesFile: "..\..\Inno Setup lang\ChineseSimplified.isl"
 
 
 [Setup]
