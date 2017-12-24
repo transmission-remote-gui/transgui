@@ -48,7 +48,7 @@ Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 Name: "pt"; MessagesFile: "compiler:Languages\Portuguese.isl"
 Name: "zh_tw"; MessagesFile: "..\..\Inno Setup lang\ChineseTraditional.isl"
 Name: "zh_cn"; MessagesFile: "..\..\Inno Setup lang\ChineseSimplified.isl"
-
+Name: "kr"; MessagesFile: "..\..\Inno Setup lang\Korean.isl"
 
 [Setup]
 AppId=transgui
