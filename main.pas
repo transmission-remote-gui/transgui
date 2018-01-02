@@ -4722,7 +4722,11 @@ end;
 procedure TMainForm.TrayIconDblClick(Sender: TObject);
 begin
 {$ifndef darwin}
-  acShowApp.Execute;
+//  acShowApp.Execute;
+if (MainForm.Visible = false) or (MainForm.WindowState = wsMinimized) then
+    MainForm.ShowApp
+    else
+    MainForm.HideApp;
 {$endif darwin}
 end;
 
