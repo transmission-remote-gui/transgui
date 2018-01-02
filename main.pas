@@ -5215,9 +5215,11 @@ end;
 //----------------------------------------------------------------
 function ExcludeInvalidChar (path: string): string; // PETROV
 var
+  s_old: string;
   l_old: integer;
 begin
-  path  := StringReplace(path, ':', '_', [rfReplaceAll, rfIgnoreCase]);
+  s_old := path;
+//path  := StringReplace(path, ':', '_', [rfReplaceAll, rfIgnoreCase]);
   path  := StringReplace(path, '*', '_', [rfReplaceAll, rfIgnoreCase]);
   path  := StringReplace(path, '?', '_', [rfReplaceAll, rfIgnoreCase]);
   path  := StringReplace(path, '|', '_', [rfReplaceAll, rfIgnoreCase]);
@@ -5226,6 +5228,11 @@ begin
   path  := StringReplace(path, '"', '_', [rfReplaceAll, rfIgnoreCase]);
   path  := StringReplace(path, '~', '_', [rfReplaceAll, rfIgnoreCase]);
 //path  := StringReplace(path, '..','_', [rfReplaceAll, rfIgnoreCase]); bag
+
+  l_old := 0;
+  if path <> s_old then begin
+     l_old :=1;
+  end;
   Result:= path;
 end;
 
