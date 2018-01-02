@@ -7099,20 +7099,24 @@ begin
     if CurFolderParam = 'LastMoveDir' then begin
     if i < 0 then begin
         DeleteDirs (CB, 1);
-        CB.Items.Insert (0, selfolder);
-        i      :=CB.Items.IndexOf(selfolder);
-        pFD    := FolderData.create;
-        pFD.Hit:= 1;
-        pFD.Ext:= '';
-        pFD.Txt:= selfolder;
-        pFD.Lst:= SysUtils.Date+7; // +7 days
-        CB.Items.Objects[i]:= pFD;
+        CB.Items.Insert   (0, selfolder);
+        i := CB.Items.IndexOf(selfolder);
+        if i >= 0 then begin
+          pFD    := FolderData.create;
+          pFD.Hit:= 1;
+          pFD.Ext:= '';
+          pFD.Txt:= selfolder;
+          pFD.Lst:= IncDay(Today, 7); // +7 days
+          CB.Items.Objects[i]:= pFD;
+        end;
       end else begin
         pFD    := CB.Items.Objects[i] as FolderData;
-        pFD.Hit:= pFD.Hit + 1;
-        pFD.Lst:= SysUtils.Date;
-        CB.Items.Objects[i]:= pFD;
-        DeleteDirs (CB, 0);
+        if pFD <> nil then begin
+          pFD.Hit:= pFD.Hit + 1;
+          pFD.Lst:= Today;
+          CB.Items.Objects[i]:= pFD;
+          DeleteDirs (CB, 0);
+        end;
       end;
     end;
   except
