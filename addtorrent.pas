@@ -1020,10 +1020,14 @@ end;
 procedure TAddTorrentForm.cbStartTorrentChange(Sender: TObject);
 begin
      Ini.WriteBool('Interface', 'StartTorrentOnAdd', cbStartTorrent.Checked);
-     if (cbStartTorrent.Checked = false) then
-       cbStartTorrent.Font.Style:= [fsbold]
-     else
+     if (cbStartTorrent.Checked = false) then begin
+       cbStartTorrent.Font.Style:= [fsbold];
+       Buttons.OKButton.Font.Style:= [fsbold]
+     end
+     else begin
        cbStartTorrent.Font.Style:= [];
+       Buttons.OKButton.Font.Style:= []
+     end;
 end;
 
 procedure TAddTorrentForm.DelButtonClick(Sender: TObject);
@@ -1241,10 +1245,14 @@ begin
   Buttons.OKButton.ModalResult:=mrNone;
   bidiMode := GetBiDi();
   cbStartTorrent.Checked := Ini.ReadBool('Interface', 'StartTorrentOnAdd', true);
-  if (cbStartTorrent.Checked = false) then
-    cbStartTorrent.Font.Style:= [fsbold]
-  else
+  if (cbStartTorrent.Checked = false) then begin
+    cbStartTorrent.Font.Style:= [fsbold];
+    Buttons.OKButton.Font.Style:= [fsbold]
+  end
+  else begin
     cbStartTorrent.Font.Style:= [];
+    Buttons.OKButton.Font.Style:= []
+  end;
 
 {$ifdef windows}
   gbSaveAs.Caption:='';

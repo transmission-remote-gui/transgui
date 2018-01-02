@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -187,6 +187,7 @@
     <SearchPaths>
       <IncludeFiles Value="synapse\source\lib"/>
       <OtherUnitFiles Value="synapse\source\lib;json"/>
+      <UnitOutputDirectory Value="units"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
@@ -197,8 +198,7 @@
     <CodeGeneration>
       <Optimizations>
         <OptimizationLevel Value="4"/>
-      </Optimizations>^
-      <UnitOutputDirectory Value="units"/>
+      </Optimizations>
       <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
