@@ -134,7 +134,7 @@ If the program finds the transgui.ini file in the same folder as the binary file
 There are some parameters in the `transgui.ini file`, that can not be modified via the GUI.
 More info on: [#924](https://github.com/transmission-remote-gui/transgui/issues/924) (File Manager & Shortcuts) and [#1020](https://github.com/transmission-remote-gui/transgui/issues/1020) (User Defined Menu *Windows Only*)
 
-```
+```ini
 [Interface]
 ; Maximum number of elements in the folder history list
 MaxFoldersHistory=10
