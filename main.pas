@@ -29,7 +29,7 @@ uses
   {$else}
   lclintf,
   {$endif windows}
-  Graphics, Dialogs, ComCtrls, Menus, ActnList,
+  Graphics, Dialogs, ComCtrls, Menus, ActnList, LCLVersion,
   httpsend, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
   zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent, Types, LazFileUtils, LazUTF8, StringToVK;
 
@@ -1692,6 +1692,9 @@ begin
         if j <> 0 then StatusBar.Panels[i].Width:=j else
                   Ini.WriteInteger('StatusBarPanels',IntToStr(i),Statusbar.Panels[i].Width);
   end;
+ {$IF LCL_FULLVERSION >= 1080000}
+   PageInfo.Options := PageInfo.Options + [nboDoChangeOnSetIndex]
+ {$ENDIF}
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
