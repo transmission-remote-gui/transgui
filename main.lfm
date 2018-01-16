@@ -253,16 +253,19 @@ inherited MainForm: TMainForm
           Visible = False
         end      
         item
+          Alignment = taCenter
           Title.Caption = 'Added on'
           Width = 0
           Visible = False
         end      
         item
+          Alignment = taCenter
           Title.Caption = 'Completed on'
           Width = 0
           Visible = False
         end      
         item
+          Alignment = taCenter
           Title.Caption = 'Last active'
           Width = 0
           Visible = False
@@ -315,6 +318,7 @@ inherited MainForm: TMainForm
       TabOrder = 0
       OnClick = gTorrentsClick
       OnDblClick = gTorrentsDblClick
+      OnMouseMove = gTorrentsMouseMove
       OnMouseUp = gTorrentsMouseUp
       OnResize = gTorrentsResize
       OnSetEditText = gTorrentsSetEditText
@@ -406,6 +410,8 @@ inherited MainForm: TMainForm
           ChildSizing.ControlsPerLine = 4
           ClientHeight = 120
           ClientWidth = 852
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 0
           object txTorrentNameLabel: TLabel
             Left = 4
@@ -574,6 +580,8 @@ inherited MainForm: TMainForm
           ChildSizing.ControlsPerLine = 6
           ClientHeight = 111
           ClientWidth = 852
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 1
           object txStatusLabel: TLabel
             Left = 4
@@ -1041,14 +1049,14 @@ inherited MainForm: TMainForm
     end
     object tabFiles: TTabSheet
       Caption = 'Files'
-      ClientHeight = 558
-      ClientWidth = 1544
+      ClientHeight = 298
+      ClientWidth = 873
       ImageIndex = 7
       object lvFiles: TVarGrid
         Left = 0
-        Height = 279
+        Height = 298
         Top = 0
-        Width = 772
+        Width = 873
         Align = alClient
         Columns = <        
           item
