@@ -52,7 +52,7 @@ Build the program by yourself.
 - Execute "make zipdist" command to create a release .zip archive in the "Release" sub-folder. 
 
 More information about building here:
-http://code.google.com/p/transmisson-remote-gui/wiki/Building
+https://sourceforge.net/p/transgui/wiki/Building/
 
 COMMAND LINE PARAMETERS
 
