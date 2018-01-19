@@ -67,6 +67,8 @@ resourcestring
   sMins = '%dm';
   sHours = '%dh';
   sDays = '%dd';
+  sMonths = '%dmo';
+  sYears  = '%dy';
   sDownloadingSeeding = '%s%s%d downloading, %d seeding%s%s, %s';
   sDownSpeed = 'D: %s/s';
   sUpSpeed = 'U: %s/s';
@@ -552,6 +554,8 @@ type
     procedure acStatusBarSizesExecute(Sender: TObject);
     procedure acStopAllTorrentsExecute(Sender: TObject);
     procedure acStopTorrentExecute(Sender: TObject);
+    procedure gTorrentsMouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
     procedure gTorrentsMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure lvFilesMouseUp(Sender: TObject; Button: TMouseButton;
@@ -647,6 +651,9 @@ type
     FLinksFromClipboard: boolean;
     FLastClipboardLink: string;
     FLinuxOpenDoc: integer;
+    FFromNow: boolean;
+    FRow: integer;
+    FCol: integer;
 {$ifdef windows}
     FFileManagerDefault: string;
     FFileManagerDefaultParam: string;
@@ -695,7 +702,7 @@ type
     function GetSeedsText(Seeds, SeedsTotal: integer): string;
     function GetPeersText(Peers, PeersTotal, Leechers: integer): string;
     function RatioToString(Ratio: double): string;
-    function TorrentDateTimeToString(d: Int64): string;
+    function TorrentDateTimeToString(d: Int64; FromNow:Boolean = false): string;
     procedure DoRefresh(All: boolean = False);
     function GetFilesCommonPath(files: TJSONArray): string;
     procedure InternalRemoveTorrent(const Msg, MsgMulti: string; RemoveLocalData: boolean);
@@ -1391,7 +1398,7 @@ var
   i, j: integer;
   R: TRect;
   SL: TStringList;
-  miUserFiles, miUserTorrents, MI, MI2: TMenuItem;
+  MI, MI2: TMenuItem;
   Ico: TIcon;
   LargeIco, SmallIco : hIcon;
   MenuCaption: String;
@@ -1552,7 +1559,7 @@ begin
   if Ini.ReadBool('MainForm', 'BigToolbar', acBigToolBar.Checked)  <> acBigToolBar.Checked then
     acBigToolbar.Execute;
 
-
+  FFromNow := Ini.ReadBool('MainForm','FromNow',false);
   LoadColumns(gTorrents, 'TorrentsList');
   TorrentColumnsChanged;
   LoadColumns(lvFiles, 'FilesList');
@@ -2003,8 +2010,6 @@ end;
 
 procedure TMainForm.acOpenFileExecute(Sender: TObject);
 var UserDef: boolean;
-    i: integer;
-    s: string;
 begin
   if gTorrents.Items.Count = 0 then
     exit;
@@ -3039,12 +3044,39 @@ begin
       Result:=Format('%.3f', [Ratio]);
 end;
 
-function TMainForm.TorrentDateTimeToString(d: Int64): string;
+function HumanReadableTime(ANow,AThen: TDateTime): string;
+var
+  Years, Months, Days, Hours, Minutes, Seconds, Discard: Word;
+begin
+  Try
+    PeriodBetween(ANow,AThen,Years,Months,Days);
+    DecodeDateTime(Anow-AThen,discard,Discard,Discard,Hours,Minutes,Seconds,Discard);
+    if Years > 0 then begin
+       Result := Format(sYears,[Years]) + ' ' + Format(sMonths,[Months]);
+    end else if Months > 0 then begin
+      Result := Format(sMonths,[Months]) + ' ' + Format(sDays,[Days]);
+     end else if Days > 0 then begin
+       Result := Format(sDays,[Days]) + ' ' + Format(sHours,[Hours]);
+    end else if Hours > 0 then begin
+      Result := Format(sHours,[Hours]) + ' ' + Format(sMins,[Minutes]);
+    end else if Minutes > 0 then begin
+      Result := Format(sMins,[Minutes]) + ' ' + Format(sSecs,[Seconds]);
+    end else begin
+      Result := Format(sSecs,[Seconds])
+    end;
+  Except
+    Result := 'An Eternity';
+  End;
+end;
+
+function TMainForm.TorrentDateTimeToString(d: Int64; FromNow: Boolean): string;
 begin
   if d = 0 then
     Result:=''
   else
-    Result:=DateTimeToStr(UnixToDateTime(d) + GetTimeZoneDelta);
+    if FromNow then
+       Result := HumanReadableTime(Now,UnixToDateTime(d) + GetTimeZoneDelta) else
+           Result:=DateTimeToStr(UnixToDateTime(d) + GetTimeZoneDelta);
 end;
 
 procedure TMainForm.DoRefresh(All: boolean);
@@ -3617,6 +3649,28 @@ begin
   TorrentAction(GetSelectedTorrents, 'torrent-stop');
 end;
 
+procedure TMainForm.gTorrentsMouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+var r, c, ADatacol: integer;
+begin
+    gTorrents.MouseToCell(x, y, c, r);
+    if c>= 0 then ADataCol := gTorrents.ColToDataCol(c);
+    if r = 0 then gTorrents.Hint:='';
+    if (ADataCol <> FCol) or (r <> FRow) then
+           begin
+             FCol := ADataCol;
+             FRow := r;
+             case ADataCol of
+             idxAddedOn, idxCompletedOn, idxLastActive:
+                 begin
+                     Application.CancelHint;
+                     gTorrents.Hint := TorrentDateTimeToString(gTorrents.Items[ADataCol, FRow-1],not(FFromNow));
+                 end
+                 else gTorrents.Hint:='';
+             end;
+           end;
+end;
+
 procedure TMainForm.gTorrentsMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -4142,7 +4196,7 @@ begin
       idxRatio:
         Text:=RatioToString(Sender.Items[idxRatio, ARow]);
       idxAddedOn, idxCompletedOn, idxLastActive:
-        Text:=TorrentDateTimeToString(Sender.Items[ADataCol, ARow]);
+        Text:=TorrentDateTimeToString(Sender.Items[ADataCol, ARow],FFromNow);
       idxPriority:
         Text:=PriorityToStr(Sender.Items[ADataCol, ARow], ImageIndex);
       idxQueuePos:
@@ -6271,8 +6325,9 @@ begin
   if f = 1 then
     s:=sUpdating
   else
-    s:=DateTimeToStr(UnixToDateTime(Trunc(f)) + GetTimeZoneDelta);
+    s:=TorrentDateTimeToString(Trunc(f),FFromNow);
   txTrackerUpdate.Caption:=s;
+  txTrackerUpdate.Hint:=TorrentDateTimeToString(Trunc(f),not(FFromNow));
   txTracker.Caption:=UTF8Encode(widestring(gTorrents.Items[idxTracker, idx])); 
   if RpcObj.RPCVersion >= 7 then
     if t.Arrays['trackerStats'].Count > 0 then
@@ -6295,7 +6350,8 @@ begin
   s:=StringReplace(s, '/', ' ' + sOf + ' ', []);
   txPeers.Caption:=StringReplace(s, ')', ' '+ sInSwarm+ ')', []);
   txMaxPeers.Caption:=t.Strings['maxConnectedPeers'];
-  txLastActive.Caption:=TorrentDateTimeToString(Trunc(t.Floats['activityDate']));
+  txLastActive.Caption:=TorrentDateTimeToString(Trunc(t.Floats['activityDate']),FFromNow);
+  txLastActive.Hint:=TorrentDateTimeToString(Trunc(t.Floats['activityDate']),Not(FFromNow));
   panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
 
   if RpcObj.RPCVersion >= 7 then
@@ -6311,7 +6367,8 @@ begin
   s:=Trim(UTF8Encode(t.Strings['creator']));
   if s <> '' then
     s:=' by ' + s;
-  txCreated.Caption:=TorrentDateTimeToString(Trunc(t.Floats['dateCreated'])) + s;
+  txCreated.Caption:=TorrentDateTimeToString(Trunc(t.Floats['dateCreated']),FFromNow) + s;
+  txCreated.Hint   :=TorrentDateTimeToString(Trunc(t.Floats['dateCreated']),Not(FFromNow)) + s;
   if gTorrents.Items[idxSize, idx] >= 0 then begin
     txTotalSize.Caption:=Format(sDone, [GetHumanSize(t.Floats['totalSize']), GetHumanSize(t.Floats['sizeWhenDone'] - t.Floats['leftUntilDone'])]);
     if t.Floats['totalSize'] = t.Floats['haveValid'] then
@@ -6344,8 +6401,10 @@ begin
       txComment.ParentFont:=True;
     end;
   end;
-  txAddedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['addedDate']));
-  txCompletedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['doneDate']));
+  txAddedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['addedDate']),FFromNow);
+  txAddedOn.Hint:=TorrentDateTimeToString(Trunc(t.Floats['addedDate']),Not(FFromNow));
+  txCompletedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['doneDate']),FFromNow);
+  txCompletedOn.Hint:=TorrentDateTimeToString(Trunc(t.Floats['doneDate']),Not(FFromNow));
   panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
   DetailsUpdated;
 end;
