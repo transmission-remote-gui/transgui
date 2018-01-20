@@ -491,8 +491,9 @@ inherited AboutForm: TAboutForm
         Top = 104
         Width = 307
         AutoSize = False
-        Caption = 'Copyright (c) 2008-2017 by Yury Sidorov, '#13#10'Alexander Petrov'
+        Caption = 'Copyright (c) 2008-2018 by Yury Sidorov and Transmission Remote GUI working group'
         ParentColor = False
+        WordWrap = True
       end
       object txVersion: TLabel
         Left = 86
