@@ -7159,30 +7159,32 @@ begin
 
   try
     if CurFolderParam = 'LastMoveDir' then begin
-    if i < 0 then begin
-        DeleteDirs (CB, 1);
-        CB.Items.Insert   (0, selfolder);
-        i := CB.Items.IndexOf(selfolder);
-        if i >= 0 then begin
-          pFD    := FolderData.create;
-          pFD.Hit:= 1;
-          pFD.Ext:= '';
-          pFD.Txt:= selfolder;
-          pFD.Lst:= IncDay(Today, 7); // +7 days
-          CB.Items.Objects[i]:= pFD;
-        end;
+      if i < 0 then begin
+          DeleteDirs (CB, 1);
+          CB.Items.Insert   (0, selfolder);
+          i := CB.Items.IndexOf(selfolder);
+          if i >= 0 then begin
+            pFD    := FolderData.create;
+            if pFD <> nil then begin
+              pFD.Hit:= 1;
+              pFD.Ext:= '';
+              pFD.Txt:= selfolder;
+              pFD.Lst:= IncDay(Today, 7); // +7 days
+              CB.Items.Objects[i]:= pFD;
+            end;
+          end;
       end else begin
-        pFD    := CB.Items.Objects[i] as FolderData;
-        if pFD <> nil then begin
-          pFD.Hit:= pFD.Hit + 1;
-          pFD.Lst:= Today;
-          CB.Items.Objects[i]:= pFD;
+          pFD    := CB.Items.Objects[i] as FolderData;
+          if pFD <> nil then begin
+            pFD.Hit:= pFD.Hit + 1;
+            pFD.Lst:= Today;
+            CB.Items.Objects[i]:= pFD;
+          end;
           DeleteDirs (CB, 0);
-        end;
       end;
     end;
   except
-    MessageDlg('Error: LS-008. Please contact the developer', mtError, [mbOK], 0);
+//  MessageDlg('Error: LS-008. Please contact the developer', mtError, [mbOK], 0);
   end;
 
   try
@@ -7190,6 +7192,8 @@ begin
     for i:=0 to CB.Items.Count - 1 do begin
       tmp := CorrectPath(CB.Items[i]); // PETROV
       pFD := CB.Items.Objects[i] as FolderData;
+      if pFD = nil then continue;
+
       Ini.WriteString (IniSec, Format('Folder%d', [i]), tmp);
       Ini.WriteInteger(IniSec, Format('FolHit%d', [i]), pFD.Hit);
       Ini.WriteString (IniSec, Format('FolExt%d', [i]), pFD.Ext);
@@ -7217,17 +7221,18 @@ var
   pFD : FolderData;
 begin
     max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
-    Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max); // PETROV
+    Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max);
 
     try
     while (CB.Items.Count+maxdel) >= max do begin
        min := 9999999;
        indx:=-1;
        for i:=0 to CB.Items.Count - 1 do begin
-
          pFD := CB.Items.Objects[i] as FolderData;
-         fldr := DaysBetween(SysUtils.Date,pFD.Lst);
-         if SysUtils.Date > pFD.Lst then
+         if pFD = nil then continue;
+
+         fldr := DaysBetween(Today,pFD.Lst);
+         if Today > pFD.Lst then
            fldr := 0- fldr;
 
          fldr := fldr + pFD.Hit;
