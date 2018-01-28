@@ -26,7 +26,7 @@ Features:
  * Per torrent options
 
 Project home:
-https://sourceforge.net/projects/transgui/
+https://github.com/transmission-remote-gui/transgui
 
 INSTALLATION
 
