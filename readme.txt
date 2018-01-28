@@ -131,6 +131,8 @@ Params2={same for item 2}
 [MainForm]
 BigToolBarHeight=48 {Height of the Big Icon Toolbar if missing default is 64}
 
+[MainForm]
+FromNow=1 {1=Shows the dates relatives to now , 0=Absolute Dates MM/DD/YY HH:MM:SS}
 *********************************************************************************
 Big Icons
 
