@@ -51,9 +51,6 @@ Build the program by yourself.
 - Execute "make" command to build the application;
 - Execute "make zipdist" command to create a release .zip archive in the "Release" sub-folder. 
 
-More information about building here:
-http://code.google.com/p/transmisson-remote-gui/wiki/Building
-
 COMMAND LINE PARAMETERS
 
 You can specify path to a .torrent file or a magnet link as a command line parameter. The program will add the specified torrent.
