@@ -1,3 +1,28 @@
+5.14.0 (Feb 03, 2018)
+ - Update date and author info
+ - Update `Project home` link in doc (#1068)
+ - Remove `building` wiki link in doc (#1067)
+ - Update README.md `transgui.ini` syntax highlight
+ - Implement the Display of Relative Dates/Times (to Now)
+ - Fix location change error (#1057)
+ - Fix error when changing file location (#1057)
+ - Fix error on torrent names with colons (#1044)
+ - Fix customized shortcut key issue with Lazarus 1.8 (#1063)
+ - Fix main window hide/display behavior when tray icon clicked (#1050)
+ - Set a bold type for the OK button if the torrent startup is turned off when adding
+ - Improve Svenska translation
+ - Improve Hungarian translation
+ - Improve Traditional Chinese translation (#1059)
+ - Set OptimizationLevel to 4 in transgui.lpi
+ - Cleanup Lazarus resourse file (transgui.res)
+ - Remove UnitOutputDirectory config in transgui.lpi
+ - Run lazbuild to generate transgui.res before "make"
+ - Add Inno Setup Unofficial Chinese translation files
+ - Separate "make clean" & "make all" as a bug workaround
+ - Upgrade Lazarus to v1.8.0 & Free Pascal to v3.0.4 on macOS
+ - Move Inno Setup translation out from origin lang directory
+ - Fix v5.13.0 history.txt, broken in accident
+
 5.13.0 (Dec 20, 2017)
 
  - Add Lazarus v1.8 support (#1040)
