@@ -245,6 +245,7 @@ type
     MenuItem502: TMenuItem;
     SearchToolbar: TToolBar;
     tbSearchCancel: TToolButton;
+    LocalWatchTimer: TTimer;
     txMagLabel: TLabel;
     txMagnetLink: TEdit;
     MenuItem101: TMenuItem;
@@ -558,6 +559,7 @@ type
       Y: Integer);
     procedure gTorrentsMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure LocalWatchTimerTimer(Sender: TObject);
     procedure lvFilesMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure MenuShowExecute(Sender: TObject);
@@ -652,6 +654,9 @@ type
     FLastClipboardLink: string;
     FLinuxOpenDoc: integer;
     FFromNow: boolean;
+    FWatchLocalFolder: string;
+    FWatchDestinationFolder: string;
+    FWatchDownloading: boolean;
     FRow: integer;
     FCol: integer;
 {$ifdef windows}
@@ -729,6 +734,7 @@ type
     procedure CheckAddTorrents;
     procedure CheckClipboardLink;
     procedure CenterDetailsWait;
+    procedure ReadLocalFolderWatch;
     function GetPageInfoType(pg: TTabSheet): TAdvInfoType;
     procedure DetailsUpdated;
     function RenameTorrent(TorrentId: integer; const OldPath, NewName: string): boolean;
@@ -930,7 +936,19 @@ end;
 
   {$endif windows}
 
-
+procedure TMainForm.ReadLocalFolderWatch;
+var
+  sr: TSearchRec;
+begin
+     if FPendingTorrents.Count = 0 then
+       begin
+            if FindFirstUTF8(FWatchLocalFolder+'*.torrent',faAnyFile,sr)=0 then
+               repeat
+                     FPendingTorrents.Add(FWatchLocalFolder+sr.Name);
+               until FindNextUTF8(sr)<>0;
+            FindCloseUTF8(sr);
+       end;
+end;
 
 function GetHumanSize(sz: double; RoundTo: integer; const EmptyStr: string): string;
 var
@@ -1560,6 +1578,15 @@ begin
     acBigToolbar.Execute;
 
   FFromNow := Ini.ReadBool('MainForm','FromNow',false);
+  FWatchLocalFolder := Ini.ReadString('Interface','WatchLocalFolder','');
+  if FWatchLocalFolder  <> '' then
+          if DirPathExists(FWatchLocalFolder) and DirectoryIsWritable(FWatchLocalFolder) then
+            begin
+                 FWatchLocalFolder := AppendPathDelim(FWatchLocalFolder);
+                 FWatchDestinationFolder := Ini.ReadString('Interface','WatchDestinationFolder','');
+                 LocalWatchTimer.Interval:=trunc(Ini.ReadFloat('Interface','WatchInterval',1)*60000);
+                 LocalWatchTimer.Enabled := true;
+            end;
   LoadColumns(gTorrents, 'TorrentsList');
   TorrentColumnsChanged;
   LoadColumns(lvFiles, 'FilesList');
@@ -2489,6 +2516,7 @@ begin
 
         IniSec:='AddTorrent.' + FCurConn;
         FillDownloadDirs(cbDestFolder, 'LastDownloadDir');
+        if (FWatchDownloading) and (FWatchDestinationFolder <> '') then cbDestFolder.Text:=FWatchDestinationFolder;
 
         req:=TJSONObject.Create;
         try
@@ -2597,6 +2625,7 @@ begin
         AppNormal;
 
         ok:=not Ini.ReadBool('Interface', 'ShowAddTorrentWindow', True);
+        if FWatchDownloading then ok:= true;
         if ok then
           btSelectAllClick(nil)
         else begin
@@ -2692,7 +2721,7 @@ begin
           SelectTorrent(id, 2000);
 
           id:=0;
-          if Ini.ReadBool('Interface', 'DeleteTorrentFile', False) and not IsProtocolSupported(FileName) then
+          if (Ini.ReadBool('Interface', 'DeleteTorrentFile', False) and not IsProtocolSupported(FileName)) or (FWatchDownloading) then
             DeleteFileUTF8(FileName);
 
           Ini.WriteInteger(IniSec, 'PeerLimit', edPeerLimit.Value);
@@ -3676,6 +3705,17 @@ procedure TMainForm.gTorrentsMouseUp(Sender: TObject; Button: TMouseButton;
 begin
      if Button = mbRight then pmTorrents.PopUp;
 end;
+
+procedure TMainForm.LocalWatchTimerTimer(Sender: TObject);
+begin
+   ReadLocalFolderWatch;
+   if FPendingTorrents.Count > 0 then
+      begin
+        FWatchDownloading := true;
+        TickTimerTimer(nil);
+      end;
+end;
+
 
 procedure TMainForm.lvFilesMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
@@ -7527,6 +7567,7 @@ begin
       finally
         if WasHidden then
           HideTaskbarButton;
+          FWatchDownloading := false;
       end;
     end;
   finally

@@ -1164,7 +1164,6 @@ inherited MainForm: TMainForm
     AutoSize = True
     BorderSpacing.Bottom = 2
     ButtonHeight = 23
-    ButtonWidth = 23
     Caption = 'MainToolBar'
     Images = ImageList16
     Indent = 4
@@ -1185,6 +1184,7 @@ inherited MainForm: TMainForm
       Left = 225
       Height = 23
       Top = 2
+      Width = 5
       Caption = 'ToolButton2'
       Style = tbsDivider
     end
@@ -1213,6 +1213,7 @@ inherited MainForm: TMainForm
       Left = 174
       Height = 23
       Top = 2
+      Width = 5
       Caption = 'ToolButton6'
       Style = tbsDivider
     end
@@ -1220,6 +1221,7 @@ inherited MainForm: TMainForm
       Left = 378
       Height = 23
       Top = 2
+      Width = 5
       Caption = 'ToolButton7'
       Style = tbsDivider
     end
@@ -1256,6 +1258,7 @@ inherited MainForm: TMainForm
       Left = 350
       Height = 23
       Top = 2
+      Width = 5
       Caption = 'sepAltSpeed'
       Style = tbsDivider
     end
@@ -1263,6 +1266,7 @@ inherited MainForm: TMainForm
       Left = 299
       Height = 23
       Top = 2
+      Width = 5
       Caption = 'sepQueue'
       Style = tbsDivider
     end
@@ -10617,5 +10621,12 @@ inherited MainForm: TMainForm
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000
     }
+  end
+  object LocalWatchTimer: TTimer[31]
+    Enabled = False
+    Interval = 60000
+    OnTimer = LocalWatchTimerTimer
+    left = 40
+    top = 136
   end
 end

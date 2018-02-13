@@ -132,7 +132,7 @@ If the program finds the transgui.ini file in the same folder as the binary file
 ## Advanced parameters
 
 There are some parameters in the `transgui.ini file`, that can not be modified via the GUI.
-More info on: [#924](https://github.com/transmission-remote-gui/transgui/issues/924) (File Manager & Shortcuts) and [#1020](https://github.com/transmission-remote-gui/transgui/issues/1020) (User Defined Menu *Windows Only*)
+More info on: [#924](https://github.com/transmission-remote-gui/transgui/issues/924) (File Manager & Shortcuts) , [#1020](https://github.com/transmission-remote-gui/transgui/issues/1020) (User Defined Menu *Windows Only*) and [#1070](https://github.com/transmission-remote-gui/transgui/issues/1070) (.torrent Auto Opening)
 
 ```ini
 [Interface]
@@ -152,6 +152,11 @@ FileManagerDefaultParam={Alternate parameters, could be left blank}
 ;System Wide Shortcut key (Windows Only)
 GlobalHotkey={Virtual Key Code} full list here http://docwiki.embarcadero.com/RADStudio/Seattle/en/Virtual_Key_Codes (Plus VK_A...VK_Z and VK_0..VK_9)
 GlobalHotkeyMod={Modifier Key} [MOD_SHIFT , MOD_CONTROL , MOD_ALT , MOD_WIN alone or combined with + sign]
+
+[Interface]
+WatchLocalFolder= {LOCAL Folder to watch for torrent files}
+WatchDestinationFolder= {REMOTE destination where the data would be saved if missing or empty last destination folder is used}
+WatchInterval=1 {Time period in MINUTES between folder scans for torrents, may be fractional values 0,50 = 30 seconds}
 
 [Shortcuts]
 ;Modify all the shortcuts of the GUI here
