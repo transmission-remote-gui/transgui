@@ -128,6 +128,12 @@ resourcestring
 
   sUserMenu = 'User Menu';
 
+  sBiDiDefault = 'Default';
+  sBiDiLeftRight = 'Left->Right';
+  sBiDiRightLeft = 'Right->Left';
+  sBiDiRightLeftNoAlign = 'Right->Left (No Align)';
+  sBiDiRightLeftReadOnly = 'Right->Left (Reading Only)';
+
 type
 
   // for torrent folder

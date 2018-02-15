@@ -69,6 +69,7 @@ type
     procedure cbLanguageEnter(Sender: TObject);
     procedure cbLanguageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure cbLanguageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -91,7 +92,7 @@ uses
   {$ifdef mswindows}
   registry,
   {$endif mswindows}
-  main, utils, ResTranslator;
+  main, utils, ResTranslator, Math;
 
 { TOptionsForm }
 
@@ -121,11 +122,11 @@ begin
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@OKButtonClick;
 
-  cbLangLeftRight.Items.Add('Default');
-  cbLangLeftRight.Items.Add('Left->Right');
-  cbLangLeftRight.Items.Add('Right->Left');
-  cbLangLeftRight.Items.Add('Right->Left (No Align)');
-  cbLangLeftRight.Items.Add('Right->Left (Reading Only)');
+  cbLangLeftRight.Items.Add(sBiDiDefault);
+  cbLangLeftRight.Items.Add(sBiDiLeftRight);
+  cbLangLeftRight.Items.Add(sBiDiRightLeft);
+  cbLangLeftRight.Items.Add(sBiDiRightLeftNoAlign);
+  cbLangLeftRight.Items.Add(sBiDiRightLeftReadOnly);
   cbLangLeftRight.ItemIndex:=Ini.ReadInteger ('Interface', 'IgnoreRightLeft', 0);
 
   cbLanguage.Items.Add(FTranslationLanguage);
@@ -185,6 +186,25 @@ end;
 procedure TOptionsForm.cbLanguageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
   cbLanguageEnter(cbLanguage);
+end;
+
+procedure TOptionsForm.FormActivate(Sender: TObject);
+var
+  cnv: TControlCanvas;
+  w: Integer;
+  s: String;
+begin
+  w := 0;
+  cnv := TControlCanvas.Create;
+  try
+    cnv.Control := cbLangLeftRight;
+    cnv.Font.Assign(cbLangLeftRight.Font);
+    for s in cbLangLeftRight.Items do
+      w := max(w, cnv.TextWidth(s));
+    cbLangLeftRight.ItemWidth := w + 16;
+  finally
+    cnv.Free;
+  end;
 end;
 
 procedure TOptionsForm.FillLanguageItems;
