@@ -9,6 +9,7 @@ inherited OptionsForm: TOptionsForm
   Caption = 'Application options'
   ClientHeight = 331
   ClientWidth = 564
+  OnActivate = FormActivate
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -34,7 +35,7 @@ inherited OptionsForm: TOptionsForm
         Width = 523
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Add torrent'
-        ClientHeight = 77
+        ClientHeight = 75
         ClientWidth = 519
         TabOrder = 1
         object cbShowAddTorrentWindow: TCheckBox
@@ -69,7 +70,7 @@ inherited OptionsForm: TOptionsForm
         Width = 523
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Data display'
-        ClientHeight = 88
+        ClientHeight = 86
         ClientWidth = 519
         TabOrder = 0
         object txSeconds: TLabel
@@ -163,7 +164,7 @@ inherited OptionsForm: TOptionsForm
         ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
-        ClientHeight = 55
+        ClientHeight = 53
         ClientWidth = 519
         TabOrder = 0
         object cbTrayMinimize: TCheckBox
@@ -273,7 +274,7 @@ inherited OptionsForm: TOptionsForm
         Width = 523
         Anchors = [akTop, akLeft, akRight]
         Caption = 'System integration'
-        ClientHeight = 53
+        ClientHeight = 51
         ClientWidth = 519
         TabOrder = 5
         Visible = False
@@ -297,7 +298,7 @@ inherited OptionsForm: TOptionsForm
       object cbLangLeftRight: TComboBox
         Left = 392
         Height = 23
-        Top = 146
+        Top = 148
         Width = 136
         Anchors = [akTop, akLeft, akRight]
         DropDownCount = 60
