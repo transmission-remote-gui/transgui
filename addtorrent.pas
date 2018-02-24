@@ -239,7 +239,10 @@ procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJ
     while idx < cnt do begin
 
       ww := widestring(list[idxFileFullPath, idx]);
-      s  := ExtractFilePath(UTF8Encode(ww));
+
+      s  := StringReplace(UTF8Encode(ww), ':', '_', [rfReplaceAll, rfIgnoreCase]);
+      s  := ExtractFilePath(s); // fixed an incorrect search if there is a ":"
+
       if s = '' then begin
         Inc(idx);
         continue;
