@@ -71,6 +71,7 @@ Alt + 4 : Active
 Alt + 5 : Inactive
 Alt + 6 : Stopped
 Alt + 7 : Error
+Alt + 8 : Waiting
 Alt + S : Searchbox (filter torrents by keywords) - Esc cancel filter and clean the box.
 Alt + G : Info Pane - General Tab
 Alt + K : Info Pane - Trackers Tab

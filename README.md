@@ -123,6 +123,7 @@ If the program finds the transgui.ini file in the same folder as the binary file
  - <kbd>Alt</kbd> + <kbd>5</kbd> : Inactive
  - <kbd>Alt</kbd> + <kbd>6</kbd> : Stopped
  - <kbd>Alt</kbd> + <kbd>7</kbd> : Error
+ - <kbd>Alt</kbd> + <kbd>8</kbd> : Waiting
  - <kbd>Alt</kbd> + <kbd>S</kbd> : Searchbox (filter torrents by keywords) - Esc cancel filter and clean the box.
  - <kbd>Alt</kbd> + <kbd>G</kbd> : Info Pane - General Tab
  - <kbd>Alt</kbd> + <kbd>K</kbd> : Info Pane - Trackers Tab
