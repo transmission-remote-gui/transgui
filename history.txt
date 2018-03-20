@@ -1,3 +1,11 @@
+5.15.0 (Mar 21, 2018)
+ - Fix incorrect search if there is a ":"
+ - Fix language display in drop-down list (#1082)
+ - Update RU(Русский) translation (#1080)
+ - Add Local Folder Watch feature (#1070)
+ - Add adding Magnet Link by Hash feature (#1090)
+ - Add Filter by Waiting Category feature (#1089)
+
 5.14.0 (Feb 03, 2018)
  - Update date and author info
  - Update `Project home` link in doc (#1068)
