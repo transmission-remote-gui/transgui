@@ -508,9 +508,9 @@ begin
     cbSSL.Checked:=ReadBool(Sec, 'UseSSL', False);
     cbAutoReconnect.Checked:=ReadBool(Sec, 'Autoreconnect', False);
     edUserName.Text:=ReadString(Sec, 'UserName', '');
-    cbAuth.Checked:=edUserName.Text <> '';
+    s:=ReadString(Sec, 'Password', '');
+    cbAuth.Checked:=(edUserName.Text <> '') or (s <> '');
     if cbAuth.Checked then begin
-      s:=ReadString(Sec, 'Password', '');
       cbAskPassword.Checked:=s = '-';
       if not cbAskPassword.Checked then
         if s <> '' then

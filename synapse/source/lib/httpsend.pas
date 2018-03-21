@@ -470,7 +470,7 @@ begin
   else
     FHeaders.Insert(0, pp + 'Connection: close');
   { set target servers/proxy, authorizations, etc... }
-  if User <> '' then
+  if (User <> '') or (Pass <> '') then
     FHeaders.Insert(0, 'Authorization: Basic ' + EncodeBase64(User + ':' + Pass));
   if UsingProxy and (FProxyUser <> '') then
     FHeaders.Insert(0, 'Proxy-Authorization: Basic ' +
