@@ -945,20 +945,21 @@ end;
 
   {$endif windows}
 
-  function IsHash(Hash: String): boolean;
-  var i: integer;
-  begin
-        if Hash = '' then exit;
-        if Length(Hash) = 32 then   // possible base32 encoded hash
-                        try
-                           Hash:=StrToHex(Base32Decode(UpperCase(Hash)));
-                        except
-                           exit;
-                        end;
-       if Length(Hash) <> 40 then exit;
-       Result := true;
-       for i := 1 to 40 do if not (Hash[i] in ['a' .. 'f', 'A'..'F', '0'..'9']) then Result := false;
-  end;
+function IsHash(Hash: String): boolean;
+var i: integer;
+begin
+      Result := false;
+      if Hash = '' then exit;
+      if Length(Hash) = 32 then   // possible base32 encoded hash
+                      try
+                         Hash:=StrToHex(Base32Decode(UpperCase(Hash)));
+                      except
+                         exit;
+                      end;
+     if Length(Hash) <> 40 then exit;
+     Result := true;
+     for i := 1 to 40 do if not (Hash[i] in ['a' .. 'f', 'A'..'F', '0'..'9']) then Result := false;
+end;
 
 procedure TMainForm.ReadLocalFolderWatch;
 var
