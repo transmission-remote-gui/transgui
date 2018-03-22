@@ -1,3 +1,6 @@
+5.15.1 (Mar 22, 2018)
+ - Support to authenticate with password only as feature of Transmission v2.93 (#1099)
+
 5.15.0 (Mar 21, 2018)
  - Fix incorrect search if there is a ":"
  - Fix language display in drop-down list (#1082)
