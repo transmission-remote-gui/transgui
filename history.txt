@@ -1,3 +1,6 @@
+5.15.2 (Mar 24, 2018)
+ - Fix an initialization/startup error (#1101)
+
 5.15.1 (Mar 22, 2018)
  - Support to authenticate with password only as feature of Transmission v2.93 (#1099)
 
