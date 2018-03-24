@@ -2562,7 +2562,7 @@ begin
               pFD.Ext:= '';
               pFD.Txt:= s;
               pFD.Lst:= SysUtils.Date;
-              cbDestFolder.Items.Insert(0, s);
+              cbDestFolder.Items.Add(s);
               i := cbDestFolder.Items.IndexOf(s);
               cbDestFolder.Items.Objects[i]:= pFD;
             end;
@@ -7240,7 +7240,7 @@ begin
     if CurFolderParam = 'LastMoveDir' then begin
       if i < 0 then begin
           DeleteDirs (CB, 1);
-          CB.Items.Insert   (0, selfolder);
+          CB.Items.Add  (selfolder);
           i := CB.Items.IndexOf(selfolder);
           if i >= 0 then begin
             pFD    := FolderData.create;
@@ -7263,7 +7263,7 @@ begin
       end;
     end;
   except
-//  MessageDlg('Error: LS-008. Please contact the developer', mtError, [mbOK], 0);
+//    MessageDlg('Error: LS-008. Please contact the developer', mtError, [mbOK], 0);
   end;
 
   try
