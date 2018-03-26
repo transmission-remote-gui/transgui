@@ -2954,7 +2954,7 @@ end;
 
 function TMainForm.DownloadGeoIpDatabase(AUpdate: boolean): boolean;
 const
-  GeoLiteURL = 'http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz';
+  GeoLiteURL = 'https://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz';
 var
   tmp: string;
   gz: TGZFileStream;
