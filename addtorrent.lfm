@@ -114,7 +114,7 @@ inherited AddTorrentForm: TAddTorrentForm
     object edExtension: TEdit
       Left = 8
       Height = 23
-      Hint = 'for example: *.avi *.mkv tom*jerry*.avi'
+      Hint = 'for example: *.avi *.mkv'
       Top = 56
       Width = 456
       Anchors = [akTop, akLeft, akRight]
