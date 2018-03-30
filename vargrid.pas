@@ -24,7 +24,7 @@ unit VarGrid;
 interface
 
 uses
-  Classes, SysUtils, Grids, VarList, Graphics, Controls, LMessages, Forms, StdCtrls, LCLType, ExtCtrls,LazUTF8;
+  Classes, SysUtils, Grids, VarList, Graphics, Controls, LMessages, Forms, StdCtrls, LCLType, ExtCtrls,LazUTF8, LCLVersion;
 
 type
   TVarGrid = class;
@@ -127,9 +127,11 @@ type
     procedure SetupCell(ACol, ARow: integer; AState: TGridDrawState; out CellAttribs: TCellAttributes);
     procedure DoOnCheckBoxClick(ACol, ARow: integer);
     procedure DoOnTreeButtonClick(ACol, ARow: integer);
+    {$IF LCL_FULLVERSION < 1080000}
     function  DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean; override;
     function  DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean; override;
     function  DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
+    {$ENDIF}
     procedure DrawRow(aRow: Integer); override;
     function  GetCells(ACol, ARow: Integer): string; override;
     function  GetEditText(ACol, ARow: Longint): string; override;
@@ -1123,6 +1125,8 @@ begin
     FOnTreeButtonClick(Self, ACol - FixedCols, ARow - FixedRows, ColToDataCol(ACol));
 end;
 
+{$IF LCL_FULLVERSION < 1080000}
+
 function TVarGrid.DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean;
 begin
   Result := False;
@@ -1148,6 +1152,8 @@ begin
     Result := True;
   end;
 end;
+
+{$ENDIF}
 
 constructor TVarGrid.Create(AOwner: TComponent);
 begin
