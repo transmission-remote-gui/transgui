@@ -1,3 +1,10 @@
+5.15.3 (Mar 31, 2018)
+ - Fix chaging location error (#1057)
+ - Fix torrent template hint message
+ - Fix mouse scrolls, adapt TVargrid to Lazarus 1.8 (#1062)
+ - Use https instead http to downloda GeoIP Lite data (#1103)
+ - Upgrade OpenSSL for Windows from v1.0.2n to v1.0.2o
+
 5.15.2 (Mar 24, 2018)
  - Fix an initialization/startup error (#1101)
 

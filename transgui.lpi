@@ -21,8 +21,8 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="5"/>
       <MinorVersionNr Value="15"/>
-      <RevisionNr Value="2"/>
-      <StringTable CompanyName="Yury Sidorov" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2017 by Yury Sidorov &amp; Alexander Petrov" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion="5.14"/>
+      <RevisionNr Value="3"/>
+      <StringTable CompanyName="Yury Sidorov" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2017 by Yury Sidorov &amp; Alexander Petrov" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion="5.15.3"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="default" Default="True"/>
