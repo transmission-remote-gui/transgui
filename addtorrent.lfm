@@ -126,7 +126,7 @@ inherited AddTorrentForm: TAddTorrentForm
     object txSaveAs1: TLabel
       Left = 10
       Height = 15
-      Hint = 'for example: *.avi *.mkv tom*jerry*.avi'
+      Hint = 'for example: *.avi *.mkv'
       Top = 40
       Width = 59
       Caption = 'Template:  '

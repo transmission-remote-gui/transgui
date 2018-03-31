@@ -360,6 +360,6 @@ Always auto-reconnect=Завжди перез'єднуватись
 The maximum history of directories for storage of torrents=Максимальна довжина історії каталогів для зберігання торрентів
 Delete destination folder=Видалити відображений каталог
 Template:  =Шаблон, наприклад: *.avi *.mkv tom*джерри*.avi
-for example: *.avi *.mkv tom*jerry*.avi= щось на кшталт "*.mkv" або "tom*джерри*.avi"
+for example: *.avi *.mkv= щось на кшталт "*.mkv" або "tom*джерри*.avi"
 Copy Magnet Link(s)=Копіювати magnet-посилання
 Application Options (Ctrl+F9)=Налаштування програми (Ctrl+F9)
