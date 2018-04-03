@@ -924,7 +924,7 @@ begin
   try
     if i < 0 then begin
        DeleteDirs (1);               // prepare for new item
-       cbDestFolder.Items.Insert (0, s);
+       cbDestFolder.Items.Add (s);
        i:=cbDestFolder.Items.IndexOf(s);
        pFD    := FolderData.create;
        pFD.Hit:= 1;
