@@ -68,8 +68,8 @@ DefaultDirName={pf}\{#AppName}
 DefaultGroupName={#AppName}
 AllowNoIcons=yes
 LicenseFile=..\..\LICENSE
-InfoAfterFile=..\..\history.txt
-OutputDir=..\..\Release
+InfoAfterFile=..\..\..\history.txt
+OutputDir=..\..\..\Release
 OutputBaseFilename=transgui-{#AppVersion}-setup
 
 Compression=lzma2/ultra64
@@ -107,10 +107,10 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: "..\..\transgui.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: app
-Source: "..\..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion; Components: app
-Source: "..\..\README.md"; DestDir: "{app}"; Flags: ignoreversion; Components: app
-Source: "..\..\README.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
-Source: "..\..\history.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
+Source: "..\..\..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion; Components: app
+Source: "..\..\..\README.md"; DestDir: "{app}"; Flags: ignoreversion; Components: app
+Source: "..\..\..\README.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
+Source: "..\..\..\history.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
 Source: "..\..\lang\transgui.*"; DestDir: "{app}\lang"; Flags: ignoreversion; Components: lang
 ; OpenSSL
 Source: "openssl\libeay32.dll"; DestDir: "{app}"; Components: app
