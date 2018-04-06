@@ -15,6 +15,7 @@
   - [Windows](#windows)
     - [Portable zip tarball (recommended)](#portable-zip-tarball-recommended)
     - [Installer](#installer)
+    - [Using Chocolatey](#using-chocolatey)
   - [macOS](#macos)
     - [Without a package manager](#without-a-package-manager)
     - [Homebrew-Cask](#homebrew-cask)
@@ -82,6 +83,10 @@ This installer has additional installation wizard and includes static OpenSSL li
 
  1. Directly download the installer.
  2. Run the installer and follow the steps to install it on your system.
+
+#### Using [Chocolatey](https://chocolatey.org)
+
+Run `cinst transgui` to install the latest version of Transmission Remote GUI.
 
 ### macOS
 
