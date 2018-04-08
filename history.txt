@@ -1,3 +1,12 @@
+5.15.4 (Apr 8, 2018)
+ - Update GitHub issue template
+ - Update Italian translation (#1102)
+ - Update Hungarian translation (#1107)
+ - Add Chocolatey info for Windows (#1113)
+ - Fix mouse scrolls, again (#1062)
+ - Fix change file location error (#1111)
+ - Fix torrent template hint message, again
+
 5.15.3 (Mar 31, 2018)
  - Fix chaging location error (#1057)
  - Fix torrent template hint message
