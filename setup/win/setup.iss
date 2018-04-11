@@ -11,7 +11,7 @@
 
 #define AppName "Transmission Remote GUI"
 #define AppVerName AppName + " " + AppVersion
-#define AppPublisher "Yury Sidorov & Alexander Petrov"
+#define AppPublisher "Yury Sidorov & Transmission Remote GUI working group"
 #define AppURL "https://github.com/transmission-remote-gui/transgui"
 #define AppExeName "transgui.exe"
 #define CurYear GetDateTimeString('yyyy', '', '')
@@ -54,7 +54,7 @@ Name: "zh_cn"; MessagesFile: "..\..\Inno Setup lang\ChineseSimplified.isl"
 AppId=transgui
 AppName={#AppName}
 AppVerName={#AppVerName}
-AppCopyright=Copyright (c) 2008-{#CurYear} by Yury Sidorov & Alexander Petrov
+AppCopyright=Copyright (c) 2008-{#CurYear} by Yury Sidorov & Transmission Remote GUI working group
 AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}

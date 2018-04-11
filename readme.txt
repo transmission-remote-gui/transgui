@@ -1,5 +1,5 @@
 Transmission Remote GUI.
-Copyright (c) 2008-2017 by Yury Sidorov, Alexander Petrov.
+Copyright (c) 2008-2018 by Yury Sidorov and Transmission Remote GUI working group.
 
 Transmission Remote GUI is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
