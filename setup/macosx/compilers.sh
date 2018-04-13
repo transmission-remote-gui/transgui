@@ -1,4 +1,7 @@
 #!/bin/sh
+
+set -x
+
 fpc="fpc-3.0.4.intel-macosx"
 lazarus="lazarus-1.8.0-i686-macosx"
 
