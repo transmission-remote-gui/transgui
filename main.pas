@@ -3107,6 +3107,7 @@ var
 begin
   Try
     PeriodBetween(ANow,AThen,Years,Months,Days);
+    if HoursBetween(Anow,AThen) < 24 then Days := 0;
     DecodeDateTime(Anow-AThen,discard,Discard,Discard,Hours,Minutes,Seconds,Discard);
     if Years > 0 then begin
        Result := Format(sYears,[Years]) + ' ' + Format(sMonths,[Months]);
