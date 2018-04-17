@@ -19,6 +19,8 @@
   - [macOS](#macos)
     - [Without a package manager](#without-a-package-manager)
     - [Homebrew-Cask](#homebrew-cask)
+- [Compilation](#compilation)
+  - [macOS](#macos-1)
 - [Command line parameters](#command-line-parameters)
 - [Portable mode](#portable-mode)
 - [Fixed hotkeys](#fixed-hotkeys)
@@ -107,6 +109,19 @@ You need to have [Homebrew](https://brew.sh/) installed, and [Homebrew-Cask](htt
 With Homebrew-Cask, directly execute this command to install Transmission Remote Gui:
 
  - `brew cask install transmission-remote-gui`
+
+## Compilation
+
+### macOS
+
+**Note: Currently Transmission Remote GUI can't be compiled if fpc and lazarus were installed using Homebrew. You can uninstall them using** `brew uninstall fpc` and `brew cask uninstall lazarus`
+
+1. In Terminal navigate to the transgui folder containing the source code. So if you have it in Documents/transgui type `cd ~/Documents/transgui`
+2. Type `cd setup/macosx`
+3. Run the create_app shell script by typing `./create_app.sh` (Note the dot at the start of the line).
+This will install fpc and lazarus if needed and build Transmission Remote GUI and move it in a .dmg image file.
+
+You can install the fpc and lazarus without compiling using the compilers.sh script, to run it type `./compilers.sh` while in the setup/macosx folder.
 
 ## Command line parameters
 

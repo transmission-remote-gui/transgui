@@ -198,7 +198,7 @@ matrix:
       - sh -c 'cd setup/macosx && ./compilers.sh'
       script:
       - echo -en 'travis_fold:start:build'
-      - sh -c 'cd setup/macosx && ./create_app_new.sh'
+      - sh -c 'cd setup/macosx && ./create_app.sh'
       - echo -en 'travis_fold:end:build'
       after_success:
       - md5 ./setup/macosx/transgui-$PROG_VER.dmg
