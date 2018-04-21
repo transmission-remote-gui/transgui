@@ -365,7 +365,7 @@
 [+] Support for Transmission 2.30+.
 [+] Implemented a folder browsing window for choosing torrent destination folder.
 [+] Option to Windows setup to handle magnet links by Transmission Remote GUI.
-[+] The "Enable µTP" daemon option.
+[+] The "Enable ÂµTP" daemon option.
 [+] Average download speed to torrent details.
 [+] Polish translation by piotr.tytus.dobrowolski.
 [+] Traditional Chinese (Taiwan) translation by thelordkao.
