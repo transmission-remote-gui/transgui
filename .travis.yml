@@ -5,7 +5,7 @@ git:
 
 env:
   global:
-  - PROG_VER=$(cat VERSION.txt)
+  - PROG_VER=$(head -n 1 VERSION.txt)
 
 matrix:
   include:
