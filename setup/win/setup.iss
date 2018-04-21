@@ -199,4 +199,3 @@ Filename: "{tmp}\vcredist_x86"; Parameters: "/q"; Check: VCRedistNeedsInstall
 
 [UninstallDelete]
 Type: filesandordirs ; Name: "{localappdata}\{#AppName}"
-

@@ -73,4 +73,3 @@ initialization
   {$I addlink.lrs}
 
 end.
-

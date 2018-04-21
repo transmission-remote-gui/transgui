@@ -286,4 +286,3 @@ initialization
   GetMacFormatSettings(DefaultFormatSettings);
 
 end.
-
