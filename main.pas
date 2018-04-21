@@ -726,7 +726,7 @@ type
     function GetDisplayedTorrents: variant;
     procedure FillDownloadDirs(CB: TComboBox; const CurFolderParam: string);
     procedure SaveDownloadDirs(CB: TComboBox; const CurFolderParam: string);
-    procedure DeleteDirs(CB: TComboBox; maxdel : Integer); 
+    procedure DeleteDirs(CB: TComboBox; maxdel : Integer);
     procedure SetRefreshInterval;
     procedure AddTracker(EditMode: boolean);
     procedure UpdateConnections;
@@ -767,7 +767,7 @@ type
   end;
 
 function ExcludeInvalidChar (path: string): string; // PETROV
-function GetBiDi: TBiDiMode; 
+function GetBiDi: TBiDiMode;
 function CheckAppParams: boolean;
 procedure LoadTranslation;
 function GetHumanSize(sz: double; RoundTo: integer = 0; const EmptyStr: string = '-'): string;
@@ -1252,7 +1252,7 @@ begin
 
   LoadTranslation;
 
-  GetBiDi; 
+  GetBiDi;
 
   SizeNames[1]:=sByte;
   SizeNames[2]:=sKByte;
@@ -1637,7 +1637,7 @@ begin
   if i >= 0 then
     UpdateUIRpcVersion(i);
 
-  bidiMode := GetBiDi; 
+  bidiMode := GetBiDi;
 
   acFolderGrouping.Checked:=Ini.ReadBool('Interface', 'FolderGrouping', True);
   acTrackerGrouping.Checked:=Ini.ReadBool('Interface', 'TrackerGrouping', True);
@@ -2624,7 +2624,7 @@ begin
             raise Exception.Create(sUnableGetFilesList);
 
           OldName:=UTF8Encode(t.Objects[0].Strings['name']);
-          edSaveAs.Caption:=OldName;          
+          edSaveAs.Caption:=OldName;
           edSaveAs.Caption := ExcludeInvalidChar(edSaveAs.Caption); // petrov - Exclude prohibited characters
 
           if RpcObj.RPCVersion < 15 then begin
@@ -3318,7 +3318,7 @@ begin
 
           if RpcObj.RPCVersion >= 7 then begin
             cbIncompleteDir.Checked:=args.Integers['incomplete-dir-enabled'] <> 0;
-            edIncompleteDir.Text:=UTF8Encode(args.Strings['incomplete-dir']); 
+            edIncompleteDir.Text:=UTF8Encode(args.Strings['incomplete-dir']);
             cbIncompleteDirClick(nil);
           end
           else begin
@@ -3352,7 +3352,7 @@ begin
           end;
 
           if args.IndexOfName('blocklist-url') >= 0 then
-            edBlocklistURL.Text:=UTF8Encode(args.Strings['blocklist-url']) 
+            edBlocklistURL.Text:=UTF8Encode(args.Strings['blocklist-url'])
           else begin
             edBlocklistURL.Visible:=False;
             cbBlocklist.Left:=cbPEX.Left;
@@ -3671,7 +3671,7 @@ begin
   acStatusBar.Checked:=not acStatusBar.Checked;
   StatusBar.Visible:=acStatusBar.Checked;
   if StatusBar.Visible then
-      StatusBar.Top:=ClientHeight 
+      StatusBar.Top:=ClientHeight
   else
       begin
         acStatusBarSizes.Checked := true;
@@ -4085,7 +4085,7 @@ begin
     gTorrents.EnsureSelectionVisible;
     ids:=GetSelectedTorrents;
     if gTorrents.SelCount < 2 then
-      s:=Format(sTorrentVerification, [UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Items.IndexOf(idxTorrentId, ids[0])]))]) 
+      s:=Format(sTorrentVerification, [UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Items.IndexOf(idxTorrentId, ids[0])]))])
     else
       s:=Format(sTorrentsVerification, [gTorrents.SelCount]);
     if MessageDlg('', s, mtConfirmation, mbYesNo, 0, mbNo) <> mrYes then
@@ -4375,7 +4375,7 @@ begin
     v:=gTorrents.Items[idxName, i];
     if VarIsEmpty(v) or VarIsNull(v) then
       continue;
-    if Pos(s, Trim(UTF8UpperCase(UTF8Encode(widestring(v))))) > 0 then begin  
+    if Pos(s, Trim(UTF8UpperCase(UTF8Encode(widestring(v))))) > 0 then begin
       ARow:=i;
       break;
     end;
@@ -4392,7 +4392,7 @@ end;
 
 procedure TMainForm.gTorrentsSetEditText(Sender: TObject; ACol, ARow: Integer; const Value: string);
 begin
-  if RenameTorrent(gTorrents.Items[idxTorrentId, ARow], UTF8Encode(widestring(gTorrents.Items[idxName, ARow])), Trim(Value)) then begin 
+  if RenameTorrent(gTorrents.Items[idxTorrentId, ARow], UTF8Encode(widestring(gTorrents.Items[idxName, ARow])), Trim(Value)) then begin
     gTorrents.Items[idxName, ARow]:=UTF8Decode(Trim(Value));
     FFilesTree.Clear;
   end;
@@ -4451,7 +4451,7 @@ begin
         FFiles[idxFileFullPath, ARow]:=UTF8Decode(p + RemotePathDelimiter);
         for i:=ARow + 1 to FFiles.Count - 1 do
           if FFilesTree.RowLevel[i] > lvl then
-            FFiles[idxFileFullPath, i]:=UTF8Decode(p + Copy(UTF8Encode(widestring(FFiles[idxFileFullPath, i])), len + 1, MaxInt)) 
+            FFiles[idxFileFullPath, i]:=UTF8Decode(p + Copy(UTF8Encode(widestring(FFiles[idxFileFullPath, i])), len + 1, MaxInt))
           else
             break;
       finally
@@ -5422,7 +5422,7 @@ begin
       end;
   end
   else begin
-    Result:=UTF8Encode(t.Strings['announceResponse']); 
+    Result:=UTF8Encode(t.Strings['announceResponse']);
     if Result = 'Success' then
       Result:=''
     else
@@ -5437,7 +5437,7 @@ begin
   end;
 
   if (Result = '') or (Status = TR_STATUS_STOPPED) or (Status = TR_STATUS_FINISHED) then
-    Result:=UTF8Encode(gerr); 
+    Result:=UTF8Encode(gerr);
 end;
 
 function TMainForm.SecondsToString(j: integer): string;
@@ -5630,11 +5630,11 @@ begin
     Dec(FilterIdx);
   if FilterIdx >= StatusFiltersCount then
     if not VarIsNull(lvFilter.Items[-1, FilterIdx]) then begin
-      PathFilter:=UTF8Encode(widestring(lvFilter.Items[-1, FilterIdx])); 
+      PathFilter:=UTF8Encode(widestring(lvFilter.Items[-1, FilterIdx]));
       FilterIdx:=fltAll;
     end
     else begin
-      TrackerFilter:=UTF8Encode(widestring(lvFilter.Items[0, FilterIdx])); 
+      TrackerFilter:=UTF8Encode(widestring(lvFilter.Items[0, FilterIdx]));
       FilterIdx:=fltAll;
       i:=RPos('(', TrackerFilter);
       if i > 0 then
@@ -5660,7 +5660,7 @@ begin
 
     j:=t.Integers['status'];
     if ExistingRow and (j = TR_STATUS_SEED) and (FTorrents[idxStatus, row] = TR_STATUS_DOWNLOAD) then
-      DownloadFinished(UTF8Encode(widestring(FTorrents[idxName, row]))); 
+      DownloadFinished(UTF8Encode(widestring(FTorrents[idxName, row])));
     FTorrents[idxStatus, row]:=j;
     if j = TR_STATUS_CHECK_WAIT  then StateImg:=imgDownQueue else
     if j = TR_STATUS_CHECK  then StateImg:=imgDownQueue else
@@ -5708,7 +5708,7 @@ begin
     end
     else
       s:='';
-    FTorrents[idxTrackerStatus, row]:=UTF8Decode(s); 
+    FTorrents[idxTrackerStatus, row]:=UTF8Decode(s);
 
     if FTorrents[idxStatus, row] = TR_STATUS_CHECK then
       f:=t.Floats['recheckProgress']*100.0
@@ -5796,7 +5796,7 @@ begin
     end
     else
       if FieldExists[idxTracker] then
-        s:=UTF8Encode(t.Arrays['trackers'].Objects[0].Strings['announce']) 
+        s:=UTF8Encode(t.Arrays['trackers'].Objects[0].Strings['announce'])
       else begin
         s:='';
         if VarIsEmpty(FTorrents[idxTracker, row]) then
@@ -5822,17 +5822,17 @@ begin
       j:=Pos(':', s);
       if j > 0 then
         System.Delete(s, j, MaxInt);
-      FTorrents[idxTracker, row]:=UTF8Decode(s); 
+      FTorrents[idxTracker, row]:=UTF8Decode(s);
     end;
 
     if FieldExists[idxPath] then
-      FTorrents[idxPath, row]:=UTF8Decode(ExcludeTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir']))) 
+      FTorrents[idxPath, row]:=UTF8Decode(ExcludeTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir'])))
     else
       if VarIsEmpty(FTorrents[idxPath, row]) then
         RpcObj.RequestFullInfo:=True;
 
     if not VarIsEmpty(FTorrents[idxPath, row]) then begin
-      s:=UTF8Encode(widestring(FTorrents[idxPath, row])); 
+      s:=UTF8Encode(widestring(FTorrents[idxPath, row]));
       j:=Paths.IndexOf(s);
       if j < 0 then
         Paths.AddObject(s, TObject(1))
@@ -5898,7 +5898,7 @@ begin
           Inc(ErrorCnt);
 
       if not VarIsEmpty(FTorrents[idxTracker, i]) then begin
-        s:=UTF8Encode(widestring(FTorrents[idxTracker, i])); 
+        s:=UTF8Encode(widestring(FTorrents[idxTracker, i]));
         j:=FTrackers.IndexOf(s);
         if j < 0 then
           j:=FTrackers.Add(s);
@@ -5907,7 +5907,7 @@ begin
           continue;
       end;
 
-      if (PathFilter <> '') and not VarIsEmpty(FTorrents[idxPath, i]) and (UTF8Decode(PathFilter) <> FTorrents[idxPath, i]) then 
+      if (PathFilter <> '') and not VarIsEmpty(FTorrents[idxPath, i]) and (UTF8Decode(PathFilter) <> FTorrents[idxPath, i]) then
         continue;
 
       case FilterIdx of
@@ -5935,7 +5935,7 @@ begin
       end;
 
       if edSearch.Text <> '' then
-        if UTF8Pos(UTF8UpperCase(edSearch.Text), UTF8UpperCase(UTF8Encode(widestring(FTorrents[idxName, i])))) = 0 then 
+        if UTF8Pos(UTF8UpperCase(edSearch.Text), UTF8UpperCase(UTF8Encode(widestring(FTorrents[idxName, i])))) = 0 then
           continue;
 
       if not gTorrents.Items.Find(idxTorrentId, FTorrents[idxTorrentId, i], row) then
@@ -5979,7 +5979,7 @@ begin
     lvFilter.Items[0, 1]:=UTF8Decode(Format('%s (%d)', [SDownloading, DownCnt]));
     lvFilter.Items[0, 2]:=UTF8Decode(Format('%s (%d)', [SCompleted, CompletedCnt]));
     lvFilter.Items[0, 3]:=UTF8Decode(Format('%s (%d)', [SActive, ActiveCnt]));
-    lvFilter.Items[0, 4]:=UTF8Decode(Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt - StoppedCnt])); 
+    lvFilter.Items[0, 4]:=UTF8Decode(Format('%s (%d)', [SInactive, FTorrents.Count - ActiveCnt - StoppedCnt]));
     lvFilter.Items[0, 5]:=UTF8Decode(Format('%s (%d)', [sStopped, StoppedCnt]));
     lvFilter.Items[0, 6]:=UTF8Decode(Format('%s (%d)', [sErrorState, ErrorCnt]));
     lvFilter.Items[0, 7]:=UTF8Decode(Format('%s (%d)', [sWaiting, WaitingCnt]));
@@ -5993,11 +5993,11 @@ begin
       for i:=0 to Paths.Count - 1 do begin
         s:=ExtractFileName(Paths[i]);
         for row:=StatusFiltersCount + 1 to j - 1 do
-          if ExtractFileName(UTF8Encode(widestring(lvFilter.Items[-1, row]))) = s then begin 
+          if ExtractFileName(UTF8Encode(widestring(lvFilter.Items[-1, row]))) = s then begin
             s:=Paths[i];
             lvFilter.Items[0, row]:=UTF8Decode(Format('%s (%d)', [UTF8Encode(widestring(lvFilter.Items[-1, row])), ptruint(Paths.Objects[row - StatusFiltersCount - 1])]));
           end;
-        lvFilter.Items[ 0, j]:=UTF8Decode(Format('%s (%d)', [s, ptruint(Paths.Objects[i])])); 
+        lvFilter.Items[ 0, j]:=UTF8Decode(Format('%s (%d)', [s, ptruint(Paths.Objects[i])]));
         lvFilter.Items[-1, j]:=UTF8Decode(Paths[i]);
         if Paths[i] = PathFilter then
           crow:=j;
@@ -6017,7 +6017,7 @@ begin
       while i < FTrackers.Count do begin
         j:=ptruint(FTrackers.Objects[i]);
         if j > 0 then begin
-          lvFilter.Items[ 0, row]:=UTF8Decode(Format('%s (%d)', [FTrackers[i], j])); 
+          lvFilter.Items[ 0, row]:=UTF8Decode(Format('%s (%d)', [FTrackers[i], j]));
           lvFilter.Items[-1, row]:=NULL;
           if FTrackers[i] = TrackerFilter then
             crow:=row;
@@ -6171,7 +6171,7 @@ begin
     d:=files[i];
     if not (d is TJSONObject) then continue;
     f:=d as TJSONObject;
-    s:=UTF8Encode(f.Strings['name']); 
+    s:=UTF8Encode(f.Strings['name']);
     if i = 0 then
       Result:=ExtractFilePath(s)
     else begin
@@ -6267,7 +6267,7 @@ begin
 
   lvFiles.Enabled:=True;
   lvFiles.Color  :=clWindow;
-  FFilesTree.DownloadDir:=UTF8Encode(DownloadDir); 
+  FFilesTree.DownloadDir:=UTF8Encode(DownloadDir);
   FFilesTree.FillTree(ATorrentId, list, priorities, wanted);
   tabFiles.Caption:=Format('%s (%d)', [FFilesCapt, list.Count]);
   DetailsUpdated;
@@ -6408,7 +6408,7 @@ begin
     s:=TorrentDateTimeToString(Trunc(f),FFromNow);
   txTrackerUpdate.Caption:=s;
   txTrackerUpdate.Hint:=TorrentDateTimeToString(Trunc(f),not(FFromNow));
-  txTracker.Caption:=UTF8Encode(widestring(gTorrents.Items[idxTracker, idx])); 
+  txTracker.Caption:=UTF8Encode(widestring(gTorrents.Items[idxTracker, idx]));
   if RpcObj.RPCVersion >= 7 then
     if t.Arrays['trackerStats'].Count > 0 then
       i:=t.Arrays['trackerStats'].Objects[0].Integers['seederCount']
@@ -6440,9 +6440,9 @@ begin
 
   panGeneralInfo.ChildSizing.Layout:=cclNone;
 
-  s:=UTF8Encode(widestring(gTorrents.Items[idxName, idx])); 
+  s:=UTF8Encode(widestring(gTorrents.Items[idxName, idx]));
   if RpcObj.RPCVersion >= 4 then
-    s:=IncludeProperTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir'])) + s; 
+    s:=IncludeProperTrailingPathDelimiter(UTF8Encode(t.Strings['downloadDir'])) + s;
   txTorrentName.Caption:=s;
   s:=Trim(UTF8Encode(t.Strings['creator']));
   if s <> '' then
@@ -6463,7 +6463,7 @@ begin
   end;
 
   txHash.Caption:=t.Strings['hashString'];
-  txComment.Caption:=UTF8Encode(t.Strings['comment']); 
+  txComment.Caption:=UTF8Encode(t.Strings['comment']);
   if (AnsiCompareText(Copy(txComment.Caption, 1, 7), 'http://') = 0)
      or (AnsiCompareText(Copy(txComment.Caption, 1, 8), 'https://') = 0)
   then begin
@@ -6678,7 +6678,7 @@ procedure TMainForm.FillStatistics(s: TJSONObject);
   begin
     with gStats do begin
       Items[idx, 0]:=UTF8Decode(GetHumanSize(s.Floats['downloadedBytes']));
-      Items[idx, 1]:=UTF8Decode(GetHumanSize(s.Floats['uploadedBytes'])); 
+      Items[idx, 1]:=UTF8Decode(GetHumanSize(s.Floats['uploadedBytes']));
       Items[idx, 2]:=s.Integers['filesAdded'];
       Items[idx, 3]:=UTF8Decode(SecondsToString(s.Integers['secondsActive']));
     end;
@@ -7744,7 +7744,7 @@ begin
           files:=Arrays['files'];
           if files.Count = 0 then exit;
           if files.Count = 1 then begin
-            p:=UTF8Encode((files[0] as TJSONObject).Strings['name']); 
+            p:=UTF8Encode((files[0] as TJSONObject).Strings['name']);
             sel:=OpenFolderOnly;
           end
           else begin
@@ -7755,7 +7755,7 @@ begin
               s:=ExtractFilePath(p);
             until (s = '') or (s = p);
           end;
-          p:=IncludeTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + p; 
+          p:=IncludeTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + p;
         end;
       finally
         res.Free;
@@ -7848,4 +7848,4 @@ finalization
   except
   end;
 end.
- 
+

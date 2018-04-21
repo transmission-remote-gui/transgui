@@ -48,7 +48,7 @@ type
     { private declarations }
   public
     { public declarations }
-  end; 
+  end;
 
 implementation
 

@@ -49,7 +49,7 @@ type
     procedure MoveItem(Delta: integer);
   public
     { public declarations }
-  end; 
+  end;
 
 function SetupColumns(LV: TVarGrid; PersistentColumnId: integer; const GridName: string): boolean;
 

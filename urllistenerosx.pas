@@ -11,7 +11,7 @@ type
   THandlerProc = procedure(const url: string);
 
   { TAppURLHandler }
-  
+
   TAppURLHandler = objcclass(NSObject)
   public
     procedure  getUrlwithReplyEvent(event: NSAppleEventDescriptor; eventReply: NSAppleEventDescriptor); message 'getUrl:withReplyEvent:';
@@ -23,7 +23,7 @@ procedure RegisterURLHandler(HandlerProc: THandlerProc);
 var
   handler : TAppURLHandler;
   eventManager: NSAppleEventManager;
- 
+
 implementation
 
 { TAppURLHandler }

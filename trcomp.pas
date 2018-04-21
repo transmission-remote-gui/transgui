@@ -2,7 +2,7 @@
   This source is only used to compile and install the package.
  }
 
-unit trcomp; 
+unit trcomp;
 
 interface
 
@@ -11,11 +11,11 @@ uses
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-  RegisterUnit('VarGrid', @VarGrid.Register); 
-end; 
+  RegisterUnit('VarGrid', @VarGrid.Register);
+end;
 
 initialization
-  RegisterPackage('trcomp', @Register); 
+  RegisterPackage('trcomp', @Register);
 end.

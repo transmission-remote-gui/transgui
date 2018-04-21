@@ -23,7 +23,7 @@ ifeq ($(LAZARUS_DIR),)
       LAZARUS_DIR=$(HOME)/lazarus
     endif
   endif
-  
+
   ifeq ($(LAZARUS_DIR),)
     $(error Lazarus directory was not found. Use LAZARUS_DIR=<dir> switch.)
   endif
@@ -44,7 +44,7 @@ endif
 
 ifeq ($(DEBUG),)
   COMP_OPT=-O2 -g- -CX -XX -Xs
-else  
+else
   COMP_OPT=-O- -gs -dCALLSTACK
 endif
 

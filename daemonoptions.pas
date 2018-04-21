@@ -120,7 +120,7 @@ type
     { private declarations }
   public
     { public declarations }
-  end; 
+  end;
 
 implementation
 
@@ -248,7 +248,7 @@ var
   i, j, x, wd: integer;
   cb: TCheckBox;
 begin
-  bidiMode := GetBiDi(); 
+  bidiMode := GetBiDi();
   Page.ActivePageIndex:=0;
   cbEncryption.Items.Add(sEncryptionDisabled);
   cbEncryption.Items.Add(sEncryptionEnabled);

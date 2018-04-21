@@ -161,7 +161,7 @@
 5.8.0 (Jul 6, 2017)
 [-] Fixed TLS 1.2 support on non-MacOS platforms
 [+] Updated Traditional Chinese translation
-[+] Re-compressed all png images and zip archive 
+[+] Re-compressed all png images and zip archive
 
 5.7.0 (Jul 1, 2017)
 [+] Removed support for SSL 2,3.
@@ -192,7 +192,7 @@
 [-] Fixed bug. Issue 928
 
 5.5.0 (Dec 31, 2016)
-[+] Build the project using the Lazarus 1.6.2 
+[+] Build the project using the Lazarus 1.6.2
 [+] Added copied magnet links. Issue 911
 [?] Added SSL support ('0.9.8', '1.0.0', '1.0.2', '1.1.0'). Issue 922
 [?] Support high DPI modes. Issue 918
@@ -207,10 +207,10 @@
 
 5.3.0 (Apr 01, 2016)
 [+] Add a column for 'download remaining'. Issue 881,898
-[-] Fix "Global Statistics" shown problem. Issue 897 
+[-] Fix "Global Statistics" shown problem. Issue 897
 [+] Bigger toolbar buttons and menu for touchscreen. Issue 889 (transgui.ini, [MainForm] BigToolbar=1)
 [+] Added shortcuts keys to filter and info panel. Fix button 'Application Option' on the toolbar. Issue 886
-[-] Fix cannot execute on open (nix). Issue 888 
+[-] Fix cannot execute on open (nix). Issue 888
 
 5.2.0 (Dec 09, 2015)
 [-] Fixed various bugs
@@ -240,7 +240,7 @@
 [+] Added entry of the hidden parameter 'MaxFoldersHistory' in the ini file. Parameter specifies the maximum number of directories to store torrents
 [*] Changed the maximum number of stored history MaxFoldersHistory (Default:50)
 [*] Increased quantity of elements in the drop-down lists from 20 to 60 (elements: 'Add torrent...', 'Set data location...')
-[*] Changed sorting directories to store torrents. Directories are sorted by name 
+[*] Changed sorting directories to store torrents. Directories are sorted by name
 [+] Added support for text direction in the program. Issue 734. Parameter 'IgnoreRightLeft' ini-file. 0/1/2/3/4 =nothing/from left to right/from left to right(No Align)/from left to right(Reading Only)
 [+] Added import / export program settings. Issue 752
 
@@ -395,7 +395,7 @@
 [+] Added Korean translation by kpsman.
 [+] Added Chinese translation by xtfllbl.
 [+] Added Ukrainian translation by PavelDudn.
-[+] Added Italian translation by ilnero71. 
+[+] Added Italian translation by ilnero71.
 [+] Added Greek translation by lamprakisa.
 [*] Separated connection settings from the program's options.
 [*] Improved handling of connection settings.
@@ -448,7 +448,7 @@
 [*] Use proxy settings for GeoIP database download. Issue #278.
 [-] Improper update of the peer list. Issue #264.
 [-] Incorrect encoding of file names in the Add torrent window.
-[-] Problem to "Open containing folder" from the torrents list for some path mappings. Issue #260. 
+[-] Problem to "Open containing folder" from the torrents list for some path mappings. Issue #260.
 [-] Improper filtering by path in some cases. Issue #262.
 
 2.0 (Aug 11, 2010)
@@ -592,8 +592,8 @@
 0.92 beta (Dec 30, 2008)
 ------------------------
 [+] Torrent filtering by status and by tracker.
-[+] Resolving of peer's host by IP. 
-[+] Resolving of peer's country by IP. 
+[+] Resolving of peer's host by IP.
+[+] Resolving of peer's country by IP.
 [+] Displaying of peer's country flag.
 [*] Store parameters for add torrent window per each host.
 [*] Added "WARNING: Transmission daemon will crash if non-existent folder is specified." to add torrent window.

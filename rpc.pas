@@ -509,7 +509,7 @@ begin
                                      'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
                                      'seeders','peersGettingFromUs','leechers', 'uploadRatio', 'addedDate', 'doneDate',
                                      'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id', 'pieces',
-                                     'trackerStats', 'secondsDownloading', 'secondsSeeding', 'magnetLink']);									 
+                                     'trackerStats', 'secondsDownloading', 'secondsSeeding', 'magnetLink']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
@@ -586,7 +586,7 @@ procedure TRpc.InitSSL;
   procedure CheckOpenSSL;
   const
 	OpenSSLVersions: array[1..4] of string =
-	('0.9.8', '1.0.0', '1.0.2', '1.1.0'); 
+	('0.9.8', '1.0.0', '1.0.2', '1.1.0');
   var
     hLib1, hLib2: TLibHandle;
     i: integer;

@@ -315,7 +315,7 @@ LCL_WIDGETSET=carbon
 endif
 ifeq ($(DEBUG),)
   COMP_OPT=-O2 -g- -CX -XX -Xs
-else  
+else
   COMP_OPT=-O- -gs -dCALLSTACK
 endif
 ifeq ($(FULL_TARGET),i386-linux)
@@ -1497,7 +1497,7 @@ else
 TAROPT=vz
 TAREXT=.tar.gz
 endif
-override REQUIRE_PACKAGES=rtl 
+override REQUIRE_PACKAGES=rtl
 ifeq ($(FULL_TARGET),i386-linux)
 REQUIRE_PACKAGES_RTL=1
 endif

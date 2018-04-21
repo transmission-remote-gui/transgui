@@ -47,7 +47,7 @@ type
     property FileName: utf8string Read FFilename;
   end;
 
-  
+
   { TIniFileUtf8 }
 
   TIniFileUtf8 = class(TIniFile)
@@ -60,8 +60,8 @@ type
     procedure UpdateFile; override;
     function getFileName() : string;
   end;
-  
-  
+
+
 
 function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
 function FileCreateUTF8(Const FileName : string) : THandle;
@@ -403,7 +403,7 @@ var
 begin
   Result:=-1;
   WrkProcess:=TProcess.Create(nil);
-  WrkProcess.Options:=[poNoConsole,poWaitOnExit];  
+  WrkProcess.Options:=[poNoConsole,poWaitOnExit];
 
   cmd:=FindDefaultExecutablePath('xdg-open');
   if cmd = '' then begin

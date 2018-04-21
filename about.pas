@@ -63,7 +63,7 @@ type
     { private declarations }
   public
     { public declarations }
-  end; 
+  end;
 
 procedure CheckNewVersion(Async: boolean = True);
 procedure GoHomePage;

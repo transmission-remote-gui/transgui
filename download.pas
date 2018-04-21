@@ -59,7 +59,7 @@ type
     procedure UpdateStatus(Data: PtrInt);
   public
     { public declarations }
-  end; 
+  end;
 
   { TDownloadThread }
 
@@ -176,7 +176,7 @@ end;
 
 procedure TDownloadForm.FormCreate(Sender: TObject);
 begin
-  bidiMode := GetBiDi(); 
+  bidiMode := GetBiDi();
   FThread:=TDownloadThread.Create(True);
   FThread.FreeOnTerminate:=True;
   FThread.FForm:=Self;
