@@ -1,8 +1,8 @@
 {************************************************************
-   Copyright (c) 2010 Alex Cherednichenko, aka Alex7Che.
-   Copyright (c) 2011-2013 Yury Sidorov.
+  Copyright (c) 2010 Alex Cherednichenko, aka Alex7Che.
+  Copyright (c) 2011-2013 Yury Sidorov.
 
-   Published at GNU General Public License as Free Software.
+  Published at GNU General Public License as Free Software.
  ************************************************************}
 
 unit ResTranslator;
@@ -488,9 +488,9 @@ end;
 function TTranslateStringList.DoCompareText(const s1, s2: string): PtrInt;
 begin
  if CaseSensitive then
-   result:=AnsiCompareText(s1,s2)
+  result:=AnsiCompareText(s1,s2)
  else
-   result:=AnsiCompareText(UTF8UpperCase(s1),UTF8UpperCase(s2));
+  result:=AnsiCompareText(UTF8UpperCase(s1),UTF8UpperCase(s2));
 end;
 
 constructor TTranslateStringList.Create(const FileName: string);

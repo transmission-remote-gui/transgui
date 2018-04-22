@@ -301,7 +301,7 @@ begin
 
     // Detecting top level folder to be removed
     FCommonPathLen:=0;
-     path:='';
+    path:='';
     if files.Count > 0 then begin
       s:=UTF8Encode(files.Objects[0].Strings['name']);
       s:=ExcludeInvalidChar(s); // petrov - Exclude prohibited characters
@@ -443,7 +443,7 @@ begin
   end
   else
     Result:='';
-     Result:=Result + UTF8Encode(widestring(FFiles[idxFileFullPath, ARow]));
+    Result:=Result + UTF8Encode(widestring(FFiles[idxFileFullPath, ARow]));
 
   if IsFolder(ARow) then
       Result:=Copy(Result, 1, Length(Result) - 1)
@@ -871,9 +871,9 @@ begin
   Result:= path;
   l_old := length(path);
   if l_old >= 1 then begin
-     if path[l_old]='/' then
+    if path[l_old]='/' then
         path := MidStr(path,1,l_old-1);
-     Result:= path;
+    Result:= path;
   end;
 end;
 
@@ -887,24 +887,24 @@ begin
 
     try
       while (cbDestFolder.Items.Count+maxdel) > max do begin
-         min := 9999999;
-         indx:=-1;
-         for i:=0 to cbDestFolder.Items.Count - 1 do begin
-           pFD := cbDestFolder.Items.Objects[i] as FolderData;
+        min := 9999999;
+        indx:=-1;
+        for i:=0 to cbDestFolder.Items.Count - 1 do begin
+          pFD := cbDestFolder.Items.Objects[i] as FolderData;
 
-           fldr := DaysBetween(SysUtils.Date,pFD.Lst);
-           if SysUtils.Date > pFD.Lst then
-             fldr := 0- fldr;
+          fldr := DaysBetween(SysUtils.Date,pFD.Lst);
+          if SysUtils.Date > pFD.Lst then
+            fldr := 0- fldr;
 
-           fldr := fldr + pFD.Hit;
-           if fldr < min then begin
-             min := fldr;
-             indx:= i;
-           end;
-         end;
+          fldr := fldr + pFD.Hit;
+          if fldr < min then begin
+            min := fldr;
+            indx:= i;
+          end;
+        end;
 
-         if indx > -1 then
-           cbDestFolder.Items.Delete(indx);
+        if indx > -1 then
+          cbDestFolder.Items.Delete(indx);
       end;
     except
       MessageDlg('Error: LS-001. Please contact the developer', mtError, [mbOK], 0);
@@ -923,23 +923,23 @@ begin
   i := cbDestFolder.Items.IndexOf(s);
   try
     if i < 0 then begin
-       DeleteDirs (1);               // prepare for new item
-       cbDestFolder.Items.Add (s);
-       i:=cbDestFolder.Items.IndexOf(s);
-       pFD    := FolderData.create;
-       pFD.Hit:= 1;
-       pFD.Ext:= e;
-       pFD.Txt:= s;
-       pFD.Lst:= SysUtils.Date;
-       cbDestFolder.Items.Objects[i]:= pFD;
+      DeleteDirs (1);               // prepare for new item
+      cbDestFolder.Items.Add (s);
+      i:=cbDestFolder.Items.IndexOf(s);
+      pFD    := FolderData.create;
+      pFD.Hit:= 1;
+      pFD.Ext:= e;
+      pFD.Txt:= s;
+      pFD.Lst:= SysUtils.Date;
+      cbDestFolder.Items.Objects[i]:= pFD;
     end else begin
-       pFD    := cbDestFolder.Items.Objects[i] as FolderData;
-       pFD.Hit:= pFD.Hit + 1;
-       pFD.Ext:= e;
-       pFD.Txt:= s;
-       pFD.Lst:= SysUtils.Date;
-       cbDestFolder.Items.Objects[i]:= pFD;
-       DeleteDirs (0);               // check count items
+      pFD    := cbDestFolder.Items.Objects[i] as FolderData;
+      pFD.Hit:= pFD.Hit + 1;
+      pFD.Ext:= e;
+      pFD.Txt:= s;
+      pFD.Lst:= SysUtils.Date;
+      cbDestFolder.Items.Objects[i]:= pFD;
+      DeleteDirs (0);               // check count items
     end;
   except
     MessageDlg('Error: LS-002. Please contact the developer', mtError, [mbOK], 0);
@@ -1022,15 +1022,15 @@ end;
 
 procedure TAddTorrentForm.cbStartTorrentChange(Sender: TObject);
 begin
-     Ini.WriteBool('Interface', 'StartTorrentOnAdd', cbStartTorrent.Checked);
-     if (cbStartTorrent.Checked = false) then begin
-       cbStartTorrent.Font.Style:= [fsbold];
-       Buttons.OKButton.Font.Style:= [fsbold]
-     end
-     else begin
-       cbStartTorrent.Font.Style:= [];
-       Buttons.OKButton.Font.Style:= []
-     end;
+    Ini.WriteBool('Interface', 'StartTorrentOnAdd', cbStartTorrent.Checked);
+    if (cbStartTorrent.Checked = false) then begin
+      cbStartTorrent.Font.Style:= [fsbold];
+      Buttons.OKButton.Font.Style:= [fsbold]
+    end
+    else begin
+      cbStartTorrent.Font.Style:= [];
+      Buttons.OKButton.Font.Style:= []
+    end;
 end;
 
 procedure TAddTorrentForm.DelButtonClick(Sender: TObject);
@@ -1161,7 +1161,7 @@ begin
           if k <> 0 then begin
             tmp_Name    := Copy (tmp_Name, k+n, 999);
             if ((tmpExt ='') and (re=true)) and (tmp_Name <> '') then begin
-               continue;
+              continue;
             end else begin
               total_sstr := total_sstr +1;
               ok         := true;

@@ -30,9 +30,9 @@ uses
 resourcestring
   SErrorCheckingVersion = 'Error checking for new version.';
   SNewVersionFound = 'A new version of %s is available.' + LineEnding +
-                     'Your current version: %s' + LineEnding +
-                     'The new version: %s' + LineEnding + LineEnding +
-                     'Do you wish to open the Downloads web page?';
+                    'Your current version: %s' + LineEnding +
+                    'The new version: %s' + LineEnding + LineEnding +
+                    'Do you wish to open the Downloads web page?';
   SLatestVersion = 'No updates have been found.' + LineEnding + 'You are running the latest version of %s.';
 
 type

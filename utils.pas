@@ -114,28 +114,28 @@ const
     GENERIC_WRITE,
     GENERIC_READ or GENERIC_WRITE);
   ShareMode: array[0..4] of Integer = (
-               0,
-               0,
-               FILE_SHARE_READ,
-               FILE_SHARE_WRITE,
-               FILE_SHARE_READ or FILE_SHARE_WRITE);
+              0,
+              0,
+              FILE_SHARE_READ,
+              FILE_SHARE_WRITE,
+              FILE_SHARE_READ or FILE_SHARE_WRITE);
 begin
   Result := CreateFileW(PWideChar(UTF8Decode(FileName)), dword(AccessMode[Mode and 3]),
-                       dword(ShareMode[(Mode and $F0) shr 4]), nil, OPEN_EXISTING,
-                       FILE_ATTRIBUTE_NORMAL, 0);
+                      dword(ShareMode[(Mode and $F0) shr 4]), nil, OPEN_EXISTING,
+                      FILE_ATTRIBUTE_NORMAL, 0);
   //if fail api return feInvalidHandle (INVALIDE_HANDLE=feInvalidHandle=-1)
 end;
 
 function FileCreateUTF8(Const FileName : string) : THandle;
 begin
   Result := CreateFileW(PWideChar(UTF8Decode(FileName)), GENERIC_READ or GENERIC_WRITE,
-                       0, nil, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+                      0, nil, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 end;
 
 function FileCreateUTF8(Const FileName : string; Rights: Cardinal) : THandle;
 begin
   Result := CreateFileW(PWideChar(UTF8Decode(FileName)), GENERIC_READ or GENERIC_WRITE,
-                       0, nil, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+                      0, nil, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 end;
 
 var
@@ -637,7 +637,7 @@ end;
 
 function TIniFileUtf8.getFileName() : string;
 begin
-	result:=FFileName;
+  result:=FFileName;
 end;
 
 

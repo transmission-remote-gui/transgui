@@ -400,8 +400,8 @@ begin
   end;
 
   args:=FRpc.RequestInfo(0, ['id', 'name', 'status', 'errorString', 'announceResponse', 'recheckProgress',
-                             'sizeWhenDone', 'leftUntilDone', 'rateDownload', 'rateUpload', 'trackerStats',
-                             'metadataPercentComplete'], ExtraFields);
+                            'sizeWhenDone', 'leftUntilDone', 'rateDownload', 'rateUpload', 'trackerStats',
+                            'metadataPercentComplete'], ExtraFields);
   try
     if (args <> nil) and not Terminated then begin
       FRpc.RequestFullInfo:=False;
@@ -504,12 +504,12 @@ var
   t: TJSONArray;
 begin
   args:=FRpc.RequestInfo(TorrentId, ['totalSize', 'sizeWhenDone', 'leftUntilDone', 'pieceCount', 'pieceSize', 'haveValid',
-                                     'hashString', 'comment', 'downloadedEver', 'uploadedEver', 'corruptEver', 'errorString',
-                                     'announceResponse', 'downloadLimit', 'downloadLimitMode', 'uploadLimit', 'uploadLimitMode',
-                                     'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
-                                     'seeders','peersGettingFromUs','leechers', 'uploadRatio', 'addedDate', 'doneDate',
-                                     'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id', 'pieces',
-                                     'trackerStats', 'secondsDownloading', 'secondsSeeding', 'magnetLink']);
+                                    'hashString', 'comment', 'downloadedEver', 'uploadedEver', 'corruptEver', 'errorString',
+                                    'announceResponse', 'downloadLimit', 'downloadLimitMode', 'uploadLimit', 'uploadLimitMode',
+                                    'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
+                                    'seeders','peersGettingFromUs','leechers', 'uploadRatio', 'addedDate', 'doneDate',
+                                    'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id', 'pieces',
+                                    'trackerStats', 'secondsDownloading', 'secondsSeeding', 'magnetLink']);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
@@ -585,8 +585,8 @@ procedure TRpc.InitSSL;
 {$ifndef darwin}
   procedure CheckOpenSSL;
   const
-	OpenSSLVersions: array[1..4] of string =
-	('0.9.8', '1.0.0', '1.0.2', '1.1.0');
+  OpenSSLVersions: array[1..4] of string =
+  ('0.9.8', '1.0.0', '1.0.2', '1.1.0');
   var
     hLib1, hLib2: TLibHandle;
     i: integer;

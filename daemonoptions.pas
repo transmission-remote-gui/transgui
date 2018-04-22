@@ -203,18 +203,18 @@ begin
   end;
   edBlocklistURL.Text:=Trim(edBlocklistURL.Text);
   if cbAutoAlt.Checked then begin
-     if StrToTimeDef(edAltTimeBegin.Text, -1) < 0 then begin
-       Page.ActivePage:=tabBandwidth;
-       edAltTimeBegin.SetFocus;
-       MessageDlg(SInvalidTime, mtError, [mbOK], 0);
-       exit;
-     end;
-     if StrToTimeDef(edAltTimeEnd.Text, -1) < 0 then begin
-       Page.ActivePage:=tabBandwidth;
-       edAltTimeEnd.SetFocus;
-       MessageDlg(SInvalidTime, mtError, [mbOK], 0);
-       exit;
-     end;
+    if StrToTimeDef(edAltTimeBegin.Text, -1) < 0 then begin
+      Page.ActivePage:=tabBandwidth;
+      edAltTimeBegin.SetFocus;
+      MessageDlg(SInvalidTime, mtError, [mbOK], 0);
+      exit;
+    end;
+    if StrToTimeDef(edAltTimeEnd.Text, -1) < 0 then begin
+      Page.ActivePage:=tabBandwidth;
+      edAltTimeEnd.SetFocus;
+      MessageDlg(SInvalidTime, mtError, [mbOK], 0);
+      exit;
+    end;
   end;
   ModalResult:=mrOK;
 end;

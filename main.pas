@@ -784,8 +784,8 @@ var
   Ini: TIniFileUtf8;
   FHomeDir: string;
   {$ifdef windows}
-   PrevWndProc: windows.WNDPROC;
-   HotKeyID: Integer;
+  PrevWndProc: windows.WNDPROC;
+  HotKeyID: Integer;
   {$endif windows}
 
 const
@@ -876,9 +876,9 @@ const
 
   TorrentFieldsMap: array[idxName..idxSizeLeft] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
-     'peersGettingFromUs,leechers', '', '', 'eta', 'uploadRatio',
-     'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority',
-     '', '', 'queuePosition', 'secondsSeeding', 'leftUntilDone');
+    'peersGettingFromUs,leechers', '', '', 'eta', 'uploadRatio',
+    'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority',
+    '', '', 'queuePosition', 'secondsSeeding', 'leftUntilDone');
 
   FinishedQueue = 1000000;
 
@@ -952,27 +952,27 @@ begin
       if Hash = '' then exit;
       if Length(Hash) = 32 then   // possible base32 encoded hash
                       try
-                         Hash:=StrToHex(Base32Decode(UpperCase(Hash)));
+                        Hash:=StrToHex(Base32Decode(UpperCase(Hash)));
                       except
-                         exit;
+                        exit;
                       end;
-     if Length(Hash) <> 40 then exit;
-     Result := true;
-     for i := 1 to 40 do if not (Hash[i] in ['a' .. 'f', 'A'..'F', '0'..'9']) then Result := false;
+    if Length(Hash) <> 40 then exit;
+    Result := true;
+    for i := 1 to 40 do if not (Hash[i] in ['a' .. 'f', 'A'..'F', '0'..'9']) then Result := false;
 end;
 
 procedure TMainForm.ReadLocalFolderWatch;
 var
   sr: TSearchRec;
 begin
-     if FPendingTorrents.Count = 0 then
-       begin
+    if FPendingTorrents.Count = 0 then
+      begin
             if FindFirstUTF8(FWatchLocalFolder+'*.torrent',faAnyFile,sr)=0 then
-               repeat
-                     FPendingTorrents.Add(FWatchLocalFolder+sr.Name);
-               until FindNextUTF8(sr)<>0;
+              repeat
+                    FPendingTorrents.Add(FWatchLocalFolder+sr.Name);
+              until FindNextUTF8(sr)<>0;
             FindCloseUTF8(sr);
-       end;
+      end;
 end;
 
 function GetHumanSize(sz: double; RoundTo: integer; const EmptyStr: string): string;
@@ -1003,19 +1003,19 @@ function AddToChannel(Clr: TColor; Value: integer; Position: byte): TColor;
 var i: integer;
 
 begin
-     i:=(Clr shr (Position*8)) and $FF;
-     i:=i + Value;
-     if i < 0 then i:=0;
-     if i > $FF then i:=$FF;
-     Result:=Clr and (not (Cardinal($FF) shl (Position*8))) or (Cardinal(i) shl (Position*8));
+    i:=(Clr shr (Position*8)) and $FF;
+    i:=i + Value;
+    if i < 0 then i:=0;
+    if i > $FF then i:=$FF;
+    Result:=Clr and (not (Cardinal($FF) shl (Position*8))) or (Cardinal(i) shl (Position*8));
 end;
 
 function AddToColor(Color: TColor; R, G, B: integer): TColor;
 begin
-     Result:=ColorToRGB(Color);
-     Result:=AddToChannel(Result, R, 0);
-     Result:=AddToChannel(Result, G, 1);
-     Result:=AddToChannel(Result, B, 2);
+    Result:=ColorToRGB(Color);
+    Result:=AddToChannel(Result, R, 0);
+    Result:=AddToChannel(Result, G, 1);
+    Result:=AddToChannel(Result, B, 2);
 end;
 
 function GetLikeColor(Color: TColor; Delta: integer): TColor;
@@ -1056,8 +1056,8 @@ procedure OnTranslate(Sender: TResTranslator; const ResourceName: AnsiString; va
 const
   IgnoreUnits: array[0..12] of string =
       ('fpjson','jsonparser','jsonscanner','lclstrconsts','math',
-       'rtlconsts','sysconst','variants','zbase','zipper','zstream',
-       'xmlcfg', 'registry');
+      'rtlconsts','sysconst','variants','zbase','zipper','zstream',
+      'xmlcfg', 'registry');
 
   IgnoreControls: array[0..3] of string =
     ('AboutForm.txAuthor', 'MainForm.miLn', 'ConnOptionsForm.cbUseSocks5', 'ConnOptionsForm.tabConnection');
@@ -1066,8 +1066,8 @@ var
   i: integer;
 begin
   Accept := not AnsiMatchText(Copy2Symb(ResourceName, '.'), IgnoreUnits)
-             or AnsiStartsText('lclstrconsts.rsMb', ResourceName)  //<-- dialog buttons
-             or AnsiStartsText('lclstrconsts.rsMt', ResourceName); //<-- dialog message
+            or AnsiStartsText('lclstrconsts.rsMb', ResourceName)  //<-- dialog buttons
+            or AnsiStartsText('lclstrconsts.rsMt', ResourceName); //<-- dialog message
   if Accept then
     for i:=Low(IgnoreControls) to High(IgnoreControls) do
       if AnsiStartsText(IgnoreControls[i], ResourceName) then begin
@@ -1127,7 +1127,7 @@ end;
 procedure LoadTranslation;
 begin
   if Ini.ReadBool('Translation', 'TranslateForm', True) = False then
-     FTranslationLanguage := 'English'
+    FTranslationLanguage := 'English'
   else begin
   FTranslationFileName := Ini.ReadString('Interface', 'TranslationFile', '');
   if FTranslationFileName <> '-' then
@@ -1168,7 +1168,7 @@ begin
       try
         proc.Executable:=ParamStrUTF8(0);
         for i:=1 to ParamCount do
-		  proc.Parameters.Add(ParamStrUTF8(i));
+      proc.Parameters.Add(ParamStrUTF8(i));
         for i:=0 to GetEnvironmentVariableCount - 1 do
           proc.Environment.Add(GetEnvironmentString(i));
         proc.Environment.Values['LIBOVERLAY_SCROLLBAR']:='0';
@@ -1453,7 +1453,7 @@ begin
 {$ifdef darwin}
   // Load better icon if possible
   s:=ExtractFilePath(ParamStrUTF8(0)) + '..' + DirectorySeparator + 'Resources'
-     + DirectorySeparator + ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.icns');
+    + DirectorySeparator + ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.icns');
   if FileExistsUTF8(s) then begin
     pic:=TPicture.Create;
     try
@@ -1607,10 +1607,10 @@ begin
   if FWatchLocalFolder  <> '' then
           if DirPathExists(FWatchLocalFolder) and DirectoryIsWritable(FWatchLocalFolder) then
             begin
-                 FWatchLocalFolder := AppendPathDelim(FWatchLocalFolder);
-                 FWatchDestinationFolder := Ini.ReadString('Interface','WatchDestinationFolder','');
-                 LocalWatchTimer.Interval:=trunc(Ini.ReadFloat('Interface','WatchInterval',1)*60000);
-                 LocalWatchTimer.Enabled := true;
+                FWatchLocalFolder := AppendPathDelim(FWatchLocalFolder);
+                FWatchDestinationFolder := Ini.ReadString('Interface','WatchDestinationFolder','');
+                LocalWatchTimer.Interval:=trunc(Ini.ReadFloat('Interface','WatchInterval',1)*60000);
+                LocalWatchTimer.Enabled := true;
             end;
   LoadColumns(gTorrents, 'TorrentsList');
   TorrentColumnsChanged;
@@ -1646,24 +1646,24 @@ begin
   Application.OnException:=@ApplicationPropertiesException;
 
   {$ifdef windows}
-   FFileManagerDefault:=Ini.ReadString('Interface','FileManagerDefault','explorer.exe');
-   FFileManagerDefaultParam:=Ini.ReadString('Interface', 'FileManagerDefaultParam', '/select,"%s"');
-   FGlobalHotkey:=Ini.ReadString('Interface','GlobalHotkey','');
-   FGlobalHotkeyMod:=Ini.ReadString('Interface','GlobalHotkeyMod','0');
-   HotKeyID := GlobalAddAtom('TransGUIHotkey');
-   PrevWndProc:=windows.WNDPROC(SetWindowLongPtr(Self.Handle,GWL_WNDPROC,PtrInt(@WndCallback)));
-   RegisterHotKey(Self.Handle,HotKeyID, VKStringToWord(FGlobalHotkeyMod), VKStringToWord(FGlobalHotkey));
-   // Create UserMenus if any in [UserMenu]
+  FFileManagerDefault:=Ini.ReadString('Interface','FileManagerDefault','explorer.exe');
+  FFileManagerDefaultParam:=Ini.ReadString('Interface', 'FileManagerDefaultParam', '/select,"%s"');
+  FGlobalHotkey:=Ini.ReadString('Interface','GlobalHotkey','');
+  FGlobalHotkeyMod:=Ini.ReadString('Interface','GlobalHotkeyMod','0');
+  HotKeyID := GlobalAddAtom('TransGUIHotkey');
+  PrevWndProc:=windows.WNDPROC(SetWindowLongPtr(Self.Handle,GWL_WNDPROC,PtrInt(@WndCallback)));
+  RegisterHotKey(Self.Handle,HotKeyID, VKStringToWord(FGlobalHotkeyMod), VKStringToWord(FGlobalHotkey));
+  // Create UserMenus if any in [UserMenu]
       j:= 1;
-       repeat
-             MenuCaption := Ini.ReadString('UserMenu','Caption'+IntToStr(j),'nocaption');
-             inc(J);
-       until MenuCaption = 'nocaption';
-       dec(j);
-       if j > 0 then
-         begin
-           if J > 2 then
-             begin
+      repeat
+            MenuCaption := Ini.ReadString('UserMenu','Caption'+IntToStr(j),'nocaption');
+            inc(J);
+      until MenuCaption = 'nocaption';
+      dec(j);
+      if j > 0 then
+        begin
+          if J > 2 then
+            begin
                   MI := TMenuItem.Create(Self);
                   MI.Caption:= sUserMenu;
                   MI.ImageIndex:=6;
@@ -1672,9 +1672,9 @@ begin
                   MI2.Caption:= sUserMenu;
                   MI2.ImageIndex:=6;
                   pmTorrents.Items.Insert(2,MI2);
-             end;
-           for i := 1 to j-1 do
-             begin
+            end;
+          for i := 1 to j-1 do
+            begin
                 MI := TMenuItem.Create(Self);
                 MI2 := TMenuItem.Create(Self);
                 MI.Caption:= Ini.ReadString('UserMenu','Caption'+IntToStr(i),'');
@@ -1685,18 +1685,18 @@ begin
                 end;
                 try
                 if ExtractIconEx(PChar(Ini.ReadString('UserMenu','ExeName'+IntToStr(i),'')), 0, LargeIco, SmallIco, 1) > null then
-                   begin
+                  begin
                         Ico := TIcon.Create;
                         try
-                           Ico.Handle := SmallIco;
-                           Ico.Transparent := True;
-                           Ico.Masked:=True;
+                          Ico.Handle := SmallIco;
+                          Ico.Transparent := True;
+                          Ico.Masked:=True;
                         finally
-                           ImageList16.AddIcon(Ico);
-                           Ico.Free;
-                           MI.ImageIndex := ImageList16.Count-1;
+                          ImageList16.AddIcon(Ico);
+                          Ico.Free;
+                          MI.ImageIndex := ImageList16.Count-1;
                         end;
-                   end;
+                  end;
                 except
                 end;
                 MI2.Caption:= MI.Caption;
@@ -1704,19 +1704,19 @@ begin
                 MI2.OnClick:=MI.OnClick;
                 MI2.ImageIndex:= MI.ImageIndex;
                 if j > 2 then pmFiles.Items[4].Add(MI)
-                         else pmFiles.Items.Insert(4,MI);
+                        else pmFiles.Items.Insert(4,MI);
                 if j > 2 then pmTorrents.Items[2].Add(MI2)
-                         else pmTorrents.Items.Insert(2,MI2);
-             end;
-         end;
-   // end Create UserMenu
+                        else pmTorrents.Items.Insert(2,MI2);
+            end;
+        end;
+  // end Create UserMenu
   {$else}
-     {$ifdef darwin}
-     FLinuxOpenDoc := Ini.ReadInteger('Interface','FileOpenDoc',0);  // macOS - OpenURL(s, p) = Original version TRGUI
-     {$else}
-     FLinuxOpenDoc := Ini.ReadInteger('Interface','FileOpenDoc',1);
-     {$endif darwin}
-     Ini.WriteInteger('Interface','FileOpenDoc',FLinuxOpenDoc);
+    {$ifdef darwin}
+    FLinuxOpenDoc := Ini.ReadInteger('Interface','FileOpenDoc',0);  // macOS - OpenURL(s, p) = Original version TRGUI
+    {$else}
+    FLinuxOpenDoc := Ini.ReadInteger('Interface','FileOpenDoc',1);
+    {$endif darwin}
+    Ini.WriteInteger('Interface','FileOpenDoc',FLinuxOpenDoc);
   {$endif windows}
 
 //Dynamic Associations of ShortCuts to Actions/Menus
@@ -1730,7 +1730,7 @@ begin
           if (i<SL.Count-1) and (SL.Text <> '') and (ActionList.ActionByName(SL.Names[i]) = nil) then Ini.WriteString('Shortcuts',StringReplace(ActionList.Actions[i].Name,'ac','',[]),ShortcutToText(TAction(ActionList.Actions[i]).ShortCut));
       end
       else
-         for i := 0 to SL.Count - 1 do
+        for i := 0 to SL.Count - 1 do
               try
                   TAction(ActionList.ActionbyName('ac'+SL.Names[i])).ShortCut := TextToShortcut(SL.ValueFromIndex[i]);
               except
@@ -1752,7 +1752,7 @@ begin
                   Ini.WriteInteger('StatusBarPanels',IntToStr(i),Statusbar.Panels[i].Width);
   end;
  {$IF LCL_FULLVERSION >= 1080000}
-   PageInfo.Options := PageInfo.Options + [nboDoChangeOnSetIndex]
+  PageInfo.Options := PageInfo.Options + [nboDoChangeOnSetIndex]
  {$ENDIF}
 end;
 
@@ -1799,8 +1799,8 @@ begin
   except
   end;
   {$ifdef windows}
-   UnRegisterHotkey(Self.Handle,HotKeyID);
-   GlobalDeleteAtom(HotKeyID);
+  UnRegisterHotkey(Self.Handle,HotKeyID);
+  GlobalDeleteAtom(HotKeyID);
   {$endif windows}
 
 end;
@@ -1950,9 +1950,9 @@ procedure TMainForm.acMenuShowExecute(Sender: TObject);
 begin
     acMenuShow.Checked:=not acMenuShow.Checked;
     if acMenuShow.Checked = false then
-       MainForm.Menu := nil
+      MainForm.Menu := nil
     else
-       MainForm.Menu := MainMenu;
+      MainForm.Menu := MainMenu;
 end;
 
 procedure TMainForm.acMoveTorrentExecute(Sender: TObject);
@@ -2068,11 +2068,11 @@ begin
   Application.ProcessMessages;
   if (Sender is TMenuItem) and (TMenuItem(Sender).Tag > 999) then
     begin
-         UserDef := true;
-         {$ifdef windows}
-         FUserDefinedMenuEx    := Ini.ReadString('UserMenu','ExeName'+IntToStr(TMenuItem(Sender).Tag-1000),'');
-         FUserDefinedMenuParam := Ini.ReadString('UserMenu','Params'+IntToStr(TMenuItem(Sender).Tag-1000),'');
-         {$endif windows}
+        UserDef := true;
+        {$ifdef windows}
+        FUserDefinedMenuEx    := Ini.ReadString('UserMenu','ExeName'+IntToStr(TMenuItem(Sender).Tag-1000),'');
+        FUserDefinedMenuParam := Ini.ReadString('UserMenu','Params'+IntToStr(TMenuItem(Sender).Tag-1000),'');
+        {$endif windows}
     end
       else UserDef := false;
   if lvFiles.Focused then begin
@@ -2201,17 +2201,17 @@ end;
 
 procedure TMainForm.acBigToolbarExecute(Sender: TObject);
 begin
-   acBigToolbar.Checked:=not acBigToolbar.Checked;
-   if acBigToolbar.Checked then begin
-     MainToolBar.ButtonWidth:= Ini.ReadInteger('MainForm','BigToolBarHeight',64);
-     MainToolBar.ButtonHeight:= MainToolBar.ButtonWidth;
-     MainToolBar.Images:= ImageList32;
-   end else begin
-     MainToolBar.ButtonWidth:= 23;
-     MainToolBar.ButtonHeight:=23;
-     MainToolBar.Images:= ImageList16;
-     end;
-   Ini.WriteBool('MainForm', 'BigToolbar', acBigToolbar.Checked);
+  acBigToolbar.Checked:=not acBigToolbar.Checked;
+  if acBigToolbar.Checked then begin
+    MainToolBar.ButtonWidth:= Ini.ReadInteger('MainForm','BigToolBarHeight',64);
+    MainToolBar.ButtonHeight:= MainToolBar.ButtonWidth;
+    MainToolBar.Images:= ImageList32;
+  end else begin
+    MainToolBar.ButtonWidth:= 23;
+    MainToolBar.ButtonHeight:=23;
+    MainToolBar.Images:= ImageList16;
+    end;
+  Ini.WriteBool('MainForm', 'BigToolbar', acBigToolbar.Checked);
 end;
 
 procedure TMainForm.acCheckNewVersionExecute(Sender: TObject);
@@ -2230,8 +2230,8 @@ begin
     AppNormal;
     if ShowModal = mrOk then
       begin
-           if isHash(edLink.Text) then edLink.Text := 'magnet:?xt=urn:btih:'+ edLink.Text;
-           DoAddTorrent(edLink.Text);
+          if isHash(edLink.Text) then edLink.Text := 'magnet:?xt=urn:btih:'+ edLink.Text;
+          DoAddTorrent(edLink.Text);
       end;
   finally
     Free;
@@ -2773,10 +2773,10 @@ end;
 procedure TMainForm.UpdateTray;
 begin
 {$ifndef CPUARM}
-   TrayIcon.Visible:=not IsUnity and
+  TrayIcon.Visible:=not IsUnity and
     (Ini.ReadBool('Interface', 'TrayIconAlways', True)  or
     ((WindowState = wsMinimized) and Ini.ReadBool('Interface', 'TrayMinimize', True) ) or
-     (not Self.Visible and Ini.ReadBool('Interface', 'TrayClose', False) )
+    (not Self.Visible and Ini.ReadBool('Interface', 'TrayClose', False) )
     );
 {$endif CPUARM}
 
@@ -2795,7 +2795,7 @@ procedure TMainForm.HideApp;
 begin
   if WindowState <> wsMinimized then
     Hide;
-   HideTaskbarButton;
+  HideTaskbarButton;
   UpdateTray;
 end;
 
@@ -3110,11 +3110,11 @@ begin
     if HoursBetween(Anow,AThen) < 24 then Days := 0;
     DecodeDateTime(Anow-AThen,discard,Discard,Discard,Hours,Minutes,Seconds,Discard);
     if Years > 0 then begin
-       Result := Format(sYears,[Years]) + ' ' + Format(sMonths,[Months]);
+      Result := Format(sYears,[Years]) + ' ' + Format(sMonths,[Months]);
     end else if Months > 0 then begin
       Result := Format(sMonths,[Months]) + ' ' + Format(sDays,[Days]);
-     end else if Days > 0 then begin
-       Result := Format(sDays,[Days]) + ' ' + Format(sHours,[Hours]);
+    end else if Days > 0 then begin
+      Result := Format(sDays,[Days]) + ' ' + Format(sHours,[Hours]);
     end else if Hours > 0 then begin
       Result := Format(sHours,[Hours]) + ' ' + Format(sMins,[Minutes]);
     end else if Minutes > 0 then begin
@@ -3133,8 +3133,8 @@ begin
     Result:=''
   else
     if FromNow then
-       Result := HumanReadableTime(Now,UnixToDateTime(d) + GetTimeZoneDelta) else
-           Result:=DateTimeToStr(UnixToDateTime(d) + GetTimeZoneDelta);
+      Result := HumanReadableTime(Now,UnixToDateTime(d) + GetTimeZoneDelta) else
+          Result:=DateTimeToStr(UnixToDateTime(d) + GetTimeZoneDelta);
 end;
 
 procedure TMainForm.DoRefresh(All: boolean);
@@ -3158,28 +3158,28 @@ var
 begin
   SaveDialog1.filename := 'transgui.ini';
   if SaveDialog1.Execute then begin
-     s:=SaveDialog1.filename;
-     d:=Ini.getFileName();
+    s:=SaveDialog1.filename;
+    d:=Ini.getFileName();
 
-     AssignFile(FileVar1, d );
-     AssignFile(FileVar2, s );
+    AssignFile(FileVar1, d );
+    AssignFile(FileVar2, s );
 
-     Reset  (FileVar1);
-     Rewrite(FileVar2);
+    Reset  (FileVar1);
+    Rewrite(FileVar2);
 
-     {$I+} //use exceptions
-     try
+    {$I+} //use exceptions
+    try
 
-     Repeat
-       Readln (FileVar1,s);
-       Writeln(FileVar2,s);
-     Until Eof(FileVar1);
+    Repeat
+      Readln (FileVar1,s);
+      Writeln(FileVar2,s);
+    Until Eof(FileVar1);
 
-     CloseFile(FileVar1);
-     CloseFile(FileVar2);
-     except
-     end;
-     {$I-} //!use exceptions
+    CloseFile(FileVar1);
+    CloseFile(FileVar2);
+    except
+    end;
+    {$I-} //!use exceptions
   end;
 end;
 
@@ -3192,66 +3192,66 @@ var
 begin
   OpenDialog1.filename := 'transgui.ini';
   if OpenDialog1.Execute then begin
-     s:=OpenDialog1.filename;
-     d:=Ini.getFileName();
-     p1:=0;
-     p2:=0;
-     p3:=0;
-     p4:=0;
-     // check valid Ini-file
-     AssignFile(FileVar2, s);
-     Reset     (FileVar2);
-     {$I+} //use exceptions
-     try
-     Repeat
-       Readln (FileVar2,s);
-       P := Pos ('[Hosts]',s);
-       if P>0 then p1 := P;
+    s:=OpenDialog1.filename;
+    d:=Ini.getFileName();
+    p1:=0;
+    p2:=0;
+    p3:=0;
+    p4:=0;
+    // check valid Ini-file
+    AssignFile(FileVar2, s);
+    Reset     (FileVar2);
+    {$I+} //use exceptions
+    try
+    Repeat
+      Readln (FileVar2,s);
+      P := Pos ('[Hosts]',s);
+      if P>0 then p1 := P;
 
-       P := Pos ('[MainForm]',s);
-       if P>0 then p2 := P;
+      P := Pos ('[MainForm]',s);
+      if P>0 then p2 := P;
 
-       P := Pos ('[TorrentsList]',s);
-       if P>0 then p3 := P;
+      P := Pos ('[TorrentsList]',s);
+      if P>0 then p3 := P;
 
-       P := Pos ('ShowCountryFlag=',s);
-       if P>0 then p4 := P;
-     Until Eof(FileVar2);
-     CloseFile(FileVar2);
-     except
-     end;
-     {$I-} //!use exceptions
+      P := Pos ('ShowCountryFlag=',s);
+      if P>0 then p4 := P;
+    Until Eof(FileVar2);
+    CloseFile(FileVar2);
+    except
+    end;
+    {$I-} //!use exceptions
 
-     if (p1=0) and (p2=0) and (p3=0) and (p4=0) then begin
+    if (p1=0) and (p2=0) and (p3=0) and (p4=0) then begin
         MessageDlg('Invalid file!', mtError, [mbOK], 0);
         exit;
-     end;
+    end;
 
-     // rewrite ini-file
-     s:=OpenDialog1.filename;
-     AssignFile(FileVar1, s );
-     AssignFile(FileVar2, d );
+    // rewrite ini-file
+    s:=OpenDialog1.filename;
+    AssignFile(FileVar1, s );
+    AssignFile(FileVar2, d );
 
-     Reset  (FileVar1);
-     Rewrite(FileVar2);
+    Reset  (FileVar1);
+    Rewrite(FileVar2);
 
-     {$I+} //use exceptions
-     try
-     Repeat
-       Readln (FileVar1,s);
-       Writeln(FileVar2,s);
-     Until Eof(FileVar1);
-     CloseFile(FileVar1);
-     CloseFile(FileVar2);
-     except
-     end;
-     {$I-} //!use exceptions
+    {$I+} //use exceptions
+    try
+    Repeat
+      Readln (FileVar1,s);
+      Writeln(FileVar2,s);
+    Until Eof(FileVar1);
+    CloseFile(FileVar1);
+    CloseFile(FileVar2);
+    except
+    end;
+    {$I-} //!use exceptions
 
-     // Read ini now!
-     CheckAppParams ();
+    // Read ini now!
+    CheckAppParams ();
 
 //   MessageDlg('All ok!', mtInformation, [mbOK], 0);
-     MessageDlg(sRestartRequired, mtInformation, [mbOk], 0);
+    MessageDlg(sRestartRequired, mtInformation, [mbOk], 0);
   end;
 end;
 
@@ -3681,13 +3681,13 @@ end;
 
 procedure TMainForm.acStatusBarSizesExecute(Sender: TObject);
 begin
-   acStatusBarSizes.Checked := not acStatusBarSizes.Checked;
-   if acStatusBarSizes.Checked then
-     begin
+  acStatusBarSizes.Checked := not acStatusBarSizes.Checked;
+  if acStatusBarSizes.Checked then
+    begin
           acStatusBar.Checked:=false;
           acStatusBarExecute(nil);
-     end
-       else
+    end
+      else
         begin
           StatusBar.Panels[4].Text:= '';
           StatusBar.Panels[5].Text:= '';
@@ -3715,30 +3715,30 @@ begin
     if c>= 0 then ADataCol := gTorrents.ColToDataCol(c);
     if r = 0 then gTorrents.Hint:='';
     if (ADataCol <> FCol) or (r <> FRow) then
-           begin
-             FCol := ADataCol;
-             FRow := r;
-             case ADataCol of
-             idxAddedOn, idxCompletedOn, idxLastActive:
-                 begin
-                     Application.CancelHint;
-                     gTorrents.Hint := TorrentDateTimeToString(gTorrents.Items[ADataCol, FRow-1],not(FFromNow));
-                 end
-                 else gTorrents.Hint:='';
-             end;
-           end;
+          begin
+            FCol := ADataCol;
+            FRow := r;
+            case ADataCol of
+            idxAddedOn, idxCompletedOn, idxLastActive:
+                begin
+                    Application.CancelHint;
+                    gTorrents.Hint := TorrentDateTimeToString(gTorrents.Items[ADataCol, FRow-1],not(FFromNow));
+                end
+                else gTorrents.Hint:='';
+            end;
+          end;
 end;
 
 procedure TMainForm.gTorrentsMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-     if Button = mbRight then pmTorrents.PopUp;
+    if Button = mbRight then pmTorrents.PopUp;
 end;
 
 procedure TMainForm.LocalWatchTimerTimer(Sender: TObject);
 begin
-   ReadLocalFolderWatch;
-   if FPendingTorrents.Count > 0 then
+  ReadLocalFolderWatch;
+  if FPendingTorrents.Count > 0 then
       begin
         FWatchDownloading := true;
         TickTimerTimer(nil);
@@ -3749,16 +3749,16 @@ end;
 procedure TMainForm.lvFilesMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-     if Button = mbRight then pmFiles.PopUp;
+    if Button = mbRight then pmFiles.PopUp;
 end;
 
 procedure TMainForm.MenuShowExecute(Sender: TObject);
 begin
  acMenuShow.Checked:=not acMenuShow.Checked;
  if acMenuShow.Checked = false then
-   MainForm.Menu := nil
+  MainForm.Menu := nil
  else
-   MainForm.Menu := MainMenu;
+  MainForm.Menu := MainMenu;
 end;
 
 procedure TMainForm.acToolbarShowExecute(Sender: TObject);
@@ -4167,13 +4167,13 @@ procedure TMainForm.edSearchChange(Sender: TObject);
 begin
   DoRefresh(True);
   if edSearch.Text=  '' then tbSearchCancel.Enabled:=false
-                     else tbSearchCancel.Enabled:=true;
+                    else tbSearchCancel.Enabled:=true;
 end;
 
 procedure TMainForm.edSearchKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-     if Key = VK_ESCAPE then edSearch.Text:='';
+    if Key = VK_ESCAPE then edSearch.Text:='';
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
@@ -4194,27 +4194,27 @@ procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
 var
   Keypressed: Word;
 begin
-     if (Shift = [ssAlt]) and not (MainForm.ActiveControl is TVarGridStringEditor) then
-     begin
-       Keypressed := Key;
-       Key := 0;
+    if (Shift = [ssAlt]) and not (MainForm.ActiveControl is TVarGridStringEditor) then
+    begin
+      Keypressed := Key;
+      Key := 0;
         case Keypressed of
-           VK_S: edSearch.SetFocus;
-           VK_G: PageInfo.PageIndex:=0;
-           VK_K: PageInfo.PageIndex:=1;
-           VK_P: PageInfo.PageIndex:=2;
-           VK_F: PageInfo.PageIndex:=3;
-           VK_1: lvFilter.Row:=fltAll;
-           VK_2: lvFilter.Row:=fltDown;
-           VK_3: lvFilter.Row:=fltDone;
-           VK_4: lvFilter.Row:=fltActive;
-           VK_5: lvFilter.Row:=fltInactive;
-           VK_6: lvFilter.Row:=fltStopped;
-           VK_7: lvFilter.Row:=fltError;
-           VK_8: lvFilter.Row:=fltWaiting;
+          VK_S: edSearch.SetFocus;
+          VK_G: PageInfo.PageIndex:=0;
+          VK_K: PageInfo.PageIndex:=1;
+          VK_P: PageInfo.PageIndex:=2;
+          VK_F: PageInfo.PageIndex:=3;
+          VK_1: lvFilter.Row:=fltAll;
+          VK_2: lvFilter.Row:=fltDown;
+          VK_3: lvFilter.Row:=fltDone;
+          VK_4: lvFilter.Row:=fltActive;
+          VK_5: lvFilter.Row:=fltInactive;
+          VK_6: lvFilter.Row:=fltStopped;
+          VK_7: lvFilter.Row:=fltError;
+          VK_8: lvFilter.Row:=fltWaiting;
         else Key := KeyPressed;
         end;
-     end;
+    end;
 
 end;
 
@@ -4592,7 +4592,7 @@ end;
 procedure TMainForm.MainToolBarContextPopup(Sender: TObject; MousePos: TPoint;
   var Handled: Boolean);
 begin
-     acBigToolBar.Execute;
+    acBigToolBar.Execute;
 end;
 
 procedure TMainForm.MenuItem101Click(Sender: TObject);
@@ -4667,11 +4667,11 @@ begin
   pt:=StatusBar.ClientToScreen(Point(X, Y));
   case StatusBar.GetPanelIndexAt(X, Y) of
     0: if Button = mbLeft then
-         acConnOptions.Execute;
+        acConnOptions.Execute;
     1: if rb then
-         pmDownSpeeds.PopUp(pt.X, pt.Y);
+        pmDownSpeeds.PopUp(pt.X, pt.Y);
     2: if rb then
-         pmUpSpeeds.PopUp(pt.X, pt.Y);
+        pmUpSpeeds.PopUp(pt.X, pt.Y);
   end;
 end;
 
@@ -4761,15 +4761,15 @@ begin
       end;
 
 {$ifdef LCLcarbon}
-     THackApplication(Application).ProcessAsyncCallQueue;
-     if Active and (WindowState <> wsMinimized) then begin
-       if not FFormActive then begin
-         FFormActive:=True;
-         CheckClipboardLink;
-       end;
-     end
-     else
-       FFormActive:=False;
+    THackApplication(Application).ProcessAsyncCallQueue;
+    if Active and (WindowState <> wsMinimized) then begin
+      if not FFormActive then begin
+        FFormActive:=True;
+        CheckClipboardLink;
+      end;
+    end
+    else
+      FFormActive:=False;
 {$endif LCLcarbon}
   finally
     TickTimer.Enabled:=True;
@@ -5168,7 +5168,7 @@ begin
     DoDisconnect;
     Sec:='Connection.' + ActiveConnection;
     if Ini.ReadBool(Sec, 'Autoreconnect', False) then
-       FReconnectTimeOut:=0
+      FReconnectTimeOut:=0
     else
     FReconnectTimeOut:=-1;
     FCurConn:=ActiveConnection;
@@ -5182,7 +5182,7 @@ var
   e: boolean;
 begin
   e:=((Screen.ActiveForm = Self) or not Visible or (WindowState = wsMinimized))
-     and not gTorrents.EditorMode and not lvFiles.EditorMode;
+    and not gTorrents.EditorMode and not lvFiles.EditorMode;
 
   acConnect.Enabled:=e;
   acOptions.Enabled:=e;
@@ -5326,10 +5326,10 @@ var
 begin
   // PETROV - Herb off
   i:=Ini.ReadInteger ('Interface', 'IgnoreRightLeft', 0);	// 0 - by default
-     Ini.WriteInteger('Interface', 'IgnoreRightLeft', i);
+    Ini.WriteInteger('Interface', 'IgnoreRightLeft', i);
 
   if (FTranslationLanguage='English') and (i=0) then
-     i := 1;
+    i := 1;
 
   Result := bdLeftToRight;
   case i of
@@ -5360,7 +5360,7 @@ begin
 
   l_old := 0;
   if path <> s_old then begin
-     l_old :=1;
+    l_old :=1;
   end;
   Result:= path;
 end;
@@ -5376,9 +5376,9 @@ begin
   Result:= path;
   l_old := length(path);
   if l_old >= 1 then begin
-     if path[l_old]='/' then
+    if path[l_old]='/' then
         path := MidStr(path,1,l_old-1);
-     Result:= path;
+    Result:= path;
   end;
 end;
 
@@ -6303,7 +6303,7 @@ begin
   tr:=GetTorrentError(t, gTorrents.Items[idxStatus, idx]);
   txError.Constraints.MinWidth:=400;
   if Ini.ReadBool('Translation', 'TranslateMsg', True) then
-     txError.Caption:=TranslateString(tr, True)
+    txError.Caption:=TranslateString(tr, True)
   else
       txError.Caption:=tr;
 
@@ -6435,7 +6435,7 @@ begin
   panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
 
   if RpcObj.RPCVersion >= 7 then
-     txMagnetLink.Text := t.Strings['magnetLink'];
+    txMagnetLink.Text := t.Strings['magnetLink'];
 
 
   panGeneralInfo.ChildSizing.Layout:=cclNone;
@@ -6465,7 +6465,7 @@ begin
   txHash.Caption:=t.Strings['hashString'];
   txComment.Caption:=UTF8Encode(t.Strings['comment']);
   if (AnsiCompareText(Copy(txComment.Caption, 1, 7), 'http://') = 0)
-     or (AnsiCompareText(Copy(txComment.Caption, 1, 8), 'https://') = 0)
+    or (AnsiCompareText(Copy(txComment.Caption, 1, 8), 'https://') = 0)
   then begin
     if not Assigned(txComment.OnClick) then begin
       txComment.OnClick:=@UrlLabelClick;
@@ -6996,15 +6996,15 @@ function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean; U
       if FileExistsUTF8(s) then begin
 {$ifdef mswindows}
 if Userdef then
-               begin
-                     p:=Format(FUserDefinedMenuParam, [s]);
-                     s:=FUserDefinedMenuEx;
-               end
-               else
-               begin
-                     p:=Format(FFileManagerDefaultParam, [s]); ; // ALERT  //      p:=Format('/select,"%s"', [s]);
-                     s:=FFileManagerDefault;                               //      s:='explorer.exe';
-               end;
+              begin
+                    p:=Format(FUserDefinedMenuParam, [s]);
+                    s:=FUserDefinedMenuEx;
+              end
+              else
+              begin
+                    p:=Format(FFileManagerDefaultParam, [s]); ; // ALERT  //      p:=Format('/select,"%s"', [s]);
+                    s:=FFileManagerDefault;                               //      s:='explorer.exe';
+              end;
 {$else}
         p:='';
         s:=ExtractFilePath(s);
@@ -7019,15 +7019,15 @@ if Userdef then
 
 {$ifdef mswindows}
 if Userdef then
-               begin
-                     p := Format(FUserDefinedMenuParam, [s]);
-                     s := FUserDefinedMenuEx;
-               end ;
+              begin
+                    p := Format(FUserDefinedMenuParam, [s]);
+                    s := FUserDefinedMenuEx;
+              end ;
                     Result:=OpenURL(s, p);
 {$else}
-       if FLinuxOpenDoc = 0 then
+      if FLinuxOpenDoc = 0 then
           Result := OpenURL(s, p)    // does not work in latest linux very well!!!! old.vers
-       else
+      else
           Result := OpenDocument(s); // works better - new.vers
 {$endif mswindows}
 
@@ -7046,16 +7046,16 @@ begin
   if s <> '' then begin
     if Userdef then
       begin
-       if (lvFiles.Focused) and (lvFiles.SelCount > 1) then
+      if (lvFiles.Focused) and (lvFiles.SelCount > 1) then
           begin
                 r := '';
                 for i := 0 to lvFiles.Items.Count-1 do
                   if lvFiles.RowSelected[i] then
                     if r = '' then r := MapRemoteToLocal(FFilesTree.GetFullPath(i)) + '"'  else
-                       r := r + ' "'+ MapRemoteToLocal(FFilesTree.GetFullPath(i)) + '"';
+                      r := r + ' "'+ MapRemoteToLocal(FFilesTree.GetFullPath(i)) + '"';
                 s := r;
           end;
-         // else s := '"' + s + '"';
+        // else s := '"' + s + '"';
       end;
     _Exec(s);
     exit;
@@ -7113,9 +7113,9 @@ end;
 
 procedure TMainform.StatusBarSizes;
 var
-   ids: variant;
-   TotalSize, TotalDownloaded, TotalSizeToDownload, TorrentDownloaded, TorrentSizeToDownload: Int64;
-   i: Integer;
+  ids: variant;
+  TotalSize, TotalDownloaded, TotalSizeToDownload, TorrentDownloaded, TorrentSizeToDownload: Int64;
+  i: Integer;
 begin
     try
     if gTorrents.Items.Count > 0 then
@@ -7128,11 +7128,11 @@ begin
         TotalSizeToDownload := 0;
         for i:=VarArrayLowBound(ids, 1) to VarArrayHighBound(ids, 1) do
         begin
-             TotalSize             := TotalSize + FTorrents.Items[idxSize, FTorrents.IndexOf(idxTorrentId, ids[i])];
-             TorrentSizeToDownload := FTorrents.Items[idxSizetoDowload, FTorrents.IndexOf(idxTorrentId, ids[i])];
-             TorrentDownloaded     := TorrentSizeToDownload * (FTorrents.Items[idxDone, FTorrents.IndexOf(idxTorrentId, ids[i])] / 100);
-             TotalSizeToDownload   := TotalSizeToDownload + TorrentSizeToDownload;
-             TotalDownloaded       := TotalDownloaded + TorrentDownloaded;
+            TotalSize             := TotalSize + FTorrents.Items[idxSize, FTorrents.IndexOf(idxTorrentId, ids[i])];
+            TorrentSizeToDownload := FTorrents.Items[idxSizetoDowload, FTorrents.IndexOf(idxTorrentId, ids[i])];
+            TorrentDownloaded     := TorrentSizeToDownload * (FTorrents.Items[idxDone, FTorrents.IndexOf(idxTorrentId, ids[i])] / 100);
+            TotalSizeToDownload   := TotalSizeToDownload + TorrentSizeToDownload;
+            TotalDownloaded       := TotalDownloaded + TorrentDownloaded;
         end;
         StatusBar.Panels[4].Text:=Format(sTotalSize,[GetHumanSize(TotalSize, 0, '?')]);
         StatusBar.Panels[5].Text:=Format(sTotalSizeToDownload,[GetHumanSize(TotalSizeToDownload, 0, '?')]);
@@ -7147,7 +7147,7 @@ begin
       StatusBar.Panels[7].Text:=Format(sTotalRemain,[GetHumanSize(0, 0, '?')]);
     end;
     except
-         gTorrents.Refresh;
+        gTorrents.Refresh;
     end;
 
 end;
@@ -7174,9 +7174,9 @@ begin
 
       n := 0;
       for xx:=0 to CB.Items.Count - 1 do begin
-         if CB.Items[xx]=s then begin
-           n := 1;
-         end;
+        if CB.Items[xx]=s then begin
+          n := 1;
+        end;
       end;
 
       if n=0 then begin
@@ -7188,7 +7188,7 @@ begin
         pFD.Txt:= s; // for debug
 
         try
-		  pFD.Lst := EncodeDate(2000,1,1); // last time folder
+      pFD.Lst := EncodeDate(2000,1,1); // last time folder
 
           if (lastDt <> '') then begin
             dd := Copy (lastDt, 1, 2);
@@ -7203,7 +7203,7 @@ begin
             pFD.Lst := EncodeDate(ny,nm,nd);
           end
         except
-        	MessageDlg('Error: LS-007. Please contact the developer', mtError, [mbOK], 0);
+          MessageDlg('Error: LS-007. Please contact the developer', mtError, [mbOK], 0);
             pFD.Lst := EncodeDate(2000,1,1); // last time folder
         end;
 
@@ -7221,7 +7221,7 @@ begin
   end
   else begin
     if CB.Items.Count > 0 then
-       CB.ItemIndex:=0;
+      CB.ItemIndex:=0;
   end;
 end;
 
@@ -7305,25 +7305,25 @@ begin
 
     try
     while (CB.Items.Count+maxdel) >= max do begin
-       min := 9999999;
-       indx:=-1;
-       for i:=0 to CB.Items.Count - 1 do begin
-         pFD := CB.Items.Objects[i] as FolderData;
-         if pFD = nil then continue;
+      min := 9999999;
+      indx:=-1;
+      for i:=0 to CB.Items.Count - 1 do begin
+        pFD := CB.Items.Objects[i] as FolderData;
+        if pFD = nil then continue;
 
-         fldr := DaysBetween(Today,pFD.Lst);
-         if Today > pFD.Lst then
-           fldr := 0- fldr;
+        fldr := DaysBetween(Today,pFD.Lst);
+        if Today > pFD.Lst then
+          fldr := 0- fldr;
 
-         fldr := fldr + pFD.Hit;
-         if fldr < min then begin
-           min := fldr;
-           indx:= i;
-         end;
-       end;
+        fldr := fldr + pFD.Hit;
+        if fldr < min then begin
+          min := fldr;
+          indx:= i;
+        end;
+      end;
 
-       if indx > -1 then
-         CB.Items.Delete(indx);
+      if indx > -1 then
+        CB.Items.Delete(indx);
     end;
     except
       MessageDlg('Error: LS-010. Please contact the developer', mtError, [mbOK], 0);

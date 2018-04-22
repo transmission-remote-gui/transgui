@@ -355,8 +355,8 @@ begin
     else begin
       R := I-1;
       if (CompareRes=0) then begin
-         Result := true;
-         L := I; // forces end of while loop
+        Result := true;
+        L := I; // forces end of while loop
       end;
     end;
   end;

@@ -33,7 +33,7 @@ implementation
 {------------------------------------------------------------------------------
   Name:    CFStringToStr
   Params:  AString  - Core Foundation string ref
-           Encoding - Result data encoding format
+          Encoding - Result data encoding format
   Returns: UTF-8 string
 
   Converts Core Foundation string to string

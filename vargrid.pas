@@ -238,7 +238,7 @@ procedure Register;
 implementation
 
 uses Variants, Math, GraphType, lclintf, Themes, types, lclproc
-     {$ifdef LCLcarbon} , carbonproc {$endif LCLcarbon};
+    {$ifdef LCLcarbon} , carbonproc {$endif LCLcarbon};
 
 const
   roSelected = 1;
@@ -1332,7 +1332,7 @@ var
       end;
       if ClickCellPushed and (aCol=PushedCell.x) and (aRow=PushedCell.y) then begin
         Include(gds, gdPushed);
-       end;
+      end;
     end;
 {$ifdef LCLgtk2}
     Rgn := CreateRectRgn(R.Left, R.Top, R.Right, R.Bottom);
@@ -1396,7 +1396,7 @@ begin
 
     // Draw the focus Rect
     if FocusRectVisible and (ARow=inherited Row) and
-       ((Rs and (ARow>=Top) and (ARow<=Bottom)) or IsCellVisible(Col,ARow))
+      ((Rs and (ARow>=Top) and (ARow<=Bottom)) or IsCellVisible(Col,ARow))
     then begin
       if EditorMode then begin
       //if EditorAlwaysShown and (FEditor<>nil) and FEditor.Visible then begin

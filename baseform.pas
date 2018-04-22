@@ -154,11 +154,11 @@ begin
         if C is TVarGrid then
           with TVarGrid(C).Columns do
             for i:=0 to Count - 1 do
-               Items[i].Width:=ScaleInt(Items[i].Width);
+              Items[i].Width:=ScaleInt(Items[i].Width);
         if C is TStatusBar then
           with TStatusBar(C) do
             for i:=0 to Panels.Count - 1 do
-               Panels[i].Width:=ScaleInt(Panels[i].Width);
+              Panels[i].Width:=ScaleInt(Panels[i].Width);
       end;
 
       // Runtime fixes
