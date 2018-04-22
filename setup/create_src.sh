@@ -1,6 +1,6 @@
 #!/bin/sh
 
-prog_ver="$(cat ../VERSION.txt)"
+prog_ver="$(cat ../VERSION)"
 zipfile="../Release/transgui-$prog_ver-src.zip"
 
 mkdir -p "../Release"

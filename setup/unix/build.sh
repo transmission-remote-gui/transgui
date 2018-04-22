@@ -3,7 +3,7 @@
 set -ex
 
 ROOT="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}" )")/../../" && pwd)"
-VERSION="$(cat "$ROOT/VERSION.txt")"
+VERSION="$(cat "$ROOT/VERSION")"
 
 build="$(git rev-list --abbrev-commit --max-count=1 HEAD)"
 lazarus_ver="$(lazbuild -v)"

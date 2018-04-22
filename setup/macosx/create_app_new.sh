@@ -2,7 +2,7 @@
 
 set -x
 
-prog_ver="$(cat ../../VERSION.txt)"
+prog_ver="$(cat ../../VERSION)"
 build="$(git rev-list --abbrev-commit --max-count=1 HEAD ../..)"
 lazarus_ver="$(lazbuild -v)"
 fpc_ver="$(fpc -i V | head -n 1)"

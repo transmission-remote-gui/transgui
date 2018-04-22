@@ -286,9 +286,9 @@ FPCFPMAKE=$(FPC)
 endif
 endif
 ifneq ($(findstring $(OS_TARGET),win32,win64),)
-PROG_VER=$(shell type VERSION.txt)
+PROG_VER=$(shell type VERSION)
 else
-PROG_VER=$(shell cat VERSION.txt)
+PROG_VER=$(shell cat VERSION)
 endif
 ifeq ($(LAZARUS_DIR),)
   LAZARUS_DIR=$(strip $(dir $(realpath $(firstword $(strip $(wildcard $(addsuffix /lazbuild$(SRCEXEEXT),$(SEARCHPATH))))))))
