@@ -898,7 +898,7 @@ uses
 {$endif darwin}
   synacode, ConnOptions, clipbrd, DateUtils, TorrProps, DaemonOptions, About,
   ToolWin, download, ColSetup, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
-  Options, ButtonPanel, BEncode, synautil;
+  Options, ButtonPanel, BEncode, synautil, Math;
 
 const
   TR_STATUS_CHECK_WAIT_1   = ( 1 shl 0 ); // Waiting in queue to check files
@@ -3107,8 +3107,8 @@ var
 begin
   Try
     PeriodBetween(ANow,AThen,Years,Months,Days);
-    if HoursBetween(Anow,AThen) < 24 then Days := 0;
-    DecodeDateTime(Anow-AThen,discard,Discard,Discard,Hours,Minutes,Seconds,Discard);
+    if Sign(Anow-Athen)*CompareTime(Anow,Athen) < 0 then Dec(Days);
+    DecodeDateTime(Sign(Anow-Athen)*(Anow-AThen),discard,Discard,Discard,Hours,Minutes,Seconds,Discard);
     if Years > 0 then begin
       Result := Format(sYears,[Years]) + ' ' + Format(sMonths,[Months]);
     end else if Months > 0 then begin

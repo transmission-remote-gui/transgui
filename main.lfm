@@ -157,7 +157,7 @@ inherited MainForm: TMainForm
         Top = 0
         Width = 130
         Align = alClient
-        Columns = <
+        Columns = <        
           item
             Title.Caption = ' '
             Width = 10
@@ -183,128 +183,128 @@ inherited MainForm: TMainForm
       Top = 0
       Width = 746
       Align = alClient
-      Columns = <
+      Columns = <      
         item
           Title.Caption = 'Name'
           Width = 200
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Size'
           Width = 60
-        end
+        end      
         item
           Alignment = taCenter
           Title.Caption = 'Done'
-        end
+        end      
         item
           Title.Caption = 'Status'
           Width = 70
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Seeds'
           Width = 55
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Peers'
           Width = 55
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Down speed'
           Width = 75
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Up speed'
           Width = 75
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'ETA'
           Width = 80
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Ratio'
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Downloaded'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Uploaded'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Title.Caption = 'Tracker'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Title.Caption = 'Tracker status'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taCenter
           Title.Caption = 'Added on'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taCenter
           Title.Caption = 'Completed on'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taCenter
           Title.Caption = 'Last active'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Title.Caption = 'Path'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Title.Caption = 'Priority'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Size to download'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'ID'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Queue position'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           SizePriority = 0
           Title.Caption = 'Seeding time'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Size left'
@@ -338,28 +338,28 @@ inherited MainForm: TMainForm
     Height = 23
     Top = 551
     Width = 881
-    Panels = <
+    Panels = <    
       item
         Width = 300
-      end
+      end    
       item
         Width = 140
-      end
+      end    
       item
         Width = 140
-      end
+      end    
       item
         Width = 120
-      end
+      end    
       item
         Width = 120
-      end
+      end    
       item
         Width = 120
-      end
+      end    
       item
         Width = 120
-      end
+      end    
       item
         Width = 120
       end>
@@ -960,19 +960,19 @@ inherited MainForm: TMainForm
         Top = 0
         Width = 873
         Align = alClient
-        Columns = <
+        Columns = <        
           item
             Title.Caption = 'Name'
             Width = 200
-          end
+          end        
           item
             Title.Caption = 'Status'
             Width = 200
-          end
+          end        
           item
             Title.Caption = 'Update in'
             Width = 80
-          end
+          end        
           item
             Title.Caption = 'Seeds'
           end>
@@ -999,38 +999,38 @@ inherited MainForm: TMainForm
         Top = 0
         Width = 772
         Align = alClient
-        Columns = <
+        Columns = <        
           item
             Title.Caption = 'Host'
             Width = 150
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Caption = 'Port'
             Width = 0
             Visible = False
-          end
+          end        
           item
             Title.Caption = 'Country'
             Width = 100
-          end
+          end        
           item
             Title.Caption = 'Client'
             Width = 150
-          end
+          end        
           item
             Title.Caption = 'Flags'
             Width = 70
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Caption = 'Have'
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Caption = 'Up speed'
             Width = 80
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Caption = 'Down speed'
@@ -1058,27 +1058,27 @@ inherited MainForm: TMainForm
         Top = 0
         Width = 873
         Align = alClient
-        Columns = <
+        Columns = <        
           item
             Title.Caption = 'File name'
             Width = 350
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Caption = 'Size'
             Width = 80
-          end
+          end        
           item
             Alignment = taCenter
             Title.Caption = 'Done'
             Width = 70
-          end
+          end        
           item
             Alignment = taCenter
             Title.Alignment = taCenter
             Title.Caption = '%'
             Width = 70
-          end
+          end        
           item
             Title.Caption = 'Priority'
             Width = 100
@@ -1110,17 +1110,17 @@ inherited MainForm: TMainForm
         Top = 24
         Width = 760
         Align = alClient
-        Columns = <
+        Columns = <        
           item
             Title.Caption = ' '
             Width = 200
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Alignment = taCenter
             Title.Caption = 'Current'
             Width = 120
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Alignment = taCenter
