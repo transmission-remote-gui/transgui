@@ -2719,8 +2719,9 @@ begin
             end;
             args.Free;
 
-            edSaveAs.Text:=Trim(edSaveAs.Text);
-            edSaveAs.Text := ExcludeInvalidChar(edSaveAs.Text); // petrov - Exclude prohibited characters
+//          edSaveAs.Text := Trim(edSaveAs.Text);               // leave spaces to not rename the torrent (see below)
+            edSaveAs.Text := ExcludeInvalidChar(edSaveAs.Text); // Exclude prohibited characters
+
             if OldName <> edSaveAs.Text then begin
               // Changing torrent name
               req.Free;
@@ -2734,11 +2735,14 @@ begin
               args:=nil;
               args:=RpcObj.SendRequest(req, False);
               if args = nil then begin
-                CheckStatus(False);
-                exit;
+                // CheckStatus(False); // failed to rename torrent
+                // exit;               // we continue work (try)
               end;
+
               args.Free;
             end;
+
+
           finally
             req.Free;
           end;
