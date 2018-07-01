@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -50,7 +50,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="19">
+    <Units Count="20">
       <Unit0>
         <Filename Value="transgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -180,6 +180,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="BaseForm"/>
       </Unit18>
+      <Unit19>
+        <Filename Value="passwcon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="PasswordConnect"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit19>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

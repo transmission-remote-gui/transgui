@@ -3133,13 +3133,18 @@ begin
 end;
 
 function TMainForm.TorrentDateTimeToString(d: Int64; FromNow: Boolean): string;
+var
+   s: string;
 begin
   if d = 0 then
     Result:=''
-  else
+  else begin
     if FromNow then
-      Result := HumanReadableTime(Now,UnixToDateTime(d) + GetTimeZoneDelta) else
-          Result:=DateTimeToStr(UnixToDateTime(d) + GetTimeZoneDelta);
+      s := HumanReadableTime(Now,UnixToDateTime(d) + GetTimeZoneDelta)
+    else
+      s := DateTimeToStr(UnixToDateTime(d) + GetTimeZoneDelta);
+    Result := s;
+  end;
 end;
 
 procedure TMainForm.DoRefresh(All: boolean);
@@ -7137,14 +7142,16 @@ procedure TMainform.StatusBarSizes;
 var
   ids: variant;
   TotalSize, TotalDownloaded, TotalSizeToDownload, TorrentDownloaded, TorrentSizeToDownload: Int64;
-  i: Integer;
+  i : Integer;
+  a, b, c, d: Int64;
 begin
     try
     if gTorrents.Items.Count > 0 then
     begin
         if gTorrents.SelCount > 0 then
-            ids := GetSelectedTorrents
-        else  ids := GetDisplayedTorrents;
+           ids := GetSelectedTorrents
+        else
+           ids := GetDisplayedTorrents;
         TotalSize := 0;
         TotalDownloaded := 0;
         TotalSizeToDownload := 0;
@@ -7152,7 +7159,12 @@ begin
         begin
             TotalSize             := TotalSize + FTorrents.Items[idxSize, FTorrents.IndexOf(idxTorrentId, ids[i])];
             TorrentSizeToDownload := FTorrents.Items[idxSizetoDowload, FTorrents.IndexOf(idxTorrentId, ids[i])];
-            TorrentDownloaded     := TorrentSizeToDownload * (FTorrents.Items[idxDone, FTorrents.IndexOf(idxTorrentId, ids[i])] / 100);
+            a:= idxDone;
+            b:= FTorrents.IndexOf(idxTorrentId, ids[i]);
+            c:= FTorrents.Items[a,b];
+            d:= Round (c / 100);
+            TorrentDownloaded     := TorrentSizeToDownload * d;
+//          TorrentDownloaded     := TorrentSizeToDownload * (FTorrents.Items[idxDone, FTorrents.IndexOf(idxTorrentId, ids[i])] / 100); runtime 200 ?
             TotalSizeToDownload   := TotalSizeToDownload + TorrentSizeToDownload;
             TotalDownloaded       := TotalDownloaded + TorrentDownloaded;
         end;

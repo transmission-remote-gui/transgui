@@ -36,8 +36,10 @@ uses
 {$endif}
   Interfaces, // this includes the LCL widgetset
   Forms
-  { you can add units after this }, BaseForm, Main, rpc, AddTorrent, ConnOptions, varlist,
-  TorrProps, DaemonOptions, About, IpResolver, download, ColSetup, utils, ResTranslator, AddLink, MoveTorrent, AddTracker, Options;
+  { you can add units after this }, BaseForm, Main, rpc, AddTorrent,
+  ConnOptions, varlist, TorrProps, DaemonOptions, About, IpResolver, download,
+  ColSetup, utils, ResTranslator, AddLink, MoveTorrent, AddTracker, Options,
+  passwcon;
 
 //{$ifdef windows}
 {$R *.res}
