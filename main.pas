@@ -6475,7 +6475,8 @@ begin
     if t.Floats['totalSize'] = t.Floats['haveValid'] then
       i:=t.Integers['pieceCount']
     else
-      i:=Trunc(t.Floats['haveValid']/t.Floats['pieceSize']);
+      i:=Trunc(t.Floats['haveValid']/(t.Floats['pieceSize'] + 0.00000001)); // division by 0
+
     txPieces.Caption:=Format(sHave, [t.Integers['pieceCount'], GetHumanSize(t.Floats['pieceSize']), i]);
   end
   else begin
