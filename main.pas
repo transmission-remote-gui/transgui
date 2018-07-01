@@ -31,7 +31,8 @@ uses
   {$endif windows}
   Graphics, Dialogs, ComCtrls, Menus, ActnList, LCLVersion,
   httpsend, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
-  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent, Types, LazFileUtils, LazUTF8, StringToVK;
+  zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent, Types,
+  LazFileUtils, LazUTF8, StringToVK, passwcon;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -4899,12 +4900,28 @@ begin
     if i >= 0 then
       pwd:=FPasswords.ValueFromIndex[i]
     else begin
-      pwd:='';
-      if not InputQuery(Format(SConnectTo, [FCurConn]), Format(SEnterPassword, [FCurConn]), pwd) then begin
-        RpcObj.Url:='-';
-        Result:=False;
-        exit;
+      pwd := '';
+      // own dialog for entering a password (****)
+      with TPasswordConnect.Create(Self) do
+      try
+         SetText(Format(SConnectTo, [FCurConn]), Format(SEnterPassword, [FCurConn]));
+         if ShowModal <> mrOk then begin
+           RpcObj.Url:='-';
+           Result:=False;
+           exit;
+         end else begin
+           pwd := gPassw
+         end;
+      finally
+         Free;
       end;
+
+      //this function does not hide characters
+      //if not InputQuery(Format(SConnectTo, [FCurConn]), Format(SEnterPassword, [FCurConn]), pwd) then begin
+      //    RpcObj.Url:='-';
+      //    Result:=False;
+      //    exit;
+      //end;
     end;
   end
   else

@@ -1,0 +1,61 @@
+object PasswordConnect: TPasswordConnect
+  Left = 421
+  Height = 99
+  Top = 451
+  Width = 456
+  BorderIcons = []
+  Caption = 'PasswordConnect'
+  ClientHeight = 99
+  ClientWidth = 456
+  Constraints.MaxHeight = 99
+  Constraints.MaxWidth = 456
+  Constraints.MinHeight = 99
+  Constraints.MinWidth = 456
+  OnCreate = FormCreate
+  Position = poMainFormCenter
+  LCLVersion = '1.6.4.0'
+  object lMsg: TLabel
+    Left = 8
+    Height = 23
+    Top = 8
+    Width = 440
+    AutoSize = False
+    Caption = 'lMsg'
+    ParentColor = False
+  end
+  object passw: TEdit
+    Left = 8
+    Height = 23
+    Top = 32
+    Width = 440
+    AutoSize = False
+    EchoMode = emPassword
+    PasswordChar = '*'
+    TabOrder = 0
+    Text = '12345'
+  end
+  object Buttons: TButtonPanel
+    Left = 8
+    Height = 26
+    Top = 65
+    Width = 440
+    BorderSpacing.Left = 8
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    OKButton.OnClick = OKButtonClick
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    CancelButton.OnClick = CancelButtonClick
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+end
