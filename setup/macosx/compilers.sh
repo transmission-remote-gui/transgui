@@ -6,7 +6,7 @@ fpc="fpc-3.0.4.intel-macosx"
 lazarus="lazarus-1.8.2-i686-macosx"
 
 if [ -n "${sourceforge_mirror-}" ]; then
-    mirror_string="&use_mirror=${sourceforge_mirror}"
+  mirror_string="&use_mirror=${sourceforge_mirror}"
 fi
 
 if [ ! -x "$(command -v fpc 2>&1)" ]; then

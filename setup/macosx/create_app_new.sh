@@ -13,7 +13,7 @@ appfolder="$dmgfolder/$appname.app"
 lazdir="${1:-/Developer/lazarus/}"
 
 if [ -z "${CI-}" ]; then
-    ./compilers.sh
+  ./compilers.sh
 fi
 
 if [ ! "$lazdir" = "" ]; then
@@ -69,5 +69,5 @@ rm -rf "$dmgfolder"
 mv ../../about.lfm.bak ../../about.lfm
 
 if [ -z "${CI-}" ]; then
-    open "transgui-$prog_ver.dmg"
+  open "transgui-$prog_ver.dmg"
 fi

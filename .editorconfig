@@ -9,7 +9,7 @@ trim_trailing_whitespace = true
 [*.{bat,iss,txt}]
 end_of_line = crlf
 
-[*.{pas,lpi,lfm,lpr}]
+[*.{pas,lpi,lfm,lpr,sh}]
 indent_size = 2
 indent_style = space
 
