@@ -8,8 +8,7 @@ appname="Transmission Remote GUI"
 appfolder="../../$appname.app"
 lazdir="${1:-/Developer/lazarus/}"
 
-if [ ! "$lazdir" = "" ]
-then
+if [ ! "$lazdir" = "" ]; then
   lazdir=LAZARUS_DIR="$lazdir"
 fi
 
@@ -29,8 +28,7 @@ mv "$exename" "$exename.ppc"
 lipo -create "$exename.ppc" "$exename.386" -output "$exename"
 rm "$exename.386" "$exename.ppc"
 
-if ! [ -e $exename ]
-then
+if ! [ -e $exename ]; then
   echo "$exename does not exist"
   exit 1
 fi
