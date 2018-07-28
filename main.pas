@@ -135,6 +135,9 @@ resourcestring
   sBiDiRightLeftNoAlign = 'Right->Left (No Align)';
   sBiDiRightLeftReadOnly = 'Right->Left (Reading Only)';
 
+  sPrivateOn = 'ON';
+  sPrivateOff = 'OFF';
+
 type
 
   // for torrent folder
@@ -815,6 +818,7 @@ const
   idxQueuePos = 21;
   idxSeedingTime = 22;
   idxSizeLeft = 23;
+  idxPrivate = 24;
 
   idxTag = -1;
   idxSeedsTotal = -2;
@@ -875,11 +879,11 @@ const
 
   StatusFiltersCount = 8;
 
-  TorrentFieldsMap: array[idxName..idxSizeLeft] of string =
+  TorrentFieldsMap: array[idxName..idxPrivate] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
     'peersGettingFromUs,leechers', '', '', 'eta', 'uploadRatio',
     'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority',
-    '', '', 'queuePosition', 'secondsSeeding', 'leftUntilDone');
+    '', '', 'queuePosition', 'secondsSeeding', 'leftUntilDone', 'isPrivate');
 
   FinishedQueue = 1000000;
 
@@ -4294,6 +4298,14 @@ begin
           else
             Text:='';
         end;
+      idxPrivate:
+        begin
+          j:=Sender.Items[idxPrivate, ARow];
+          if j >= 1 then
+            Text:=sPrivateOn
+          else
+            Text:=sPrivateOff;
+        end;
     end;
   end;
 end;
@@ -5639,6 +5651,7 @@ begin
     FieldExists[idxPriority]:=t.IndexOfName('bandwidthPriority') >= 0;
     FieldExists[idxQueuePos]:=t.IndexOfName('queuePosition') >= 0;
     FieldExists[idxSeedingTime]:=t.IndexOfName('secondsSeeding') >= 0;
+    FieldExists[idxPrivate]:=t.IndexOfName('isPrivate') >= 0;
   end;
 
   UpSpeed:=0;
@@ -5875,6 +5888,9 @@ begin
         Inc(j, FinishedQueue);
       FTorrents[idxQueuePos, row]:=j;
     end;
+
+    if FieldExists[idxPrivate] then
+      FTorrents[idxPrivate, row]:=t.Integers['isPrivate'];
 
     DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, row];
     UpSpeed:=UpSpeed + FTorrents[idxUpSpeed, row];
