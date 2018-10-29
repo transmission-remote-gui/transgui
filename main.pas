@@ -32,7 +32,7 @@ uses
   Graphics, Dialogs, ComCtrls, Menus, ActnList, LCLVersion,
   httpsend, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
   zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent, Types,
-  LazFileUtils, LazUTF8, StringToVK, passwcon;
+  LazFileUtils, LazUTF8, StringToVK, passwcon, GContnrs;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -139,6 +139,14 @@ resourcestring
   sPrivateOff = 'OFF';
 
 type
+
+  { TMyHashMap example from hashmapdemo }
+  TMyHashMap = class(specialize TGenHashMap<Integer, Integer>)
+    function DefaultHashKey(const Key: Integer): Integer; override;
+    function DefaultKeysEqual(const A, B: Integer): Boolean; override;
+    function DefaultKeyToString(const Key: Integer): String; override;
+    function DefaultItemToString(const Item: Integer): String; override;
+  end;
 
   // for torrent folder
   FolderData = class
@@ -905,6 +913,29 @@ uses
   ToolWin, download, ColSetup, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
   Options, ButtonPanel, BEncode, synautil, Math;
 
+  {TMyHashMap}
+  function TMyHashMap.DefaultHashKey(const Key: Integer): Integer;
+  begin
+    Result := Key;
+    if Odd(Result) then
+      Result := Result * 3;
+    end;
+
+  function TMyHashMap.DefaultKeysEqual(const A, B: Integer): Boolean;
+  begin
+    Result := A = B;
+  end;
+
+  function TMyHashMap.DefaultKeyToString(const Key: Integer): String;
+  begin
+    WriteStr(Result, Key);
+  end;
+
+  function TMyHashMap.DefaultItemToString(const Item: Integer): String;
+  begin
+    WriteStr(Result, Item);
+  end;
+  
 const
   TR_STATUS_CHECK_WAIT_1   = ( 1 shl 0 ); // Waiting in queue to check files
   TR_STATUS_CHECK_1        = ( 1 shl 1 ); // Checking files
@@ -7156,34 +7187,38 @@ end;
 
 procedure TMainform.StatusBarSizes;
 var
-  ids: variant;
-  TotalSize, TotalDownloaded, TotalSizeToDownload, TorrentDownloaded, TorrentSizeToDownload: Int64;
-  i : Integer;
-  a, b, c, d: Int64;
+   MMap: TMyHashMap;
+   ids, cidx: variant;
+   TotalSize, TotalDownloaded, TotalSizeToDownload, TorrentDownloaded, TorrentSizeToDownload: Int64;
+   i: Integer;
 begin
     try
     if gTorrents.Items.Count > 0 then
     begin
         if gTorrents.SelCount > 0 then
-           ids := GetSelectedTorrents
-        else
-           ids := GetDisplayedTorrents;
+            ids := GetSelectedTorrents
+        else  ids := GetDisplayedTorrents;
         TotalSize := 0;
         TotalDownloaded := 0;
         TotalSizeToDownload := 0;
+		
+		MMap := TMyHashMap.Create;
+		for i:=0 to FTorrents.Count -1 do
+		begin
+		  MMap[StrToInt(Ftorrents.Items[idxTorrentId, i])] := i;
+		end;
+
         for i:=VarArrayLowBound(ids, 1) to VarArrayHighBound(ids, 1) do
         begin
-            TotalSize             := TotalSize + FTorrents.Items[idxSize, FTorrents.IndexOf(idxTorrentId, ids[i])];
-            TorrentSizeToDownload := FTorrents.Items[idxSizetoDowload, FTorrents.IndexOf(idxTorrentId, ids[i])];
-            a:= idxDone;
-            b:= FTorrents.IndexOf(idxTorrentId, ids[i]);
-            c:= FTorrents.Items[a,b];
-            d:= Round (c / 100);
-            TorrentDownloaded     := TorrentSizeToDownload * d;
-//          TorrentDownloaded     := TorrentSizeToDownload * (FTorrents.Items[idxDone, FTorrents.IndexOf(idxTorrentId, ids[i])] / 100); runtime 200 ?
-            TotalSizeToDownload   := TotalSizeToDownload + TorrentSizeToDownload;
-            TotalDownloaded       := TotalDownloaded + TorrentDownloaded;
+			 cidx := MMap[ids[i]];
+			 TotalSize             := TotalSize + FTorrents.Items[idxSize, cidx];  
+			 TorrentSizeToDownload := FTorrents.Items[idxSizetoDowload, cidx];
+			 TorrentDownloaded     := TorrentSizeToDownload * (FTorrents.Items[idxDone, cidx] / 100);  
+			 TotalSizeToDownload   := TotalSizeToDownload + TorrentSizeToDownload;  
+			 TotalDownloaded       := TotalDownloaded + TorrentDownloaded;  
         end;
+		MMap.Free;
+		
         StatusBar.Panels[4].Text:=Format(sTotalSize,[GetHumanSize(TotalSize, 0, '?')]);
         StatusBar.Panels[5].Text:=Format(sTotalSizeToDownload,[GetHumanSize(TotalSizeToDownload, 0, '?')]);
         StatusBar.Panels[6].Text:=Format(sTotalDownloaded,[GetHumanSize(TotalDownloaded, 0, '?')]);
@@ -7197,7 +7232,7 @@ begin
       StatusBar.Panels[7].Text:=Format(sTotalRemain,[GetHumanSize(0, 0, '?')]);
     end;
     except
-        gTorrents.Refresh;
+         gTorrents.Refresh;
     end;
 
 end;
