@@ -77,8 +77,8 @@ begin
 end;
 
 procedure TMoveTorrentForm.FormCreate(Sender: TObject);
-var
-    c,c1,c2: integer;
+///var
+///    c,c1,c2: integer;
 begin
   Buttons.OKButton.ModalResult:=mrNone;
   Buttons.OKButton.OnClick:=@btOKClick;

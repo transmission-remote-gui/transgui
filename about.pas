@@ -180,7 +180,7 @@ begin
           FHttp.ProxyUser:=RpcObj.Http.ProxyUser;
           FHttp.ProxyPass:=RpcObj.Http.ProxyPass;
         end;
-        if FHttp.HTTPMethod('GET', 'https://raw.githubusercontent.com/transmission-remote-gui/transgui/master/VERSION') then begin
+        if FHttp.HTTPMethod('GET', 'https://raw.githubusercontent.com/transmission-remote-gui/transgui/master/VERSION.txt') then begin
           if FHttp.ResultCode = 200 then begin
             SetString(FVersion, FHttp.Document.Memory, FHttp.Document.Size);
             FVersion:=Trim(FVersion);

@@ -12,17 +12,13 @@
       <AutoCreateForms Value="False"/>
       <UseAppBundle Value="False"/>
       <UseXPManifest Value="True"/>
-      <XPManifest>
-        <DpiAware Value="True"/>
-      </XPManifest>
       <Icon Value="0"/>
     </General>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="5"/>
-      <MinorVersionNr Value="15"/>
-      <RevisionNr Value="4"/>
-      <StringTable CompanyName="Transmission Remote GUI working group" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2018 by Yury Sidorov &amp; Transmission Remote GUI working group" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion="5.15.4"/>
+      <MinorVersionNr Value="16"/>
+      <StringTable CompanyName="Transmission Remote GUI working group" FileDescription="Transmission Remote GUI" InternalName="transgui" LegalCopyright="Copyright (c) 2008-2018 by Yury Sidorov &amp; Transmission Remote GUI working group" OriginalFilename="transgui.exe" ProductName="Transmission Remote GUI" ProductVersion="5.16"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="default" Default="True"/>
@@ -204,21 +200,19 @@
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
-      <Optimizations>
-        <OptimizationLevel Value="4"/>
-      </Optimizations>
       <SmallerCode Value="True"/>
     </CodeGeneration>
-    <Linking>
-      <Debugging>
-        <UseValgrind Value="True"/>
-      </Debugging>
-    </Linking>
     <Other>
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
       <CustomOptions Value="-Sa"/>
+      <ExecuteBefore>
+        <ShowAllMessages Value="True"/>
+      </ExecuteBefore>
+      <ExecuteAfter>
+        <ShowAllMessages Value="True"/>
+      </ExecuteAfter>
     </Other>
   </CompilerOptions>
   <Debugging>

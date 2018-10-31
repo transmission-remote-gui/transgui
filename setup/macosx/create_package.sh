@@ -1,6 +1,6 @@
 #!/bin/sh
 
-prog_ver="$(cat ../../VERSION)"
+prog_ver="$(cat ../../VERSION.txt)"
 pm="/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker"
 proot=../../proot
 

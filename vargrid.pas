@@ -1348,6 +1348,7 @@ var
   end;
 
 begin
+  Rs := false;
   // Upper and Lower bounds for this row
   R.Left:=0;
   ColRowToOffSet(False, True, aRow, R.Top, R.Bottom);

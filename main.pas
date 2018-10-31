@@ -36,7 +36,7 @@ uses
 
 const
   AppName = 'Transmission Remote GUI';
-  AppVersion = '5.15.4';
+  AppVersion = '5.16';
 
 resourcestring
   sAll = 'All torrents';
@@ -670,7 +670,7 @@ type
     FPendingTorrents: TStringList;
     FLinksFromClipboard: boolean;
     FLastClipboardLink: string;
-    FLinuxOpenDoc: integer;
+//    FLinuxOpenDoc: integer;
     FFromNow: boolean;
     FWatchLocalFolder: string;
     FWatchDestinationFolder: string;
@@ -696,6 +696,7 @@ type
     FFilesCapt: string;
     FCalcAvg: boolean;
     FPasswords: TStringList;
+    FAppProps:TApplicationProperties;
 
     procedure UpdateUI;
     procedure UpdateUIRpcVersion(RpcVersion: integer);
@@ -776,7 +777,9 @@ type
     function SelectRemoteFolder(const CurFolder, DialogTitle: string): string;
     procedure ConnectionSettingsChanged(const ActiveConnection: string; ForceReconnect: boolean);
     procedure StatusBarSizes;
-  end;
+private
+    procedure _onException(Sender: TObject; E: Exception);
+end;
 
 function ExcludeInvalidChar (path: string): string; // PETROV
 function GetBiDi: TBiDiMode;
@@ -1505,6 +1508,16 @@ begin
 
   RegisterURLHandler(@AddTorrentFile);
 {$endif darwin}
+
+
+  {$if FPC_FULlVERSION>=30101}
+  AllowReuseOfLineInfoData:=false;
+  {$endif}
+  FAppProps := TApplicationProperties.Create(Self);
+  FAppProps.OnException := @_onException;
+  FAppProps.CaptureExceptions := True;
+
+
   Application.Title:=AppName + ' v' + AppVersion;
   Caption:=Application.Title;
   txTransferHeader.Font.Size:=Font.Size + 2;
@@ -3756,6 +3769,7 @@ procedure TMainForm.gTorrentsMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 var r, c, ADatacol: integer;
 begin
+    ADataCol := 0;
     gTorrents.MouseToCell(x, y, c, r);
     if c>= 0 then ADataCol := gTorrents.ColToDataCol(c);
     if r = 0 then gTorrents.Hint:='';
@@ -5411,7 +5425,7 @@ end;
 
 
 //----------------------------------------------------------------
-function ExcludeInvalidChar (path: string): string; // PETROV
+function ExcludeInvalidChar (path: string): string;
 var
   s_old: string;
   l_old: integer;
@@ -5431,6 +5445,7 @@ begin
   if path <> s_old then begin
     l_old :=1;
   end;
+
   Result:= path;
 end;
 
@@ -6909,6 +6924,7 @@ var
   i, j, k, level: integer;
   pri: string;
 begin
+  Result:= false;
   if (gTorrents.Items.Count = 0) or (PageInfo.ActivePage <> tabFiles) then exit;
   SetLength(Files, lvFiles.Items.Count);
   pri:=APriority;
@@ -7116,6 +7132,7 @@ var
   s,r: string;
   i: integer;
 begin
+  Result:= false;
   s:=MapRemoteToLocal(FileName);
   if s <> '' then begin
     if Userdef then
@@ -7191,10 +7208,11 @@ var
    ids, cidx: variant;
    TotalSize, TotalDownloaded, TotalSizeToDownload, TorrentDownloaded, TorrentSizeToDownload: Int64;
    i: Integer;
+  a, b, c, d: Int64;
 begin
     try
     if gTorrents.Items.Count > 0 then
-    begin
+      begin
         if gTorrents.SelCount > 0 then
             ids := GetSelectedTorrents
         else  ids := GetDisplayedTorrents;
@@ -7211,14 +7229,38 @@ begin
         for i:=VarArrayLowBound(ids, 1) to VarArrayHighBound(ids, 1) do
         begin
 			 cidx := MMap[ids[i]];
-			 TotalSize             := TotalSize + FTorrents.Items[idxSize, cidx];  
+			 TotalSize             := TotalSize + FTorrents.Items[idxSize, cidx];
 			 TorrentSizeToDownload := FTorrents.Items[idxSizetoDowload, cidx];
-			 TorrentDownloaded     := TorrentSizeToDownload * (FTorrents.Items[idxDone, cidx] / 100);  
-			 TotalSizeToDownload   := TotalSizeToDownload + TorrentSizeToDownload;  
-			 TotalDownloaded       := TotalDownloaded + TorrentDownloaded;  
+			 TorrentDownloaded     := TorrentSizeToDownload * (FTorrents.Items[idxDone, cidx] / 100);
+			 TotalSizeToDownload   := TotalSizeToDownload + TorrentSizeToDownload;
+			 TotalDownloaded       := TotalDownloaded + TorrentDownloaded;
         end;
 		MMap.Free;
-		
+
+
+//-------------------
+//       begin
+//        if gTorrents.SelCount > 0 then
+//           ids := GetSelectedTorrents
+//        else
+//           ids := GetDisplayedTorrents;
+//        TotalSize := 0;
+//        TotalDownloaded := 0;
+//        TotalSizeToDownload := 0;
+//        for i:=VarArrayLowBound(ids, 1) to VarArrayHighBound(ids, 1) do
+//        begin
+//            TotalSize             := TotalSize + FTorrents.Items[idxSize, FTorrents.IndexOf(idxTorrentId, ids[i])];
+//            TorrentSizeToDownload := FTorrents.Items[idxSizetoDowload, FTorrents.IndexOf(idxTorrentId, ids[i])];
+//            a:= idxDone;
+//            b:= FTorrents.IndexOf(idxTorrentId, ids[i]);
+//            c:= FTorrents.Items[a,b];
+//            d:= Round (c / 100);
+//            TorrentDownloaded     := TorrentSizeToDownload * d;
+//          TotalSizeToDownload   := TotalSizeToDownload + TorrentSizeToDownload;
+//          TotalDownloaded       := TotalDownloaded + TorrentDownloaded;
+//        end;
+
+
         StatusBar.Panels[4].Text:=Format(sTotalSize,[GetHumanSize(TotalSize, 0, '?')]);
         StatusBar.Panels[5].Text:=Format(sTotalSizeToDownload,[GetHumanSize(TotalSizeToDownload, 0, '?')]);
         StatusBar.Panels[6].Text:=Format(sTotalDownloaded,[GetHumanSize(TotalDownloaded, 0, '?')]);
@@ -7851,6 +7893,45 @@ begin
   end;
 end;
 
+procedure myDumpAddr(Addr: Pointer;var f:system.text);
+begin
+  try
+    WriteLn(f,BackTraceStrFunc(Addr));
+  except
+    writeLn(f,SysBackTraceStr(Addr));
+  end;
+end;
+procedure MyDumpExceptionBackTrace(var f:system.text);
+var
+  FrameCount: integer;
+  Frames: PPointer;
+  FrameNumber:Integer;
+begin
+  WriteLn(f,'Stack trace:');
+  myDumpAddr(ExceptAddr,f);
+  FrameCount:=ExceptFrameCount;
+  Frames:=ExceptFrames;
+  for FrameNumber := 0 to FrameCount-1 do
+    myDumpAddr(Frames[FrameNumber],f);
+end;
+procedure TMainForm._onException(Sender: TObject; E: Exception);
+var
+  f:system.text;
+  crashreportfilename:shortstring;
+begin
+     crashreportfilename:='crashreport.txt';
+     system.Assign(f,crashreportfilename);
+     if FileExists(crashreportfilename) then
+                                            system.Append(f)
+                                        else
+                                            system.Rewrite(f);
+     WriteLn(f,'');WriteLn(f,'crashed((');WriteLn(f,'');
+     myDumpExceptionBackTrace(f);
+     system.close(f);
+     halt(0);
+end;
+
+
 procedure TMainForm.FillSpeedsMenu;
 
   procedure _FillMenu(Items: TMenuItem; const Speeds: string; OnClickHandler: TNotifyEvent; CurSpeed: integer);
@@ -7933,3 +8014,5 @@ finalization
   except
   end;
 end.
+
+

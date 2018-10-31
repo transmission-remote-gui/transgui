@@ -2,7 +2,7 @@
 
 set -x
 
-prog_ver="$(cat ../../VERSION)"
+prog_ver="$(cat ../../VERSION.txt)"
 exename=../../transgui
 appname="Transmission Remote GUI"
 appfolder="../../$appname.app"

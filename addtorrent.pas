@@ -1035,8 +1035,7 @@ end;
 
 procedure TAddTorrentForm.DelButtonClick(Sender: TObject);
 var
-  i,min,max,indx, fldr: integer;
-  pFD : FolderData;
+  i: integer;
   s : string;
 begin
     if cbDestFolder.Items.Count > 1 then begin

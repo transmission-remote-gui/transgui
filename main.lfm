@@ -1,7 +1,7 @@
 inherited MainForm: TMainForm
-  Left = 788
+  Left = 2543
   Height = 594
-  Top = 399
+  Top = 191
   Width = 881
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
@@ -2514,7 +2514,6 @@ inherited MainForm: TMainForm
     object acStatusBarSizes: TAction
       Category = 'View'
       Caption = 'Status bar - Sizes'
-      Checked = False
       OnExecute = acStatusBarSizesExecute
     end
     object acToolbarShow: TAction
