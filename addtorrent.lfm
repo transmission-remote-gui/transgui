@@ -237,12 +237,12 @@ inherited AddTorrentForm: TAddTorrentForm
       Top = 40
       Width = 467
       Anchors = [akTop, akLeft, akRight, akBottom]
-      Columns = <      
+      Columns = <
         item
           ReadOnly = True
           Title.Caption = 'File name'
           Width = 350
-        end      
+        end
         item
           ReadOnly = True
           Title.Caption = 'Size'
