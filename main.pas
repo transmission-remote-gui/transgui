@@ -32,7 +32,7 @@ uses
   Graphics, Dialogs, ComCtrls, Menus, ActnList, LCLVersion,
   httpsend, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
   zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent, Types,
-  LazFileUtils, LazUTF8, StringToVK, passwcon, GContnrs;
+  LazFileUtils, LazUTF8, StringToVK, passwcon, GContnrs,lineinfo;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -670,7 +670,6 @@ type
     FPendingTorrents: TStringList;
     FLinksFromClipboard: boolean;
     FLastClipboardLink: string;
-//    FLinuxOpenDoc: integer;
     FFromNow: boolean;
     FWatchLocalFolder: string;
     FWatchDestinationFolder: string;
@@ -2787,11 +2786,8 @@ begin
                 // CheckStatus(False); // failed to rename torrent
                 // exit;               // we continue work (try)
               end;
-
               args.Free;
             end;
-
-
           finally
             req.Free;
           end;
@@ -3307,8 +3303,6 @@ begin
 
     // Read ini now!
     CheckAppParams ();
-
-//   MessageDlg('All ok!', mtInformation, [mbOK], 0);
     MessageDlg(sRestartRequired, mtInformation, [mbOk], 0);
   end;
 end;
@@ -4977,13 +4971,6 @@ begin
       finally
          Free;
       end;
-
-      //this function does not hide characters
-      //if not InputQuery(Format(SConnectTo, [FCurConn]), Format(SEnterPassword, [FCurConn]), pwd) then begin
-      //    RpcObj.Url:='-';
-      //    Result:=False;
-      //    exit;
-      //end;
     end;
   end
   else
@@ -7237,30 +7224,6 @@ begin
         end;
 		MMap.Free;
 
-
-//-------------------
-//       begin
-//        if gTorrents.SelCount > 0 then
-//           ids := GetSelectedTorrents
-//        else
-//           ids := GetDisplayedTorrents;
-//        TotalSize := 0;
-//        TotalDownloaded := 0;
-//        TotalSizeToDownload := 0;
-//        for i:=VarArrayLowBound(ids, 1) to VarArrayHighBound(ids, 1) do
-//        begin
-//            TotalSize             := TotalSize + FTorrents.Items[idxSize, FTorrents.IndexOf(idxTorrentId, ids[i])];
-//            TorrentSizeToDownload := FTorrents.Items[idxSizetoDowload, FTorrents.IndexOf(idxTorrentId, ids[i])];
-//            a:= idxDone;
-//            b:= FTorrents.IndexOf(idxTorrentId, ids[i]);
-//            c:= FTorrents.Items[a,b];
-//            d:= Round (c / 100);
-//            TorrentDownloaded     := TorrentSizeToDownload * d;
-//          TotalSizeToDownload   := TotalSizeToDownload + TorrentSizeToDownload;
-//          TotalDownloaded       := TotalDownloaded + TorrentDownloaded;
-//        end;
-
-
         StatusBar.Panels[4].Text:=Format(sTotalSize,[GetHumanSize(TotalSize, 0, '?')]);
         StatusBar.Panels[5].Text:=Format(sTotalSizeToDownload,[GetHumanSize(TotalSizeToDownload, 0, '?')]);
         StatusBar.Panels[6].Text:=Format(sTotalDownloaded,[GetHumanSize(TotalDownloaded, 0, '?')]);
@@ -7339,7 +7302,7 @@ begin
     end;
   end;
 
-  s:=CorrectPath (Ini.ReadString(IniSec, CurFolderParam, '')); // PETROV
+  s:=CorrectPath (Ini.ReadString(IniSec, CurFolderParam, ''));
   if s <> '' then begin
     i:=CB.Items.IndexOf(s);
     if i > 0 then  // autosorting
@@ -7397,7 +7360,7 @@ begin
   try
     Ini.WriteInteger(IniSec, 'FolderCount', CB.Items.Count);
     for i:=0 to CB.Items.Count - 1 do begin
-      tmp := CorrectPath(CB.Items[i]); // PETROV
+      tmp := CorrectPath(CB.Items[i]);
       pFD := CB.Items.Objects[i] as FolderData;
       if pFD = nil then continue;
 
@@ -7922,9 +7885,10 @@ begin
      crashreportfilename:='crashreport.txt';
      system.Assign(f,crashreportfilename);
      if FileExists(crashreportfilename) then
-                                            system.Append(f)
-                                        else
-                                            system.Rewrite(f);
+        system.Append(f)
+     else
+        system.Rewrite(f);
+
      WriteLn(f,'');WriteLn(f,'crashed((');WriteLn(f,'');
      myDumpExceptionBackTrace(f);
      system.close(f);
