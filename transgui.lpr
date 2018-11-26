@@ -46,6 +46,7 @@ uses
 //{$endif}
 
 begin
+  Application.Scaled:=True;
   if not CheckAppParams then exit;
 
   Application.Initialize;
