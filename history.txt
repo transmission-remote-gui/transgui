@@ -1,3 +1,12 @@
+5.16 (Nov 26, 2018)
+ - Added crash report generation when an error occurs
+ - Added support for private column mapping
+ - Updated the position of the "start torrent" switch in the add torrent window
+ - Fixed torrent adding
+ - Fixed password entry for connecting to the transmission
+ - Changed the format for displaying the torrent date/time
+ - Changed data display (processing acceleration)
+
 5.15.4 (Apr 8, 2018)
  - Update GitHub issue template
  - Update Italian translation (#1102)
