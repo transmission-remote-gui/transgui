@@ -670,6 +670,7 @@ type
     FPendingTorrents: TStringList;
     FLinksFromClipboard: boolean;
     FLastClipboardLink: string;
+    FLinuxOpenDoc: integer; // no del!
     FFromNow: boolean;
     FWatchLocalFolder: string;
     FWatchDestinationFolder: string;
