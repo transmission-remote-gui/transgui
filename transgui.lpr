@@ -46,7 +46,8 @@ uses
 //{$endif}
 
 begin
-  Application.Scaled:=True;
+//Application.Scaled:=True; //travis doesnt compile
+
   if not CheckAppParams then exit;
 
   Application.Initialize;
