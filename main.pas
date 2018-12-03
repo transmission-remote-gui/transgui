@@ -2581,7 +2581,14 @@ begin
         if IsProtocolSupported(FileName) then
           torrent:='-'
         else begin
-          fs:=TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyNone);
+          try
+            fs:=TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyNone); // why isnt in try
+          except
+            AppNormal;    // if the clipboard garbage and file cant be created. just go out.
+            HideWaitMsg;
+            exit;
+          end;
+
           try
             SetLength(torrent, fs.Size);
             fs.ReadBuffer(PChar(torrent)^, Length(torrent));
@@ -3238,7 +3245,7 @@ begin
   end;
 end;
 
-procedure TMainForm.acImportExecute(Sender: TObject); // PETROV
+procedure TMainForm.acImportExecute(Sender: TObject);
 var
   s,d : string;
   FileVar1: TextFile;
@@ -7890,7 +7897,7 @@ begin
      else
         system.Rewrite(f);
 
-     WriteLn(f,'');WriteLn(f,'crashed((');WriteLn(f,'');
+     WriteLn(f,'');WriteLn(f,'v.' + AppVersion + ' crashed((');WriteLn(f,'');
      myDumpExceptionBackTrace(f);
      system.close(f);
      halt(0);
