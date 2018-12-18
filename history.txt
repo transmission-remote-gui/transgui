@@ -1,11 +1,37 @@
-5.16 (Nov 26, 2018)
- - Added crash report generation when an error occurs
- - Added support for private column mapping
- - Updated the position of the "start torrent" switch in the add torrent window
- - Fixed torrent adding
- - Fixed password entry for connecting to the transmission
- - Changed the format for displaying the torrent date/time
- - Changed data display (processing acceleration)
+5.16 (Dec 25, 2018)
+ - Add TravisBuddy
+ - Add EditorConfig
+ - Add crash report generation when an error occurs
+ - Add support for private column mapping
+ - Add own dialog for password input (*****) (#1123)
+ - Adjust version.txt read method on Travis CI
+ - Catch exception to prevent being crashed
+ - Change data display (processing acceleration)
+ - Change the format for displaying the torrent date/time
+ - Fix a runtime error (#1140)
+ - Fix FromNow routine (#1141)
+ - Fix µ char in history.txt for v3.1
+ - Fix script format for Windows
+ - Fix file format to UNIX & DOS by cases
+ - Fix partial indentation of pas files
+ - Fix password entry for connecting to the transmission
+ - Fix torrent adding with magnet link with '&' within torrent title (#1146)
+ - Improve README.md style
+ - Improve shell script format & syntax
+ - Improve macOS compiler install script syntax
+ - Make sure the final and single newline char at eof
+ - Move to Xcode9.4 & macOS v10.13.4 image on Travis CI
+ - Remove trailing spaces
+ - Remove unused JSON library
+ - Replace slow IndexOf lookup with GContnrs hashmap (#1164)
+ - Set shell -x in macOS compiler install script
+ - Set  StatusBarSizes to be unchecked by default (#1163)
+ - Update UK translation (#1079)
+ - Update English translation (#1166)
+ - Update license header and author info
+ - Update Windows OpenSSL from v1.0.2o to v1.0.2p - Update Lietuvių translation (#1172)
+ - Update the position of the "start torrent" switch in the add torrent window
+ - Upgrade Lazarus on macOS from v1.8.0 to v1.8.2
 
 5.15.4 (Apr 8, 2018)
  - Update GitHub issue template
