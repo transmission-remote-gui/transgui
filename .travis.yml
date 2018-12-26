@@ -98,7 +98,7 @@ matrix:
       - task=build
       - arch=i386
       script:
-      - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" i386/debian:stretch-backports linux32 --32bit bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
+      - docker run -e DEBIAN_FRONTEND=noninteractive --privileged -it --rm -v "${PWD}:/transgui" i386/debian:stretch-backports linux32 --32bit bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
       after_success:
       - md5sum ./Release/transgui-$PROG_VER-i686-Linux.txz
       - sha1sum ./Release/transgui-$PROG_VER-i686-Linux.txz

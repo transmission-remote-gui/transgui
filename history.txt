@@ -20,6 +20,7 @@
  - Improve README.md style
  - Improve shell script format & syntax
  - Improve macOS compiler install script syntax
+ - Increse privilege to 32bit Docker build to fix build issue
  - Make sure the final and single newline char at eof
  - Move to Xcode9.4 & macOS v10.13.4 image on Travis CI
  - Move to Travis CI new Linux Infrastructure
