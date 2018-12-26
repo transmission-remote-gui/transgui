@@ -16,6 +16,7 @@
  - Fix partial indentation of pas files
  - Fix password entry for connecting to the transmission
  - Fix torrent adding with magnet link with '&' within torrent title (#1146)
+ - Increse compiler optimization level
  - Improve README.md style
  - Improve shell script format & syntax
  - Improve macOS compiler install script syntax

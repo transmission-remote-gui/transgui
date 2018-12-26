@@ -314,7 +314,7 @@ ifneq ($(findstring $(OS_TARGET),darwin),)
 LCL_WIDGETSET=carbon
 endif
 ifeq ($(DEBUG),)
-  COMP_OPT=-O2 -g- -CX -XX -Xs -Scgi -l -vewnhibq 
+  COMP_OPT=-O3 -g- -CX -XX -Xs -Scgi -l -vewnhibq 
 else
   COMP_OPT=-O- -g -gl -gs -dCALLSTACK -Scgi -l -vewnhibq 
 endif
