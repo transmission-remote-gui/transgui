@@ -22,6 +22,7 @@
  - Improve macOS compiler install script syntax
  - Make sure the final and single newline char at eof
  - Move to Xcode9.4 & macOS v10.13.4 image on Travis CI
+ - Parallel zip tarball build test on Travis CI
  - Remove trailing spaces
  - Remove unused JSON library
  - Replace slow IndexOf lookup with GContnrs hashmap (#1164)
