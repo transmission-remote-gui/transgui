@@ -2824,7 +2824,7 @@ end;
 {--- TAbstractVector.Shuffle ---}
 procedure TAbstractVector.Shuffle;
 begin
-   if fSize > 1 then
+  if fSize > 1 then
     Shuffle(0, fSize - 1);
 end;
 
@@ -3161,7 +3161,7 @@ var
   Tmp, Item : _TItem_;
 begin
   if PosFrom >= PosTo then
-     Exit;
+    Exit;
 
   for I := PosFrom + 1 to PosTo do
   begin
@@ -4060,7 +4060,7 @@ var
   Tmp, Item : _TItem_;
 begin
   if PosFrom >= PosTo then
-     Exit;
+    Exit;
 
   IRank := IndexToRank(PosFrom + 1);
   for I := PosFrom + 1 to PosTo do
@@ -5473,9 +5473,9 @@ begin
   Pivot := Front^.Next;
   if Pivot <> Back then
   begin
-     Partition(Pivot, Back, Comparator);
-     RealSort(Front, Pivot, Comparator);
-     RealSort(Pivot, Back, Comparator)
+    Partition(Pivot, Back, Comparator);
+    RealSort(Front, Pivot, Comparator);
+    RealSort(Pivot, Back, Comparator)
   end;
 end;
 
@@ -5956,7 +5956,7 @@ begin
     Right := Child + 1;
 
     if (Right < fSize) and
-       (fOnCompareItems(fItems[Child], fItems[Right]) > 0) then
+        (fOnCompareItems(fItems[Child], fItems[Right]) > 0) then
       Child := Right;
 
     if fOnCompareItems(Item, fItems[Child]) <= 0 then
