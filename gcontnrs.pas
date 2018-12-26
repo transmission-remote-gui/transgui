@@ -1,4 +1,4 @@
-{ 
+{
   Copyright (C) 2014 Yann Mérignac
 
   This library is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 
   You should have received a copy of the GNU Lesser General Public
   License along with this library. If not, see
-  <http://www.gnu.org/licenses/>. 
-} 
+  <http://www.gnu.org/licenses/>.
+}
 unit GContnrs;
 
 {$mode objfpc}{$H+}
@@ -145,11 +145,11 @@ type
 
     {** Capacity of the container. }
     property Capacity : Integer read fCapacity;
-    
+
     {** Number of items. }
-    property Size: Integer read fSize;  
+    property Size: Integer read fSize;
   end;
-  
+
   { TGenVector }
 
   generic TGenVector<_TItem_> = class(TAbstractVector)
@@ -160,7 +160,7 @@ type
     TProcessItem = procedure(var Item: _TItem_) of object;
     TEnumerator = specialize TGenEnumerator<_TItem_, Integer>;
 
-  strict private 
+  strict private
     fItems : array of _TItem_;
     fOnCompareItems: TCompareItems;
     fOnItemToString: TItemToString;
@@ -362,8 +362,8 @@ type
 
     property OnItemToString : TItemToString read fOnItemToString
       write SetOnItemToString;
-  end;  
-  
+  end;
+
   { TGenDeque }
 
   generic TGenDeque<_TItem_> = class(TAbstractVector)
@@ -398,7 +398,7 @@ type
     procedure ReduceCapacity(ACapacity : Integer);
     procedure SetOnCompareItems(AValue: TCompareItems);
     procedure SetOnItemToString(AValue: TItemToString);
-  
+
   protected
     procedure InsertSpaceFast(Position, Count: Integer); override;
     function ItemToString(Index: Integer) : String; override;
@@ -578,7 +578,7 @@ type
 
     property OnItemToString : TItemToString read fOnItemToString
       write SetOnItemToString;
-  end;  
+  end;
 
   TAbstractList = class;
 
@@ -727,7 +727,7 @@ type
 
     {** Returns a cursor on the first item equal to Item or NilCursor. }
     function Find(const Item: _TItem_) : TListCursor;
-    
+
     function Find(const Item: _TItem_; Comparator: TCompareItems) : TListCursor;
 
     {** Returns a cursor on the first item equal to Item or NilCursor.The search
@@ -2058,7 +2058,7 @@ const
 {--- HashData ---}
 {$PUSH}
 {$O-}{$R-}{$Q-}
-function HashData(Data : PByte; DataSize: Integer) : Integer; 
+function HashData(Data : PByte; DataSize: Integer) : Integer;
 var
   I : Integer;
 begin
@@ -5260,7 +5260,7 @@ begin
   Src.CheckNotNil(PosTo);
 
   Copy := TGenList.Create;
-  try    
+  try
     Node := PNode(PosFrom.Node);
     LastNode := PNode(PosTo.Node)^.Next;
 

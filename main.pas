@@ -938,7 +938,7 @@ uses
   begin
     WriteStr(Result, Item);
   end;
-  
+
 const
   TR_STATUS_CHECK_WAIT_1   = ( 1 shl 0 ); // Waiting in queue to check files
   TR_STATUS_CHECK_1        = ( 1 shl 1 ); // Checking files
