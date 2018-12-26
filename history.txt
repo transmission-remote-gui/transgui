@@ -23,6 +23,7 @@
  - Make sure the final and single newline char at eof
  - Move to Xcode9.4 & macOS v10.13.4 image on Travis CI
  - Move to Travis CI new Linux Infrastructure
+ - Move Travis CI Ubuntu environment to Xenial
  - Parallel zip tarball build test on Travis CI
  - Remove trailing spaces
  - Remove unused JSON library

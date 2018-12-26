@@ -11,7 +11,7 @@ matrix:
   include:
 
     - os: linux
-      dist: trusty
+      dist: xenial
       env:
       - task=shellcheck
       script:
@@ -19,7 +19,7 @@ matrix:
       - find . -type f -name "*.sh" | xargs -n 1 shellcheck
 
     - os: linux
-      dist: trusty
+      dist: xenial
       env:
       - task=markdown-link-check
       install:
@@ -33,7 +33,7 @@ matrix:
       - find . -type f -name "*.md" | xargs -n 1 markdown-link-check
 
     - os: linux
-      dist: trusty
+      dist: xenial
       env:
       - task=doctoc-check
       install:
@@ -52,7 +52,7 @@ matrix:
         fi
 
     - os: linux
-      dist: trusty
+      dist: xenial
       services:
       - docker
       env:
@@ -61,7 +61,7 @@ matrix:
       - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" debian:stretch-backports bash -c "cd /transgui/ && ./setup/unix/debian-ubuntu-install_deps.sh && lazbuild -B transgui.lpi --lazarusdir=/usr/lib/lazarus/default/ && make -j$(nproc) zipdist && ls -al ./Release/transgui-$PROG_VER-x86_64-linux.zip"
 
     - os: linux
-      dist: trusty
+      dist: xenial
       services:
       - docker
       env:
@@ -89,7 +89,7 @@ matrix:
           tags: true
 
     - os: linux
-      dist: trusty
+      dist: xenial
       services:
       - docker
       env:
@@ -117,7 +117,7 @@ matrix:
           tags: true
 
     - os: linux
-      dist: trusty
+      dist: xenial
       services:
       - docker
       env:
@@ -149,7 +149,7 @@ matrix:
           tags: true
 
     - os: linux
-      dist: trusty
+      dist: xenial
       services:
       - docker
       env:
