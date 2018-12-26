@@ -1,4 +1,4 @@
-language: generic
+language: minimal
 
 git:
   depth: 10
@@ -20,6 +20,7 @@ matrix:
 
     - os: linux
       dist: xenial
+      language: node_js
       env:
       - task=markdown-link-check
       install:
@@ -34,6 +35,7 @@ matrix:
 
     - os: linux
       dist: xenial
+      language: node_js
       env:
       - task=doctoc-check
       install:

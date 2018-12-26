@@ -30,6 +30,7 @@
  - Replace slow IndexOf lookup with GContnrs hashmap (#1164)
  - Set shell -x in macOS compiler install script
  - Set  StatusBarSizes to be unchecked by default (#1163)
+ - Switch Travis CI default to optimized minimal environment
  - Update UK translation (#1079)
  - Update English translation (#1166)
  - Update Svenska/Swedish translation (#1185)
