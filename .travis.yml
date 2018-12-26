@@ -12,7 +12,6 @@ matrix:
 
     - os: linux
       dist: trusty
-      sudo: false
       env:
       - task=shellcheck
       script:
@@ -21,7 +20,6 @@ matrix:
 
     - os: linux
       dist: trusty
-      sudo: false
       env:
       - task=markdown-link-check
       install:
@@ -36,7 +34,6 @@ matrix:
 
     - os: linux
       dist: trusty
-      sudo: false
       env:
       - task=doctoc-check
       install:
@@ -56,7 +53,6 @@ matrix:
 
     - os: linux
       dist: trusty
-      sudo: required
       services:
       - docker
       env:
@@ -66,7 +62,6 @@ matrix:
 
     - os: linux
       dist: trusty
-      sudo: required
       services:
       - docker
       env:
@@ -95,7 +90,6 @@ matrix:
 
     - os: linux
       dist: trusty
-      sudo: required
       services:
       - docker
       env:
@@ -124,7 +118,6 @@ matrix:
 
     - os: linux
       dist: trusty
-      sudo: required
       services:
       - docker
       env:
@@ -157,7 +150,6 @@ matrix:
 
     - os: linux
       dist: trusty
-      sudo: required
       services:
       - docker
       env:
