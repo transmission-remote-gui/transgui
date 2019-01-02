@@ -35,7 +35,8 @@
  - Update English translation (#1166)
  - Update Svenska/Swedish translation (#1185)
  - Update license header and author info
- - Update Windows OpenSSL from v1.0.2o to v1.0.2p - Update Lietuvių translation (#1172)
+ - Update Windows OpenSSL from v1.0.2o to v1.0.2p
+ - Update Lietuvių translation (#1172)
  - Update the position of the "start torrent" switch in the add torrent window
  - Update UPX to v3.95 for Windows zip disttribution
  - Upgrade Lazarus on macOS from v1.8.0 to v1.8.2
