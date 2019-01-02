@@ -1,7 +1,6 @@
 5.16 (Dec 26, 2018)
  - Add TravisBuddy
  - Add EditorConfig
- - Add crash report generation when an error occurs
  - Add support for private column mapping
  - Add own dialog for password input (*****) (#1123)
  - Adjust version.txt read method on Travis CI
