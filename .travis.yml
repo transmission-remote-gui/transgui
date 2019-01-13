@@ -20,6 +20,21 @@ matrix:
 
     - os: linux
       dist: xenial
+      env:
+      - task=Pascal format check
+      addons:
+        apt:
+          packages:
+          - fp-utils-3.0.0
+      before_script:
+      - touch empty
+      - ptop -v empty empty
+      script:
+      - find . -name "*.pas" ! -path "./synapse/*" ! -name "gcontnrs.pas" -exec ptop -i 2 -c ptop.cfg {} {} \;
+      - git diff --exit-code --color
+
+    - os: linux
+      dist: xenial
       language: node_js
       env:
       - task=markdown-link-check
