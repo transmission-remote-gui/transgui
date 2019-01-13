@@ -1,3 +1,4 @@
+
 unit passwcon;
 
 {$mode objfpc}{$H+}
@@ -5,7 +6,7 @@ unit passwcon;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ButtonPanel;
+Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ButtonPanel;
 
 type
 
@@ -20,11 +21,11 @@ type
     procedure OKButtonClick(Sender: TObject);
     procedure SetText(form : string; msg : string);
 
-  private
+    private
     { private declarations }
-  public
+    public
     { public declarations }
-    gPassw : string;
+      gPassw : string;
   end;
 
 var
@@ -44,7 +45,7 @@ end;
 procedure TPasswordConnect.FormCreate(Sender: TObject);
 begin
 
-  Buttons.OKButton.ModalResult:= mrNone;
+  Buttons.OKButton.ModalResult := mrNone;
   bidiMode := GetBiDi;
   gPassw := '';
   passw.Text := '';
@@ -52,8 +53,8 @@ end;
 
 procedure TPasswordConnect.OKButtonClick(Sender: TObject);
 begin
-  gPassw:= passw.Text;
-  ModalResult:=mrOk;
+  gPassw := passw.Text;
+  ModalResult :=mrOk;
 end;
 
 
@@ -68,4 +69,3 @@ initialization
   {$I passwcon.lrs}
 
 end.
-

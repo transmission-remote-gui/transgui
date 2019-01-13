@@ -1,3 +1,4 @@
+
 unit AddTracker;
 
 {$mode objfpc}{$H+}
@@ -5,11 +6,12 @@ unit AddTracker;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ButtonPanel, StdCtrls, ExtCtrls, BaseForm;
+Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, ButtonPanel, StdCtrls,
+ExtCtrls, BaseForm;
 
 resourcestring
-  STrackerProps = 'Tracker properties';
-  SNoTracker = 'No tracker URL was specified.';
+STrackerProps = 'Tracker properties';
+SNoTracker = 'No tracker URL was specified.';
 
 type
 
@@ -22,9 +24,9 @@ type
     txTrackerURL: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
-  private
+    private
     { private declarations }
-  public
+    public
     { public declarations }
   end;
 
@@ -36,23 +38,23 @@ uses main;
 
 procedure TAddTrackerForm.OKButtonClick(Sender: TObject);
 begin
-  edTracker.Text:=Trim(edTracker.Text);
-  if edTracker.Text = '' then begin
-    edTracker.SetFocus;
-    MessageDlg(SNoTracker, mtError, [mbOK], 0);
-    exit;
-  end;
-  ModalResult:=mrOk;
+  edTracker.Text :=Trim(edTracker.Text);
+  if edTracker.Text = '' then
+    begin
+      edTracker.SetFocus;
+      MessageDlg(SNoTracker, mtError, [mbOK], 0);
+      exit;
+    end;
+  ModalResult :=mrOk;
 end;
 
 procedure TAddTrackerForm.FormCreate(Sender: TObject);
 begin
-  Buttons.OKButton.ModalResult:=mrNone;
-  Buttons.OKButton.OnClick:=@OKButtonClick;
+  Buttons.OKButton.ModalResult :=mrNone;
+  Buttons.OKButton.OnClick :=@OKButtonClick;
 end;
 
 initialization
   {$I addtracker.lrs}
 
 end.
-

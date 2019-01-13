@@ -1,3 +1,4 @@
+
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
   Copyright (c) 2008-2018 by Yury Sidorov and Transmission Remote GUI working group.
@@ -24,10 +25,11 @@ unit AddLink;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ButtonPanel, ExtCtrls, BaseForm;
+Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ButtonPanel,
+ExtCtrls, BaseForm;
 
 resourcestring
-  SNoLink = 'No link was specified.';
+SNoLink = 'No link was specified.';
 
 type
 
@@ -40,9 +42,9 @@ type
     txLink: TLabel;
     procedure btOKClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-  private
+    private
     { private declarations }
-  public
+    public
     { public declarations }
   end;
 
@@ -54,23 +56,23 @@ uses main;
 
 procedure TAddLinkForm.btOKClick(Sender: TObject);
 begin
-  edLink.Text:=Trim(edLink.Text);
-  if edLink.Text = '' then begin
-    edLink.SetFocus;
-    MessageDlg(SNoLink, mtError, [mbOK], 0);
-    exit;
-  end;
-  ModalResult:=mrOK;
+  edLink.Text :=Trim(edLink.Text);
+  if edLink.Text = '' then
+    begin
+      edLink.SetFocus;
+      MessageDlg(SNoLink, mtError, [mbOK], 0);
+      exit;
+    end;
+  ModalResult :=mrOK;
 end;
 
 procedure TAddLinkForm.FormCreate(Sender: TObject);
 begin
-  Buttons.OKButton.ModalResult:=mrNone;
-  Buttons.OKButton.OnClick:=@btOKClick;
+  Buttons.OKButton.ModalResult :=mrNone;
+  Buttons.OKButton.OnClick :=@btOKClick;
 end;
 
 initialization
   {$I addlink.lrs}
 
 end.
-

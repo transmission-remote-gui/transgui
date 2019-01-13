@@ -1,3 +1,4 @@
+
 { This file was automatically created by Lazarus. do not edit!
   This source is only used to compile and install the package.
  }
@@ -7,7 +8,7 @@ unit trcomp;
 interface
 
 uses
-  VarGrid, LazarusPackageIntf;
+VarGrid, LazarusPackageIntf;
 
 implementation
 
@@ -17,5 +18,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('trcomp', @Register);
+RegisterPackage('trcomp', @Register);
 end.

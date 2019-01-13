@@ -1,3 +1,4 @@
+
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
   Copyright (c) 2008-2018 by Yury Sidorov and Transmission Remote GUI working group.
@@ -24,152 +25,164 @@ unit download;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  httpsend, synsock, ExtCtrls, BaseForm, utils;
+Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
+httpsend, synsock, ExtCtrls, BaseForm, utils;
 
 resourcestring
-  SDownloadProgress = '%s of %s downloaded';
-  SDownloadProgress2 = '%s downloaded';
+SDownloadProgress = '%s of %s downloaded';
+SDownloadProgress2 = '%s downloaded';
 
 type
   TDownloadThread = class;
 
   { TDownloadForm }
 
-  TDownloadForm = class(TBaseForm)
-    btCancel: TButton;
-    UpdateTimer: TTimer;
-    txPercent: TLabel;
-    txBytes: TLabel;
-    txFileName: TLabel;
-    pbDownload: TProgressBar;
-    procedure btCancelClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure FormResize(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure UpdateTimerTimer(Sender: TObject);
-  private
-    FThread: TDownloadThread;
-    FTotalSize: Int64;
-    FDownloaded: Int64;
-    FError: string;
+    TDownloadForm = class(TBaseForm)
+      btCancel: TButton;
+      UpdateTimer: TTimer;
+      txPercent: TLabel;
+      txBytes: TLabel;
+      txFileName: TLabel;
+      pbDownload: TProgressBar;
+      procedure btCancelClick(Sender: TObject);
+      procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+      procedure FormCreate(Sender: TObject);
+      procedure FormDestroy(Sender: TObject);
+      procedure FormResize(Sender: TObject);
+      procedure FormShow(Sender: TObject);
+      procedure UpdateTimerTimer(Sender: TObject);
+      private
+        FThread: TDownloadThread;
+        FTotalSize: Int64;
+        FDownloaded: Int64;
+        FError: string;
 
-    procedure UpdateStatus(Data: PtrInt);
-  public
+        procedure UpdateStatus(Data: PtrInt);
+      public
     { public declarations }
-  end;
+    end;
 
   { TDownloadThread }
 
-  TDownloadThread = class(TThread)
-  private
-    FHttp: THTTPSend;
-    FForm: TDownloadForm;
-    FUrl: string;
-    FDestFileName: string;
-    FOut: TFileStreamUTF8;
+    TDownloadThread = class(TThread)
+      private
+        FHttp: THTTPSend;
+        FForm: TDownloadForm;
+        FUrl: string;
+        FDestFileName: string;
+        FOut: TFileStreamUTF8;
 
-    procedure DoMonitor(Sender: TObject; Writing: Boolean; const Buffer: TMemory; Len: Integer);
-    procedure WriteToFile;
-  protected
-    procedure Execute; override;
+        procedure DoMonitor(Sender: TObject; Writing: Boolean; const Buffer: TMemory; Len: Integer);
+        procedure WriteToFile;
+      protected
+        procedure Execute;
+        override;
+    end;
+
+    function DownloadFile(const URL, DestFolder: string; const DestFileName: string = ''; const
+                          DisplayName: string = ''): boolean;
+
+    implementation
+
+    uses Main, rpc;
+
+    function DownloadFile(const URL, DestFolder: string; const DestFileName, DisplayName: string):
+                                                                                             boolean
+    ;
+
+    var
+      s: string;
+    begin
+      with TDownloadForm.Create(Application) do
+        try
+          s :=ExtractFileName(StringReplace(URL, '/', DirectorySeparator, [rfReplaceAll]));
+          if DisplayName <> '' then
+            txFileName.Caption :=DisplayName
+          else
+            txFileName.Caption :=s;
+          if DestFileName <> '' then
+            s :=DestFileName;
+          FThread.FUrl :=URL;
+          FThread.FDestFileName :=IncludeTrailingPathDelimiter(DestFolder) + s;
+          FThread.Suspended :=False;
+          Result :=ShowModal = mrOk;
+        finally
+          Free;
+    end;
   end;
-
-function DownloadFile(const URL, DestFolder: string; const DestFileName: string = ''; const DisplayName: string = ''): boolean;
-
-implementation
-
-uses Main, rpc;
-
-function DownloadFile(const URL, DestFolder: string; const DestFileName, DisplayName: string): boolean;
-var
-  s: string;
-begin
-  with TDownloadForm.Create(Application) do
-  try
-    s:=ExtractFileName(StringReplace(URL, '/', DirectorySeparator, [rfReplaceAll]));
-    if DisplayName <> '' then
-      txFileName.Caption:=DisplayName
-    else
-      txFileName.Caption:=s;
-    if DestFileName <> '' then
-      s:=DestFileName;
-    FThread.FUrl:=URL;
-    FThread.FDestFileName:=IncludeTrailingPathDelimiter(DestFolder) + s;
-    FThread.Suspended:=False;
-    Result:=ShowModal = mrOk;
-  finally
-    Free;
-  end;
-end;
 
 { TDownloadThread }
 
-procedure TDownloadThread.DoMonitor(Sender: TObject; Writing: Boolean; const Buffer: TMemory; Len: Integer);
+procedure TDownloadThread.DoMonitor(Sender: TObject; Writing: Boolean; const Buffer: TMemory; Len:
+                                    Integer);
 begin
-  if Terminated then begin
-    FHttp.Abort;
-    exit;
-  end;
+  if Terminated then
+    begin
+      FHttp.Abort;
+      exit;
+    end;
 
-  if FHttp.DownloadSize <> 0 then begin
-    FForm.FTotalSize:=FHttp.DownloadSize;
-    Inc(FForm.FDownloaded, Len);
-    WriteToFile;
-  end;
+  if FHttp.DownloadSize <> 0 then
+    begin
+      FForm.FTotalSize :=FHttp.DownloadSize;
+      Inc(FForm.FDownloaded, Len);
+      WriteToFile;
+    end;
 end;
 
 procedure TDownloadThread.WriteToFile;
 begin
   if FOut = nil then
-    FOut:=TFileStreamUTF8.Create(FDestFileName, fmCreate);
+    FOut :=TFileStreamUTF8.Create(FDestFileName, fmCreate);
 
-  FHttp.Document.Position:=0;
+  FHttp.Document.Position :=0;
   FOut.CopyFrom(FHttp.Document, FHttp.Document.Size);
   FHttp.Document.Clear;
 end;
 
 procedure TDownloadThread.Execute;
+
 var
   res: PtrInt;
 begin
-  res:=1;
+  res :=1;
   try
-    FHttp:=THTTPSend.Create;
+    FHttp :=THTTPSend.Create;
     try
-      if RpcObj.Http.ProxyHost <> '' then begin
-        FHttp.ProxyHost:=RpcObj.Http.ProxyHost;
-        FHttp.ProxyPort:=RpcObj.Http.ProxyPort;
-        FHttp.ProxyUser:=RpcObj.Http.ProxyUser;
-        FHttp.ProxyPass:=RpcObj.Http.ProxyPass;
-      end;
-      FHttp.Sock.OnMonitor:=@DoMonitor;
-      if FHttp.HTTPMethod('GET', FUrl) then begin
-        if FHttp.ResultCode = 200 then begin
-          FForm.FDownloaded:=FHttp.DownloadSize;
-          WriteToFile;
-          res:=2;
+      if RpcObj.Http.ProxyHost <> '' then
+        begin
+          FHttp.ProxyHost :=RpcObj.Http.ProxyHost;
+          FHttp.ProxyPort :=RpcObj.Http.ProxyPort;
+          FHttp.ProxyUser :=RpcObj.Http.ProxyUser;
+          FHttp.ProxyPass :=RpcObj.Http.ProxyPass;
+        end;
+      FHttp.Sock.OnMonitor :=@DoMonitor;
+      if FHttp.HTTPMethod('GET', FUrl) then
+        begin
+          if FHttp.ResultCode = 200 then
+            begin
+              FForm.FDownloaded :=FHttp.DownloadSize;
+              WriteToFile;
+              res :=2;
+            end
+          else
+            if not Terminated then
+              FForm.FError :=Format('HTTP error: %d', [FHttp.ResultCode]);
         end
-        else
-          if not Terminated then
-            FForm.FError:=Format('HTTP error: %d', [FHttp.ResultCode]);
-      end
       else
         if not Terminated then
-          FForm.FError:=FHttp.Sock.LastErrorDesc;
+          FForm.FError :=FHttp.Sock.LastErrorDesc;
     finally
       FHttp.Free;
-    end;
-  except
-    FForm.FError:=Exception(ExceptObject).Message;
-  end;
-  FOut.Free;
-  if res = 1 then
-    DeleteFile(FDestFileName);
-  Application.QueueAsyncCall(@FForm.UpdateStatus, res);
-  FForm.FThread:=nil;
+end;
+except
+  FForm.FError :=Exception(ExceptObject).Message;
+end;
+FOut.Free;
+if res = 1 then
+  DeleteFile(FDestFileName);
+Application.QueueAsyncCall(@FForm.UpdateStatus, res);
+FForm.FThread :=nil;
 end;
 
 { TDownloadForm }
@@ -177,24 +190,25 @@ end;
 procedure TDownloadForm.FormCreate(Sender: TObject);
 begin
   bidiMode := GetBiDi();
-  FThread:=TDownloadThread.Create(True);
-  FThread.FreeOnTerminate:=True;
-  FThread.FForm:=Self;
+  FThread :=TDownloadThread.Create(True);
+  FThread.FreeOnTerminate :=True;
+  FThread.FForm :=Self;
   UpdateTimerTimer(nil);
 end;
 
 procedure TDownloadForm.btCancelClick(Sender: TObject);
 begin
-  btCancel.Enabled:=False;
+  btCancel.Enabled :=False;
   FThread.Terminate;
 end;
 
 procedure TDownloadForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if FThread <> nil then begin
-    CloseAction:=caNone;
-    btCancel.Click;
-  end;
+  if FThread <> nil then
+    begin
+      CloseAction :=caNone;
+      btCancel.Click;
+    end;
 end;
 
 procedure TDownloadForm.FormDestroy(Sender: TObject);
@@ -203,7 +217,7 @@ end;
 
 procedure TDownloadForm.FormResize(Sender: TObject);
 begin
-  btCancel.Left:=(ClientWidth - btCancel.Width) div 2;
+  btCancel.Left :=(ClientWidth - btCancel.Width) div 2;
 end;
 
 procedure TDownloadForm.FormShow(Sender: TObject);
@@ -213,35 +227,39 @@ end;
 
 procedure TDownloadForm.UpdateTimerTimer(Sender: TObject);
 begin
-  if FTotalSize <> 0 then begin
-    pbDownload.Max:=FTotalSize;
-    pbDownload.Position:=FDownloaded;
-    txPercent.Caption:=Format('%.1f%%', [FDownloaded*100/FTotalSize]);
-    txBytes.Caption:=Format(SDownloadProgress, [GetHumanSize(FDownloaded), GetHumanSize(FTotalSize)]);
-    txPercent.Show;
-  end
-  else begin
-    txBytes.Caption:=Format(SDownloadProgress2, [GetHumanSize(FDownloaded)]);
-    txPercent.Hide;
-  end;
+  if FTotalSize <> 0 then
+    begin
+      pbDownload.Max :=FTotalSize;
+      pbDownload.Position :=FDownloaded;
+      txPercent.Caption :=Format('%.1f%%', [FDownloaded*100/FTotalSize]);
+      txBytes.Caption :=Format(SDownloadProgress, [GetHumanSize(FDownloaded), GetHumanSize(
+                        FTotalSize)]);
+      txPercent.Show;
+    end
+  else
+    begin
+      txBytes.Caption :=Format(SDownloadProgress2, [GetHumanSize(FDownloaded)]);
+      txPercent.Hide;
+    end;
 end;
 
 procedure TDownloadForm.UpdateStatus(Data: PtrInt);
 begin
-  if Data <> 0 then begin
-    if Data = 2 then
-      ModalResult:=mrOk
-    else begin
-      if FError <> '' then
-        MessageDlg(FError, mtError, [mbOK], 0);
-      ModalResult:=mrCancel;
+  if Data <> 0 then
+    begin
+      if Data = 2 then
+        ModalResult :=mrOk
+      else
+        begin
+          if FError <> '' then
+            MessageDlg(FError, mtError, [mbOK], 0);
+          ModalResult :=mrCancel;
+        end;
+      exit;
     end;
-    exit;
-  end;
 end;
 
 initialization
   {$I download.lrs}
 
 end.
-

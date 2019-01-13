@@ -1,3 +1,4 @@
+
 {*************************************************************************************
   This file is part of Transmission Remote GUI.
   Copyright (c) 2008-2018 by Yury Sidorov and Transmission Remote GUI working group.
@@ -24,19 +25,20 @@ unit DaemonOptions;
 interface
 
 uses
-  Classes, SysUtils, LazUTF8, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, Spin, ComCtrls, CheckLst, EditBtn, MaskEdit,
-  ButtonPanel, BaseForm;
+Classes, SysUtils, LazUTF8, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, Spin
+, ComCtrls, CheckLst, EditBtn, MaskEdit,
+ButtonPanel, BaseForm;
 
 resourcestring
- sPortTestSuccess = 'Incoming port tested successfully.';
- sPortTestFailed = 'Incoming port is closed. Check your firewall settings.';
- sEncryptionDisabled = 'Encryption disabled';
- sEncryptionEnabled = 'Encryption enabled';
- sEncryptionRequired = 'Encryption required';
- SNoDownloadDir = 'The downloads directory was not specified.';
- SNoIncompleteDir = 'The directory for incomplete files was not specified.';
+sPortTestSuccess = 'Incoming port tested successfully.';
+sPortTestFailed = 'Incoming port is closed. Check your firewall settings.';
+sEncryptionDisabled = 'Encryption disabled';
+sEncryptionEnabled = 'Encryption enabled';
+sEncryptionRequired = 'Encryption required';
+SNoDownloadDir = 'The downloads directory was not specified.';
+SNoIncompleteDir = 'The directory for incomplete files was not specified.';
 // SNoBlocklistURL = 'The blocklist URL was not specified.';
- SInvalidTime = 'The invalid time value was entered.';
+SInvalidTime = 'The invalid time value was entered.';
 
 type
 
@@ -116,9 +118,9 @@ type
     procedure cbRandomPortClick(Sender: TObject);
     procedure cbSeedRatioClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-  private
+    private
     { private declarations }
-  public
+    public
     { public declarations }
   end;
 
@@ -130,150 +132,158 @@ uses main, utils, fpjson;
 
 procedure TDaemonOptionsForm.cbMaxDownClick(Sender: TObject);
 begin
-  edMaxDown.Enabled:=cbMaxDown.Checked;
+  edMaxDown.Enabled :=cbMaxDown.Checked;
 end;
 
 procedure TDaemonOptionsForm.btTestPortClick(Sender: TObject);
+
 var
   req, res: TJSONObject;
 begin
   AppBusy;
-  req:=TJSONObject.Create;
+  req :=TJSONObject.Create;
   try
     req.Add('method', 'port-test');
-    res:=RpcObj.SendRequest(req, False);
+    res :=RpcObj.SendRequest(req, False);
     AppNormal;
     if res = nil then
       MainForm.CheckStatus(False)
     else
       if res.Objects['arguments'].Integers['port-is-open'] <> 0 then
         MessageDlg(sPortTestSuccess, mtInformation, [mbOk], 0)
-      else
-        MessageDlg(sPortTestFailed, mtError, [mbOK], 0);
+    else
+      MessageDlg(sPortTestFailed, mtError, [mbOK], 0);
     res.Free;
   finally
     req.Free;
-  end;
+end;
 end;
 
 procedure TDaemonOptionsForm.cbAutoAltClick(Sender: TObject);
+
 var
   i: integer;
 begin
-  edAltTimeBegin.Enabled:=cbAutoAlt.Checked;
-  edAltTimeEnd.Enabled:=cbAutoAlt.Checked;
-  txFrom.Enabled:=cbAutoAlt.Checked;
-  txTo.Enabled:=cbAutoAlt.Checked;
-  txDays.Enabled:=cbAutoAlt.Checked;
+  edAltTimeBegin.Enabled :=cbAutoAlt.Checked;
+  edAltTimeEnd.Enabled :=cbAutoAlt.Checked;
+  txFrom.Enabled :=cbAutoAlt.Checked;
+  txTo.Enabled :=cbAutoAlt.Checked;
+  txDays.Enabled :=cbAutoAlt.Checked;
   for i:=1 to 7 do
-    gbAltSpeed.FindChildControl(Format('cbDay%d', [i])).Enabled:=cbAutoAlt.Checked;
+    gbAltSpeed.FindChildControl(Format('cbDay%d', [i])).Enabled :=cbAutoAlt.Checked;
 end;
 
 procedure TDaemonOptionsForm.cbBlocklistClick(Sender: TObject);
 begin
   if not edBlocklistURL.Visible then
     exit;
-  edBlocklistURL.Enabled:=cbBlocklist.Checked;
+  edBlocklistURL.Enabled :=cbBlocklist.Checked;
   if edBlocklistURL.Enabled then
-    edBlocklistURL.Color:=clWindow
+    edBlocklistURL.Color :=clWindow
   else
-    edBlocklistURL.ParentColor:=True;
+    edBlocklistURL.ParentColor :=True;
 end;
 
 procedure TDaemonOptionsForm.cbIdleSeedLimitClick(Sender: TObject);
 begin
-  edIdleSeedLimit.Enabled:=cbIdleSeedLimit.Checked;
+  edIdleSeedLimit.Enabled :=cbIdleSeedLimit.Checked;
 end;
 
 procedure TDaemonOptionsForm.btOKClick(Sender: TObject);
 begin
-  edDownloadDir.Text:=Trim(edDownloadDir.Text);
-  if edDownloadDir.Text = '' then begin
-    Page.ActivePage:=tabDownload;
-    edDownloadDir.SetFocus;
-    MessageDlg(SNoDownloadDir, mtError, [mbOK], 0);
-    exit;
-  end;
-  edIncompleteDir.Text:=Trim(edIncompleteDir.Text);
-  if cbIncompleteDir.Checked and (edIncompleteDir.Text = '') then begin
-    Page.ActivePage:=tabDownload;
-    edIncompleteDir.SetFocus;
-    MessageDlg(SNoIncompleteDir, mtError, [mbOK], 0);
-    exit;
-  end;
-  edBlocklistURL.Text:=Trim(edBlocklistURL.Text);
-  if cbAutoAlt.Checked then begin
-    if StrToTimeDef(edAltTimeBegin.Text, -1) < 0 then begin
-      Page.ActivePage:=tabBandwidth;
-      edAltTimeBegin.SetFocus;
-      MessageDlg(SInvalidTime, mtError, [mbOK], 0);
+  edDownloadDir.Text :=Trim(edDownloadDir.Text);
+  if edDownloadDir.Text = '' then
+    begin
+      Page.ActivePage :=tabDownload;
+      edDownloadDir.SetFocus;
+      MessageDlg(SNoDownloadDir, mtError, [mbOK], 0);
       exit;
     end;
-    if StrToTimeDef(edAltTimeEnd.Text, -1) < 0 then begin
-      Page.ActivePage:=tabBandwidth;
-      edAltTimeEnd.SetFocus;
-      MessageDlg(SInvalidTime, mtError, [mbOK], 0);
+  edIncompleteDir.Text :=Trim(edIncompleteDir.Text);
+  if cbIncompleteDir.Checked and (edIncompleteDir.Text = '') then
+    begin
+      Page.ActivePage :=tabDownload;
+      edIncompleteDir.SetFocus;
+      MessageDlg(SNoIncompleteDir, mtError, [mbOK], 0);
       exit;
     end;
-  end;
-  ModalResult:=mrOK;
+  edBlocklistURL.Text :=Trim(edBlocklistURL.Text);
+  if cbAutoAlt.Checked then
+    begin
+      if StrToTimeDef(edAltTimeBegin.Text, -1) < 0 then
+        begin
+          Page.ActivePage :=tabBandwidth;
+          edAltTimeBegin.SetFocus;
+          MessageDlg(SInvalidTime, mtError, [mbOK], 0);
+          exit;
+        end;
+      if StrToTimeDef(edAltTimeEnd.Text, -1) < 0 then
+        begin
+          Page.ActivePage :=tabBandwidth;
+          edAltTimeEnd.SetFocus;
+          MessageDlg(SInvalidTime, mtError, [mbOK], 0);
+          exit;
+        end;
+    end;
+  ModalResult :=mrOK;
 end;
 
 procedure TDaemonOptionsForm.cbIncompleteDirClick(Sender: TObject);
 begin
-  edIncompleteDir.Enabled:=cbIncompleteDir.Checked;
+  edIncompleteDir.Enabled :=cbIncompleteDir.Checked;
   if edIncompleteDir.Enabled then
-    edIncompleteDir.Color:=clWindow
+    edIncompleteDir.Color :=clWindow
   else
-    edIncompleteDir.ParentColor:=True;
+    edIncompleteDir.ParentColor :=True;
 end;
 
 procedure TDaemonOptionsForm.cbMaxUpClick(Sender: TObject);
 begin
-  edMaxUp.Enabled:=cbMaxUp.Checked;
+  edMaxUp.Enabled :=cbMaxUp.Checked;
 end;
 
 procedure TDaemonOptionsForm.cbRandomPortClick(Sender: TObject);
 begin
-  edPort.Enabled:=not cbRandomPort.Checked;
+  edPort.Enabled :=not cbRandomPort.Checked;
 end;
 
 procedure TDaemonOptionsForm.cbSeedRatioClick(Sender: TObject);
 begin
-  edSeedRatio.Enabled:=cbSeedRatio.Checked;
+  edSeedRatio.Enabled :=cbSeedRatio.Checked;
 end;
 
 procedure TDaemonOptionsForm.FormCreate(Sender: TObject);
+
 var
   i, j, x, wd: integer;
   cb: TCheckBox;
 begin
   bidiMode := GetBiDi();
-  Page.ActivePageIndex:=0;
+  Page.ActivePageIndex :=0;
   cbEncryption.Items.Add(sEncryptionDisabled);
   cbEncryption.Items.Add(sEncryptionEnabled);
   cbEncryption.Items.Add(sEncryptionRequired);
-  Buttons.OKButton.ModalResult:=mrNone;
-  Buttons.OKButton.OnClick:=@btOKClick;
+  Buttons.OKButton.ModalResult :=mrNone;
+  Buttons.OKButton.OnClick :=@btOKClick;
 
-  x:=edAltTimeBegin.Left;
-  wd:=(gbAltSpeed.ClientWidth - x - BorderWidth) div 7;
-  for i:=1 to 7 do begin
-    cb:=TCheckBox.Create(gbAltSpeed);
-    cb.Parent:=gbAltSpeed;
-    j:=i + 1;
-    if j > 7 then
-      Dec(j, 7);
-    cb.Caption:=SysToUTF8(FormatSettings.ShortDayNames[j]);
-    cb.Name:=Format('cbDay%d', [j]);
-    cb.Left:=x;
-    cb.Top:=txDays.Top - (cb.Height - txDays.Height) div 2;
-    Inc(x, wd);
-  end;
+  x :=edAltTimeBegin.Left;
+  wd :=(gbAltSpeed.ClientWidth - x - BorderWidth) div 7;
+  for i:=1 to 7 do
+    begin
+      cb :=TCheckBox.Create(gbAltSpeed);
+      cb.Parent :=gbAltSpeed;
+      j :=i + 1;
+      if j > 7 then
+        Dec(j, 7);
+      cb.Caption :=SysToUTF8(FormatSettings.ShortDayNames[j]);
+      cb.Name :=Format('cbDay%d', [j]);
+      cb.Left :=x;
+      cb.Top :=txDays.Top - (cb.Height - txDays.Height) div 2;
+      Inc(x, wd);
+    end;
 end;
 
 initialization
   {$I daemonoptions.lrs}
 
 end.
-
