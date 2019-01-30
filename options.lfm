@@ -19,10 +19,10 @@ inherited OptionsForm: TOptionsForm
     Height = 281
     Top = 8
     Width = 548
-    ActivePage = tabAdvanced
+    ActivePage = tabGeneral
     Align = alClient
     BorderSpacing.Around = 8
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object tabGeneral: TTabSheet
       Caption = 'General'
