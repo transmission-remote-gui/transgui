@@ -811,6 +811,7 @@ procedure TVarGrid.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
   pt: TPoint;
 begin
+  NullStrictConvert := False;
   inherited MouseMove(Shift, X, Y);
   pt:=MouseToCell(Point(x, y));
   if (FHintCell.x <> -1) and ((FHintCell.x <> pt.x) or (FHintCell.y <> pt.y)) then begin
