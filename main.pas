@@ -4985,8 +4985,12 @@ begin
   if i >= 0 then
     FPasswords.Delete(i);
 
+  RpcObj.Http.Sock.SSL.PFXfile:='';
+  RpcObj.Http.Sock.SSL.KeyPassword:='';
   if Ini.ReadBool(Sec, 'UseSSL', False) then begin
     RpcObj.InitSSL;
+    RpcObj.Http.Sock.SSL.PFXfile:=Ini.ReadString(Sec, 'CertFile', '');
+    RpcObj.Http.Sock.SSL.KeyPassword:=DecodeBase64(Ini.ReadString(Sec, 'CertPass', ''));
     if not IsSSLloaded then begin
       MessageDlg(Format(sSSLLoadError, [DLLSSLName, DLLUtilName]), mtError, [mbOK], 0);
       exit;
