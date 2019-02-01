@@ -175,7 +175,11 @@ end;
 
 procedure TConnOptionsForm.cbSSLClick(Sender: TObject);
 begin
+{$ifndef windows}
   EnableControls(cbSSL.Checked, [txCertFile, edCertFile, txCertPass, edCertPass]);
+{$else}
+  EnableControls(False, [txCertFile, edCertFile, txCertPass, edCertPass]);
+{$endif windows}
 end;
 
 procedure TConnOptionsForm.cbConnectionSelect(Sender: TObject);
