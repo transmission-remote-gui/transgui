@@ -18,7 +18,7 @@ inherited ConnOptionsForm: TConnOptionsForm
   Position = poMainFormCenter
   object Page: TPageControl[0]
     Left = 8
-    Height = 283
+    Height = 329
     Top = 69
     Width = 513
     ActivePage = tabConnection
@@ -94,9 +94,10 @@ inherited ConnOptionsForm: TConnOptionsForm
       object cbSSL: TCheckBox
         Left = 260
         Height = 19
-        Top = 75
+        Top = 77
         Width = 60
         Caption = 'Use SSL'
+        OnClick = cbSSLClick
         TabOrder = 2
       end
       object edHost: TEdit
@@ -170,6 +171,38 @@ inherited ConnOptionsForm: TConnOptionsForm
         AutoSize = False
         Caption = 'Always auto-reconnect'
         TabOrder = 7
+      end
+      object txCertFile: TLabel
+        Left = 8
+        Height = 18
+        Top = 245
+        Width = 105
+        Caption = 'Client Certificate:'
+        ParentColor = False
+      end
+      object edCertFile: TEdit
+        Left = 180
+        Height = 32
+        Top = 242
+        Width = 316
+        TabOrder = 10
+      end
+      object txCertPass: TLabel
+        Left = 8
+        Height = 18
+        Top = 274
+        Width = 72
+        Caption = 'Private Key:'
+        ParentColor = False
+      end
+      object edCertPass: TEdit
+        Left = 180
+        Height = 32
+        Top = 271
+        Width = 316
+        EchoMode = emPassword
+        PasswordChar = '*'
+        TabOrder = 11
       end
     end
     object tabProxy: TTabSheet

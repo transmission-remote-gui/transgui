@@ -16,7 +16,7 @@ inherited OptionsForm: TOptionsForm
   Position = poMainFormCenter
   object Page: TPageControl[0]
     Left = 8
-    Height = 281
+    Height = 329
     Top = 8
     Width = 548
     ActivePage = tabGeneral
