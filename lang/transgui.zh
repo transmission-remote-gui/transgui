@@ -318,7 +318,7 @@ Connect to %s=连接到 %s
 Connect to Transmission using proxy server=使用代理服务器连接到 Transmission
 Connect to Transmission=连接到 Transmission
 Connection name=连接名称
-Could not connect to tracker==无法连接到 Tracker
+Could not connect to tracker=无法连接到 Tracker
 Data display=数据显示
 Data refresh interval when minimized=数据刷新频率 (最小化时)
 Data refresh interval=数据刷新频率
