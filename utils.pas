@@ -421,10 +421,7 @@ begin
     end;
   end;
 
-  fn:=FileName;
-  if Pos('://', fn) > 0 then
-    fn:=StringReplace(fn, '#', '%23', [rfReplaceAll]);
-  Wrkprocess.Parameters.Add(fn);
+  Wrkprocess.Parameters.Add(FileName);
   WrkProcess.Executable:=cmd;
 
   try
