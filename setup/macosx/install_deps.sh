@@ -3,9 +3,9 @@
 set -x
 set -e
 
-lazarus_ver="1.8.4"
-fpc="fpc-3.0.4.intel-macosx"
-lazarus="lazarus-1.8.4-i686-macosx"
+lazarus_ver="2.0.4"
+fpc="fpc-3.0.4a.intel-macosx"
+lazarus="lazarus-2.0.4-i686-macosx"
 
 if [ -n "${sourceforge_mirror-}" ]; then
   mirror_string="&use_mirror=${sourceforge_mirror}"
@@ -27,4 +27,5 @@ if [ ! -x "$(command -v lazbuild 2>&1)" ]; then
   sudo installer -pkg "$pkgpath/lazarus.pkg" -target /
   hdiutil unmount "$pkgpath"
   rm "$lazarus.dmg"
+  lazbuild --build-ide= --compiler=fpc --cpu=x86_64 --widgetset=cocoa
 fi

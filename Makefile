@@ -311,7 +311,7 @@ ifneq ($(findstring $(OS_TARGET),win32,win64),)
 LCL_WIDGETSET=win32
 endif
 ifneq ($(findstring $(OS_TARGET),darwin),)
-LCL_WIDGETSET=carbon
+LCL_WIDGETSET=cocoa
 endif
 ifeq ($(DEBUG),)
   COMP_OPT=-O3 -g- -CX -XX -Xs -Scgi -l -vewnhibq
