@@ -3866,7 +3866,7 @@ begin
     gTorrents.EnsureSelectionVisible;
     TorrentIds:=GetSelectedTorrents;
     args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited', 'uploadLimit', 'uploadLimitMode', 'uploadLimited',
-                                  'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit', 'seedIdleLimit', 'seedIdleMode', 'trackers']);
+                                  'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit', 'seedIdleLimit', 'seedIdleMode', 'trackers', 'sequential']);
     if args = nil then begin
       CheckStatus(False);
       exit;
@@ -3954,6 +3954,12 @@ begin
         tabAdvanced.TabVisible:=False;
       end;
       edPeerLimit.Value:=t.Integers['maxConnectedPeers'];
+      try
+        cbSequential.Checked:=t.Booleans['sequential'];
+      except
+        cbSequential.Enabled:=false;
+        cbSequential.Hint:='Your transmission is not supported';
+      end;
     finally
       args.Free;
     end;
@@ -3972,6 +3978,9 @@ begin
         for i:=VarArrayLowBound(TorrentIds, 1) to VarArrayHighBound(TorrentIds, 1) do
           ids.Add(integer(TorrentIds[i]));
         args.Add('ids', ids);
+
+        if cbSequential.Enabled=true then
+          args.Add('sequential', integer(cbSequential.Checked) and 1);
 
         if RpcObj.RPCVersion < 5 then
         begin
