@@ -1,3 +1,17 @@
+5.17.0 (Jun 26, 2019)
+ - Switch to GeoIP Legacy Databases (DAT) (#1195)
+ - Set default option active page to General tab
+ - Update screenshot in README.md
+ - Update copyright to 2019 (#1198)
+ - Update Polish translation (#1217)
+ - Update Danish/Dansk Translation (#1179)
+ - Update Traditional Chinese translation
+ - Upgrade OpenSSL for Windows from 1.0.2p to 1.0.2s
+ - Fix date column throws error (#1201)
+ - Fix history.txt(changelog) for v5.16.0 (#1190)
+ - Fix small English grammar issue in issue template
+ - Add support for client certificates on non-windows platform (#1202)
+
 5.16 (Dec 26, 2018)
  - Add TravisBuddy
  - Add EditorConfig
