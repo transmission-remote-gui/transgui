@@ -1,0 +1,60 @@
+---
+name: transgui
+version: version
+summary: Transmission Remote GUI
+version-script: cat VERSION.txt
+description: |
+  Transmission Remote GUI is feature rich cross platform front-end
+  to remotely control Transmission daemon via its RPC protocol.
+  It is faster and has more functionality than builtin Transmission
+  web interface.
+icon: transgui.png
+grade: stable
+confinement: strict
+
+parts:
+  transgui:
+    plugin: dump
+    source: .
+    prime:
+      - etc
+      - usr
+      - var
+      - lib
+      - lang
+      - LICENSE
+      - transgui
+      - transgui.desktop
+      - README.md
+      - history.txt
+      - transgui.png
+    override-build: |
+      snapcraftctl build
+      sed -i 's|Icon=transgui|Icon=${SNAP}/transgui.png|' ${SNAPCRAFT_PART_INSTALL}/transgui.desktop
+    build-packages:
+      - git
+      - make
+      - lazarus
+      - coreutils
+    stage-packages:
+      - libx11-6
+      - libcairo2
+      - libssl-dev
+      - libatk1.0-0
+      - libgtk2.0-0
+      - libglib2.0-0
+      - libpango-1.0-0
+      - libgdk-pixbuf2.0-0
+
+apps:
+  transgui:
+    desktop: transgui.desktop
+    plugs:
+      - desktop
+      - desktop-legacy
+      - wayland
+      - x11
+      - unity7
+      - network
+      - home
+    command: transgui

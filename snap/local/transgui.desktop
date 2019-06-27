@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=TransGUI
+GenericName=Transmission Remote GUI
+Comment=Transmission Remote GUI
+Exec=@bindir@/transgui
+TryExec=@bindir@/transgui
+Icon=transgui
+Terminal=false
+Type=Application
+Categories=Internet;
+MimeType=application/x-bittorrent
+X-KDE-Protocols=magnet
+Keywords=Torrent;Transmission;

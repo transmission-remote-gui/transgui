@@ -1,3 +1,11 @@
+
+# snap package build via snapcraft
+/*.snap
+/snap/.snapcraft/
+/stage/
+/parts/
+/prime/
+
 ### https://raw.github.com/github/gitignore/8edb8a95c4c4b3dce71a378aaaf89275510b9cef/Global/Lazarus.gitignore
 
 # Lazarus compiler-generated binaries (safe to delete)
