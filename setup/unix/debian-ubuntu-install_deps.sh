@@ -3,4 +3,4 @@
 set -ex
 
 apt update -yqq
-apt install -yqq lazarus xz-utils realpath git make jq zip
+apt install -yqq lazarus xz-utils realpath git make jq zip libssl-dev
