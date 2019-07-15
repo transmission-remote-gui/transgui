@@ -13,6 +13,17 @@ matrix:
     - os: linux
       dist: xenial
       env:
+      - task=shfmt
+      services:
+      - docker
+      script:
+      - docker run -it --rm -v "$(pwd)":/sh -w /sh peterdavehello/shfmt:2.6.4 shfmt -sr -i 2 -l -w -ci .
+      - git diff --color
+      - git diff --stat=220 --color --exit-code
+
+    - os: linux
+      dist: xenial
+      env:
       - task=shellcheck
       script:
       - shellcheck -V
