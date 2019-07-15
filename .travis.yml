@@ -37,7 +37,7 @@ matrix:
       env:
         - task=markdown-link-check
       install:
-        - nvm install 4
+        - nvm install 10
         - npm i -g markdown-link-check
       before_script:
         - node --version
@@ -52,7 +52,7 @@ matrix:
       env:
         - task=doctoc-check
       install:
-        - nvm install 4
+        - nvm install 10
         - npm i -g doctoc
       before_script:
         - node --version
