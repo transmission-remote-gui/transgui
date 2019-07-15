@@ -8,7 +8,7 @@ lazarus_ver="$(lazbuild -v)"
 fpc_ver="$(fpc -i V | head -n 1)"
 exename=../../transgui
 appname="Transmission Remote GUI"
-dmg_dist_file="transgui-$prog_ver.dmg"
+dmg_dist_file="../../Release/transgui-$prog_ver.dmg"
 dmgfolder=./Release
 appfolder="$dmgfolder/$appname.app"
 lazdir="${1:-/Developer/lazarus/}"
@@ -21,6 +21,7 @@ if [ ! "$lazdir" = "" ]; then
   lazdir=LAZARUS_DIR="$lazdir"
 fi
 
+mkdir -p ../../Release/
 sed -i.bak "s/'Version %s'/'Version %s Build $build'#13#10'Compiled by: $fpc_ver, Lazarus v$lazarus_ver'/" ../../about.lfm
 
 lazbuild -B ../../transgui.lpi --lazarusdir=/Developer/lazarus/

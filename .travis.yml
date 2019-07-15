@@ -195,20 +195,20 @@ matrix:
       - sh -c 'cd setup/macosx && ./create_app_new.sh'
       - echo -en 'travis_fold:end:build'
       after_success:
-      - md5 ./setup/macosx/transgui-$PROG_VER.dmg
-      - shasum -a 1 ./setup/macosx/transgui-$PROG_VER.dmg
-      - shasum -a 256 ./setup/macosx/transgui-$PROG_VER.dmg
+      - md5 ./Release/transgui-$PROG_VER.dmg
+      - shasum -a 1 ./Release/transgui-$PROG_VER.dmg
+      - shasum -a 256 ./Release/transgui-$PROG_VER.dmg
       - if [ -n "$TRAVIS_TAG" ] ; then
-          curl -F "file=@./setup/macosx/transgui-$PROG_VER.dmg" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+          curl -F "file=@./Release/transgui-$PROG_VER.dmg" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
           curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
         else
-          setup/upload_asset.sh ./setup/macosx/transgui-$PROG_VER.dmg ;
+          setup/upload_asset.sh ./Release/transgui-$PROG_VER.dmg ;
         fi
       deploy:
       - provider: releases
         api_key:
           secure: "0671vAjL2m6gqjDSdkdjiyfDwuR8uLYrE6OCaeaX9iLvqSxmKAffkLlCZXU9fevmTglEMSmarcmHtwy1AYcqBClChl0dup2YvmM+BzsTfDSjZT43asI1Ok7MJALqqCa/xPO15HH1XfvstHeuOCM16nB61VQKT1+an0T9oz96PNIr5oS/Q8owmaWHvbB18IBoeTNvUZl0OvaqjNGZJ9JnBvBTROPDvsfud1DxlPmlTaCxh+yx8yAZYX2nLOkJFlWhG4b7mtcrlitVENcdjJ90qY4c01uzH3cYNdVn4PH/z0s+cAQT36f2zSX8UpsfBxbsBpB6ANS9Ig4gPp8eOtuhfpd2lOH6fL/DwAaxh9FGbTH5n9eR4cO9bEkmW5BoUeDpcIboIVZKrtZI97/MiRtwMfQzleQuwWuDpanaMqiY+LdS6vllG4kQjGck9fWj5wbaHR/MDTlAODc5/WUYA+69MDjPK/JI34/rPIag+8ZF2pF2VLyVC1kbvpngsYkcvQTRRSWrb6Cj0i7ggrBrCOmU2RrfkiKUGarukaCel/9U2dxnmkxPpfKBVXD0v6ylcUEofMJ6ml4lcGH8XX1jTNlUQebu7uhbfyhsJA9IEyMKXX3RHaq7Tf1XyCtZYIo2sAkFG103u/zSbkVZOAa8qoWqwFO8gx5MAa7ZRJVbuBNswBk="
-        file: ./setup/macosx/transgui-$PROG_VER.dmg
+        file: ./Release/transgui-$PROG_VER.dmg
         skip_cleanup: true
         on:
           tags: true
