@@ -13,7 +13,7 @@ appfolder="$dmgfolder/$appname.app"
 lazdir="${1:-/Developer/lazarus/}"
 
 if [ -z "${CI-}" ]; then
-  ./compilers.sh
+  ./install_deps.sh
 fi
 
 if [ ! "$lazdir" = "" ]; then

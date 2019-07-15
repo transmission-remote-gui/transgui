@@ -189,7 +189,7 @@ matrix:
       - arch=osx
       - sourceforge_mirror=pilotfiber
       install:
-      - sh -c 'cd setup/macosx && ./compilers.sh'
+      - sh -c 'cd setup/macosx && ./install_deps.sh'
       script:
       - echo -en 'travis_fold:start:build'
       - sh -c 'cd setup/macosx && ./create_app_new.sh'
