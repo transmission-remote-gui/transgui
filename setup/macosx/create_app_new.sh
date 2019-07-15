@@ -8,6 +8,7 @@ lazarus_ver="$(lazbuild -v)"
 fpc_ver="$(fpc -i V | head -n 1)"
 exename=../../transgui
 appname="Transmission Remote GUI"
+dmg_dist_file="transgui-$prog_ver.dmg"
 dmgfolder=./Release
 appfolder="$dmgfolder/$appname.app"
 lazdir="${1:-/Developer/lazarus/}"
@@ -61,13 +62,13 @@ SetFile -c icnC "$mount_volume/.VolumeIcon.icns"
 SetFile -a C "$mount_volume"
 
 hdiutil detach "$mount_device"
-rm -f "transgui-$prog_ver.dmg"
-hdiutil convert tmp.dmg -format UDBZ -imagekey zlib-level=9 -o "transgui-$prog_ver.dmg"
+rm -f "$dmg_dist_file"
+hdiutil convert tmp.dmg -format UDBZ -imagekey zlib-level=9 -o "$dmg_dist_file"
 
 rm tmp.dmg
 rm -rf "$dmgfolder"
 mv ../../about.lfm.bak ../../about.lfm
 
 if [ -z "${CI-}" ]; then
-  open "transgui-$prog_ver.dmg"
+  open "$dmg_dist_file"
 fi
