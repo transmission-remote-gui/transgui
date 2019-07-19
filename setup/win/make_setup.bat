@@ -3,7 +3,7 @@
 if (%1) == () goto usage
 if (%2) == () goto usage
 
-set path=%1;%1\fpc\3.0.2\bin\i386-win32;%path%
+set path=%1;%1\fpc\3.0.4\bin\i386-win32;%path%
 set LAZARUS_DIR=%1
 
 lazbuild -B ../../transgui.lpi
