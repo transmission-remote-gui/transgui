@@ -31,6 +31,7 @@ if not (%CODECERT%) == () (
 "%ISC%\iscc.exe" "/ssigntool=signtool.exe $p" setup.iss
 if errorlevel 1 goto err
 
+pause
 exit /b 0
 
 :err
