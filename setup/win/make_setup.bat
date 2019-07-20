@@ -1,14 +1,24 @@
 @echo off
 
-if (%1) == () goto usage
-if (%2) == () goto usage
+echo "Usage: %~nx0 <lazarus_dir> <inno_setup_dir>"
 
-set path=%1;%1\fpc\3.0.4\bin\i386-win32;%path%
-set LAZARUS_DIR=%1
+if "%1" NEQ "" (
+    set "LAZARUS_DIR=%1"
+) else (
+    set "LAZARUS_DIR=C:\lazarus"
+)
+
+if "%2" NEQ "" (
+    set "ISC=%2"
+) else (
+    set "ISC=C:\Program Files (x86)\Inno Setup 5"
+)
+
+set path=%LAZARUS_DIR%;%LAZARUS_DIR%\fpc\3.0.4\bin\i386-win32;%path%
 
 lazbuild -B ../../transgui.lpi
-make -C ../.. clean LAZARUS_DIR=%1
-make -C ../.. all   LAZARUS_DIR=%1
+make -C ../.. clean
+make -C ../.. all
 if errorlevel 1 goto err
 
 if not (%CODECERT%) == () (
@@ -16,15 +26,10 @@ if not (%CODECERT%) == () (
   if errorlevel 1 goto err
 )
 
-set ISC=%~2
-
 "%ISC%\iscc.exe" "/ssigntool=signtool.exe $p" setup.iss
 if errorlevel 1 goto err
 
 exit /b 0
-
-:usage
-echo "Usage: %~nx0 <lazarus_dir> <inno_setup_dir>"
 
 :err
 pause
