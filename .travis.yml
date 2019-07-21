@@ -13,7 +13,7 @@ matrix:
   include:
 
     - os: linux
-      dist: xenial
+      dist: bionic
       env:
         - task=shfmt
       services:
@@ -24,7 +24,7 @@ matrix:
         - git diff --stat=220 --color --exit-code
 
     - os: linux
-      dist: xenial
+      dist: bionic
       env:
         - task=shellcheck
       script:
@@ -32,7 +32,7 @@ matrix:
         - find . -type f -name "*.sh" | xargs -n 1 shellcheck
 
     - os: linux
-      dist: xenial
+      dist: bionic
       language: node_js
       env:
         - task=markdown-link-check
@@ -47,7 +47,7 @@ matrix:
         - find . -type f -name "*.md" | xargs -n 1 markdown-link-check
 
     - os: linux
-      dist: xenial
+      dist: bionic
       language: node_js
       env:
         - task=doctoc-check
@@ -67,7 +67,7 @@ matrix:
           fi
 
     - os: linux
-      dist: xenial
+      dist: bionic
       services:
         - docker
       env:
@@ -76,7 +76,7 @@ matrix:
         - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" debian:stretch-backports bash -c "cd /transgui/ && ./setup/unix/debian-ubuntu-install_deps.sh && lazbuild -B transgui.lpi --lazarusdir=/usr/lib/lazarus/default/ && make -j$(nproc) zipdist && ls -al ./Release/transgui-$PROG_VER-x86_64-linux.zip"
 
     - os: linux
-      dist: xenial
+      dist: bionic
       services:
         - docker
       env:
@@ -104,7 +104,7 @@ matrix:
             tags: true
 
     - os: linux
-      dist: xenial
+      dist: bionic
       services:
         - docker
       env:
@@ -132,7 +132,7 @@ matrix:
             tags: true
 
     - os: linux
-      dist: xenial
+      dist: bionic
       services:
         - docker
       env:
@@ -164,7 +164,7 @@ matrix:
             tags: true
 
     - os: linux
-      dist: xenial
+      dist: bionic
       services:
         - docker
       env:
