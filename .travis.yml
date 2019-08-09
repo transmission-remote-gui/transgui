@@ -59,6 +59,22 @@ matrix:
       language: node_js
       node_js: 10
       env:
+        - task=eclint
+      install:
+        - npm i -g eclint
+      before_script:
+        - node --version
+        - npm  --version
+        - type eclint
+      script:
+        - eclint check lang/ setup/ Makefile* *.txt
+
+    - os: linux
+      dist: bionic
+      stage: static test
+      language: node_js
+      node_js: 10
+      env:
         - task=doctoc-check
       install:
         - npm i -g doctoc
