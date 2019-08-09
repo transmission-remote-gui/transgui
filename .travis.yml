@@ -128,7 +128,7 @@ matrix:
           packages:
             - qemu-user-static
       script:
-        - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static resin/rpi-raspbian:stretch bash -c "sed -i 's/archive.raspbian.org/mirrors.ocf.berkeley.edu\/raspbian/g' /etc/apt/sources.list && cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
+        - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static balenalib/rpi-raspbian:stretch bash -c "sed -i 's/archive.raspbian.org/mirrors.ocf.berkeley.edu\/raspbian/g' /etc/apt/sources.list && cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
       after_success: *linux_after_success
       deploy: *deploy
 
@@ -141,7 +141,7 @@ matrix:
           packages:
             - qemu-user-static
       script:
-        - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static resin/armv7hf-debian:stretch bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
+        - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static balenalib/armv7hf-debian:stretch bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
       after_success: *linux_after_success
       deploy: *deploy
 
