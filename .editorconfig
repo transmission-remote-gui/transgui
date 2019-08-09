@@ -9,11 +9,17 @@ trim_trailing_whitespace = true
 [*.{bat,iss,txt}]
 end_of_line = crlf
 
+[VERSION.txt]
+end_of_line = lf
+
+[PkgInfo]
+end_of_line = crlf
+
 [*.{pas,lpi,lfm,lpr,sh}]
 indent_size = 2
 indent_style = space
 
-[*.isl]
+[*.{isl,icns}]
 charset = false
 end_of_line = false
 insert_final_newline = false
