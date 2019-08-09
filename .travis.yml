@@ -107,23 +107,24 @@ matrix:
         - docker
       env:
         - arch=amd64
+        - artifact=./Release/transgui-$PROG_VER-x86_64-Linux.txz
       script:
         - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" debian:stretch-backports bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
       after_success:
-        - md5sum ./Release/transgui-$PROG_VER-x86_64-Linux.txz
-        - sha1sum ./Release/transgui-$PROG_VER-x86_64-Linux.txz
-        - sha256sum ./Release/transgui-$PROG_VER-x86_64-Linux.txz
+        - md5sum $artifact
+        - sha1sum $artifact
+        - sha256sum $artifact
         - if [ -n "$TRAVIS_TAG" ] ; then
-            curl -F "file=@./Release/transgui-$PROG_VER-x86_64-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+            curl -F "file=@$artifact" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
             curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
           else
-            setup/upload_asset.sh ./Release/transgui-$PROG_VER-x86_64-Linux.txz ;
+            setup/upload_asset.sh $artifact ;
           fi
       deploy:
         - provider: releases
           api_key:
             secure: "0671vAjL2m6gqjDSdkdjiyfDwuR8uLYrE6OCaeaX9iLvqSxmKAffkLlCZXU9fevmTglEMSmarcmHtwy1AYcqBClChl0dup2YvmM+BzsTfDSjZT43asI1Ok7MJALqqCa/xPO15HH1XfvstHeuOCM16nB61VQKT1+an0T9oz96PNIr5oS/Q8owmaWHvbB18IBoeTNvUZl0OvaqjNGZJ9JnBvBTROPDvsfud1DxlPmlTaCxh+yx8yAZYX2nLOkJFlWhG4b7mtcrlitVENcdjJ90qY4c01uzH3cYNdVn4PH/z0s+cAQT36f2zSX8UpsfBxbsBpB6ANS9Ig4gPp8eOtuhfpd2lOH6fL/DwAaxh9FGbTH5n9eR4cO9bEkmW5BoUeDpcIboIVZKrtZI97/MiRtwMfQzleQuwWuDpanaMqiY+LdS6vllG4kQjGck9fWj5wbaHR/MDTlAODc5/WUYA+69MDjPK/JI34/rPIag+8ZF2pF2VLyVC1kbvpngsYkcvQTRRSWrb6Cj0i7ggrBrCOmU2RrfkiKUGarukaCel/9U2dxnmkxPpfKBVXD0v6ylcUEofMJ6ml4lcGH8XX1jTNlUQebu7uhbfyhsJA9IEyMKXX3RHaq7Tf1XyCtZYIo2sAkFG103u/zSbkVZOAa8qoWqwFO8gx5MAa7ZRJVbuBNswBk="
-          file: ./Release/transgui-$PROG_VER-x86_64-Linux.txz
+          file: $artifact
           skip_cleanup: true
           on:
             tags: true
@@ -135,23 +136,24 @@ matrix:
         - docker
       env:
         - arch=i386
+        - artifact=./Release/transgui-$PROG_VER-i686-Linux.txz
       script:
         - docker run -e DEBIAN_FRONTEND=noninteractive --privileged -it --rm -v "${PWD}:/transgui" i386/debian:stretch-backports linux32 --32bit bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
       after_success:
-        - md5sum ./Release/transgui-$PROG_VER-i686-Linux.txz
-        - sha1sum ./Release/transgui-$PROG_VER-i686-Linux.txz
-        - sha256sum ./Release/transgui-$PROG_VER-i686-Linux.txz
+        - md5sum $artifact
+        - sha1sum $artifact
+        - sha256sum $artifact
         - if [ -n "$TRAVIS_TAG" ] ; then
-            curl -F "file=@./Release/transgui-$PROG_VER-i686-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+            curl -F "file=@$artifact" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
             curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
           else
-            setup/upload_asset.sh ./Release/transgui-$PROG_VER-i686-Linux.txz ;
+            setup/upload_asset.sh $artifact ;
           fi
       deploy:
         - provider: releases
           api_key:
             secure: "0671vAjL2m6gqjDSdkdjiyfDwuR8uLYrE6OCaeaX9iLvqSxmKAffkLlCZXU9fevmTglEMSmarcmHtwy1AYcqBClChl0dup2YvmM+BzsTfDSjZT43asI1Ok7MJALqqCa/xPO15HH1XfvstHeuOCM16nB61VQKT1+an0T9oz96PNIr5oS/Q8owmaWHvbB18IBoeTNvUZl0OvaqjNGZJ9JnBvBTROPDvsfud1DxlPmlTaCxh+yx8yAZYX2nLOkJFlWhG4b7mtcrlitVENcdjJ90qY4c01uzH3cYNdVn4PH/z0s+cAQT36f2zSX8UpsfBxbsBpB6ANS9Ig4gPp8eOtuhfpd2lOH6fL/DwAaxh9FGbTH5n9eR4cO9bEkmW5BoUeDpcIboIVZKrtZI97/MiRtwMfQzleQuwWuDpanaMqiY+LdS6vllG4kQjGck9fWj5wbaHR/MDTlAODc5/WUYA+69MDjPK/JI34/rPIag+8ZF2pF2VLyVC1kbvpngsYkcvQTRRSWrb6Cj0i7ggrBrCOmU2RrfkiKUGarukaCel/9U2dxnmkxPpfKBVXD0v6ylcUEofMJ6ml4lcGH8XX1jTNlUQebu7uhbfyhsJA9IEyMKXX3RHaq7Tf1XyCtZYIo2sAkFG103u/zSbkVZOAa8qoWqwFO8gx5MAa7ZRJVbuBNswBk="
-          file: ./Release/transgui-$PROG_VER-i686-Linux.txz
+          file: $artifact
           skip_cleanup: true
           on:
             tags: true
@@ -163,6 +165,7 @@ matrix:
         - docker
       env:
         - arch=rpi-armv6l
+        - artifact=./Release/transgui-$PROG_VER-armv6l-Linux.txz
       addons:
         apt:
           packages:
@@ -170,20 +173,20 @@ matrix:
       script:
         - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static resin/rpi-raspbian:stretch bash -c "sed -i 's/archive.raspbian.org/mirrors.ocf.berkeley.edu\/raspbian/g' /etc/apt/sources.list && cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
       after_success:
-        - md5sum ./Release/transgui-$PROG_VER-armv6l-Linux.txz
-        - sha1sum ./Release/transgui-$PROG_VER-armv6l-Linux.txz
-        - sha256sum ./Release/transgui-$PROG_VER-armv6l-Linux.txz
+        - md5sum $artifact
+        - sha1sum $artifact
+        - sha256sum $artifact
         - if [ -n "$TRAVIS_TAG" ] ; then
-            curl -F "file=@./Release/transgui-$PROG_VER-armv6l-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+            curl -F "file=@$artifact" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
             curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
           else
-            setup/upload_asset.sh ./Release/transgui-$PROG_VER-armv6l-Linux.txz ;
+            setup/upload_asset.sh $artifact ;
           fi
       deploy:
         - provider: releases
           api_key:
             secure: "0671vAjL2m6gqjDSdkdjiyfDwuR8uLYrE6OCaeaX9iLvqSxmKAffkLlCZXU9fevmTglEMSmarcmHtwy1AYcqBClChl0dup2YvmM+BzsTfDSjZT43asI1Ok7MJALqqCa/xPO15HH1XfvstHeuOCM16nB61VQKT1+an0T9oz96PNIr5oS/Q8owmaWHvbB18IBoeTNvUZl0OvaqjNGZJ9JnBvBTROPDvsfud1DxlPmlTaCxh+yx8yAZYX2nLOkJFlWhG4b7mtcrlitVENcdjJ90qY4c01uzH3cYNdVn4PH/z0s+cAQT36f2zSX8UpsfBxbsBpB6ANS9Ig4gPp8eOtuhfpd2lOH6fL/DwAaxh9FGbTH5n9eR4cO9bEkmW5BoUeDpcIboIVZKrtZI97/MiRtwMfQzleQuwWuDpanaMqiY+LdS6vllG4kQjGck9fWj5wbaHR/MDTlAODc5/WUYA+69MDjPK/JI34/rPIag+8ZF2pF2VLyVC1kbvpngsYkcvQTRRSWrb6Cj0i7ggrBrCOmU2RrfkiKUGarukaCel/9U2dxnmkxPpfKBVXD0v6ylcUEofMJ6ml4lcGH8XX1jTNlUQebu7uhbfyhsJA9IEyMKXX3RHaq7Tf1XyCtZYIo2sAkFG103u/zSbkVZOAa8qoWqwFO8gx5MAa7ZRJVbuBNswBk="
-          file: ./Release/transgui-$PROG_VER-armv6l-Linux.txz
+          file: $artifact
           skip_cleanup: true
           on:
             tags: true
@@ -195,6 +198,7 @@ matrix:
         - docker
       env:
         - arch=armv7l
+        - artifact=./Release/transgui-$PROG_VER-armv7l-Linux.txz
       addons:
         apt:
           packages:
@@ -202,20 +206,20 @@ matrix:
       script:
         - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static resin/armv7hf-debian:stretch bash -c "sed -i 's/archive.raspbian.org/mirrors.ocf.berkeley.edu\/raspbian/g' /etc/apt/sources.list && cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
       after_success:
-        - md5sum ./Release/transgui-$PROG_VER-armv7l-Linux.txz
-        - sha1sum ./Release/transgui-$PROG_VER-armv7l-Linux.txz
-        - sha256sum ./Release/transgui-$PROG_VER-armv7l-Linux.txz
+        - md5sum $artifact
+        - sha1sum $artifact
+        - sha256sum $artifact
         - if [ -n "$TRAVIS_TAG" ] ; then
-            curl -F "file=@./Release/transgui-$PROG_VER-armv7l-Linux.txz" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+            curl -F "file=@$artifact" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
             curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
           else
-            setup/upload_asset.sh ./Release/transgui-$PROG_VER-armv7l-Linux.txz ;
+            setup/upload_asset.sh $artifact ;
           fi
       deploy:
         - provider: releases
           api_key:
             secure: "0671vAjL2m6gqjDSdkdjiyfDwuR8uLYrE6OCaeaX9iLvqSxmKAffkLlCZXU9fevmTglEMSmarcmHtwy1AYcqBClChl0dup2YvmM+BzsTfDSjZT43asI1Ok7MJALqqCa/xPO15HH1XfvstHeuOCM16nB61VQKT1+an0T9oz96PNIr5oS/Q8owmaWHvbB18IBoeTNvUZl0OvaqjNGZJ9JnBvBTROPDvsfud1DxlPmlTaCxh+yx8yAZYX2nLOkJFlWhG4b7mtcrlitVENcdjJ90qY4c01uzH3cYNdVn4PH/z0s+cAQT36f2zSX8UpsfBxbsBpB6ANS9Ig4gPp8eOtuhfpd2lOH6fL/DwAaxh9FGbTH5n9eR4cO9bEkmW5BoUeDpcIboIVZKrtZI97/MiRtwMfQzleQuwWuDpanaMqiY+LdS6vllG4kQjGck9fWj5wbaHR/MDTlAODc5/WUYA+69MDjPK/JI34/rPIag+8ZF2pF2VLyVC1kbvpngsYkcvQTRRSWrb6Cj0i7ggrBrCOmU2RrfkiKUGarukaCel/9U2dxnmkxPpfKBVXD0v6ylcUEofMJ6ml4lcGH8XX1jTNlUQebu7uhbfyhsJA9IEyMKXX3RHaq7Tf1XyCtZYIo2sAkFG103u/zSbkVZOAa8qoWqwFO8gx5MAa7ZRJVbuBNswBk="
-          file: ./Release/transgui-$PROG_VER-armv7l-Linux.txz
+          file: $artifact
           skip_cleanup: true
           on:
             tags: true
@@ -226,6 +230,7 @@ matrix:
       env:
         - arch=osx
         - sourceforge_mirror=pilotfiber
+        - artifact=./Release/transgui-$PROG_VER.dmg
       install:
         - sh -c 'cd setup/macosx && ./install_deps.sh'
       script:
@@ -233,20 +238,20 @@ matrix:
         - sh -c 'cd setup/macosx && ./create_app_new.sh'
         - echo -en 'travis_fold:end:build'
       after_success:
-        - md5 ./Release/transgui-$PROG_VER.dmg
-        - shasum -a 1 ./Release/transgui-$PROG_VER.dmg
-        - shasum -a 256 ./Release/transgui-$PROG_VER.dmg
+        - md5 $artifact
+        - shasum -a 1 $artifact
+        - shasum -a 256 $artifact
         - if [ -n "$TRAVIS_TAG" ] ; then
-            curl -F "file=@./Release/transgui-$PROG_VER.dmg" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+            curl -F "file=@$artifact" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
             curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
           else
-            setup/upload_asset.sh ./Release/transgui-$PROG_VER.dmg ;
+            setup/upload_asset.sh $artifact ;
           fi
       deploy:
         - provider: releases
           api_key:
             secure: "0671vAjL2m6gqjDSdkdjiyfDwuR8uLYrE6OCaeaX9iLvqSxmKAffkLlCZXU9fevmTglEMSmarcmHtwy1AYcqBClChl0dup2YvmM+BzsTfDSjZT43asI1Ok7MJALqqCa/xPO15HH1XfvstHeuOCM16nB61VQKT1+an0T9oz96PNIr5oS/Q8owmaWHvbB18IBoeTNvUZl0OvaqjNGZJ9JnBvBTROPDvsfud1DxlPmlTaCxh+yx8yAZYX2nLOkJFlWhG4b7mtcrlitVENcdjJ90qY4c01uzH3cYNdVn4PH/z0s+cAQT36f2zSX8UpsfBxbsBpB6ANS9Ig4gPp8eOtuhfpd2lOH6fL/DwAaxh9FGbTH5n9eR4cO9bEkmW5BoUeDpcIboIVZKrtZI97/MiRtwMfQzleQuwWuDpanaMqiY+LdS6vllG4kQjGck9fWj5wbaHR/MDTlAODc5/WUYA+69MDjPK/JI34/rPIag+8ZF2pF2VLyVC1kbvpngsYkcvQTRRSWrb6Cj0i7ggrBrCOmU2RrfkiKUGarukaCel/9U2dxnmkxPpfKBVXD0v6ylcUEofMJ6ml4lcGH8XX1jTNlUQebu7uhbfyhsJA9IEyMKXX3RHaq7Tf1XyCtZYIo2sAkFG103u/zSbkVZOAa8qoWqwFO8gx5MAa7ZRJVbuBNswBk="
-          file: ./Release/transgui-$PROG_VER.dmg
+          file: $artifact
           skip_cleanup: true
           on:
             tags: true
