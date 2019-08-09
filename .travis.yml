@@ -52,8 +52,6 @@ env_template:
     install:
       - npm i -g $task
     before_script:
-      - node --version
-      - npm --version
       - type $task
 
 matrix:
@@ -72,7 +70,6 @@ matrix:
       env:
         - task=shellcheck
       script:
-        - shellcheck -V
         - find . -type f -name "*.sh" | xargs -n 1 shellcheck
 
     - <<: *nodejs_static_test_env
