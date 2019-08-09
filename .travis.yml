@@ -41,10 +41,10 @@ matrix:
       dist: bionic
       stage: static test
       language: node_js
+      node_js: 10
       env:
         - task=markdown-link-check
       install:
-        - nvm install 10
         - npm i -g markdown-link-check
       before_script:
         - node --version
@@ -57,10 +57,10 @@ matrix:
       dist: bionic
       stage: static test
       language: node_js
+      node_js: 10
       env:
         - task=doctoc-check
       install:
-        - nvm install 10
         - npm i -g doctoc
       before_script:
         - node --version
