@@ -9,27 +9,65 @@ env:
   global:
     - PROG_VER=$(head -n 1 VERSION.txt)
 
+deploy: &deploy
+  - provider: releases
+    api_key:
+      secure: "0671vAjL2m6gqjDSdkdjiyfDwuR8uLYrE6OCaeaX9iLvqSxmKAffkLlCZXU9fevmTglEMSmarcmHtwy1AYcqBClChl0dup2YvmM+BzsTfDSjZT43asI1Ok7MJALqqCa/xPO15HH1XfvstHeuOCM16nB61VQKT1+an0T9oz96PNIr5oS/Q8owmaWHvbB18IBoeTNvUZl0OvaqjNGZJ9JnBvBTROPDvsfud1DxlPmlTaCxh+yx8yAZYX2nLOkJFlWhG4b7mtcrlitVENcdjJ90qY4c01uzH3cYNdVn4PH/z0s+cAQT36f2zSX8UpsfBxbsBpB6ANS9Ig4gPp8eOtuhfpd2lOH6fL/DwAaxh9FGbTH5n9eR4cO9bEkmW5BoUeDpcIboIVZKrtZI97/MiRtwMfQzleQuwWuDpanaMqiY+LdS6vllG4kQjGck9fWj5wbaHR/MDTlAODc5/WUYA+69MDjPK/JI34/rPIag+8ZF2pF2VLyVC1kbvpngsYkcvQTRRSWrb6Cj0i7ggrBrCOmU2RrfkiKUGarukaCel/9U2dxnmkxPpfKBVXD0v6ylcUEofMJ6ml4lcGH8XX1jTNlUQebu7uhbfyhsJA9IEyMKXX3RHaq7Tf1XyCtZYIo2sAkFG103u/zSbkVZOAa8qoWqwFO8gx5MAa7ZRJVbuBNswBk="
+    file: $artifact
+    skip_cleanup: true
+    on:
+      tags: true
+
+linux_after_success: &linux_after_success
+  - md5sum $artifact
+  - shasum -a 1 $artifact
+  - shasum -a 256 $artifact
+  - if [ -n "$TRAVIS_TAG" ] ; then
+      curl -F "file=@$artifact" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+      curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+    else
+      setup/upload_asset.sh $artifact ;
+    fi
+
 stages:
   - static test
   - build
 
+env_template:
+  - &linux_env
+    os: linux
+    dist: bionic
+    services:
+      - docker
+
+  - &linux_build_env
+    <<: *linux_env
+    stage: build
+
+  - &nodejs_static_test_env
+    <<: *linux_env
+    stage: static test
+    language: node_js
+    node_js: 10
+    install:
+      - npm i -g $task
+    before_script:
+      - node --version
+      - npm --version
+      - type $task
+
 matrix:
   include:
-
-    - os: linux
-      dist: bionic
+    - <<: *linux_env
       stage: static test
       env:
         - task=shfmt
-      services:
-        - docker
       script:
         - docker run -it --rm -v "$(pwd)":/sh -w /sh peterdavehello/shfmt:2.6.4 shfmt -sr -i 2 -l -w -ci .
         - git diff --color
         - git diff --stat=220 --color --exit-code
 
-    - os: linux
-      dist: bionic
+    - <<: *linux_env
       stage: static test
       env:
         - task=shellcheck
@@ -37,51 +75,21 @@ matrix:
         - shellcheck -V
         - find . -type f -name "*.sh" | xargs -n 1 shellcheck
 
-    - os: linux
-      dist: bionic
-      stage: static test
-      language: node_js
-      node_js: 10
+    - <<: *nodejs_static_test_env
       env:
         - task=markdown-link-check
-      install:
-        - npm i -g markdown-link-check
-      before_script:
-        - node --version
-        - npm  --version
-        - type markdown-link-check
       script:
         - find . -type f -name "*.md" | xargs -n 1 markdown-link-check
 
-    - os: linux
-      dist: bionic
-      stage: static test
-      language: node_js
-      node_js: 10
+    - <<: *nodejs_static_test_env
       env:
         - task=eclint
-      install:
-        - npm i -g eclint
-      before_script:
-        - node --version
-        - npm  --version
-        - type eclint
       script:
         - eclint check lang/ setup/ Makefile* *.txt
 
-    - os: linux
-      dist: bionic
-      stage: static test
-      language: node_js
-      node_js: 10
+    - <<: *nodejs_static_test_env
       env:
-        - task=doctoc-check
-      install:
-        - npm i -g doctoc
-      before_script:
-        - node --version
-        - npm  --version
-        - type doctoc
+        - task=doctoc
       script:
         - doctoc --title "## Table of Contents" --github README.md > /dev/null
         - if ! git diff --quiet README.md; then
@@ -90,79 +98,31 @@ matrix:
             exit 1;
           fi
 
-    - os: linux
-      dist: bionic
-      stage: build
-      services:
-        - docker
+    - <<: *linux_build_env
       env:
         - task=zip-tarball-test
       script:
         - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" debian:stretch-backports bash -c "cd /transgui/ && ./setup/unix/debian-ubuntu-install_deps.sh && lazbuild -B transgui.lpi --lazarusdir=/usr/lib/lazarus/default/ && make -j$(nproc) zipdist && ls -al ./Release/transgui-$PROG_VER-x86_64-linux.zip"
 
-    - os: linux
-      dist: bionic
-      stage: build
-      services:
-        - docker
+    - <<: *linux_build_env
       env:
         - arch=amd64
         - artifact=./Release/transgui-$PROG_VER-x86_64-Linux.txz
       script:
         - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" debian:stretch-backports bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
-      after_success:
-        - md5sum $artifact
-        - sha1sum $artifact
-        - sha256sum $artifact
-        - if [ -n "$TRAVIS_TAG" ] ; then
-            curl -F "file=@$artifact" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
-            curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
-          else
-            setup/upload_asset.sh $artifact ;
-          fi
-      deploy:
-        - provider: releases
-          api_key:
-            secure: "0671vAjL2m6gqjDSdkdjiyfDwuR8uLYrE6OCaeaX9iLvqSxmKAffkLlCZXU9fevmTglEMSmarcmHtwy1AYcqBClChl0dup2YvmM+BzsTfDSjZT43asI1Ok7MJALqqCa/xPO15HH1XfvstHeuOCM16nB61VQKT1+an0T9oz96PNIr5oS/Q8owmaWHvbB18IBoeTNvUZl0OvaqjNGZJ9JnBvBTROPDvsfud1DxlPmlTaCxh+yx8yAZYX2nLOkJFlWhG4b7mtcrlitVENcdjJ90qY4c01uzH3cYNdVn4PH/z0s+cAQT36f2zSX8UpsfBxbsBpB6ANS9Ig4gPp8eOtuhfpd2lOH6fL/DwAaxh9FGbTH5n9eR4cO9bEkmW5BoUeDpcIboIVZKrtZI97/MiRtwMfQzleQuwWuDpanaMqiY+LdS6vllG4kQjGck9fWj5wbaHR/MDTlAODc5/WUYA+69MDjPK/JI34/rPIag+8ZF2pF2VLyVC1kbvpngsYkcvQTRRSWrb6Cj0i7ggrBrCOmU2RrfkiKUGarukaCel/9U2dxnmkxPpfKBVXD0v6ylcUEofMJ6ml4lcGH8XX1jTNlUQebu7uhbfyhsJA9IEyMKXX3RHaq7Tf1XyCtZYIo2sAkFG103u/zSbkVZOAa8qoWqwFO8gx5MAa7ZRJVbuBNswBk="
-          file: $artifact
-          skip_cleanup: true
-          on:
-            tags: true
+      after_success: *linux_after_success
+      deploy: *deploy
 
-    - os: linux
-      dist: bionic
-      stage: build
-      services:
-        - docker
+    - <<: *linux_build_env
       env:
         - arch=i386
         - artifact=./Release/transgui-$PROG_VER-i686-Linux.txz
       script:
         - docker run -e DEBIAN_FRONTEND=noninteractive --privileged -it --rm -v "${PWD}:/transgui" i386/debian:stretch-backports linux32 --32bit bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
-      after_success:
-        - md5sum $artifact
-        - sha1sum $artifact
-        - sha256sum $artifact
-        - if [ -n "$TRAVIS_TAG" ] ; then
-            curl -F "file=@$artifact" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
-            curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
-          else
-            setup/upload_asset.sh $artifact ;
-          fi
-      deploy:
-        - provider: releases
-          api_key:
-            secure: "0671vAjL2m6gqjDSdkdjiyfDwuR8uLYrE6OCaeaX9iLvqSxmKAffkLlCZXU9fevmTglEMSmarcmHtwy1AYcqBClChl0dup2YvmM+BzsTfDSjZT43asI1Ok7MJALqqCa/xPO15HH1XfvstHeuOCM16nB61VQKT1+an0T9oz96PNIr5oS/Q8owmaWHvbB18IBoeTNvUZl0OvaqjNGZJ9JnBvBTROPDvsfud1DxlPmlTaCxh+yx8yAZYX2nLOkJFlWhG4b7mtcrlitVENcdjJ90qY4c01uzH3cYNdVn4PH/z0s+cAQT36f2zSX8UpsfBxbsBpB6ANS9Ig4gPp8eOtuhfpd2lOH6fL/DwAaxh9FGbTH5n9eR4cO9bEkmW5BoUeDpcIboIVZKrtZI97/MiRtwMfQzleQuwWuDpanaMqiY+LdS6vllG4kQjGck9fWj5wbaHR/MDTlAODc5/WUYA+69MDjPK/JI34/rPIag+8ZF2pF2VLyVC1kbvpngsYkcvQTRRSWrb6Cj0i7ggrBrCOmU2RrfkiKUGarukaCel/9U2dxnmkxPpfKBVXD0v6ylcUEofMJ6ml4lcGH8XX1jTNlUQebu7uhbfyhsJA9IEyMKXX3RHaq7Tf1XyCtZYIo2sAkFG103u/zSbkVZOAa8qoWqwFO8gx5MAa7ZRJVbuBNswBk="
-          file: $artifact
-          skip_cleanup: true
-          on:
-            tags: true
+      after_success: *linux_after_success
+      deploy: *deploy
 
-    - os: linux
-      dist: bionic
-      stage: build
-      services:
-        - docker
+    - <<: *linux_build_env
       env:
         - arch=rpi-armv6l
         - artifact=./Release/transgui-$PROG_VER-armv6l-Linux.txz
@@ -172,30 +132,10 @@ matrix:
             - qemu-user-static
       script:
         - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static resin/rpi-raspbian:stretch bash -c "sed -i 's/archive.raspbian.org/mirrors.ocf.berkeley.edu\/raspbian/g' /etc/apt/sources.list && cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
-      after_success:
-        - md5sum $artifact
-        - sha1sum $artifact
-        - sha256sum $artifact
-        - if [ -n "$TRAVIS_TAG" ] ; then
-            curl -F "file=@$artifact" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
-            curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
-          else
-            setup/upload_asset.sh $artifact ;
-          fi
-      deploy:
-        - provider: releases
-          api_key:
-            secure: "0671vAjL2m6gqjDSdkdjiyfDwuR8uLYrE6OCaeaX9iLvqSxmKAffkLlCZXU9fevmTglEMSmarcmHtwy1AYcqBClChl0dup2YvmM+BzsTfDSjZT43asI1Ok7MJALqqCa/xPO15HH1XfvstHeuOCM16nB61VQKT1+an0T9oz96PNIr5oS/Q8owmaWHvbB18IBoeTNvUZl0OvaqjNGZJ9JnBvBTROPDvsfud1DxlPmlTaCxh+yx8yAZYX2nLOkJFlWhG4b7mtcrlitVENcdjJ90qY4c01uzH3cYNdVn4PH/z0s+cAQT36f2zSX8UpsfBxbsBpB6ANS9Ig4gPp8eOtuhfpd2lOH6fL/DwAaxh9FGbTH5n9eR4cO9bEkmW5BoUeDpcIboIVZKrtZI97/MiRtwMfQzleQuwWuDpanaMqiY+LdS6vllG4kQjGck9fWj5wbaHR/MDTlAODc5/WUYA+69MDjPK/JI34/rPIag+8ZF2pF2VLyVC1kbvpngsYkcvQTRRSWrb6Cj0i7ggrBrCOmU2RrfkiKUGarukaCel/9U2dxnmkxPpfKBVXD0v6ylcUEofMJ6ml4lcGH8XX1jTNlUQebu7uhbfyhsJA9IEyMKXX3RHaq7Tf1XyCtZYIo2sAkFG103u/zSbkVZOAa8qoWqwFO8gx5MAa7ZRJVbuBNswBk="
-          file: $artifact
-          skip_cleanup: true
-          on:
-            tags: true
+      after_success: *linux_after_success
+      deploy: *deploy
 
-    - os: linux
-      dist: bionic
-      stage: build
-      services:
-        - docker
+    - <<: *linux_build_env
       env:
         - arch=armv7l
         - artifact=./Release/transgui-$PROG_VER-armv7l-Linux.txz
@@ -205,24 +145,8 @@ matrix:
             - qemu-user-static
       script:
         - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static resin/armv7hf-debian:stretch bash -c "sed -i 's/archive.raspbian.org/mirrors.ocf.berkeley.edu\/raspbian/g' /etc/apt/sources.list && cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
-      after_success:
-        - md5sum $artifact
-        - sha1sum $artifact
-        - sha256sum $artifact
-        - if [ -n "$TRAVIS_TAG" ] ; then
-            curl -F "file=@$artifact" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
-            curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
-          else
-            setup/upload_asset.sh $artifact ;
-          fi
-      deploy:
-        - provider: releases
-          api_key:
-            secure: "0671vAjL2m6gqjDSdkdjiyfDwuR8uLYrE6OCaeaX9iLvqSxmKAffkLlCZXU9fevmTglEMSmarcmHtwy1AYcqBClChl0dup2YvmM+BzsTfDSjZT43asI1Ok7MJALqqCa/xPO15HH1XfvstHeuOCM16nB61VQKT1+an0T9oz96PNIr5oS/Q8owmaWHvbB18IBoeTNvUZl0OvaqjNGZJ9JnBvBTROPDvsfud1DxlPmlTaCxh+yx8yAZYX2nLOkJFlWhG4b7mtcrlitVENcdjJ90qY4c01uzH3cYNdVn4PH/z0s+cAQT36f2zSX8UpsfBxbsBpB6ANS9Ig4gPp8eOtuhfpd2lOH6fL/DwAaxh9FGbTH5n9eR4cO9bEkmW5BoUeDpcIboIVZKrtZI97/MiRtwMfQzleQuwWuDpanaMqiY+LdS6vllG4kQjGck9fWj5wbaHR/MDTlAODc5/WUYA+69MDjPK/JI34/rPIag+8ZF2pF2VLyVC1kbvpngsYkcvQTRRSWrb6Cj0i7ggrBrCOmU2RrfkiKUGarukaCel/9U2dxnmkxPpfKBVXD0v6ylcUEofMJ6ml4lcGH8XX1jTNlUQebu7uhbfyhsJA9IEyMKXX3RHaq7Tf1XyCtZYIo2sAkFG103u/zSbkVZOAa8qoWqwFO8gx5MAa7ZRJVbuBNswBk="
-          file: $artifact
-          skip_cleanup: true
-          on:
-            tags: true
+      after_success: *linux_after_success
+      deploy: *deploy
 
     - os: osx
       osx_image: xcode9.4
@@ -247,14 +171,7 @@ matrix:
           else
             setup/upload_asset.sh $artifact ;
           fi
-      deploy:
-        - provider: releases
-          api_key:
-            secure: "0671vAjL2m6gqjDSdkdjiyfDwuR8uLYrE6OCaeaX9iLvqSxmKAffkLlCZXU9fevmTglEMSmarcmHtwy1AYcqBClChl0dup2YvmM+BzsTfDSjZT43asI1Ok7MJALqqCa/xPO15HH1XfvstHeuOCM16nB61VQKT1+an0T9oz96PNIr5oS/Q8owmaWHvbB18IBoeTNvUZl0OvaqjNGZJ9JnBvBTROPDvsfud1DxlPmlTaCxh+yx8yAZYX2nLOkJFlWhG4b7mtcrlitVENcdjJ90qY4c01uzH3cYNdVn4PH/z0s+cAQT36f2zSX8UpsfBxbsBpB6ANS9Ig4gPp8eOtuhfpd2lOH6fL/DwAaxh9FGbTH5n9eR4cO9bEkmW5BoUeDpcIboIVZKrtZI97/MiRtwMfQzleQuwWuDpanaMqiY+LdS6vllG4kQjGck9fWj5wbaHR/MDTlAODc5/WUYA+69MDjPK/JI34/rPIag+8ZF2pF2VLyVC1kbvpngsYkcvQTRRSWrb6Cj0i7ggrBrCOmU2RrfkiKUGarukaCel/9U2dxnmkxPpfKBVXD0v6ylcUEofMJ6ml4lcGH8XX1jTNlUQebu7uhbfyhsJA9IEyMKXX3RHaq7Tf1XyCtZYIo2sAkFG103u/zSbkVZOAa8qoWqwFO8gx5MAa7ZRJVbuBNswBk="
-          file: $artifact
-          skip_cleanup: true
-          on:
-            tags: true
+      deploy: *deploy
 
 notifications:
   email:
