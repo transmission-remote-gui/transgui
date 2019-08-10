@@ -42,4 +42,10 @@ if exist "C:\Program Files\Git\git-cmd.exe" (
     choco install git -y
 )
 
+if exist "C:\ProgramData\chocolatey\bin\zip.exe" (
+    echo Found zip
+) else (
+    choco install zip -y
+)
+
 pause
