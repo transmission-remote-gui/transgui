@@ -48,4 +48,10 @@ if exist "C:\ProgramData\chocolatey\bin\zip.exe" (
     choco install zip -y
 )
 
+if exist "C:\ProgramData\chocolatey\bin\upx.exe" (
+    echo Found upx
+) else (
+    choco install upx -y
+)
+
 pause
