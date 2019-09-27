@@ -2709,8 +2709,7 @@ begin
         AppNormal;
 
         ok:=not Ini.ReadBool('Interface', 'ShowAddTorrentWindow', True);
-        openWindow := Ini.ReadBool('Interface', 'WatchWindowOpen', False)
-        if FWatchDownloading and openWindow then ok:= true;
+        if FWatchDownloading and Ini.ReadBool('Interface', 'WatchWindowOpen', False) then ok:= true;
         if ok then
           btSelectAllClick(nil)
         else begin
