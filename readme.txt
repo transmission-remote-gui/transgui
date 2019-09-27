@@ -107,8 +107,8 @@ GlobalHotkeyMod={Modifier Key} [MOD_SHIFT , MOD_CONTROL , MOD_ALT , MOD_WIN alon
 [Interface]
 WatchLocalFolder= {LOCAL Folder to watch for torrent files}
 WatchDestinationFolder= {REMOTE destination where the data would be saved if missing or empty last destination folder is used}
-WatchInterval=1 {Time period in MINUTES between folder scans for torrents, may be fractional values 0,50 = 30 seconds}
-
+WatchInterval=1 {Time period in MINUTES between folder scans for torrents, may be fractional values 0,50/0.50 = 30 seconds}
+WatchWindowOpen={Set to True to open the application window when the watcher picks up a file}
 
 [Shortcuts]
 ;Modify all the shortcuts of the GUI here
