@@ -1,3 +1,29 @@
+5.18.0 (Oct 11, 2019)
+ - Enable smart linking (#1252)
+ - Add basic snap package files (#1109)
+ - Add WhiteSource Bolt config (#1243)
+ - Add Windows AMD64/64bit release
+ - Add Windows dependency install script
+ - Add Windows build zip tarball release script
+ - Add shfmt test on Travis CI for shell scripts
+ - Add missing `libssl-dev` in Debian/Ubuntu dependency
+ - Add eclint format checking for certain files on Travis CI
+ - Improve .travis.yml styling
+ - Set macOS builds to use cocoa for 64bit release (#1224)
+ - Update .editorconfig
+ - Update Lazarus on macOS to v2.0.4
+ - Update Lazarus on Windows to v2.x (with FPC v3.0.4)
+ - Update OpenSSL for Windows from 1.0.2s to 1.0.2t
+ - Update Traditional Chinese translation
+ - Update Docker image for arm builds on Travis CI
+ - Update Travis CI Linux env to Ubuntu Bionic (18.04)
+ - Update Travis CI mac env to macOS 10.14 w/ Xcode v11.1
+ - Update node.js version on Travis CI env from v4 to v10
+ - Update Debian/Ubuntu dependency for `realpath` command
+ - Refactor build script of macOS and Windows
+ - Refactor dependency install script of Debian/Ubuntu Linux and macOS
+ - Refactor, clean up and simplify .travis.yml
+
 5.17.0 (Jun 26, 2019)
  - Switch to GeoIP Legacy Databases (DAT) (#1195)
  - Set default option active page to General tab
