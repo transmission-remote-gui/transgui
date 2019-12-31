@@ -11,6 +11,11 @@
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
+  
+  In addition, as a special exception, the copyright holders give permission to 
+  link the code of portions of this program with the
+  OpenSSL library under certain conditions as described in each individual
+  source file, and distribute linked combinations including the two.
 
   You should have received a copy of the GNU General Public License
   along with Transmission Remote GUI; if not, write to the Free Software
