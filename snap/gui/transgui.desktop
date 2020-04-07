@@ -1,11 +1,9 @@
 [Desktop Entry]
 Version=1.0
-Name=TransGUI
-GenericName=Transmission Remote GUI
-Comment=Transmission Remote GUI
-Exec=@bindir@/transgui "%U"
-TryExec=@bindir@/transgui
-Icon=transgui
+Name=Transmission Remote GUI
+Comment=A feature rich cross platform Transmission BitTorrent client.
+Exec=transgui
+Icon=${SNAP}/meta/gui/transgui.png
 Terminal=false
 Type=Application
 Categories=Internet;Network;FileTransfer;
