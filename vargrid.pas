@@ -755,7 +755,11 @@ begin
 {$ifdef LCLcarbon}
   IsCtrl:=ssMeta in GetCarbonShiftState;
 {$else}
+{$ifdef LCLCocoa}
+  IsCtrl:=ssMeta in Shift;
+{$else}
   IsCtrl:=ssCtrl in Shift;
+{$endif LCLCocoa}
 {$endif LCLcarbon}
   CheckBoxClicked:=False;
   pt:=MouseToCell(Point(X,Y));

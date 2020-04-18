@@ -11,7 +11,7 @@ appname="Transmission Remote GUI"
 dmg_dist_file="../../Release/transgui-$prog_ver.dmg"
 dmgfolder=./Release
 appfolder="$dmgfolder/$appname.app"
-lazdir="${1:-/Developer/lazarus/}"
+lazdir="${1:-/Library/Lazarus/}"
 
 if [ -z "${CI-}" ]; then
   ./install_deps.sh
@@ -24,7 +24,7 @@ fi
 mkdir -p ../../Release/
 sed -i.bak "s/'Version %s'/'Version %s Build $build'#13#10'Compiled by: $fpc_ver, Lazarus v$lazarus_ver'/" ../../about.lfm
 
-lazbuild -B ../../transgui.lpi --lazarusdir=/Developer/lazarus/ --compiler=/usr/local/bin/fpc --cpu=x86_64 --widgetset=cocoa
+lazbuild -B ../../transgui.lpi --lazarusdir=/Library/Lazarus/ --compiler=/usr/local/bin/fpc --cpu=x86_64 --widgetset=cocoa
 
 # Building Intel version
 make -j"$(sysctl -n hw.ncpu)" -C ../.. clean CPU_TARGET=x86_64 "$lazdir"

@@ -3,29 +3,23 @@
 set -x
 set -e
 
-lazarus_ver="2.0.4"
-fpc="fpc-3.0.4a.intel-macosx"
-lazarus="lazarus-2.0.4-i686-macosx"
+lazarus_ver="2.0.8"
+fpc="fpc-3.0.4-macos-x86_64-laz"
+lazarus="LazarusIDE-2.0.8-macos-x86_64"
 
 if [ -n "${sourceforge_mirror-}" ]; then
   mirror_string="&use_mirror=${sourceforge_mirror}"
 fi
 
 if [ ! -x "$(command -v fpc 2>&1)" ]; then
-  wget "https://downloads.sourceforge.net/project/lazarus/Lazarus%20Mac%20OS%20X%20i386/Lazarus%20${lazarus_ver}/$fpc.dmg?r=&ts=$(date +%s)${mirror_string-}" -O "$fpc.dmg"
-  hdiutil attach -quiet "$fpc.dmg"
-  pkgpath="$(hdiutil attach "$fpc.dmg" | command awk "/Apple_HFS/ { print \$3 }")"
-  sudo installer -pkg "$pkgpath/$fpc.pkg" -target /
-  hdiutil unmount "$pkgpath"
-  rm "$fpc.dmg"
+  wget "https://downloads.sourceforge.net/project/lazarus/Lazarus%20macOS%20x86-64/Lazarus%20${lazarus_ver}/$fpc.pkg?r=&ts=$(date +%s)${mirror_string-}" -O "fpc.pkg"
+  sudo ln -s /usr/local/lib/fpc/3.0.4/ppcx64 /usr/local/bin/ppcx64
+  sudo installer -pkg "fpc.pkg" -target /
+  rm "fpc.pkg"
 fi
 
 if [ ! -x "$(command -v lazbuild 2>&1)" ]; then
-  wget "https://downloads.sourceforge.net/project/lazarus/Lazarus%20Mac%20OS%20X%20i386/Lazarus%20${lazarus_ver}/$lazarus.dmg?r=&ts=$(date +%s)${mirror_string-}" -O "$lazarus.dmg"
-  hdiutil attach -quiet "$lazarus.dmg"
-  pkgpath="$(hdiutil attach "$lazarus.dmg" | command awk "/Apple_HFS/ { print \$3 }")"
-  sudo installer -pkg "$pkgpath/lazarus.pkg" -target /
-  hdiutil unmount "$pkgpath"
-  rm "$lazarus.dmg"
-  lazbuild --build-ide= --compiler=fpc --cpu=x86_64 --widgetset=cocoa
+  wget "https://downloads.sourceforge.net/project/lazarus/Lazarus%20macOS%20x86-64/Lazarus%20${lazarus_ver}/$lazarus.pkg?r=&ts=$(date +%s)${mirror_string-}" -O "lazarus.pkg"
+  sudo installer -pkg "lazarus.pkg" -target /
+  rm "lazarus.pkg"
 fi
