@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/transmission-remote-gui/transgui.svg?branch=master)](https://travis-ci.org/transmission-remote-gui/transgui)
 
-![Screenshot](http://i.imgur.com/Xi0zYnp.png)
+![Screenshot](http://i.imgur.com/XBbF4Vh.png)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
