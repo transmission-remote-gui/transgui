@@ -32,7 +32,7 @@ uses
   Graphics, Dialogs, ComCtrls, Menus, ActnList, LCLVersion,
   httpsend, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
   zipper, ResTranslator, VarGrid, StrUtils, LCLProc, Grids, BaseForm, utils, AddTorrent, Types,
-  LazFileUtils, LazUTF8, StringToVK, passwcon, GContnrs,lineinfo;
+  LazFileUtils, LazUTF8, StringToVK, passwcon, GContnrs,lineinfo, RegExpr;
 
 const
   AppName = 'Transmission Remote GUI';
@@ -242,8 +242,13 @@ type
     acFilterPane: TAction;
     acMenuShow :  TAction;
     acBigToolbar: TAction;
+    acSetLabels: TAction;
+    acLabelGrouping: TAction;
     ImageList32: TImageList;
     MenuItem103: TMenuItem;
+    MenuItem104: TMenuItem;
+    MenuItem105: TMenuItem;
+    MenuItem106: TMenuItem;
     MenuShow: TAction;
     ActionList1: TActionList;
     acToolbarShow :  TAction;
@@ -264,6 +269,8 @@ type
     SearchToolbar: TToolBar;
     tbSearchCancel: TToolButton;
     LocalWatchTimer: TTimer;
+    ToolButton10: TToolButton;
+    txDummy1: TLabel;
     txMagLabel: TLabel;
     txMagnetLink: TEdit;
     MenuItem101: TMenuItem;
@@ -383,6 +390,7 @@ type
     panSearch: TPanel;
     panFilter: TPanel;
     panReconnectFrame: TShape;
+    txDummy: TLabel;
     txReconnectSecs: TLabel;
     txConnError: TLabel;
     MenuItem38: TMenuItem;
@@ -390,6 +398,8 @@ type
     panReconnect: TPanel;
     txLastActive: TLabel;
     txLastActiveLabel: TLabel;
+    txLabels: TLabel;
+    txLabelsLabel: TLabel;
     txTracker: TLabel;
     txTrackerLabel: TLabel;
     txCompletedOn: TLabel;
@@ -434,9 +444,7 @@ type
     txPeersLabel: TLabel;
     txSeeds: TLabel;
     txSeedsLabel: TLabel;
-    txDummy2: TLabel;
     txTrackerUpdate: TLabel;
-    txDummy1: TLabel;
     txRemaining: TLabel;
     txRemainingLabel: TLabel;
     txStatus: TLabel;
@@ -538,6 +546,7 @@ type
     procedure acForceStartTorrentExecute(Sender: TObject);
     procedure acHideAppExecute(Sender: TObject);
     procedure acInfoPaneExecute(Sender: TObject);
+    procedure acLabelGroupingExecute(Sender: TObject);
     procedure acMenuShowExecute(Sender: TObject);
     procedure acMoveTorrentExecute(Sender: TObject);
     procedure acNewConnectionExecute(Sender: TObject);
@@ -564,6 +573,7 @@ type
     procedure acSetLowPriorityExecute(Sender: TObject);
     procedure acSetNormalPriorityExecute(Sender: TObject);
     procedure acSetNotDownloadExecute(Sender: TObject);
+    procedure acSetLabelsExecute(Sender: TObject);
     procedure acSetupColumnsExecute(Sender: TObject);
     procedure acShowAppExecute(Sender: TObject);
     procedure acShowCountryFlagExecute(Sender: TObject);
@@ -830,6 +840,7 @@ const
   idxSeedingTime = 22;
   idxSizeLeft = 23;
   idxPrivate = 24;
+  idxLabels = 25;
 
   idxTag = -1;
   idxSeedsTotal = -2;
@@ -890,11 +901,11 @@ const
 
   StatusFiltersCount = 8;
 
-  TorrentFieldsMap: array[idxName..idxPrivate] of string =
+  TorrentFieldsMap: array[idxName..idxLabels] of string =
     ('', 'totalSize', '', 'status', 'peersSendingToUs,seeders',
     'peersGettingFromUs,leechers', '', '', 'eta', 'uploadRatio',
     'downloadedEver', 'uploadedEver', '', '', 'addedDate', 'doneDate', 'activityDate', '', 'bandwidthPriority',
-    '', '', 'queuePosition', 'secondsSeeding', 'leftUntilDone', 'isPrivate');
+    '', '', 'queuePosition', 'secondsSeeding', 'leftUntilDone', 'isPrivate', 'labels');
 
   FinishedQueue = 1000000;
 
@@ -1538,7 +1549,7 @@ begin
   FTrackers.Sorted:=True;
   FReconnectTimeOut:=-1;
   FAlterColor:=GetLikeColor(gTorrents.Color, -$10);
-  lvFilter.Items.ExtraColumns:=1;
+  lvFilter.Items.ExtraColumns:=2;
   gTorrents.AlternateColor:=FAlterColor;
   lvPeers.AlternateColor:=FAlterColor;
   lvTrackers.AlternateColor:=FAlterColor;
@@ -1689,6 +1700,7 @@ begin
   bidiMode := GetBiDi;
 
   acFolderGrouping.Checked:=Ini.ReadBool('Interface', 'FolderGrouping', True);
+  acLabelGrouping.Checked:=Ini.ReadBool('Interface', 'LabelGrouping', True);
   acTrackerGrouping.Checked:=Ini.ReadBool('Interface', 'TrackerGrouping', True);
   FLinksFromClipboard:=Ini.ReadBool('Interface', 'LinksFromClipboard', True);
   Application.OnActivate:=@FormActivate;
@@ -1993,6 +2005,13 @@ begin
     PageInfoChange(nil)
   else
     RpcObj.AdvInfo:=aiNone;
+end;
+
+procedure TMainForm.acLabelGroupingExecute(Sender: TObject);
+begin
+  acLabelGrouping.Checked:=not acLabelGrouping.Checked;
+  Ini.WriteBool('Interface', 'LabelGrouping', acLabelGrouping.Checked);
+  RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtTorrents];
 end;
 
 procedure TMainForm.acMenuShowExecute(Sender: TObject);
@@ -3668,6 +3687,68 @@ begin
   SetCurrentFilePriority('skip');
 end;
 
+procedure TMainForm.acSetLabelsExecute(Sender: TObject);
+var
+  ids: variant;
+  i: integer;
+  input, s: string;
+  req: TJSONObject;
+  aids: TJSONArray;
+  alabels: TJSONArray;
+  slabels: TStringList;
+  args: TJSONObject;
+begin
+  if gTorrents.Items.Count = 0 then
+    exit;
+  gTorrents.Tag:=1;
+  gTorrents.EnsureSelectionVisible;
+  if gTorrents.SelCount = 0 then
+    gTorrents.RowSelected[gTorrents.Row]:=True;
+  ids:=GetSelectedTorrents;
+  i:=gTorrents.Items.IndexOf(idxTorrentId, ids[0]);
+  if VarIsEmpty(gTorrents.Items[idxPath, i]) then
+    exit;
+  if InputQuery('Set tags',
+      'This will overwrite any existing tags.' + sLineBreak +
+      'You can set multiple tags separated by a comma or leave empty to clear tags.',
+      input) then begin
+    AppBusy;
+    req := TJSONObject.Create;
+    args := TJSONObject.Create;
+    aids := TJSONArray.Create;
+    alabels := TJSONArray.Create;
+    slabels := TStringList.Create;
+    try
+      req.Add('method', 'torrent-set');
+      for i:=VarArrayLowBound(ids, 1) to VarArrayHighBound(ids, 1) do
+            aids.Add(integer(ids[i]));
+      args.Add('ids', aids);
+      SplitRegExpr(',', input, slabels);
+      slabels.Sort;
+      for s in slabels do begin
+        alabels.Add(trim(s));
+      end;
+      args.Add('labels', alabels);
+      req.Add('arguments', args);
+      args := RpcObj.SendRequest(req, False);
+      args.Free;
+    finally
+      req.Free;
+      AppNormal;
+    end;
+    if args = nil then
+      CheckStatus(False)
+    else begin
+      RpcObj.RequestFullInfo:=True;
+      DoRefresh(True);
+      Sleep(200);
+      Application.ProcessMessages;
+    end;
+
+  end;
+  gTorrents.Tag:=0;
+end;
+
 procedure TMainForm.acSetupColumnsExecute(Sender: TObject);
 var
   g: TVarGrid;
@@ -4530,6 +4611,7 @@ begin
 end;
 
 procedure TMainForm.lvFilterCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
+var t: Integer;
 begin
   if ARow < 0 then exit;
   with CellAttribs do begin
@@ -4546,8 +4628,13 @@ begin
         if Text <> '' then
           if VarIsNull(Sender.Items[-1, ARow]) then
             ImageIndex:=5
-          else
-            ImageIndex:=22;
+          else begin
+            t:=Integer(Sender.Items[-2, ARow]);
+            if t = 1 then
+              ImageIndex:=22
+            else
+              ImageIndex:=44;
+          end;
     end;
   end;
 end;
@@ -5284,6 +5371,7 @@ begin
   acRemoveTorrentAndData.Enabled:=acRemoveTorrent.Enabled and (RpcObj.RPCVersion >= 4);
   acReannounceTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 5);
   acMoveTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 6);
+  acSetLabels.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 16);
   acTorrentProps.Enabled:=acVerifyTorrent.Enabled;
   acOpenContainingFolder.Enabled:=acTorrentProps.Enabled and (RpcObj.RPCVersion >= 4);
   pmiPriority.Enabled:=e and (gTorrents.Items.Count > 0);
@@ -5553,8 +5641,9 @@ end;
 
 procedure TMainForm.FillTorrentsList(list: TJSONArray);
 var
-  i, j, row, crow, id, StateImg: integer;
+  i, j, p, row, crow, id, StateImg: integer;
   t: TJSONObject;
+  a: TJSONArray;
   f: double;
   ExistingRow: boolean;
   s, ss: string;
@@ -5640,11 +5729,11 @@ var
 
 var
   FilterIdx, OldId: integer;
-  TrackerFilter, PathFilter: string;
+  TrackerFilter, PathFilter, LabelFilter: string;
   UpSpeed, DownSpeed: double;
-  DownCnt, SeedCnt, CompletedCnt, ActiveCnt, StoppedCnt, ErrorCnt, WaitingCnt: integer;
+  DownCnt, SeedCnt, CompletedCnt, ActiveCnt, StoppedCnt, ErrorCnt, WaitingCnt, ft: integer;
   IsActive: boolean;
-  Paths: TStringList;
+  Paths, Labels: TStringList;
   v: variant;
   FieldExists: array of boolean;
 begin
@@ -5668,8 +5757,10 @@ begin
   end;
 }
   Paths:=TStringList.Create;
+  Labels:=TStringList.Create;
   try
   Paths.Sorted:=True;
+  Labels.Sorted:=True;
   OldId:=RpcObj.CurTorrentId;
   IsActive:=gTorrents.Enabled;
   gTorrents.Enabled:=True;
@@ -5696,6 +5787,7 @@ begin
     FieldExists[idxQueuePos]:=t.IndexOfName('queuePosition') >= 0;
     FieldExists[idxSeedingTime]:=t.IndexOfName('secondsSeeding') >= 0;
     FieldExists[idxPrivate]:=t.IndexOfName('isPrivate') >= 0;
+    FIeldExists[idxLabels]:=t.IndexOfName('labels') >= 0;
   end;
 
   UpSpeed:=0;
@@ -5713,7 +5805,11 @@ begin
     Dec(FilterIdx);
   if FilterIdx >= StatusFiltersCount then
     if not VarIsNull(lvFilter.Items[-1, FilterIdx]) then begin
-      PathFilter:=UTF8Encode(widestring(lvFilter.Items[-1, FilterIdx]));
+      ft := Integer(lvFilter.Items[-2, FilterIdx]);
+      if ft = 1 then
+        PathFilter:=UTF8Encode(widestring(lvFilter.Items[-1, FilterIdx]))
+      else
+        LabelFilter:=UTF8Encode(widestring(lvFilter.Items[-1, FilterIdx]));
       FilterIdx:=fltAll;
     end
     else begin
@@ -5936,6 +6032,22 @@ begin
     if FieldExists[idxPrivate] then
       FTorrents[idxPrivate, row]:=t.Integers['isPrivate'];
 
+    if FieldExists[idxLabels] then begin
+      a := t.Arrays['labels'];
+      s := '';
+      for j:=0 to a.Count-1 do begin
+        ss := UTF8Encode(widestring(a.Strings[j]));
+        if j > 0 then s := s + ', ';
+        s := s + ss;
+        p := Labels.IndexOf(ss);
+        if p < 0 then
+          Labels.AddObject(ss, TObject(1))
+        else
+          Labels.Objects[p]:=TObject(PtrInt(Labels.Objects[p]) + 1);
+      end;
+      FTorrents[idxLabels, row] := s;
+    end;
+
     DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, row];
     UpSpeed:=UpSpeed + FTorrents[idxUpSpeed, row];
 
@@ -5995,6 +6107,11 @@ begin
 
       if (PathFilter <> '') and not VarIsEmpty(FTorrents[idxPath, i]) and (UTF8Decode(PathFilter) <> FTorrents[idxPath, i]) then
         continue;
+
+      if (LabelFilter <> '') and not VarIsEmpty(FTorrents[idxLabels, i]) then begin
+        if not AnsiContainsStr(String(FTorrents[idxLabels, i]), LabelFilter) then
+          continue;
+      end;
 
       case FilterIdx of
         fltActive:
@@ -6085,10 +6202,26 @@ begin
           end;
         lvFilter.Items[ 0, j]:=UTF8Decode(Format('%s (%d)', [s, ptruint(Paths.Objects[i])]));
         lvFilter.Items[-1, j]:=UTF8Decode(Paths[i]);
+        lvFilter.Items[-2, j]:=1;
         if Paths[i] = PathFilter then
           crow:=j;
         Inc(j);
       end;
+    end;
+
+    if acLabelGrouping.Checked then begin
+      lvFilter.Items[0, j]:=NULL;
+      Inc(j);
+
+      for i:=0 to Labels.Count - 1 do begin
+        lvFilter.Items[0, j]:=UTF8Decode(Format('%s (%d)', [Labels[i], ptruint(Labels.Objects[i])]));
+        lvFilter.Items[-1, j]:=UTF8Decode(Labels[i]);
+        lvFilter.Items[-2, j]:=2;
+        if Labels[i] = LabelFilter then
+          crow:=j;
+        Inc(j);
+      end;
+
     end;
 
     row:=j;
@@ -6105,6 +6238,7 @@ begin
         if j > 0 then begin
           lvFilter.Items[ 0, row]:=UTF8Decode(Format('%s (%d)', [FTrackers[i], j]));
           lvFilter.Items[-1, row]:=NULL;
+          lvFilter.Items[-2, row]:=3;
           if FTrackers[i] = TrackerFilter then
             crow:=row;
           Inc(i);
@@ -6365,6 +6499,7 @@ var
   s: string;
   tr: string;
   f: double;
+  ja: TJSONArray;
 begin
   if (gTorrents.Items.Count = 0) or (t = nil) then begin
     ClearDetailsInfo;
@@ -6573,6 +6708,18 @@ begin
   txCompletedOn.Caption:=TorrentDateTimeToString(Trunc(t.Floats['doneDate']),FFromNow);
   txCompletedOn.Hint:=TorrentDateTimeToString(Trunc(t.Floats['doneDate']),Not(FFromNow));
   panGeneralInfo.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
+
+  if t.IndexOfName('labels') >= 0 then begin
+    ja:=t.Arrays['labels'];
+    s:='';
+    for i:=0 to ja.Count-1 do begin
+      if i > 0 then begin
+        s := s + ', ';
+      end;
+      s := s + ja.Strings[i];
+    end;
+    txLabels.Caption := s;
+  end;
   DetailsUpdated;
 end;
 

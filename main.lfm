@@ -1,16 +1,16 @@
 inherited MainForm: TMainForm
-  Left = 2543
-  Height = 594
-  Top = 191
-  Width = 881
+  Left = 1468
+  Height = 702
+  Top = 126
+  Width = 984
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
   VertScrollBar.Range = 24
   ActiveControl = panTop
   AllowDropFiles = True
   Caption = ' '
-  ClientHeight = 574
-  ClientWidth = 881
+  ClientHeight = 682
+  ClientWidth = 984
   Constraints.MinHeight = 300
   Constraints.MinWidth = 300
   KeyPreview = True
@@ -26,18 +26,18 @@ inherited MainForm: TMainForm
   OnWindowStateChange = FormWindowStateChange
   object panTop: TPanel[0]
     Left = 0
-    Height = 193
+    Height = 301
     Top = 27
-    Width = 881
+    Width = 984
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 193
-    ClientWidth = 881
+    ClientHeight = 301
+    ClientWidth = 984
     Constraints.MinHeight = 80
     TabOrder = 0
     object HSplitter: TSplitter
       Left = 130
-      Height = 193
+      Height = 301
       Top = 0
       Width = 5
       AutoSnap = False
@@ -46,118 +46,21 @@ inherited MainForm: TMainForm
     end
     object panFilter: TPanel
       Left = 0
-      Height = 193
+      Height = 301
       Top = 0
       Width = 130
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 193
+      ClientHeight = 301
       ClientWidth = 130
       TabOrder = 2
-      object panSearch: TPanel
-        Left = 0
-        Height = 24
-        Top = 167
-        Width = 130
-        Align = alBottom
-        AutoSize = True
-        BorderSpacing.Top = 2
-        BorderSpacing.Bottom = 2
-        BevelOuter = bvNone
-        ClientHeight = 24
-        ClientWidth = 130
-        TabOrder = 0
-        object imgSearch: TImage
-          Left = 0
-          Height = 24
-          Top = 0
-          Width = 24
-          Align = alLeft
-          Center = True
-          Picture.Data = {
-            055449636F6E7E05000000000100010010100000010008006805000016000000
-            2800000010000000200000000100080000000000000000000000000000000000
-            0000000000000000FFFFFC00FFFFF700FFFEEA00FFFFE600FFF7EA00F5EFE000
-            FFFFDA00FFFED400FFF2D700FFFCCD00FFF9C700FFF5CA00FFF5C300F3EDDA00
-            F1E5DD00EFDAC200E2CECE00DCC5C500C9D0D400FFF1BE00FFEEBD00FFE5B900
-            FFE4B100FFDEAB00F3D2A800F1CFA900F5CFA400E0C0B600EFC9A600E0C7AE00
-            E0BDB300E5BEA500E0B89E00D8BCBA00DCB3A000D2B4A400D2B19E00CCB29900
-            CEB09600CCAC9300CEA88E00BDE3FF00A5D8FF008DCDFF0089B0CA00ABABAB00
-            A1A1A100BC9A8600B9938A00B79E8C00B7948100AD8A8D00AA878E0096969600
-            9F8581008C8C8C0081818100987D8200907676008B75740053B8FF00588CCF00
-            4088DF004385D9004483D6007979A7007376A80073758900777777007B616100
-            6C6C6C00626262005F5B5B005757570000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            00000000FFFFFF004A3749444A4A4A4A4A4A4A4A4A4A4A4A2D433448444A4A4A
-            4A4A4A4A4A4A4A4A2C3E423348444A4A4A4A4A4A4A4A4A4A293C3F413348444A
-            4A4A4A4A4A4A4A4A4A2A3C3F413348354A4A4A4A4A4A4A4A4A4A2B3C40413938
-            2E46494947374A4A4A4A4A2B3C3D373B2F261D233B49374A4A4A4A4A2A123319
-            0C070606053649374A4A4A4A4A101C0C0C060200000D45464A4A4A4A4A1E0C16
-            0A060200010631494A4A4A4A4A1F0B170C070302030625494A4A4A4A4A1F0B15
-            14090706060727464A4A4A4A4A1B0B0815130C0A0C0C32374A4A4A4A4A110F00
-            0414171613183A4A4A4A4A4A4A4A210E0209140C1A304A4A4A4A4A4A4A4A4A11
-            24282022374A4A4A8FFF000007FF000003FF000001FF000080FF0000C0030000
-            E0010000F0000000F8000000F8000000F8000000F8000000F8000000F8010000
-            FC030000FE070000
-          }
-        end
-        object edSearch: TEdit
-          Left = 24
-          Height = 24
-          Top = 0
-          Width = 81
-          Align = alClient
-          OnChange = edSearchChange
-          OnKeyDown = edSearchKeyDown
-          TabOrder = 0
-        end
-        object SearchToolbar: TToolBar
-          Left = 105
-          Height = 24
-          Top = 0
-          Width = 25
-          Align = alRight
-          Caption = 'SearchToolbar'
-          Images = ImageList16
-          TabOrder = 1
-          object tbSearchCancel: TToolButton
-            Left = 1
-            Top = 2
-            Caption = 'tbSearchCancel'
-            Enabled = False
-            ImageIndex = 3
-            OnClick = tbSearchCancelClick
-          end
-        end
-      end
       object lvFilter: TVarGrid
         Left = 0
-        Height = 165
+        Height = 301
         Top = 0
         Width = 130
         Align = alClient
-        Columns = <
+        Columns = <        
           item
             Title.Caption = ' '
             Width = 10
@@ -169,7 +72,7 @@ inherited MainForm: TMainForm
         PopupMenu = pmFilter
         RowCount = 1
         ScrollBars = ssAutoVertical
-        TabOrder = 1
+        TabOrder = 0
         OnClick = lvFilterClick
         OnResize = lvFilterResize
         Images = ImageList16
@@ -179,143 +82,146 @@ inherited MainForm: TMainForm
     end
     object gTorrents: TVarGrid
       Left = 135
-      Height = 193
+      Height = 301
       Top = 0
-      Width = 746
+      Width = 849
       Align = alClient
-      Columns = <
+      Columns = <      
         item
           Title.Caption = 'Name'
           Width = 200
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Size'
           Width = 60
-        end
+        end      
         item
           Alignment = taCenter
           Title.Caption = 'Done'
-        end
+        end      
         item
           Title.Caption = 'Status'
           Width = 70
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Seeds'
           Width = 55
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Peers'
           Width = 55
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Down speed'
           Width = 75
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Up speed'
           Width = 75
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'ETA'
           Width = 80
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Ratio'
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Downloaded'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Uploaded'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Title.Caption = 'Tracker'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Title.Caption = 'Tracker status'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taCenter
           Title.Caption = 'Added on'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taCenter
           Title.Caption = 'Completed on'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taCenter
           Title.Caption = 'Last active'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Title.Caption = 'Path'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Title.Caption = 'Priority'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Size to download'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'ID'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Queue position'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           SizePriority = 0
           Title.Caption = 'Seeding time'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Size left'
           Width = 0
           Visible = False
-        end
+        end      
         item
           Alignment = taRightJustify
           Title.Caption = 'Private'
           Width = 0
           Visible = False
+        end      
+        item
+          Title.Caption = 'Labels'
         end>
       FixedCols = 0
       Options = [goFixedVertLine, goFixedHorzLine, goColSizing, goColMoving, goRowSelect, goThumbTracking, goDblClickAutoSize, goHeaderHotTracking, goHeaderPushedLook]
@@ -342,30 +248,30 @@ inherited MainForm: TMainForm
   object StatusBar: TStatusBar[1]
     Left = 0
     Height = 23
-    Top = 551
-    Width = 881
-    Panels = <
+    Top = 659
+    Width = 984
+    Panels = <    
       item
         Width = 300
-      end
+      end    
       item
         Width = 140
-      end
+      end    
       item
         Width = 140
-      end
+      end    
       item
         Width = 120
-      end
+      end    
       item
         Width = 120
-      end
+      end    
       item
         Width = 120
-      end
+      end    
       item
         Width = 120
-      end
+      end    
       item
         Width = 120
       end>
@@ -375,37 +281,37 @@ inherited MainForm: TMainForm
   object PageInfo: TPageControl[2]
     Left = 0
     Height = 326
-    Top = 225
-    Width = 881
-    ActivePage = tabTrackers
+    Top = 333
+    Width = 984
+    ActivePage = tabGeneral
     Align = alBottom
     Constraints.MinHeight = 50
     Images = ImageList16
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 1
     OnChange = PageInfoChange
     OnResize = PageInfoResize
     object tabGeneral: TTabSheet
       Caption = 'General'
       ClientHeight = 298
-      ClientWidth = 873
+      ClientWidth = 976
       ImageIndex = 4
       object sbGenInfo: TScrollBox
         Left = 0
         Height = 272
         Top = 26
-        Width = 873
+        Width = 976
         HorzScrollBar.Page = 721
         VertScrollBar.Page = 268
         Align = alClient
         ClientHeight = 268
-        ClientWidth = 852
+        ClientWidth = 955
         TabOrder = 0
         object panGeneralInfo: TPanel
           Left = 0
           Height = 120
           Top = 153
-          Width = 852
+          Width = 955
           Align = alTop
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 4
@@ -415,7 +321,7 @@ inherited MainForm: TMainForm
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
           ChildSizing.ControlsPerLine = 4
           ClientHeight = 120
-          ClientWidth = 852
+          ClientWidth = 955
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
@@ -431,7 +337,7 @@ inherited MainForm: TMainForm
             Left = 181
             Height = 15
             Top = 4
-            Width = 80
+            Width = 79
             Caption = 'txTorrentName'
             ParentColor = False
             ShowAccelChar = False
@@ -456,7 +362,7 @@ inherited MainForm: TMainForm
             Left = 4
             Height = 15
             Top = 22
-            Width = 52
+            Width = 51
             Caption = 'Total size:'
             ParentColor = False
           end
@@ -464,7 +370,7 @@ inherited MainForm: TMainForm
             Left = 181
             Height = 15
             Top = 22
-            Width = 56
+            Width = 55
             Caption = 'txTotalSize'
             ParentColor = False
           end
@@ -570,12 +476,28 @@ inherited MainForm: TMainForm
             ReadOnly = True
             TabOrder = 0
           end
+          object txLabelsLabel: TLabel
+            Left = 381
+            Height = 15
+            Top = 86
+            Width = 36
+            Caption = 'Labels:'
+            ParentColor = False
+          end
+          object txLabels: TLabel
+            Left = 578
+            Height = 15
+            Top = 86
+            Width = 42
+            Caption = 'txLabels'
+            ParentColor = False
+          end
         end
         object panTransfer: TPanel
           Left = 0
           Height = 111
           Top = 21
-          Width = 852
+          Width = 955
           Align = alTop
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 4
@@ -585,7 +507,7 @@ inherited MainForm: TMainForm
           ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
           ChildSizing.ControlsPerLine = 6
           ClientHeight = 111
-          ClientWidth = 852
+          ClientWidth = 955
           ParentShowHint = False
           ShowHint = True
           TabOrder = 1
@@ -765,14 +687,14 @@ inherited MainForm: TMainForm
             Caption = 'txUpLimit'
             ParentColor = False
           end
-          object txDummy1: TLabel
+          object txDummy: TLabel
             Left = 541
             Height = 1
             Top = 58
             Width = 1
             ParentColor = False
           end
-          object txDummy2: TLabel
+          object txDummy1: TLabel
             Left = 651
             Height = 1
             Top = 58
@@ -831,7 +753,7 @@ inherited MainForm: TMainForm
             Left = 4
             Height = 15
             Top = 94
-            Width = 42
+            Width = 41
             Caption = 'Tracker:'
             ParentColor = False
           end
@@ -839,7 +761,7 @@ inherited MainForm: TMainForm
             Left = 140
             Height = 15
             Top = 94
-            Width = 48
+            Width = 47
             Caption = 'txTracker'
             ParentColor = False
           end
@@ -847,7 +769,7 @@ inherited MainForm: TMainForm
             Left = 262
             Height = 15
             Top = 94
-            Width = 99
+            Width = 98
             Caption = 'Tracker update on:'
             ParentColor = False
           end
@@ -855,7 +777,7 @@ inherited MainForm: TMainForm
             Left = 407
             Height = 15
             Top = 94
-            Width = 86
+            Width = 85
             Caption = 'txTrackerUpdate'
             ParentColor = False
           end
@@ -880,7 +802,7 @@ inherited MainForm: TMainForm
           Left = 2
           Height = 17
           Top = 2
-          Width = 848
+          Width = 951
           Align = alTop
           Alignment = taLeftJustify
           BorderSpacing.Around = 2
@@ -896,7 +818,7 @@ inherited MainForm: TMainForm
           Left = 2
           Height = 17
           Top = 134
-          Width = 848
+          Width = 951
           Align = alTop
           Alignment = taLeftJustify
           BorderSpacing.Around = 2
@@ -913,11 +835,11 @@ inherited MainForm: TMainForm
         Left = 0
         Height = 26
         Top = 0
-        Width = 873
+        Width = 976
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 26
-        ClientWidth = 873
+        ClientWidth = 976
         TabOrder = 1
         object txDownProgressLabel: TLabel
           Left = 8
@@ -931,7 +853,7 @@ inherited MainForm: TMainForm
           ParentColor = False
         end
         object txDownProgress: TLabel
-          Left = 828
+          Left = 931
           Height = 26
           Top = 0
           Width = 37
@@ -947,7 +869,7 @@ inherited MainForm: TMainForm
           Left = 84
           Height = 14
           Top = 6
-          Width = 738
+          Width = 841
           Align = alClient
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Around = 6
@@ -958,7 +880,7 @@ inherited MainForm: TMainForm
     object tabTrackers: TTabSheet
       Caption = 'Trackers'
       ClientHeight = 298
-      ClientWidth = 873
+      ClientWidth = 976
       ImageIndex = 5
       object lvTrackers: TVarGrid
         Left = 0
@@ -966,19 +888,19 @@ inherited MainForm: TMainForm
         Top = 0
         Width = 873
         Align = alClient
-        Columns = <
+        Columns = <        
           item
             Title.Caption = 'Name'
             Width = 200
-          end
+          end        
           item
             Title.Caption = 'Status'
             Width = 200
-          end
+          end        
           item
             Title.Caption = 'Update in'
             Width = 80
-          end
+          end        
           item
             Title.Caption = 'Seeds'
           end>
@@ -996,8 +918,8 @@ inherited MainForm: TMainForm
     end
     object tabPeers: TTabSheet
       Caption = 'Peers'
-      ClientHeight = 558
-      ClientWidth = 1544
+      ClientHeight = 298
+      ClientWidth = 976
       ImageIndex = 6
       object lvPeers: TVarGrid
         Left = 0
@@ -1005,38 +927,38 @@ inherited MainForm: TMainForm
         Top = 0
         Width = 772
         Align = alClient
-        Columns = <
+        Columns = <        
           item
             Title.Caption = 'Host'
             Width = 150
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Caption = 'Port'
             Width = 0
             Visible = False
-          end
+          end        
           item
             Title.Caption = 'Country'
             Width = 100
-          end
+          end        
           item
             Title.Caption = 'Client'
             Width = 150
-          end
+          end        
           item
             Title.Caption = 'Flags'
             Width = 70
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Caption = 'Have'
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Caption = 'Up speed'
             Width = 80
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Caption = 'Down speed'
@@ -1056,7 +978,7 @@ inherited MainForm: TMainForm
     object tabFiles: TTabSheet
       Caption = 'Files'
       ClientHeight = 298
-      ClientWidth = 873
+      ClientWidth = 976
       ImageIndex = 7
       object lvFiles: TVarGrid
         Left = 0
@@ -1064,27 +986,27 @@ inherited MainForm: TMainForm
         Top = 0
         Width = 873
         Align = alClient
-        Columns = <
+        Columns = <        
           item
             Title.Caption = 'File name'
             Width = 350
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Caption = 'Size'
             Width = 80
-          end
+          end        
           item
             Alignment = taCenter
             Title.Caption = 'Done'
             Width = 70
-          end
+          end        
           item
             Alignment = taCenter
             Title.Alignment = taCenter
             Title.Caption = '%'
             Width = 70
-          end
+          end        
           item
             Title.Caption = 'Priority'
             Width = 100
@@ -1107,8 +1029,8 @@ inherited MainForm: TMainForm
     end
     object tabStats: TTabSheet
       Caption = 'Statistics'
-      ClientHeight = 558
-      ClientWidth = 1544
+      ClientHeight = 298
+      ClientWidth = 976
       ImageIndex = 42
       object gStats: TVarGrid
         Left = 4
@@ -1116,17 +1038,17 @@ inherited MainForm: TMainForm
         Top = 24
         Width = 760
         Align = alClient
-        Columns = <
+        Columns = <        
           item
             Title.Caption = ' '
             Width = 200
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Alignment = taCenter
             Title.Caption = 'Current'
             Width = 120
-          end
+          end        
           item
             Alignment = taRightJustify
             Title.Alignment = taCenter
@@ -1154,8 +1076,8 @@ inherited MainForm: TMainForm
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 220
-    Width = 881
+    Top = 328
+    Width = 984
     Align = alBottom
     AutoSnap = False
     MinSize = 80
@@ -1166,10 +1088,11 @@ inherited MainForm: TMainForm
     Left = 0
     Height = 25
     Top = 0
-    Width = 881
+    Width = 984
     AutoSize = True
     BorderSpacing.Bottom = 2
     ButtonHeight = 23
+    ButtonWidth = 23
     Caption = 'MainToolBar'
     Images = ImageList16
     Indent = 4
@@ -1190,7 +1113,6 @@ inherited MainForm: TMainForm
       Left = 225
       Height = 23
       Top = 2
-      Width = 5
       Caption = 'ToolButton2'
       Style = tbsDivider
     end
@@ -1219,7 +1141,6 @@ inherited MainForm: TMainForm
       Left = 174
       Height = 23
       Top = 2
-      Width = 5
       Caption = 'ToolButton6'
       Style = tbsDivider
     end
@@ -1227,7 +1148,6 @@ inherited MainForm: TMainForm
       Left = 378
       Height = 23
       Top = 2
-      Width = 5
       Caption = 'ToolButton7'
       Style = tbsDivider
     end
@@ -1264,7 +1184,6 @@ inherited MainForm: TMainForm
       Left = 350
       Height = 23
       Top = 2
-      Width = 5
       Caption = 'sepAltSpeed'
       Style = tbsDivider
     end
@@ -1272,7 +1191,6 @@ inherited MainForm: TMainForm
       Left = 299
       Height = 23
       Top = 2
-      Width = 5
       Caption = 'sepQueue'
       Style = tbsDivider
     end
@@ -1300,9 +1218,113 @@ inherited MainForm: TMainForm
       ImageIndex = 43
       ShowCaption = False
     end
+    object ToolButton10: TToolButton
+      Left = 429
+      Height = 23
+      Top = 2
+      Caption = 'ToolButton10'
+      Style = tbsSeparator
+    end
+    object panSearch: TPanel
+      AnchorSideLeft.Control = ToolButton10
+      Left = 437
+      Height = 23
+      Top = 2
+      Width = 395
+      Anchors = [akLeft, akRight]
+      BorderSpacing.Top = 2
+      BorderSpacing.Bottom = 2
+      BevelOuter = bvNone
+      ClientHeight = 23
+      ClientWidth = 395
+      TabOrder = 0
+      object imgSearch: TImage
+        Left = 0
+        Height = 23
+        Top = 0
+        Width = 24
+        Align = alLeft
+        Center = True
+        Picture.Data = {
+          055449636F6E7E05000000000100010010100000010008006805000016000000
+          2800000010000000200000000100080000000000000000000000000000000000
+          0000000000000000FFFFFC00FFFFF700FFFEEA00FFFFE600FFF7EA00F5EFE000
+          FFFFDA00FFFED400FFF2D700FFFCCD00FFF9C700FFF5CA00FFF5C300F3EDDA00
+          F1E5DD00EFDAC200E2CECE00DCC5C500C9D0D400FFF1BE00FFEEBD00FFE5B900
+          FFE4B100FFDEAB00F3D2A800F1CFA900F5CFA400E0C0B600EFC9A600E0C7AE00
+          E0BDB300E5BEA500E0B89E00D8BCBA00DCB3A000D2B4A400D2B19E00CCB29900
+          CEB09600CCAC9300CEA88E00BDE3FF00A5D8FF008DCDFF0089B0CA00ABABAB00
+          A1A1A100BC9A8600B9938A00B79E8C00B7948100AD8A8D00AA878E0096969600
+          9F8581008C8C8C0081818100987D8200907676008B75740053B8FF00588CCF00
+          4088DF004385D9004483D6007979A7007376A80073758900777777007B616100
+          6C6C6C00626262005F5B5B005757570000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000FFFFFF004A3749444A4A4A4A4A4A4A4A4A4A4A4A2D433448444A4A4A
+          4A4A4A4A4A4A4A4A2C3E423348444A4A4A4A4A4A4A4A4A4A293C3F413348444A
+          4A4A4A4A4A4A4A4A4A2A3C3F413348354A4A4A4A4A4A4A4A4A4A2B3C40413938
+          2E46494947374A4A4A4A4A2B3C3D373B2F261D233B49374A4A4A4A4A2A123319
+          0C070606053649374A4A4A4A4A101C0C0C060200000D45464A4A4A4A4A1E0C16
+          0A060200010631494A4A4A4A4A1F0B170C070302030625494A4A4A4A4A1F0B15
+          14090706060727464A4A4A4A4A1B0B0815130C0A0C0C32374A4A4A4A4A110F00
+          0414171613183A4A4A4A4A4A4A4A210E0209140C1A304A4A4A4A4A4A4A4A4A11
+          24282022374A4A4A8FFF000007FF000003FF000001FF000080FF0000C0030000
+          E0010000F0000000F8000000F8000000F8000000F8000000F8000000F8010000
+          FC030000FE070000
+        }
+      end
+      object edSearch: TEdit
+        Left = 24
+        Height = 23
+        Top = 0
+        Width = 346
+        Align = alClient
+        OnChange = edSearchChange
+        OnKeyDown = edSearchKeyDown
+        TabOrder = 0
+      end
+      object SearchToolbar: TToolBar
+        Left = 370
+        Height = 23
+        Top = 0
+        Width = 25
+        Align = alRight
+        Caption = 'SearchToolbar'
+        Images = ImageList16
+        TabOrder = 1
+        object tbSearchCancel: TToolButton
+          Left = 1
+          Top = 2
+          Caption = 'tbSearchCancel'
+          Enabled = False
+          ImageIndex = 3
+          OnClick = tbSearchCancelClick
+        end
+      end
+    end
   end
   object panReconnect: TPanel[5]
-    Left = 532
+    Left = 528
     Height = 44
     Top = 56
     Width = 161
@@ -1954,6 +1976,9 @@ inherited MainForm: TMainForm
         Action = acMoveTorrent
         OnClick = acMoveTorrentExecute
       end
+      object MenuItem105: TMenuItem
+        Action = acSetLabels
+      end
       object MenuItem98: TMenuItem
         Action = acRename
       end
@@ -2509,7 +2534,6 @@ inherited MainForm: TMainForm
       Caption = 'Rename'
       OnExecute = acRenameExecute
       ShortCut = 113
-      Visible = False
     end
     object acStatusBarSizes: TAction
       Category = 'View'
@@ -2531,6 +2555,17 @@ inherited MainForm: TMainForm
     object acBigToolbar: TAction
       Caption = 'acBigToolbar'
       OnExecute = acBigToolbarExecute
+    end
+    object acSetLabels: TAction
+      Category = 'Torrent'
+      Caption = 'Set labels...'
+      OnExecute = acSetLabelsExecute
+      ShortCut = 118
+    end
+    object acLabelGrouping: TAction
+      Category = 'View'
+      Caption = 'Label grouping'
+      OnExecute = acLabelGroupingExecute
     end
   end
   object TorrentsListTimer: TTimer[9]
@@ -3028,6 +3063,9 @@ inherited MainForm: TMainForm
       Action = acMoveTorrent
       OnClick = acMoveTorrentExecute
     end
+    object MenuItem104: TMenuItem
+      Action = acSetLabels
+    end
     object MenuItem99: TMenuItem
       Action = acRename
     end
@@ -3059,8 +3097,8 @@ inherited MainForm: TMainForm
     Images = ImageList16
     AutoPopup = False
     OnPopup = pmFilesPopup
-    left = 304
-    top = 92
+    left = 312
+    top = 136
     object MenuItem40: TMenuItem
       Action = acOpenFile
       Default = True
@@ -3330,10 +3368,10 @@ inherited MainForm: TMainForm
     top = 55
   end
   object ImageList16: TImageList[15]
-    left = 412
-    top = 92
+    left = 472
+    top = 152
     Bitmap = {
-      4C692C0000001000000010000000000000000000000000000000000000000000
+      4C692D0000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000007308FF087B08FF088C10FF088C10FF087B08FF0000
@@ -4741,12 +4779,44 @@ inherited MainForm: TMainForm
       6265636362E56363627052545305383D3D03181F20016262614A636362E26464
       63FF646463FF646463FF636362F9404444002C3232025E5F5E156363626E6363
       62E36363627655565506393E3E03404444043E424204252C2C026262624E6363
-      62E4646463FF636363FF646463FF
+      62E4646463FF636363FF646463FF000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000FEB856FFFF9400FFFF9400FFFF9400FFFF94
+      00FFFF9400FFFF9400FFFF9400FFFF9400FFFF9400FFFF9400FFFF9400FFFEBF
+      66FF000000000000000000000000FFB550FFFF9400FFFF9400FFFF9400FFFF94
+      00FFFF9400FFFF9400FFFF9400FFFF9400FFFF9400FFFF9400FFFF9400FFFF94
+      00FFFECE8EFF0000000000000000FFB550FFFF9400FFFF9A0EFFFFF2DFFFFFF2
+      DFFFFFF2DFFFFFF2DFFFFFF2DFFFFFF2DFFFFFF2DFFFFFB754FFFF9400FFFF94
+      00FFFF9400FFFEDFB3FF00000000FFB550FFFF9400FFFF9400FFFF9B10FFFF9B
+      10FFFF9B10FFFF9B10FFFF9B10FFFF9B10FFFF9B10FFFF9706FFFF9400FFFF94
+      00FFFF9400FFFF990CFFFFEBD1FFFFB550FFFF9400FFFF9400FFFF9400FFFF94
+      00FFFF9400FFFF9400FFFF9400FFFF9400FFFF9400FFFF9400FFFF9400FFFF94
+      00FFFF9400FFFF9400FFFECC88FFFFB550FFFF9400FFFF9400FFFFEBCFFFFFEB
+      CFFFFFEBCFFFFFEBCFFFFFEBCFFFFFEBCFFFFFEBCFFFFFB54EFFFF9400FFFF94
+      00FFFF9400FFFEB856FF00000000FFB550FFFF9400FFFF9400FFFFA120FFFFA1
+      20FFFFA120FFFFA120FFFFA120FFFFA120FFFFA120FFFF990CFFFF9400FFFF94
+      00FFFEAA37FF0000000000000000FFB550FFFF9400FFFF9400FFFF9400FFFF94
+      00FFFF9400FFFF9400FFFF9400FFFF9400FFFF9400FFFF9400FFFF9400FFFFA1
+      1FFF000000000000000000000000FEE3BDFFFECE8EFFFECE8EFFFECE8EFFFECE
+      8EFFFECE8EFFFECE8EFFFECE8EFFFECE8EFFFECE8EFFFECC87FFFECC87FF0000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000
     }
   end
   object pmLabels: TPopupMenu[16]
-    left = 268
-    top = 92
+    left = 264
+    top = 144
     object miCopyLabel: TMenuItem
       Caption = 'Copy'
       OnClick = miCopyLabelClick
@@ -4763,8 +4833,8 @@ inherited MainForm: TMainForm
   end
   object pmTray: TPopupMenu[18]
     Images = ImageList16
-    left = 460
-    top = 88
+    left = 536
+    top = 152
     object MenuItem43: TMenuItem
       Action = acShowApp
       Default = True
@@ -4845,8 +4915,8 @@ inherited MainForm: TMainForm
   object imgFlags: TImageList[19]
     Height = 12
     Width = 18
-    left = 144
-    top = 92
+    left = 149
+    top = 130
     Bitmap = {
       4C6901000000120000000C000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
@@ -4879,8 +4949,8 @@ inherited MainForm: TMainForm
     }
   end
   object pmPeers: TPopupMenu[20]
-    left = 340
-    top = 92
+    left = 376
+    top = 144
     object MenuItem29: TMenuItem
       Action = acResolveHost
       OnClick = acResolveHostExecute
@@ -4909,8 +4979,8 @@ inherited MainForm: TMainForm
   end
   object pmTrackers: TPopupMenu[22]
     Images = ImageList16
-    left = 376
-    top = 92
+    left = 416
+    top = 152
     object MenuItem65: TMenuItem
       Action = acAddTracker
       OnClick = acAddTrackerExecute
@@ -4966,6 +5036,9 @@ inherited MainForm: TMainForm
     object MenuItem90: TMenuItem
       Action = acFolderGrouping
     end
+    object MenuItem106: TMenuItem
+      Action = acLabelGrouping
+    end
     object MenuItem91: TMenuItem
       Action = acTrackerGrouping
     end
@@ -4979,7 +5052,8 @@ inherited MainForm: TMainForm
     top = 152
   end
   object ActionList1: TActionList[29]
-    left = 840
+    left = 824
+    top = 56
     object MenuShow: TAction
       Caption = 'MenuShow'
       OnExecute = MenuShowExecute
