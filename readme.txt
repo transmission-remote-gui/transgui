@@ -10,6 +10,15 @@ Transmission Remote GUI is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
+
+In addition, as a special exception, OpenVPN Technologies, Inc. gives
+permission to link the code of this program with the OpenSSL Library (or with
+modified versions of OpenSSL that use the same license as OpenSSL), and
+distribute linked combinations including the two. You must obey the GNU General
+Public License in all respects for all of the code used other than OpenSSL. If
+you modify this file, you may extend this exception to your version of the
+file, but you are not obligated to do so. If you do not wish to do so, delete
+this exception statement from your version.
 *********************************************************************************
 
 Transmission Remote GUI is feature rich cross platform front-end to remotely control Transmission daemon via its RPC protocol. It is faster and has more functionality than builtin Transmission web interface.
