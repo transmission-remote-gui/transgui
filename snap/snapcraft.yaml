@@ -19,6 +19,8 @@ apps:
     command-chain:
       - bin/desktop-launch
     environment:
+      # Fallback to XWayland if running in a Wayland session.
+      DISABLE_WAYLAND: 1
       GTK_PATH: $SNAP/lib/gtk-2.0
     plugs:
       - home
