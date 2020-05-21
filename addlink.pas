@@ -16,7 +16,7 @@
   along with Transmission Remote GUI; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-  In addition, as a special exception, the copyright holders give permission to 
+  In addition, as a special exception, the copyright holders give permission to
   link the code of portions of this program with the
   OpenSSL library under certain conditions as described in each individual
   source file, and distribute linked combinations including the two.
@@ -48,7 +48,7 @@ type
 
   TAddLinkForm = class(TBaseForm)
     Buttons: TButtonPanel;
-    edLink: TEdit;
+    meLink: TMemo;
     Panel1: TPanel;
     txLink: TLabel;
     procedure btOKClick(Sender: TObject);
@@ -66,10 +66,20 @@ uses main;
 { TAddLinkForm }
 
 procedure TAddLinkForm.btOKClick(Sender: TObject);
+var
+    i: integer;
+    ok: Boolean = false;
 begin
-  edLink.Text:=Trim(edLink.Text);
-  if edLink.Text = '' then begin
-    edLink.SetFocus;
+  for i := meLink.Lines.Count - 1 downto 0 do
+  begin
+    meLink.Lines[i]:=Trim(meLink.Lines[i]);
+    if meLink.Lines[i] <> '' then ok := true // have at least one link
+    else meLink.Lines.Delete(i); // remove empty lines
+  end;
+
+  if not ok then
+  begin
+    meLink.SetFocus;
     MessageDlg(SNoLink, mtError, [mbOK], 0);
     exit;
   end;
