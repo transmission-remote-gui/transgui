@@ -933,12 +933,14 @@ begin
 
   s := CorrectPath(cbDestFolder.Text);
   e := edExtension.Text;
-  i := cbDestFolder.Items.IndexOf(s);
   try
+    DeleteDirs (0);               // check count items
+    i := cbDestFolder.Items.IndexOf(s);
     if i < 0 then begin
       DeleteDirs (1);               // prepare for new item
       cbDestFolder.Items.Add (s);
       i:=cbDestFolder.Items.IndexOf(s);
+      cbDestFolder.ItemIndex:= i; // Re-set item index in case DeleteDirs actually deleted a dir and removed the text from the combobox
       pFD    := FolderData.create;
       pFD.Hit:= 1;
       pFD.Ext:= e;
@@ -952,7 +954,9 @@ begin
       pFD.Txt:= s;
       pFD.Lst:= SysUtils.Date;
       cbDestFolder.Items.Objects[i]:= pFD;
-      DeleteDirs (0);               // check count items
+      if cbDestFolder.ItemIndex < 0 then begin // as above, if DeleteDirs ended up deleting stuff...
+        cbDestFolder.ItemIndex:= i;
+      end;
     end;
   except
     MessageDlg('Error: LS-002. Please contact the developer', mtError, [mbOK], 0);
