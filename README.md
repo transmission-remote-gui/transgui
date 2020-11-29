@@ -104,7 +104,7 @@ This method needs no additional pre-requirement or dependency, just:
 
 You need to have [Homebrew](https://brew.sh/) installed, and [Homebrew-Cask](https://caskroom.github.io/) enabled, with Homebrew, you can enable Homebrew-Cask by a single command, skip this step if you already got it:
 
-- `brew tap caskroom/cask`
+- `brew tap homebrew/cask`
 
 With Homebrew-Cask, directly execute this command to install Transmission Remote Gui:
 
