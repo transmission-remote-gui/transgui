@@ -108,7 +108,7 @@ You need to have [Homebrew](https://brew.sh/) installed, and [Homebrew-Cask](htt
 
 With Homebrew-Cask, directly execute this command to install Transmission Remote Gui:
 
-- `brew cask install transmission-remote-gui`
+- `brew install --cask transmission-remote-gui`
 
 ## Command line parameters
 
