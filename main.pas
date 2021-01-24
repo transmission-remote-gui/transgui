@@ -5775,6 +5775,7 @@ begin
   try
   Paths.Sorted:=True;
   Labels.Sorted:=True;
+  Labels.CaseSensitive:=True;
   OldId:=RpcObj.CurTorrentId;
   IsActive:=gTorrents.Enabled;
   gTorrents.Enabled:=True;
