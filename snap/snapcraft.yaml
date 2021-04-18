@@ -6,60 +6,60 @@ license: GPL-2.0
 description: Transmission Remote GUI is feature rich cross platform front-end to remotely control Transmission daemon via its RPC protocol. It is faster and has more functionality than the built-in Transmission web interface.
 icon: snap/gui/transgui.png
 confinement: strict
-base: core18
+base: core20
 
 architectures:
 - build-on: amd64
-- build-on: i386
+- build-on: arm64
 - build-on: armhf
 
 apps:
   transgui:
-    command: transgui
-    command-chain:
-      - bin/desktop-launch
+    command: bin/desktop-launch $SNAP/usr/bin/transgui
     environment:
-      # Fallback to XWayland if running in a Wayland session.
+      # Fallback to XWayland if running in a Wayland session
       DISABLE_WAYLAND: 1
       GTK_PATH: $SNAP/lib/gtk-2.0
     plugs:
-      - home
-      - removable-media
       - desktop
       - desktop-legacy
+      - gsettings
+      - home
+      - network
+      - removable-media
       - unity7
       - wayland
       - x11
-      - gsettings
-      - network
 
 parts:
+  # This part brings in the transgui package from the Ubuntu Archive. In future
+  # I will probably try to build this manually, but the Ubuntu package is quite
+  # useful for now until the Upstream is patched to work with newer distros or
+  # updated to use GTK3.
+  #
+  # See: https://github.com/transmission-remote-gui/transgui/issues/1310#issuecomment-668643815
+  #
   transgui:
-    plugin: dump
-    source:
-      - on amd64: https://github.com/transmission-remote-gui/transgui/releases/download/v$SNAPCRAFT_PROJECT_VERSION/transgui-$SNAPCRAFT_PROJECT_VERSION-x86_64-Linux.txz
-      - on i386: https://github.com/transmission-remote-gui/transgui/releases/download/v$SNAPCRAFT_PROJECT_VERSION/transgui-$SNAPCRAFT_PROJECT_VERSION-i686-Linux.txz
-      - on armhf: https://github.com/transmission-remote-gui/transgui/releases/download/v$SNAPCRAFT_PROJECT_VERSION/transgui-$SNAPCRAFT_PROJECT_VERSION-armv7l-Linux.txz
-    source-type: tar
+    plugin: nil
     stage-packages:
-      - libx11-6
-      - libcairo2
-      - libssl-dev
-      - libatk1.0-0
-      - libgtk2.0-0
-      - libglib2.0-0
-      - libpango-1.0-0
-      - libgdk-pixbuf2.0-0
+      - transgui
     after:
-      - desktop-gtk2
+      - gtk2
 
-  desktop-gtk2:
+  # This part installs the `desktop-launch` script which initialises desktop
+  # features such as fonts, themes and the XDG environment. It also installs
+  # the GTK2 runtime libraries.
+  #
+  # It is copied straight from the snapcraft desktop helpers project. Please
+  # periodically check the source for updates and copy the changes.
+  #    https://github.com/ubuntu/snapcraft-desktop-helpers/blob/master/snapcraft.yaml
+  #
+  gtk2:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
     source-subdir: gtk
     plugin: make
     make-parameters: ["FLAVOR=gtk2"]
     build-packages:
-      - build-essential
       - libgtk2.0-dev
     stage-packages:
       - libxkbcommon0  # XKB_CONFIG_ROOT
@@ -74,9 +74,8 @@ parts:
       - libglib2.0-bin
       - libgtk2.0-bin
       - unity-gtk2-module
-      - locales-all
       - libappindicator1
-      - xdg-user-dirs
+      - locales-all
       - ibus-gtk
       - libibus-1.0-5
 
