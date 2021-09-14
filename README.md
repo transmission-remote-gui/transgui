@@ -19,7 +19,7 @@
     - [Using Chocolatey](#using-chocolatey)
   - [macOS](#macos)
     - [Without a package manager](#without-a-package-manager)
-    - [Homebrew-Cask](#homebrew-cask)
+    - [Homebrew](#homebrew)
 - [Command line parameters](#command-line-parameters)
 - [Portable mode](#portable-mode)
 - [Fixed hotkeys](#fixed-hotkeys)
