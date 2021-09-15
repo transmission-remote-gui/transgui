@@ -19,7 +19,7 @@
     - [Using Chocolatey](#using-chocolatey)
   - [macOS](#macos)
     - [Without a package manager](#without-a-package-manager)
-    - [Homebrew-Cask](#homebrew-cask)
+    - [Homebrew](#homebrew)
 - [Command line parameters](#command-line-parameters)
 - [Portable mode](#portable-mode)
 - [Fixed hotkeys](#fixed-hotkeys)
@@ -100,13 +100,9 @@ This method needs no additional pre-requirement or dependency, just:
 2. Open the image file to mount the image.
 3. Directly run the application or drag the app icon to your disk / Application folder.
 
-#### Homebrew-Cask
+#### Homebrew
 
-You need to have [Homebrew](https://brew.sh/) installed, and [Homebrew-Cask](https://caskroom.github.io/) enabled, with Homebrew, you can enable Homebrew-Cask by a single command, skip this step if you already got it:
-
-- `brew tap caskroom/cask`
-
-With Homebrew-Cask, directly execute this command to install Transmission Remote Gui:
+You need to have [Homebrew](https://brew.sh/) installed. Execute this command to install Transmission Remote Gui:
 
 - `brew install --cask transmission-remote-gui`
 
