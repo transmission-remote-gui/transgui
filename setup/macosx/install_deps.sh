@@ -4,7 +4,7 @@ set -x
 set -e
 
 lazarus_ver="2.0.8"
-fpc="fpc-3.0.4-macos-x86_64-laz"
+fpc="fpc-3.0.4-macos-x86_64-laz-2"
 lazarus="LazarusIDE-2.0.8-macos-x86_64"
 
 if [ -n "${sourceforge_mirror-}" ]; then
