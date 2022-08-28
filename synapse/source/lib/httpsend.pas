@@ -368,9 +368,12 @@ end;
 
 function THTTPSend.InternalConnect(needssl: Boolean): Boolean;
 begin
+  FSock.PreferIP4 := False; //try to use IPv6
   if FSock.Socket = INVALID_SOCKET then
     Result := InternalDoConnect(needssl)
   else
+    if FSock.LastError <> 0 then
+      FSock.PreferIP4 := True; //fallback to IPv4
     if (FAliveHost <> FTargetHost) or (FAlivePort <> FTargetPort)
       or FSock.CanRead(0) then
       Result := InternalDoConnect(needssl)
