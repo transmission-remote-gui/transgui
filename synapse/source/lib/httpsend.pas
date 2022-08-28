@@ -289,10 +289,10 @@ begin
   FProxyPass := '';
   FAliveHost := '';
   FAlivePort := '';
-  FProtocol := '1.0';
+  FProtocol := '1.1';
   FKeepAlive := True;
   FStatus100 := False;
-  FUserAgent := 'Mozilla/4.0 (compatible; Synapse)';
+  FUserAgent := 'Mozilla/4.0 (compatible; transmission-remote-gui)';
   FDownloadSize := 0;
   FUploadSize := 0;
   FAddPortNumberToHost := true;
