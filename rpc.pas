@@ -657,6 +657,7 @@ begin
       Http.Document.Write(PChar(s)^, Length(s));
       s:='';
       Http.Headers.Clear;
+      Http.MimeType:='application/json';
       if XTorrentSession <> '' then
         Http.Headers.Add(XTorrentSession);
       if ATimeOut >= 0 then
