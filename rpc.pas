@@ -657,7 +657,6 @@ begin
       Http.Document.Write(PChar(s)^, Length(s));
       s:='';
       Http.Headers.Clear;
-      Http.MimeType:='application/json';
       if XTorrentSession <> '' then
         Http.Headers.Add(XTorrentSession);
       if ATimeOut >= 0 then
@@ -815,34 +814,41 @@ end;
 function TRpc.RequestInfo(TorrentId: integer; const Fields: array of const; const ExtraFields: array of string): TJSONObject;
 var
   req, args: TJSONObject;
+  field_sorter: TStringList;
   _fields: TJSONArray;
   i: integer;
-  sl: TStringList;
 begin
   Result:=nil;
-  req:=TJSONObject.Create;
-  sl:=TStringList.Create;
-  try
-    req.Add('method', 'torrent-get');
-    args:=TJSONObject.Create;
-    if TorrentId <> 0 then
-      args.Add('ids', TJSONArray.Create([TorrentId]));
+  if Length(ExtraFields) > 0 then begin
+    // fix possible duplicates
+    field_sorter:=TStringList.Create;
+    field_sorter.Duplicates:=dupIgnore;
+    field_sorter.Sorted:=true;
+    field_sorter.CaseSensitive:=true;
+    for i:=Low(Fields) to High(Fields) do begin
+      Assert(Fields[i].VType = vtAnsiString); // must be so, as we use H+ directive
+      field_sorter.add(String(Fields[i].VAnsiString));
+    end;
+    for i:=Low(ExtraFields) to High(ExtraFields) do
+      field_sorter.add(ExtraFields[i]);
     _fields:=TJSONArray.Create;
-    for i:=Low(Fields) to High(Fields) do
-      if (Fields[i].VType=vtAnsiString) then
-         sl.Add(String(Fields[i].VAnsiString));
-    sl.AddStrings(ExtraFields);
-    sl.Sort;
-    for i:=sl.Count-2 downto 0 do
-      if (sl[i]=sl[i+1]) then
-        sl.Delete(i+1);
-    for i:=0 to sl.Count-1 do
-      _fields.Add(sl[i]);
-    args.Add('fields', _fields);
-    req.Add('arguments', args);
+    for i:=0 to field_sorter.Count-1 do
+      _fields.add(field_sorter[i]);
+    field_sorter.Free;
+  end else begin
+    _fields:=TJSONArray.Create(Fields);
+  end;
+  req:=TJSONObject.Create;
+  req.Add('method', 'torrent-get');
+  args:=TJSONObject.Create;
+  if TorrentId <> 0 then
+    args.Add('ids', TJSONArray.Create([TorrentId]));
+  args.Add('fields', _fields);
+  req.Add('arguments', args);
+  try
     Result:=SendRequest(req);
   finally
-    sl.Free;
+    // req carries a full tree ob objects, that need to freed
     req.Free;
   end;
 end;
