@@ -68,8 +68,9 @@ Build the program by yourself.
   - Free Pascal Compiler 2.6.2+ and Lazarus 1.6 is used to develop Transmission Remote GUI.
 2. Download the sources archive and extract it to some folder or perform svn checkout.
 3. Open terminal/command line prompt and cd to the sources folder.
-4. Execute `make` command to build the application.
-5. Execute `make zipdist` command to create a release .zip archive in the `Release` sub-folder.
+4. Execute `lazbuild -B "transgui.lpi" --lazarusdir=/usr/lib/lazarus/default/` command to build the transgui.res file.
+5. Execute `make` command to build the application.
+6. Execute `make zipdist` command to create a release .zip archive in the `Release` sub-folder.
 
 ### Windows
 
