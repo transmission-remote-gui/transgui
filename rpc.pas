@@ -156,6 +156,27 @@ implementation
 
 uses Main, ssl_openssl_lib, synafpc, blcksock;
 
+function TranslateTableToObjects(reply: TJSONObject) : TJSONObject;
+var
+  array_tor, fields, out_torrents : TJSONArray;
+  object_tor : TJSONObject;
+  i, j : integer;
+begin
+  fields:=reply.Arrays['torrents'].Arrays[0];
+  out_torrents:=TJSONArray.Create;
+  for i:=1 to reply.Arrays['torrents'].Count - 1 do
+  begin
+    array_tor:=reply.Arrays['torrents'].Arrays[i];
+    object_tor:=TJSONObject.Create;
+    for j:=0 to fields.Count - 1 do
+      object_tor.Add(fields.Items[j].AsString, array_tor.Items[j].Clone);
+
+    out_torrents.Add(object_tor);
+  end;
+  Result:=TJSONObject.Create(['torrents', out_torrents]);
+  reply.Free;
+end;
+
 { TRpcThread }
 
 procedure TRpcThread.Execute;
@@ -839,8 +860,14 @@ begin
     for i:=0 to sl.Count-1 do
       _fields.Add(sl[i]);
     args.Add('fields', _fields);
+    if FRPCVersion >= 16 then
+      args.Add('format', 'table');
+
     req.Add('arguments', args);
-    Result:=SendRequest(req);
+    if FRPCVersion >= 16 then
+      Result:=TranslateTableToObjects(SendRequest(req))
+    else
+      Result:=SendRequest(req);
   finally
     sl.Free;
     req.Free;
