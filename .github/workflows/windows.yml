@@ -1,0 +1,31 @@
+name: Windows Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-win:
+
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        arch: [x86, amd64]
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+      
+    - shell: cmd
+      run: .github/build_windows.bat ${{ matrix.arch }}
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: TransGUI ${{ matrix.arch }}
+        path: units\transgui.exe
