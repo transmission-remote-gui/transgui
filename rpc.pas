@@ -35,7 +35,8 @@ unit rpc;
 interface
 
 uses
-  Classes, SysUtils, Forms, httpsend, syncobjs, fpjson, jsonparser, ssl_openssl;
+  Classes, SysUtils, Forms, httpsend, syncobjs, fpjson, jsonparser, ssl_openssl,
+  ZStream, jsonscanner;
 
 resourcestring
   sTransmissionAt = 'Transmission%s at %s:%s';
@@ -651,6 +652,55 @@ begin
   CreateHttp;
 end;
 
+type TGzipDecompressionStream=class(TDecompressionStream)
+public
+  constructor create(Asource:TStream);
+end;
+
+constructor TGzipDecompressionStream.create(Asource:TStream);
+var gzHeader:array[1..10] of byte;
+begin
+  {
+    paszlib is based on a relatively old zlib version that didn't implement
+    reading the gzip header. we "implement" this ourselves by skipping the first
+    10 bytes which is just enough for the data Transmission sends.
+  }
+  inherited create(Asource, True);
+  Asource.Read(gzHeader,sizeof(gzHeader));
+end;
+
+function DecompressGzipContent(source: TStream): TMemoryStream;
+var
+  buf : array[1..16384] of byte;
+  numRead : integer;
+  decomp : TGzipDecompressionStream;
+begin
+  decomp:=TGzipDecompressionStream.create(source);
+  Result:=TMemoryStream.create;
+  repeat
+    numRead:=decomp.read(buf,sizeof(buf));
+    Result.Write(buf,numRead);
+  until numRead < sizeof(buf);
+  Result.Position:=0;
+  decomp.Free;
+end;
+
+function CreateJsonParser(serverResp : THTTPSend): TJSONParser;
+var decompressed : TMemoryStream;
+begin
+  if serverResp.Headers.IndexOf('Content-Encoding: gzip') <> -1 then
+  begin
+    { need to fully decompress as the parser relies on a working Seek() }
+    decompressed:=DecompressGzipContent(serverResp.Document);
+    Result:=TJSONParser.Create(decompressed, [joUTF8]);
+    decompressed.Free;
+  end
+  else
+  begin
+    Result:=TJSONParser.Create(serverResp.Document, [joUTF8]);
+  end;
+end;
+
 function TRpc.SendRequest(req: TJSONObject; ReturnArguments: boolean; ATimeOut: integer): TJSONObject;
 var
   obj: TJSONData;
@@ -678,6 +728,7 @@ begin
       Http.Document.Write(PChar(s)^, Length(s));
       s:='';
       Http.Headers.Clear;
+      Http.Headers.Add('Accept-Encoding: gzip');
       Http.MimeType:='application/json';
       if XTorrentSession <> '' then
         Http.Headers.Add(XTorrentSession);
@@ -772,7 +823,7 @@ begin
           break;
         end;
         Http.Document.Position:=0;
-        jp:=TJSONParser.Create(Http.Document);
+        jp:=CreateJsonParser(Http);
         HttpLock.Leave;
         locked:=False;
         RequestStartTime:=0;
