@@ -32,10 +32,10 @@
 
 # Lazarus backups and unit output folders.
 # These can be changed by user in Lazarus/project options.
-backup/
+/backup/
 *.bak
-lib/
-units/
+/lib/
+/units/
 
 # Application bundle for Mac OS
 *.app/
