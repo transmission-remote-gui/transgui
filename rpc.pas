@@ -812,6 +812,15 @@ begin
   until i >= RetryCnt;
 end;
 
+procedure DeleteIfRpcLessThan(Fields: TStringList; Field: string; RpcVer: integer; NeededRpcVer: integer);
+var
+  idx: integer;
+begin
+  idx := Fields.IndexOf(Field);
+  if (idx <> -1) and (RpcVer < NeededRpcVer) then
+    Fields.Delete(idx);
+end;
+
 function TRpc.RequestInfo(TorrentId: integer; const Fields: array of const; const ExtraFields: array of string): TJSONObject;
 var
   req, args: TJSONObject;
@@ -833,6 +842,9 @@ begin
          sl.Add(String(Fields[i].VAnsiString));
     sl.AddStrings(ExtraFields);
     sl.Sort;
+
+    DeleteIfRpcLessThan(sl, 'labels', FRPCVersion, 16);
+
     for i:=sl.Count-2 downto 0 do
       if (sl[i]=sl[i+1]) then
         sl.Delete(i+1);
