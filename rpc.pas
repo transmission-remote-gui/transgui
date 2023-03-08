@@ -35,7 +35,7 @@ unit rpc;
 interface
 
 uses
-  Classes, SysUtils, Forms, httpsend, syncobjs, fpjson, jsonparser, ssl_openssl,
+  Classes, SysUtils, Forms, httpsend, syncobjs, fpjson, jsonparser, ssl_openssl3,
   ZStream, jsonscanner;
 
 resourcestring
@@ -155,7 +155,7 @@ var
 
 implementation
 
-uses Main, ssl_openssl_lib, synafpc, blcksock;
+uses Main, ssl_openssl3_lib, synafpc, blcksock;
 
 function TranslateTableToObjects(reply: TJSONObject) : TJSONObject;
 var
@@ -614,41 +614,10 @@ begin
 end;
 
 procedure TRpc.InitSSL;
-{$ifdef unix}
-{$ifndef darwin}
-  procedure CheckOpenSSL;
-  const
-  OpenSSLVersions: array[1..4] of string =
-  ('0.9.8', '1.0.0', '1.0.2', '1.1.0');
-  var
-    hLib1, hLib2: TLibHandle;
-    i: integer;
-  begin
-    for i:=Low(OpenSSLVersions) to High(OpenSSLVersions) do begin
-      hlib1:=LoadLibrary(PChar('libssl.so.' + OpenSSLVersions[i]));
-      hlib2:=LoadLibrary(PChar('libcrypto.so.' + OpenSSLVersions[i]));
-      if hLib2 <> 0 then
-        FreeLibrary(hLib2);
-      if hLib1 <> 0 then
-        FreeLibrary(hLib1);
-      if (hLib1 <> 0) and (hLib2 <> 0) then begin
-        DLLSSLName:='libssl.so.' + OpenSSLVersions[i];
-        DLLUtilName:='libcrypto.so.' + OpenSSLVersions[i];
-        break;
-      end;
-    end;
-  end;
-{$endif darwin}
-{$endif unix}
 begin
   if IsSSLloaded then exit;
-{$ifdef unix}
-{$ifndef darwin}
-  CheckOpenSSL;
-{$endif darwin}
-{$endif unix}
   if InitSSLInterface then
-    SSLImplementation := TSSLOpenSSL;
+    SSLImplementation := TSSLOpenSSL3;
   CreateHttp;
 end;
 

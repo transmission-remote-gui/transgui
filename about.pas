@@ -37,7 +37,7 @@ interface
 
 uses
   BaseForm, Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, ExtCtrls, ButtonPanel, lclversion,
-    ssl_openssl, ssl_openssl_lib;
+    ssl_openssl3, ssl_openssl3_lib;
 
 resourcestring
   SErrorCheckingVersion = 'Error checking for new version.';

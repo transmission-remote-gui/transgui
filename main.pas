@@ -935,7 +935,7 @@ uses
   urllistenerosx,
 {$endif darwin}
   synacode, ConnOptions, clipbrd, DateUtils, TorrProps, DaemonOptions, About,
-  ToolWin, download, ColSetup, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
+  ToolWin, download, ColSetup, AddLink, MoveTorrent, ssl_openssl3_lib, AddTracker, lcltype,
   Options, ButtonPanel, BEncode, synautil, Math;
 
   {TMyHashMap}
