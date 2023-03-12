@@ -173,9 +173,3 @@ matrix:
 notifications:
   email:
     on_failure: true
-  webhooks:
-    urls:
-      - https://www.travisbuddy.com/
-    on_success: never
-    on_cancel: never
-    on_start: never
