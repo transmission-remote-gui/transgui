@@ -89,7 +89,7 @@ This installer has additional installation wizard and includes static OpenSSL li
 
 #### Using [Chocolatey](https://chocolatey.org)
 
-Run `cinst transgui` to install the latest version of Transmission Remote GUI.
+Run `choco install transgui` to install the latest version of Transmission Remote GUI.
 
 ### macOS
 
