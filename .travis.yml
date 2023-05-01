@@ -48,7 +48,7 @@ env_template:
     <<: *linux_env
     stage: static test
     language: node_js
-    node_js: 10
+    node_js: 16
     install:
       - npm i -g $task
     before_script:
