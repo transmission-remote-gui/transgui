@@ -318,7 +318,7 @@ Connect to %s=Połącz z %s
 Connect to Transmission using proxy server=Połącz z Transmission przy użyciu serwera proxy
 Connect to Transmission=Połącz z Transmission
 Connection name=Nazwa połączenia
-Could not connect to tracker==Nie można połączyć się z trackerem
+Could not connect to tracker=Nie można połączyć się z trackerem
 Data display=Wyświetlaj dane
 Data refresh interval when minimized=Interwał odświeżania danych, gdy zminimalizowane
 Data refresh interval=Interwał odświeżania danych
@@ -344,7 +344,7 @@ Show advanced options=Pokaż opcje zaawansowane
 Show notifications in tray icon=Pokaż powiadomienia w ikonie na pasku
 System integration=Integracja systemu
 Torrent already exists in the list=Torrent już istnieje na liście
-Torrent not registered with this tracker==Torrent nie jest zarejestrowany na tym trackerze
+Torrent not registered with this tracker=Torrent nie jest zarejestrowany na tym trackerze
 Unable to find path mapping.~Use the application's options to setup path mappings=Nie można znaleźć mapowania ścieżki.~Użyj opcji w aplikacji do konfiguracji mapowania ścieżki
 Update trackers for the existing torrent?=Zaktualizować trackery dla istniejącego torrenta?
 You need to restart the application to apply changes=Musisz ponownie uruchomić aplikację, aby zastosować zmiany

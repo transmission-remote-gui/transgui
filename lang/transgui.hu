@@ -318,7 +318,7 @@ Connect to %s=Kapcsolódás ide: %s
 Connect to Transmission using proxy server=Kapcsolódás a Transmission-höz proxy szerveren keresztül
 Connect to Transmission=Kapcsolódás a Transmission-höz
 Connection name=Kapcsolat neve
-Could not connect to tracker==Nem tudok kapcsolódni a tracker-hez
+Could not connect to tracker=Nem tudok kapcsolódni a tracker-hez
 Data display=Adatok kijelzése
 Data refresh interval when minimized=Adatfrissítési gyakoriság, mikor a kliens minimalizálva van a tálcára
 Data refresh interval=Adatfrissítési gyakoriság

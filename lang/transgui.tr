@@ -315,7 +315,7 @@ Connect to %s=Bağlan %s
 Connect to Transmission using proxy server=Transmission'a Proxy sunucusu kullanarak bağlan
 Connect to Transmission=Transmission'a bağlan
 Connection name=Bağlantı adı
-Could not connect to tracker==İzleyiciye bağlanılamıyor
+Could not connect to tracker=İzleyiciye bağlanılamıyor
 Data display=Veri görünümü
 Data refresh interval when minimized=Görev çubuğuna küçültüldüğünde ki uygulama yenileme hızı
 Data refresh interval=Uygulama yenileme hızı
@@ -342,7 +342,7 @@ Show advanced options=Gelişmiş ayarları göster
 Show notifications in tray icon=Görev çubuğu simgesinde bildirimleri göster
 System integration=Sistem ile bütünleşme
 Torrent already exists in the list=Torrent zaten liste de mevcut
-Torrent not registered with this tracker==Torrent bu izleyiciye kayıtlı değil
+Torrent not registered with this tracker=Torrent bu izleyiciye kayıtlı değil
 Unable to find path mapping.~Use the application's options to setup path mappings=Uzak yol bulunamadı.~Uzak yol ayarlamak için uygulama ayarlarını kullanın
 Update trackers for the existing torrent?=Mevcut torrentlerin izleyicileri güncelleştirilsin mi?
 You need to restart the application to apply changes=Değişikliklerin aktif olabilmesi için uygulamayı tekrar başlatın

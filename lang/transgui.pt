@@ -316,7 +316,7 @@ Connect to %s=Connectar a %s
 Connect to Transmission using proxy server=Connectar ao Transmission a partir do proxy server
 Connect to Transmission=Connectar ao Transmission
 Connection name=Nome da connecção
-Could not connect to tracker==Não foi possivel connectar ao tracker
+Could not connect to tracker=Não foi possivel connectar ao tracker
 Data display=Amostrar dados
 Data refresh interval when minimized=Intervalo de atualização de dados em segundo plano
 Data refresh interval=Intervalo de atualização de dados

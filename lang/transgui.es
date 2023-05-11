@@ -342,7 +342,7 @@ Show advanced options=Mostrar opciones avanzadas
 Show notifications in tray icon=Mostrar notificaciones en la bandeja
 System integration=Integración del sistema
 Torrent already exists in the list=El torrent ya existe en la lista
-Torrent not registered with this tracker==Torrent no registrado en este tracker
+Torrent not registered with this tracker=Torrent no registrado en este tracker
 Unable to find path mapping.~Use the application's options to setup path mappings=No se ha podido encontrar la ruta. ~ Utilice las opciones de la aplicación para asignar la ruta
 Update trackers for the existing torrent?=¿Actualizar los trackers para el torrent existente?
 You need to restart the application to apply changes=Es necesario reiniciar la aplicación para aplicar los cambios

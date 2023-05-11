@@ -318,7 +318,7 @@ Connect to %s=Jungtis prie %s
 Connect to Transmission using proxy server=Jungtis prie Transmission per tarpinį serverį
 Connect to Transmission=Jungtis prie Transmission
 Connection name=Jungties pavadinimas
-Could not connect to tracker==Prie seklio prisijungti nepavyksta
+Could not connect to tracker=Prie seklio prisijungti nepavyksta
 Data display=Duomenų atvaizdavimas
 Data refresh interval when minimized=Duomenų atnaujinimo intervalas, kai sumažinta
 Data refresh interval=Duomenų atnaujinimo intervalas
@@ -344,7 +344,7 @@ Show advanced options=Rodyti išsamius nustatymus
 Show notifications in tray icon=Rodyti pranešimus prie piktogramos sistemos dėkle
 System integration=Susiejimas su sistema
 Torrent already exists in the list=Šis torentas sąraše jau yra
-Torrent not registered with this tracker==Torentas šiame seklyje neregistruotas
+Torrent not registered with this tracker=Torentas šiame seklyje neregistruotas
 Unable to find path mapping.~Use the application's options to setup path mappings=Nepavyksta rasti kelių nuorodų.~Kelių nuorodas nustatykite programos nustatymuose (Keliai)
 Update trackers for the existing torrent?=Atnaujinti šio torento seklius?
 You need to restart the application to apply changes=Kad pasikeitimai įsigaliotų, programą reikia paleisti iš naujo

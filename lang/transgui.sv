@@ -317,7 +317,7 @@ Connect to %s=Anslut till %s
 Connect to Transmission using proxy server=Anslut till Transmission via en proxyserver
 Connect to Transmission=Anslut till Transmission
 Connection name=Namn på anslutningen
-Could not connect to tracker==Kunde inte ansluta till tracker
+Could not connect to tracker=Kunde inte ansluta till tracker
 Data display=Datavisning
 Data refresh interval when minimized=Uppdateringsintervall av data vid minimerad
 Data refresh interval=Uppdateringsintervall av data
@@ -343,7 +343,7 @@ Show advanced options=Visa avancerade alternativ
 Show notifications in tray icon=Visa notifieringar i ikonen i aktivitetsfältet
 System integration=Systemintegration
 Torrent already exists in the list=Torrenten finns redan i listan
-Torrent not registered with this tracker==Torrenten är inte registrerad hos denna tracker
+Torrent not registered with this tracker=Torrenten är inte registrerad hos denna tracker
 Unable to find path mapping.~Use the application's options to setup path mappings=Hittar inte katalogen.~Använd inställningarna under alternativ för detta programmet för att justera katalogen (path)
 Update trackers for the existing torrent?=Uppdatera trackers för den existerande torrenten?
 You need to restart the application to apply changes=Du måste starta om programmet för att verkställa ändringarna

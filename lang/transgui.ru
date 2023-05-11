@@ -318,7 +318,7 @@ Connect to %s=Подключение к %s
 Connect to Transmission using proxy server=Подключаться к Transmission, используя прокси-сервер
 Connect to Transmission=Подключиться к Transmission
 Connection name=Название подключения
-Could not connect to tracker==Невозможно подключиться к трекеру
+Could not connect to tracker=Невозможно подключиться к трекеру
 Data display=Отображения данных
 Data refresh interval when minimized=Период обновления данных в свернутом состоянии
 Data refresh interval=Период обновления данных

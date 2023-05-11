@@ -321,7 +321,7 @@ Connect to %s=Connect to %s
 Connect to Transmission using proxy server=Connect to Transmission using proxy server
 Connect to Transmission=Connect to Transmission
 Connection name=Connection name
-Could not connect to tracker==Could not connect to tracker
+Could not connect to tracker=Could not connect to tracker
 Data display=Data display
 Data refresh interval when minimized=Data refresh interval when minimized
 Data refresh interval=Data refresh interval
