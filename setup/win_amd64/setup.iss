@@ -115,8 +115,8 @@ Source: "..\..\README.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: 
 Source: "..\..\history.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
 Source: "..\..\lang\transgui.*"; DestDir: "{app}\lang"; Flags: ignoreversion; Components: lang
 ; OpenSSL
-Source: "openssl\libeay32.dll"; DestDir: "{app}"; Components: app
-Source: "openssl\ssleay32.dll"; DestDir: "{app}"; Components: app
+Source: "openssl\libcrypto-1_1-x64.dll"; DestDir: "{app}"; Components: app
+Source: "openssl\libssl-1_1-x64.dll"; DestDir: "{app}"; Components: app
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: {app}
