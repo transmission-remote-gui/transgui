@@ -90,11 +90,6 @@ ShowLanguageDialog=yes
 SignTool=signtool sign /d "{#AppName} Setup" /du "{#AppURL}" /f "{#CODECERT}" /v $f
 #endif
 
-[Types]
-Name: "full"; Description: "Full installation"
-Name: "compact"; Description: "Compact installation"
-Name: "custom"; Description: "Custom installation"; Flags: iscustom
-
 [Components]
 Name: "app"; Description: "Main application files"; Types: full compact custom; Flags: fixed
 Name: "lang"; Description: "Language files"; Types: full custom
