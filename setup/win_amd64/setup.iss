@@ -95,6 +95,7 @@ SignTool=signtool sign /d "{#AppName} Setup" /du "{#AppURL}" /f "{#CODECERT}" /v
 [Components]
 Name: "app"; Description: "Main application files"; Types: full compact custom; Flags: fixed
 Name: "lang"; Description: "Language files"; Types: full custom
+Name: "openssl"; Description: "OpenSSL files"; Types: full custom
 
 [Tasks]
 Name: regfileext; Description: "{cm:AssocFileExtension,{#AppName},.torrent}"; Flags: unchecked
@@ -110,8 +111,8 @@ Source: "..\..\README.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: 
 Source: "..\..\history.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: app
 Source: "..\..\lang\transgui.*"; DestDir: "{app}\lang"; Flags: ignoreversion; Components: lang
 ; OpenSSL
-Source: "openssl\libcrypto-1_1-x64.dll"; DestDir: "{app}"; Components: app
-Source: "openssl\libssl-1_1-x64.dll"; DestDir: "{app}"; Components: app
+Source: "openssl\libcrypto-1_1-x64.dll"; DestDir: "{app}"; Components: openssl
+Source: "openssl\libssl-1_1-x64.dll"; DestDir: "{app}"; Components: openssl
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: {app}
