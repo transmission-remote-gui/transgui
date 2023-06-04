@@ -56,6 +56,35 @@ env_template:
 
 matrix:
   include:
+    - os: windows
+      language: shell
+      stage: build
+      env:
+        - arch=win32
+        - artifact1=./Release/transgui-$PROG_VER-setup.exe
+        - artifact2=./Release/transgui-$PROG_VER-i386-win32.zip
+      before_install:
+        - echo $PATH
+        - compgen -c | sort | uniq
+        - cd setup/win && sed -i "s/pause//g" *
+      install:
+        - sh -c 'cd setup/win && ./install_deps.bat'
+      script:
+        - sh -c 'cd setup/win && ./make_setup.bat'
+        - sh -c 'cd setup/win && ./make_zipdist.bat'
+      after_success:
+        - md5 $artifact1 $artifact2
+        - shasum -a 1 $artifact1 $artifact2
+        - shasum -a 256 $artifact1 $artifact2
+        - if [ -n "$TRAVIS_TAG" ] ; then
+            curl -F "file=@$artifact1" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+            curl -F "file=@$artifact2" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+            curl -F "file=@./transgui" -F apikey=${virustotal} https://www.virustotal.com/vtapi/v2/file/scan ;
+          else
+            setup/upload_asset.sh $artifact1 ;
+            setup/upload_asset.sh $artifact2 ;
+          fi
+      deploy: *deploy
 
 notifications:
   email:
