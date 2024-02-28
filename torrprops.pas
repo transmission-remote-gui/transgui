@@ -47,6 +47,7 @@ type
     cbMaxDown: TCheckBox;
     cbMaxUp: TCheckBox;
     cbSeedRatio: TCheckBox;
+    cbSequential: TCheckBox;
     edIdleSeedLimit: TSpinEdit;
     edMaxUp: TSpinEdit;
     edPeerLimit: TSpinEdit;
