@@ -719,6 +719,7 @@ type
     FCalcAvg: boolean;
     FPasswords: TStringList;
     FAppProps:TApplicationProperties;
+    FApplyAll: boolean; // add new torrent - apply all
 
     procedure UpdateUI;
     procedure UpdateUIRpcVersion(RpcVersion: integer);
@@ -732,7 +733,7 @@ type
     procedure LoadColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
     function GetTorrentError(t: TJSONObject; Status: integer): string;
     function SecondsToString(j: integer): string;
-    function DoAddTorrent(const FileName: Utf8String): boolean;
+    function DoAddTorrent(const FileName: Utf8String; const MultipleTorrents: boolean = False): boolean;
     procedure UpdateTray;
     procedure HideApp;
     procedure ShowApp;
@@ -2303,22 +2304,29 @@ begin
 end;
 
 procedure TMainForm.acAddLinkExecute(Sender: TObject);
+var
+  i: integer;
 begin
   AppBusy;
   with TAddLinkForm.Create(Self) do
   try
     AppNormal;
     if ShowModal = mrOk then
+    begin
+      FApplyAll:=false;
+      for i := 0 to meLink.Lines.Count - 1 do
       begin
-          if isHash(edLink.Text) then edLink.Text := 'magnet:?xt=urn:btih:'+ edLink.Text;
-          DoAddTorrent(edLink.Text);
+        if isHash(meLink.Lines[i]) then meLink.Lines[i] := 'magnet:?xt=urn:btih:' + meLink.Lines[i];
+        DoAddTorrent(meLink.Lines[i], meLink.Lines.Count > 1);
       end;
+      FApplyAll:=false;
+    end;
   finally
     Free;
   end;
 end;
 
-function TMainForm.DoAddTorrent(const FileName: Utf8String): boolean;
+function TMainForm.DoAddTorrent(const FileName: Utf8String; const MultipleTorrents: boolean = false): boolean;
 var
   torrent: string;
   WaitForm: TBaseForm;
@@ -2739,12 +2747,13 @@ begin
         OldDownloadDir:=cbDestFolder.Text;
         AppNormal;
 
-        ok:=not Ini.ReadBool('Interface', 'ShowAddTorrentWindow', True);
+        ok:=(not Ini.ReadBool('Interface', 'ShowAddTorrentWindow', True)) or FApplyAll;
         if FWatchDownloading then ok:= true;
         if ok then
           btSelectAllClick(nil)
         else begin
           HideWaitMsg;
+          cbApplyAll.Visible := MultipleTorrents;
           ok:=ShowModal = mrOk;
           if BorderStyle = bsSizeable then begin
             Ini.WriteInteger('AddTorrent', 'Width', Width);
@@ -2833,6 +2842,9 @@ begin
 
           if cbStartTorrent.Checked then
             TorrentAction(id, 'torrent-start');
+
+          if cbApplyAll.Checked then
+            FApplyAll:=true;
 
           SelectTorrent(id, 2000);
 
@@ -7860,12 +7872,14 @@ begin
       else
         ShowApp;
       try
+        FApplyAll:=false;
         while FPendingTorrents.Count > 0 do begin
           s:=FPendingTorrents[0];
           FPendingTorrents.Delete(0);
           if s <> '' then
             DoAddTorrent(s);
         end;
+        FApplyAll:=false;
       finally
         if WasHidden then
           HideTaskbarButton;

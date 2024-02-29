@@ -52,6 +52,7 @@ type
   { TAddTorrentForm }
 
   TAddTorrentForm = class(TBaseForm)
+    cbApplyAll: TCheckBox;
     DelButton: TBitBtn;
     btSelectAll: TButton;
     btSelectNone: TButton;
@@ -95,6 +96,7 @@ type
     procedure TreeStateChanged(Sender: TObject);
     procedure UpdateSize;
   public
+    ApplyToAll: boolean;
     OrigCaption: string;
     Extension : string;
     property FilesTree: TFilesTree read FTree;
