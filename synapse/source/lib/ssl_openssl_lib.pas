@@ -106,8 +106,8 @@ const
   DLLSSLName = 'libssl.so';
   DLLUtilName = 'libcrypto.so';
   {$ELSE}
-  DLLSSLName = 'ssleay32.dll';
-  DLLUtilName = 'libeay32.dll';
+  DLLSSLName = 'libssl-1_1.dll';
+  DLLUtilName = 'libcrypto-1_1.dll';
   {$ENDIF}
 {$ELSE}
 var
@@ -130,9 +130,10 @@ var
      {$ENDIF OS2}
     {$ENDIF}
   {$ELSE}
-  DLLSSLName: string = 'ssleay32.dll';
-  DLLSSLName2: string = 'libssl32.dll';
-  DLLUtilName: string = 'libeay32.dll';
+  DLLSSLName: string = 'libssl-1_1.dll';
+  DLLSSLName2: string = 'libssl-1_1-x64.dll';
+  DLLUtilName: string = 'libcrypto-1_1.dll';
+  DLLUtilName2: string = 'libcrypto-1_1-x64.dll';
   {$ENDIF}
 {$ENDIF}
 
@@ -1883,6 +1884,8 @@ begin
   {$IFDEF MSWINDOWS}
       if (SSLLibHandle = 0) then
         SSLLibHandle := LoadLib(DLLSSLName2);
+      if (SSLUtilHandle = 0) then
+        SSLUtilHandle := LoadLib(DLLUtilName2);
   {$ENDIF}
 {$ENDIF}
       if (SSLLibHandle <> 0) and (SSLUtilHandle <> 0) then

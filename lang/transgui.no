@@ -287,7 +287,7 @@ Move up=Flytt opp
 No updates have been found.~You are running the latest version of %s=Ingen oppdatering er funnet.~Du bruker allerede den siste versjonen av %s
 Queue position=Plass i køen
 Queue=Kø
-Torrents that are idle for N minuets aren't counted toward the Download queue or Upload queue=Torrenter som har stoppet opp i N minutter teller ikke mot ned- eller opplastingskøen
+Torrents that are idle for N minutes aren't counted toward the Download queue or Upload queue=Torrenter som har stoppet opp i N minutter teller ikke mot ned- eller opplastingskøen
 Tracker grouping=Trackergruppering
 Upload queue size=Størrelse på opplastingskø
 View=Vis
@@ -316,7 +316,7 @@ Connect to %s=Koble til %s
 Connect to Transmission using proxy server=Koble til Transmission via mellomtjener
 Connect to Transmission=Koble til Transmission
 Connection name=Navn på tilkoblingen
-Could not connect to tracker==Greide ikke å koble til tracker
+Could not connect to tracker=Greide ikke å koble til tracker
 Data display=Datavisning
 Data refresh interval when minimized=Oppfriskningsrate når minimert
 Data refresh interval=Oppfriskningsrate
@@ -342,7 +342,7 @@ Show advanced options=Vis avanserte innstillinger
 Show notifications in tray icon=Vis varsler i systemkurven
 System integration=Systemintegrasjon
 Torrent already exists in the list=Torrenten er allerede i lista
-Torrent not registered with this tracker==Torrenten finnes ikke på trackeren
+Torrent not registered with this tracker=Torrenten finnes ikke på trackeren
 Unable to find path mapping.~Use the application's options to setup path mappings=Finner ikke tilknytning mellom lokal og tjeners filbaner.~Sett opp filbanetilknytninger i innstillinger
 Update trackers for the existing torrent?=Oppdater tracker?
 You need to restart the application to apply changes=Du må starte applikasjonen på nytt for at endringene skal tre i kraft

@@ -16,7 +16,7 @@
   along with Transmission Remote GUI; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-  In addition, as a special exception, the copyright holders give permission to 
+  In addition, as a special exception, the copyright holders give permission to
   link the code of portions of this program with the
   OpenSSL library under certain conditions as described in each individual
   source file, and distribute linked combinations including the two.
@@ -260,6 +260,7 @@ type
     MenuItem104: TMenuItem;
     MenuItem105: TMenuItem;
     MenuItem106: TMenuItem;
+    MenuItem107: TMenuItem;
     MenuShow: TAction;
     ActionList1: TActionList;
     acToolbarShow :  TAction;
@@ -2082,7 +2083,7 @@ begin
           aids.Add(integer(ids[i]));
         args.Add('ids', aids);
         args.Add('location', TJSONString.Create(UTF8Decode(edTorrentDir.Text)));
-        args.Add('move', TJSONIntegerNumber.Create(integer(cbMoveData.Checked) and 1));
+        args.Add('move', cbMoveData.Checked);
         req.Add('arguments', args);
         args:=RpcObj.SendRequest(req, False);
         args.Free;
@@ -2263,7 +2264,7 @@ begin
   try
     req.Add('method', 'session-set');
     args:=TJSONObject.Create;
-    args.Add('alt-speed-enabled', integer(not acAltSpeed.Checked) and 1);
+    args.Add('alt-speed-enabled', not acAltSpeed.Checked);
     req.Add('arguments', args);
     args:=RpcObj.SendRequest(req, False);
     if args = nil then begin
@@ -2672,7 +2673,7 @@ begin
         edSearch.Text:='';
 
         args:=TJSONObject.Create;
-        args.Add('paused', TJSONIntegerNumber.Create(1));
+        args.Add('paused', True);
         i:=Ini.ReadInteger(IniSec, 'PeerLimit', 0);
         if i <> 0 then
           args.Add('peer-limit', TJSONIntegerNumber.Create(i));
@@ -2761,7 +2762,7 @@ begin
             TorrentAction(id, 'torrent-remove');
             id:=0;
             args:=TJSONObject.Create;
-            args.Add('paused', TJSONIntegerNumber.Create(1));
+            args.Add('paused', True);
             args.Add('peer-limit', TJSONIntegerNumber.Create(edPeerLimit.Value));
             args.Add('download-dir', TJSONString.Create(UTF8Decode(cbDestFolder.Text)));
             id:=_AddTorrent(args);
@@ -3370,18 +3371,18 @@ begin
           if RpcObj.RPCVersion >= 5 then begin
             // RPC version 5
             edPort.Value:=args.Integers['peer-port'];
-            cbPEX.Checked:=args.Integers['pex-enabled'] <> 0;
+            cbPEX.Checked:=args.Booleans['pex-enabled'];
             edMaxPeers.Value:=args.Integers['peer-limit-global'];
-            cbRandomPort.Checked:=args.Integers['peer-port-random-on-start'] <> 0;
-            cbDHT.Checked:=args.Integers['dht-enabled'] <> 0;
-            cbSeedRatio.Checked:=args.Integers['seedRatioLimited'] <> 0;
+            cbRandomPort.Checked:=args.Booleans['peer-port-random-on-start'];
+            cbDHT.Checked:=args.Booleans['dht-enabled'];
+            cbSeedRatio.Checked:=args.Booleans['seedRatioLimited'];
             edSeedRatio.Value:=args.Floats['seedRatioLimit'];
-            cbBlocklist.Checked:=args.Integers['blocklist-enabled'] <> 0;
+            cbBlocklist.Checked:=args.Booleans['blocklist-enabled'];
 
-            cbAltEnabled.Checked:=args.Integers['alt-speed-enabled'] <> 0;
+            cbAltEnabled.Checked:=args.Booleans['alt-speed-enabled'];
             edAltDown.Value:=args.Integers['alt-speed-down'];
             edAltUp.Value:=args.Integers['alt-speed-up'];
-            cbAutoAlt.Checked:=args.Integers['alt-speed-time-enabled'] <> 0;
+            cbAutoAlt.Checked:=args.Booleans['alt-speed-time-enabled'];
             edAltTimeBegin.Text:=FormatDateTime('hh:nn', args.Integers['alt-speed-time-begin']/MinsPerDay);
             edAltTimeEnd.Text:=FormatDateTime('hh:nn', args.Integers['alt-speed-time-end']/MinsPerDay);
             j:=args.Integers['alt-speed-time-day'];
@@ -3407,7 +3408,7 @@ begin
           end;
 
           if RpcObj.RPCVersion >= 7 then begin
-            cbIncompleteDir.Checked:=args.Integers['incomplete-dir-enabled'] <> 0;
+            cbIncompleteDir.Checked:=args.Booleans['incomplete-dir-enabled'];
             edIncompleteDir.Text:=UTF8Encode(args.Strings['incomplete-dir']);
             cbIncompleteDirClick(nil);
           end
@@ -3417,18 +3418,18 @@ begin
           end;
 
           if RpcObj.RPCVersion >= 8 then
-            cbPartExt.Checked:=args.Integers['rename-partial-files'] <> 0
+            cbPartExt.Checked:=args.Booleans['rename-partial-files']
           else
             cbPartExt.Visible:=False;
 
           if RpcObj.RPCVersion >= 9 then
-            cbLPD.Checked:=args.Integers['lpd-enabled'] <> 0
+            cbLPD.Checked:=args.Booleans['lpd-enabled']
           else
             cbLPD.Visible:=False;
 
           if RpcObj.RPCVersion >= 10 then begin
             edCacheSize.Value:=args.Integers['cache-size-mb'];
-            cbIdleSeedLimit.Checked:=args.Integers['idle-seeding-limit-enabled'] <> 0;
+            cbIdleSeedLimit.Checked:=args.Booleans['idle-seeding-limit-enabled'];
             edIdleSeedLimit.Value:=args.Integers['idle-seeding-limit'];
             cbIdleSeedLimitClick(nil);
           end
@@ -3451,23 +3452,23 @@ begin
           cbBlocklistClick(nil);
 
           if RpcObj.RPCVersion >= 13 then
-            cbUTP.Checked:=args.Integers['utp-enabled'] <> 0
+            cbUTP.Checked:=args.Booleans['utp-enabled']
           else
             cbUTP.Visible:=False;
 
           if RpcObj.RPCVersion >= 14 then begin
             tabQueue.TabVisible:=True;
-            cbDownQueue.Checked:=args.Integers['download-queue-enabled'] <> 0;
+            cbDownQueue.Checked:=args.Booleans['download-queue-enabled'];
             edDownQueue.Value:=args.Integers['download-queue-size'];
-            cbUpQueue.Checked:=args.Integers['seed-queue-enabled'] <> 0;
+            cbUpQueue.Checked:=args.Booleans['seed-queue-enabled'];
             edUpQueue.Value:=args.Integers['seed-queue-size'];
-            cbStalled.Checked:=args.Integers['queue-stalled-enabled'] <> 0;
+            cbStalled.Checked:=args.Booleans['queue-stalled-enabled'];
             edStalledTime.Value:=args.Integers['queue-stalled-minutes'];
           end
           else
             tabQueue.TabVisible:=False;
 
-          cbPortForwarding.Checked:=args.Integers['port-forwarding-enabled'] <> 0;
+          cbPortForwarding.Checked:=args.Booleans['port-forwarding-enabled'];
           s:=args.Strings['encryption'];
           if s = 'preferred' then
             cbEncryption.ItemIndex:=1
@@ -3476,9 +3477,9 @@ begin
             cbEncryption.ItemIndex:=2
           else
             cbEncryption.ItemIndex:=0;
-          cbMaxDown.Checked:=args.Integers['speed-limit-down-enabled'] <> 0;
+          cbMaxDown.Checked:=args.Booleans['speed-limit-down-enabled'];
           edMaxDown.Value:=args.Integers['speed-limit-down'];
-          cbMaxUp.Checked:=args.Integers['speed-limit-up-enabled'] <> 0;
+          cbMaxUp.Checked:=args.Booleans['speed-limit-up-enabled'];
           edMaxUp.Value:=args.Integers['speed-limit-up'];
         finally
           args.Free;
@@ -3504,34 +3505,34 @@ begin
         req.Add('method', 'session-set');
         args:=TJSONObject.Create;
         args.Add('download-dir', UTF8Decode(edDownloadDir.Text));
-        args.Add('port-forwarding-enabled', integer(cbPortForwarding.Checked) and 1);
+        args.Add('port-forwarding-enabled', cbPortForwarding.Checked);
         case cbEncryption.ItemIndex of
           1: s:='preferred';
           2: s:='required';
           else s:='tolerated';
         end;
         args.Add('encryption', s);
-        args.Add('speed-limit-down-enabled', integer(cbMaxDown.Checked) and 1);
+        args.Add('speed-limit-down-enabled', cbMaxDown.Checked);
         if cbMaxDown.Checked then
           args.Add('speed-limit-down', edMaxDown.Value);
-        args.Add('speed-limit-up-enabled', integer(cbMaxUp.Checked) and 1);
+        args.Add('speed-limit-up-enabled', cbMaxUp.Checked);
         if cbMaxUp.Checked then
           args.Add('speed-limit-up', edMaxUp.Value);
         if RpcObj.RPCVersion >= 5 then begin
           args.Add('peer-limit-global', edMaxPeers.Value);
           args.Add('peer-port', edPort.Value);
-          args.Add('pex-enabled', integer(cbPEX.Checked) and 1);
-          args.Add('peer-port-random-on-start', integer(cbRandomPort.Checked) and 1);
-          args.Add('dht-enabled', integer(cbDHT.Checked) and 1);
-          args.Add('seedRatioLimited', integer(cbSeedRatio.Checked) and 1);
+          args.Add('pex-enabled', cbPEX.Checked);
+          args.Add('peer-port-random-on-start', cbRandomPort.Checked);
+          args.Add('dht-enabled', cbDHT.Checked);
+          args.Add('seedRatioLimited', cbSeedRatio.Checked);
           if cbSeedRatio.Checked then
             args.Add('seedRatioLimit', edSeedRatio.Value);
-          args.Add('blocklist-enabled', integer(cbBlocklist.Checked) and 1);
+          args.Add('blocklist-enabled', cbBlocklist.Checked);
 
-          args.Add('alt-speed-enabled', integer(cbAltEnabled.Checked) and 1);
+          args.Add('alt-speed-enabled', cbAltEnabled.Checked);
           args.Add('alt-speed-down', edAltDown.Value);
           args.Add('alt-speed-up', edAltUp.Value);
-          args.Add('alt-speed-time-enabled', integer(cbAutoAlt.Checked) and 1);
+          args.Add('alt-speed-time-enabled', cbAutoAlt.Checked);
           if cbAutoAlt.Checked then begin
             args.Add('alt-speed-time-begin', Round(Frac(StrToTime(edAltTimeBegin.Text))*MinsPerDay));
             args.Add('alt-speed-time-end', Round(Frac(StrToTime(edAltTimeEnd.Text))*MinsPerDay));
@@ -3546,33 +3547,33 @@ begin
         else begin
           args.Add('peer-limit', edMaxPeers.Value);
           args.Add('port', edPort.Value);
-          args.Add('pex-allowed', integer(cbPEX.Checked) and 1);
+          args.Add('pex-allowed', cbPEX.Checked);
         end;
         if RpcObj.RPCVersion >= 7 then begin
-          args.Add('incomplete-dir-enabled', integer(cbIncompleteDir.Checked) and 1);
+          args.Add('incomplete-dir-enabled', cbIncompleteDir.Checked);
           if cbIncompleteDir.Checked then
             args.Add('incomplete-dir', UTF8Decode(edIncompleteDir.Text));
         end;
         if RpcObj.RPCVersion >= 8 then
-          args.Add('rename-partial-files', integer(cbPartExt.Checked) and 1);
+          args.Add('rename-partial-files', cbPartExt.Checked);
         if RpcObj.RPCVersion >= 9 then
-          args.Add('lpd-enabled', integer(cbLPD.Checked) and 1);
+          args.Add('lpd-enabled', cbLPD.Checked);
         if RpcObj.RPCVersion >= 10 then begin
           args.Add('cache-size-mb', edCacheSize.Value);
-          args.Add('idle-seeding-limit-enabled', integer(cbIdleSeedLimit.Checked) and 1);
+          args.Add('idle-seeding-limit-enabled', cbIdleSeedLimit.Checked);
           args.Add('idle-seeding-limit', edIdleSeedLimit.Value);
         end;
         if edBlocklistURL.Visible then
           if cbBlocklist.Checked then
             args.Add('blocklist-url', UTF8Decode(edBlocklistURL.Text));
         if RpcObj.RPCVersion >= 13 then
-          args.Add('utp-enabled', integer(cbUTP.Checked) and 1);
+          args.Add('utp-enabled', cbUTP.Checked);
         if RpcObj.RPCVersion >= 14 then begin
-          args.Add('download-queue-enabled', integer(cbDownQueue.Checked) and 1);
+          args.Add('download-queue-enabled', cbDownQueue.Checked);
           args.Add('download-queue-size', edDownQueue.Value);
-          args.Add('seed-queue-enabled', integer(cbUpQueue.Checked) and 1);
+          args.Add('seed-queue-enabled', cbUpQueue.Checked);
           args.Add('seed-queue-size', edUpQueue.Value);
-          args.Add('queue-stalled-enabled', integer(cbStalled.Checked) and 1);
+          args.Add('queue-stalled-enabled', cbStalled.Checked);
           args.Add('queue-stalled-minutes', edStalledTime.Value);
         end;
 
@@ -3719,9 +3720,9 @@ begin
   i:=gTorrents.Items.IndexOf(idxTorrentId, ids[0]);
   if VarIsEmpty(gTorrents.Items[idxPath, i]) then
     exit;
-  if InputQuery('Set tags',
-      'This will overwrite any existing tags.' + sLineBreak +
-      'You can set multiple tags separated by a comma or leave empty to clear tags.',
+  if InputQuery('Set labels',
+      'This will overwrite any existing labels.' + sLineBreak +
+      'You can set multiple labels separated by a comma or leave empty to clear labels.',
       input) then begin
     AppBusy;
     req := TJSONObject.Create;
@@ -3734,8 +3735,10 @@ begin
       for i:=VarArrayLowBound(ids, 1) to VarArrayHighBound(ids, 1) do
             aids.Add(integer(ids[i]));
       args.Add('ids', aids);
-      SplitRegExpr(',', input, slabels);
-      slabels.Sort;
+      if trim(input) <> '' then begin
+        SplitRegExpr(',', input, slabels);
+        slabels.Sort;
+      end;
       for s in slabels do begin
         alabels.Add(trim(s));
       end;
@@ -4068,16 +4071,16 @@ begin
         if RpcObj.RPCVersion < 5 then
         begin
           // RPC versions prior to v5
-          args.Add('speed-limit-down-enabled', integer(cbMaxDown.Checked) and 1);
-          args.Add('speed-limit-up-enabled', integer(cbMaxUp.Checked) and 1);
+          args.Add('speed-limit-down-enabled', cbMaxDown.Checked);
+          args.Add('speed-limit-up-enabled', cbMaxUp.Checked);
           if cbMaxDown.Checked then
             args.Add('speed-limit-down', edMaxDown.Value);
           if cbMaxUp.Checked then
             args.Add('speed-limit-up', edMaxUp.Value);
         end else begin
           // RPC version 5
-          args.Add('downloadLimited', integer(cbMaxDown.Checked) and 1);
-          args.Add('uploadLimited', integer(cbMaxUp.Checked) and 1);
+          args.Add('downloadLimited', cbMaxDown.Checked);
+          args.Add('uploadLimited', cbMaxUp.Checked);
           if cbMaxDown.Checked then
             args.Add('downloadLimit', edMaxDown.Value);
           if cbMaxUp.Checked then
@@ -5772,6 +5775,7 @@ begin
   try
   Paths.Sorted:=True;
   Labels.Sorted:=True;
+  Labels.CaseSensitive:=True;
   OldId:=RpcObj.CurTorrentId;
   IsActive:=gTorrents.Enabled;
   gTorrents.Enabled:=True;
@@ -6041,7 +6045,7 @@ begin
     end;
 
     if FieldExists[idxPrivate] then
-      FTorrents[idxPrivate, row]:=t.Integers['isPrivate'];
+      FTorrents[idxPrivate, row]:=t.Integers['isPrivate']; { boolean in json, but must be integer in varlist }
 
     if FieldExists[idxLabels] then begin
       a := t.Arrays['labels'];
@@ -6443,8 +6447,7 @@ begin
     gTorrents.Tag:=0;
   end;
   args:=TJSONObject.Create;
-  if RemoveLocalData then
-    args.Add('delete-local-data', TJSONIntegerNumber.Create(1));
+  args.Add('delete-local-data', RemoveLocalData);
 
   if TorrentAction(ids, 'torrent-remove', args) then begin
     with gTorrents do begin
@@ -6879,12 +6882,12 @@ begin
 
   if RpcObj.RPCVersion >= 5 then begin
 {$ifdef LCLcarbon}
-    if acAltSpeed.Checked <> (s.Integers['alt-speed-enabled'] <> 0) then
+    if acAltSpeed.Checked <> (s.Booleans['alt-speed-enabled']) then
       TrayIcon.Tag:=1;
 {$endif LCLcarbon}
-    acAltSpeed.Checked:=s.Integers['alt-speed-enabled'] <> 0;
-    acUpdateBlocklist.Tag:=s.Integers['blocklist-enabled'];
-    acUpdateBlocklist.Enabled:=acUpdateBlocklist.Tag <> 0;
+    acAltSpeed.Checked:=s.Booleans['alt-speed-enabled'];
+    if s.Booleans['blocklist-enabled'] then acUpdateBlocklist.Tag:=1 else acUpdateBlocklist.Tag:=0;
+    acUpdateBlocklist.Enabled:=s.Booleans['blocklist-enabled'];
   end;
   if s.IndexOfName('download-dir-free-space') >= 0 then
     StatusBar.Panels[3].Text:=Format(SFreeSpace, [GetHumanSize(s.Floats['download-dir-free-space'])]);
@@ -6894,11 +6897,11 @@ begin
     u:=s.Integers['alt-speed-up']
   end
   else begin
-    if s.Integers['speed-limit-down-enabled'] <> 0 then
+    if s.Booleans['speed-limit-down-enabled'] then
       d:=s.Integers['speed-limit-down']
     else
       d:=-1;
-    if s.Integers['speed-limit-up-enabled'] <> 0 then
+    if s.Booleans['speed-limit-up-enabled'] then
       u:=s.Integers['speed-limit-up']
     else
       u:=-1;
@@ -7723,7 +7726,7 @@ begin
     args.Add(Format('speed-limit-%s-enabled', [Dir]), integer(Speed >= 0) and 1);
     if Speed >= 0 then
       args.Add(Format('speed-limit-%s', [Dir]), Speed);
-    args.Add('alt-speed-enabled', 0);
+    args.Add('alt-speed-enabled', False);
     req.Add('arguments', args);
     args:=RpcObj.SendRequest(req, False);
     if args = nil then begin

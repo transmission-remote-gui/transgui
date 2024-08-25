@@ -1,6 +1,6 @@
 # Transmission Remote GUI
 
-[![Build Status](https://travis-ci.org/transmission-remote-gui/transgui.svg?branch=master)](https://travis-ci.org/transmission-remote-gui/transgui)
+[![Build Status](https://app.travis-ci.com/transmission-remote-gui/transgui.svg?branch=master)](https://app.travis-ci.com/transmission-remote-gui/transgui)
 
 ![Screenshot](http://i.imgur.com/XBbF4Vh.png)
 
@@ -78,7 +78,7 @@ Build the program by yourself.
 
 - Zip tarball release is much more small than the installer one, which can save you some bandwidth, disk space and time, just simply download and extract the zip tarball to wherever you want, directly execute `transgui.exe` or add shortcut for it.
 
-**Note**: The first time you use this program, you may need to install some additional dependencies (if you need SSL/TLS enabled), including [Visual C++ Redistributable Package](https://www.microsoft.com/download/details.aspx?id=40784)([Direct link](http://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe)) and [OpenSSL libs](https://wiki.openssl.org/index.php/Binaries)([Direct link](https://slproweb.com/products/Win32OpenSSL.html)), this only needs to be done once.
+**Note**: The first time you use this program, you may need to install some additional dependencies (if you need SSL/TLS enabled), including [Visual C++ Redistributable Package](https://www.microsoft.com/download/details.aspx?id=40784)([Direct link](https://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe)) and [OpenSSL libs](https://wiki.openssl.org/index.php/Binaries)([Direct link](https://slproweb.com/products/Win32OpenSSL.html)), this only needs to be done once.
 
 #### Installer
 
@@ -89,7 +89,7 @@ This installer has additional installation wizard and includes static OpenSSL li
 
 #### Using [Chocolatey](https://chocolatey.org)
 
-Run `cinst transgui` to install the latest version of Transmission Remote GUI.
+Run `choco install transgui` to install the latest version of Transmission Remote GUI.
 
 ### macOS
 

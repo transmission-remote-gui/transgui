@@ -2019,6 +2019,9 @@ inherited MainForm: TMainForm
       object MenuItem41: TMenuItem
         Action = acFolderGrouping
       end
+      object MenuItem107: TMenuItem
+        Action = acLabelGrouping
+      end
       object MenuItem89: TMenuItem
         Action = acTrackerGrouping
       end

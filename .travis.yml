@@ -48,7 +48,7 @@ env_template:
     <<: *linux_env
     stage: static test
     language: node_js
-    node_js: 10
+    node_js: 16
     install:
       - npm i -g $task
     before_script:
@@ -99,14 +99,14 @@ matrix:
       env:
         - task=zip-tarball-test
       script:
-        - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" debian:stretch-backports bash -c "cd /transgui/ && ./setup/unix/debian-ubuntu-install_deps.sh && lazbuild -B transgui.lpi --lazarusdir=/usr/lib/lazarus/default/ && make -j$(nproc) zipdist && ls -al ./Release/transgui-$PROG_VER-x86_64-linux.zip"
+        - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" debian:buster-backports bash -c "cd /transgui/ && ./setup/unix/debian-ubuntu-install_deps.sh && lazbuild -B transgui.lpi --lazarusdir=/usr/lib/lazarus/default/ && make -j$(nproc) zipdist && ls -al ./Release/transgui-$PROG_VER-x86_64-linux.zip"
 
     - <<: *linux_build_env
       env:
         - arch=amd64
         - artifact=./Release/transgui-$PROG_VER-x86_64-Linux.txz
       script:
-        - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" debian:stretch-backports bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
+        - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" debian:buster-backports bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && git config --global --add safe.directory /transgui && ./build.sh"
       after_success: *linux_after_success
       deploy: *deploy
 
@@ -115,7 +115,7 @@ matrix:
         - arch=i386
         - artifact=./Release/transgui-$PROG_VER-i686-Linux.txz
       script:
-        - docker run -e DEBIAN_FRONTEND=noninteractive --privileged -it --rm -v "${PWD}:/transgui" i386/debian:stretch-backports linux32 --32bit bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
+        - docker run -e DEBIAN_FRONTEND=noninteractive --privileged -it --rm -v "${PWD}:/transgui" i386/debian:buster-backports linux32 --32bit bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && git config --global --add safe.directory /transgui && ./build.sh"
       after_success: *linux_after_success
       deploy: *deploy
 
@@ -128,7 +128,7 @@ matrix:
           packages:
             - qemu-user-static
       script:
-        - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static balenalib/rpi-raspbian:stretch bash -c "sed -i 's/archive.raspbian.org/mirrors.ocf.berkeley.edu\/raspbian/g' /etc/apt/sources.list && cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
+        - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static balenalib/rpi-raspbian:buster bash -c "sed -i 's/archive.raspbian.org/mirrors.ocf.berkeley.edu\/raspbian/g' /etc/apt/sources.list && cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && git config --global --add safe.directory /transgui && ./build.sh"
       after_success: *linux_after_success
       deploy: *deploy
 
@@ -141,7 +141,7 @@ matrix:
           packages:
             - qemu-user-static
       script:
-        - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static balenalib/armv7hf-debian:stretch bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && ./build.sh"
+        - docker run -e DEBIAN_FRONTEND=noninteractive -it --rm -v "${PWD}:/transgui" -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static balenalib/armv7hf-debian:buster bash -c "cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && git config --global --add safe.directory /transgui && ./build.sh"
       after_success: *linux_after_success
       deploy: *deploy
 
