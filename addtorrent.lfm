@@ -1,7 +1,7 @@
 inherited AddTorrentForm: TAddTorrentForm
-  Left = 494
+  Left = 1165
   Height = 457
-  Top = 276
+  Top = 360
   Width = 508
   HorzScrollBar.Page = 505
   VertScrollBar.Page = 404
@@ -75,7 +75,7 @@ inherited AddTorrentForm: TAddTorrentForm
       Height = 26
       Hint = 'Browse folder'
       Top = 13
-      Width = 91
+      Width = 88
       Anchors = [akTop, akRight]
       Caption = 'Browse...'
       OnClick = btBrowseClick
@@ -95,17 +95,17 @@ inherited AddTorrentForm: TAddTorrentForm
       Left = 10
       Height = 23
       Top = 96
-      Width = 467
+      Width = 465
       Anchors = [akTop, akLeft, akRight]
       OnChange = edSaveAsChange
       TabOrder = 2
     end
     object edExtension: TEdit
-      Left = 8
+      Left = 10
       Height = 23
       Hint = 'for example: *.avi *.mkv tom*jerry*.avi'
       Top = 56
-      Width = 467
+      Width = 465
       Anchors = [akTop, akLeft, akRight]
       OnChange = edSaveAsChange
       ParentShowHint = False
@@ -117,7 +117,7 @@ inherited AddTorrentForm: TAddTorrentForm
       Height = 15
       Hint = 'for example: *.avi *.mkv tom*jerry*.avi'
       Top = 40
-      Width = 59
+      Width = 57
       Caption = 'Template:  '
       ParentColor = False
       ParentShowHint = False
@@ -201,6 +201,14 @@ inherited AddTorrentForm: TAddTorrentForm
       ShowHint = True
       TabOrder = 5
     end
+    object cbApplyAll: TCheckBox
+      Left = 10
+      Height = 19
+      Top = 127
+      Width = 80
+      Caption = 'Apply to all'
+      TabOrder = 6
+    end
   end
   object gbContents: TGroupBox[1]
     Left = 8
@@ -237,12 +245,12 @@ inherited AddTorrentForm: TAddTorrentForm
       Top = 40
       Width = 467
       Anchors = [akTop, akLeft, akRight, akBottom]
-      Columns = <
+      Columns = <      
         item
           ReadOnly = True
           Title.Caption = 'File name'
           Width = 350
-        end
+        end      
         item
           ReadOnly = True
           Title.Caption = 'Size'

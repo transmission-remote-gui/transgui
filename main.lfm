@@ -1,7 +1,7 @@
 inherited MainForm: TMainForm
-  Left = 1468
+  Left = 2020
   Height = 702
-  Top = 126
+  Top = 314
   Width = 984
   HorzScrollBar.Page = 740
   VertScrollBar.Page = 420
@@ -301,7 +301,7 @@ inherited MainForm: TMainForm
         Height = 272
         Top = 26
         Width = 976
-        HorzScrollBar.Page = 721
+        HorzScrollBar.Page = 722
         VertScrollBar.Page = 268
         Align = alClient
         ClientHeight = 268
@@ -354,7 +354,7 @@ inherited MainForm: TMainForm
             Left = 578
             Height = 15
             Top = 4
-            Width = 50
+            Width = 51
             Caption = 'txCreated'
             ParentColor = False
           end
@@ -362,7 +362,7 @@ inherited MainForm: TMainForm
             Left = 4
             Height = 15
             Top = 22
-            Width = 51
+            Width = 50
             Caption = 'Total size:'
             ParentColor = False
           end
@@ -386,7 +386,7 @@ inherited MainForm: TMainForm
             Left = 578
             Height = 15
             Top = 22
-            Width = 42
+            Width = 43
             Caption = 'txPieces'
             ParentColor = False
           end
@@ -402,7 +402,7 @@ inherited MainForm: TMainForm
             Left = 181
             Height = 15
             Top = 40
-            Width = 36
+            Width = 37
             Caption = 'txHash'
             ParentColor = False
             ShowAccelChar = False
@@ -420,7 +420,7 @@ inherited MainForm: TMainForm
             Left = 578
             Height = 15
             Top = 40
-            Width = 63
+            Width = 64
             Caption = 'txComment'
             ParentColor = False
             ShowAccelChar = False
@@ -437,7 +437,7 @@ inherited MainForm: TMainForm
             Left = 181
             Height = 15
             Top = 58
-            Width = 60
+            Width = 61
             Caption = 'txAddedOn'
             ParentColor = False
           end
@@ -453,7 +453,7 @@ inherited MainForm: TMainForm
             Left = 578
             Height = 15
             Top = 58
-            Width = 84
+            Width = 85
             Caption = 'txCompletedOn'
             ParentColor = False
           end
@@ -488,7 +488,7 @@ inherited MainForm: TMainForm
             Left = 578
             Height = 15
             Top = 86
-            Width = 42
+            Width = 43
             Caption = 'txLabels'
             ParentColor = False
           end
@@ -523,7 +523,7 @@ inherited MainForm: TMainForm
             Left = 140
             Height = 15
             Top = 4
-            Width = 41
+            Width = 42
             Caption = 'txStatus'
             ParentColor = False
           end
@@ -539,7 +539,7 @@ inherited MainForm: TMainForm
             Left = 407
             Height = 15
             Top = 4
-            Width = 34
+            Width = 35
             Caption = 'txError'
             ParentColor = False
           end
@@ -555,7 +555,7 @@ inherited MainForm: TMainForm
             Left = 651
             Height = 15
             Top = 4
-            Width = 66
+            Width = 67
             Caption = 'txRemaining'
             ParentColor = False
           end
@@ -571,7 +571,7 @@ inherited MainForm: TMainForm
             Left = 140
             Height = 15
             Top = 22
-            Width = 76
+            Width = 77
             Caption = 'txDownloaded'
             ParentColor = False
           end
@@ -587,7 +587,7 @@ inherited MainForm: TMainForm
             Left = 407
             Height = 15
             Top = 22
-            Width = 60
+            Width = 61
             Caption = 'txUploaded'
             ParentColor = False
           end
@@ -603,7 +603,7 @@ inherited MainForm: TMainForm
             Left = 651
             Height = 15
             Top = 22
-            Width = 48
+            Width = 49
             Caption = 'txWasted'
             ParentColor = False
           end
@@ -619,7 +619,7 @@ inherited MainForm: TMainForm
             Left = 140
             Height = 15
             Top = 40
-            Width = 72
+            Width = 73
             Caption = 'txDownSpeed'
             ParentColor = False
           end
@@ -635,7 +635,7 @@ inherited MainForm: TMainForm
             Left = 407
             Height = 15
             Top = 40
-            Width = 56
+            Width = 57
             Caption = 'txUpSpeed'
             ParentColor = False
           end
@@ -651,7 +651,7 @@ inherited MainForm: TMainForm
             Left = 651
             Height = 15
             Top = 40
-            Width = 36
+            Width = 37
             Caption = 'txRatio'
             ParentColor = False
           end
@@ -667,7 +667,7 @@ inherited MainForm: TMainForm
             Left = 140
             Height = 15
             Top = 58
-            Width = 67
+            Width = 68
             Caption = 'txDownLimit'
             ParentColor = False
           end
@@ -683,7 +683,7 @@ inherited MainForm: TMainForm
             Left = 407
             Height = 15
             Top = 58
-            Width = 51
+            Width = 52
             Caption = 'txUpLimit'
             ParentColor = False
           end
@@ -713,7 +713,7 @@ inherited MainForm: TMainForm
             Left = 140
             Height = 15
             Top = 76
-            Width = 39
+            Width = 40
             Caption = 'txSeeds'
             ParentColor = False
           end
@@ -729,7 +729,7 @@ inherited MainForm: TMainForm
             Left = 407
             Height = 15
             Top = 76
-            Width = 37
+            Width = 38
             Caption = 'txPeers'
             ParentColor = False
           end
@@ -737,7 +737,7 @@ inherited MainForm: TMainForm
             Left = 541
             Height = 15
             Top = 76
-            Width = 56
+            Width = 57
             Caption = 'Max peers:'
             ParentColor = False
           end
@@ -745,7 +745,7 @@ inherited MainForm: TMainForm
             Left = 651
             Height = 15
             Top = 76
-            Width = 59
+            Width = 61
             Caption = 'txMaxPeers'
             ParentColor = False
           end
@@ -753,7 +753,7 @@ inherited MainForm: TMainForm
             Left = 4
             Height = 15
             Top = 94
-            Width = 41
+            Width = 40
             Caption = 'Tracker:'
             ParentColor = False
           end
@@ -769,7 +769,7 @@ inherited MainForm: TMainForm
             Left = 262
             Height = 15
             Top = 94
-            Width = 98
+            Width = 97
             Caption = 'Tracker update on:'
             ParentColor = False
           end
@@ -793,7 +793,7 @@ inherited MainForm: TMainForm
             Left = 651
             Height = 15
             Top = 94
-            Width = 63
+            Width = 64
             Caption = 'txLastActive'
             ParentColor = False
           end
@@ -1103,63 +1103,63 @@ inherited MainForm: TMainForm
     TabOrder = 2
     OnContextPopup = MainToolBarContextPopup
     object ToolButton1: TToolButton
-      Left = 179
+      Left = 178
       Top = 2
       Action = acAddTorrent
       AutoSize = True
       ShowCaption = False
     end
     object ToolButton2: TToolButton
-      Left = 225
+      Left = 224
       Height = 23
       Top = 2
       Caption = 'ToolButton2'
       Style = tbsDivider
     end
     object ToolButton3: TToolButton
-      Left = 230
+      Left = 229
       Top = 2
       Action = acStartTorrent
       AutoSize = True
       ShowCaption = False
     end
     object ToolButton4: TToolButton
-      Left = 253
+      Left = 252
       Top = 2
       Action = acStopTorrent
       AutoSize = True
       ShowCaption = False
     end
     object tbStopTorrent: TToolButton
-      Left = 276
+      Left = 275
       Top = 2
       Action = acRemoveTorrent
       AutoSize = True
       ShowCaption = False
     end
     object ToolButton6: TToolButton
-      Left = 174
+      Left = 173
       Height = 23
       Top = 2
       Caption = 'ToolButton6'
       Style = tbsDivider
     end
     object ToolButton7: TToolButton
-      Left = 378
+      Left = 377
       Height = 23
       Top = 2
       Caption = 'ToolButton7'
       Style = tbsDivider
     end
     object ToolButton8: TToolButton
-      Left = 383
+      Left = 382
       Top = 2
       Action = acDaemonOptions
       AutoSize = True
       ShowCaption = False
     end
     object ToolButton9: TToolButton
-      Left = 202
+      Left = 201
       Top = 2
       Action = acAddLink
       AutoSize = True
@@ -1174,42 +1174,42 @@ inherited MainForm: TMainForm
       Style = tbsDropDown
     end
     object tbtAltSpeed: TToolButton
-      Left = 355
+      Left = 354
       Top = 2
       Action = acAltSpeed
       AutoSize = True
       ShowCaption = False
     end
     object sepAltSpeed: TToolButton
-      Left = 350
+      Left = 349
       Height = 23
       Top = 2
       Caption = 'sepAltSpeed'
       Style = tbsDivider
     end
     object sepQueue: TToolButton
-      Left = 299
+      Left = 298
       Height = 23
       Top = 2
       Caption = 'sepQueue'
       Style = tbsDivider
     end
     object tbQMoveUp: TToolButton
-      Left = 304
+      Left = 303
       Top = 2
       Action = acQMoveUp
       AutoSize = True
       ShowCaption = False
     end
     object tbQMoveDown: TToolButton
-      Left = 327
+      Left = 326
       Top = 2
       Action = acQMoveDown
       AutoSize = True
       ShowCaption = False
     end
     object ToolButton5: TToolButton
-      Left = 406
+      Left = 405
       Hint = 'Application Options (Ctrl+F9)'
       Top = 2
       Action = acConnOptions
@@ -1219,19 +1219,17 @@ inherited MainForm: TMainForm
       ShowCaption = False
     end
     object ToolButton10: TToolButton
-      Left = 429
+      Left = 428
       Height = 23
       Top = 2
       Caption = 'ToolButton10'
       Style = tbsSeparator
     end
     object panSearch: TPanel
-      AnchorSideLeft.Control = ToolButton10
-      Left = 437
+      Left = 436
       Height = 23
       Top = 2
       Width = 395
-      Anchors = [akLeft, akRight]
       BorderSpacing.Top = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
@@ -1405,42 +1403,6 @@ inherited MainForm: TMainForm
       Caption = '&Torrent'
       object miConnect: TMenuItem
         Caption = 'Connect to Transmission'
-        Bitmap.Data = {
-          36040000424D3604000000000000360000002800000010000000100000000100
-          2000000000000004000064000000640000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          00FF000000FF0000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000FF6666
-          00FF666600FF000000FF000000FF000000000000000000000000000000000000
-          0000000000000000000000000000000000FF000000FF000000FF666600FF8080
-          00FF808000FF808000FF808000FF000000FF000000FF00000000000000000000
-          00000000000000000000000000FF868686FF868686FF000000FF006666FF0080
-          80FF008080FFC0C0C0FFC0C0C0FF808000FF808000FF000000FF000000000000
-          000000000000000000FF868686FFC0C0C0FFF8F8F8FF000000FF000000FF00FF
-          FFFF00FFFFFF008080FFD7D7D7FFF8F8F8FFF8F8F8FF808000FF000000000000
-          0000000000FF868686FFC0C0C0FFF8F8F8FFC0C0C0FFB2B2B2FF868686FF0000
-          00FF000000FFC0C0C0FFD7D7D7FFF8F8F8FF808000FF00000000000000000000
-          00FF868686FFC0C0C0FFF8F8F8FFC0C0C0FFC0C0C0FFC0C0C0FFB2B2B2FFA4A0
-          A0FF868686FF000000FF000000FFC0C0C0FF000000FF00000000000000FF8686
-          86FFC0C0C0FFF8F8F8FFDDDDDDFFDDDDDDFFC0C0C0FFB2B2B2FFC0C0C0FFB2B2
-          B2FFB2B2B2FF868686FF868686FF000000FF000000FF00000000868686FFC0C0
-          C0FFF8F8F8FF868686FF868686FFC0C0C0FFC0C0C0FFC0C0C0FFB2B2B2FFB2B2
-          B2FFB2B2B2FFA4A0A0FFA4A0A0FF868686FF868686FF00000000868686FFF8F8
-          F8FFDDDDDDFFDDDDDDFFC0C0C0FF868686FF868686FFB2B2B2FFC0C0C0FFB2B2
-          B2FFB2B2B2FFB2B2B2FFA4A0A0FFA4A0A0FF868686FF00000000000000008686
-          86FF868686FFDDDDDDFFDDDDDDFFCCCCCCFFCCCCCCFF868686FF868686FFB2B2
-          B2FFB2B2B2FFA4A0A0FFA4A0A0FF868686FF0000000000000000000000000000
-          000000000000868686FF868686FFDDDDDDFFCCCCCCFFCCCCCCFFC0C0C0FF8686
-          86FF868686FFB2B2B2FF868686FF000000000000000000000000000000000000
-          0000000000FF868686FF00000000868686FF868686FFCCCCCCFFCCCCCCFFC0C0
-          C0FFC0C0C0FF868686FF00000000000000000000000000000000000000000000
-          00FF868686FF00000000000000000000000000000000868686FF868686FFCCCC
-          CCFF868686FF0000000000000000000000000000000000000000000000FF8686
-          86FF000000000000000000000000000000000000000000000000000000008686
-          86FF000000000000000000000000000000000000000000000000
-        }
         ImageIndex = 18
         object sepCon1: TMenuItem
           Tag = 1
