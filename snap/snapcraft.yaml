@@ -1,60 +1,98 @@
----
 name: transgui
-version: version
-summary: Transmission Remote GUI
-version-script: cat VERSION.txt
-description: |
-  Transmission Remote GUI is feature rich cross platform front-end
-  to remotely control Transmission daemon via its RPC protocol.
-  It is faster and has more functionality than builtin Transmission
-  web interface.
-icon: transgui.png
+version: 5.18.0
 grade: stable
+summary: A feature rich cross platform Transmission BitTorrent client.
+license: GPL-2.0
+description: Transmission Remote GUI is feature rich cross platform front-end to remotely control Transmission daemon via its RPC protocol. It is faster and has more functionality than the built-in Transmission web interface.
+icon: snap/gui/transgui.png
 confinement: strict
+base: core20
 
-parts:
-  transgui:
-    plugin: dump
-    source: .
-    prime:
-      - etc
-      - usr
-      - var
-      - lib
-      - lang
-      - LICENSE
-      - transgui
-      - transgui.desktop
-      - README.md
-      - history.txt
-      - transgui.png
-    override-build: |
-      snapcraftctl build
-      sed -i 's|Icon=transgui|Icon=${SNAP}/transgui.png|' ${SNAPCRAFT_PART_INSTALL}/transgui.desktop
-    build-packages:
-      - git
-      - make
-      - lazarus
-      - coreutils
-    stage-packages:
-      - libx11-6
-      - libcairo2
-      - libssl-dev
-      - libatk1.0-0
-      - libgtk2.0-0
-      - libglib2.0-0
-      - libpango-1.0-0
-      - libgdk-pixbuf2.0-0
+architectures:
+- build-on: amd64
+- build-on: arm64
+- build-on: armhf
 
 apps:
   transgui:
-    desktop: transgui.desktop
+    command: bin/desktop-launch $SNAP/usr/bin/transgui
+    environment:
+      # Fallback to XWayland if running in a Wayland session
+      DISABLE_WAYLAND: 1
+      GTK_PATH: $SNAP/lib/gtk-2.0
     plugs:
       - desktop
       - desktop-legacy
+      - gsettings
+      - home
+      - network
+      - removable-media
+      - unity7
       - wayland
       - x11
-      - unity7
-      - network
-      - home
-    command: transgui
+
+parts:
+  # This part brings in the transgui package from the Ubuntu Archive. In future
+  # I will probably try to build this manually, but the Ubuntu package is quite
+  # useful for now until the Upstream is patched to work with newer distros or
+  # updated to use GTK3.
+  #
+  # See: https://github.com/transmission-remote-gui/transgui/issues/1310#issuecomment-668643815
+  #
+  transgui:
+    plugin: nil
+    stage-packages:
+      - transgui
+    after:
+      - gtk2
+
+  # This part installs the `desktop-launch` script which initialises desktop
+  # features such as fonts, themes and the XDG environment. It also installs
+  # the GTK2 runtime libraries.
+  #
+  # It is copied straight from the snapcraft desktop helpers project. Please
+  # periodically check the source for updates and copy the changes.
+  #    https://github.com/ubuntu/snapcraft-desktop-helpers/blob/master/snapcraft.yaml
+  #
+  gtk2:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    plugin: make
+    make-parameters: ["FLAVOR=gtk2"]
+    build-packages:
+      - libgtk2.0-dev
+    stage-packages:
+      - libxkbcommon0  # XKB_CONFIG_ROOT
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - light-themes
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
+      - libgtk2.0-0
+      - libgdk-pixbuf2.0-0
+      - libglib2.0-bin
+      - libgtk2.0-bin
+      - unity-gtk2-module
+      - libappindicator1
+      - locales-all
+      - ibus-gtk
+      - libibus-1.0-5
+
+plugs:
+  gtk-2-engines:
+    interface: content
+    target: $SNAP/lib/gtk-2.0
+    default-provider: gtk2-common-themes
+  gtk-2-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/data-dir/sounds
+    default-provider: gtk-common-themes
