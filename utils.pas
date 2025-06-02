@@ -586,7 +586,7 @@ var
   optr, len, bcnt: integer;
   Output: PByteArray;
   Input: PAnsiChar;
-  w: word;
+  w: qword;
   c: ansichar;
   b: byte;
 begin
