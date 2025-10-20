@@ -8,7 +8,7 @@ if "%1" NEQ "" (
     set "LAZARUS_DIR=C:\lazarus"
 )
 
-set path=%LAZARUS_DIR%;%LAZARUS_DIR%\fpc\3.0.4\bin\x86_64-win64;%path%
+set path=%LAZARUS_DIR%;%LAZARUS_DIR%\fpc\3.2.2\bin\x86_64-win64;%path%
 
 lazbuild -B ../../transgui.lpi
 if errorlevel 1 goto err

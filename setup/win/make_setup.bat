@@ -14,7 +14,7 @@ if "%2" NEQ "" (
     set "ISC=C:\Program Files (x86)\Inno Setup 5"
 )
 
-set path=%LAZARUS_DIR%;%LAZARUS_DIR%\fpc\3.0.4\bin\i386-win32;%path%
+set path=%LAZARUS_DIR%;%LAZARUS_DIR%\fpc\3.2.2\bin\i386-win32;%path%
 
 lazbuild -B ../../transgui.lpi
 if errorlevel 1 goto err

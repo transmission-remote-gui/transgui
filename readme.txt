@@ -39,6 +39,11 @@ https://github.com/transmission-remote-gui/transgui
 
 INSTALLATION
 
+The installers are listed on the GitHub Releases page:
+https://github.com/transmission-remote-gui/transgui/releases/latest
+
+Different platform installation instructions:
+
 LINUX:
 
 Easy way (recommended).
@@ -59,6 +64,36 @@ Build the program by yourself.
 - Open terminal/command line prompt and cd to the sources folder;
 - Execute "make" command to build the application;
 - Execute "make zipdist" command to create a release .zip archive in the "Release" sub-folder.
+
+WINDOWS:
+
+Portable zip tarball (recommended).
+- Zip tarball release is much more small than the installer one, which can save you some bandwidth, disk space and time, just simply download and extract the zip tarball to wherever you want, directly execute "transgui.exe" or add shortcut for it.
+- Please note that, the first time you use this program, you may need to install some additional dependencies (if you need SSL/TLS enabled), including:
+  - Visual C++ Redistributable Package
+    - https://www.microsoft.com/download/details.aspx?id=40784
+    - https://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe
+  - OpenSSL libs
+    - https://wiki.openssl.org/index.php/Binaries
+    - https://slproweb.com/products/Win32OpenSSL.html
+
+Installer.
+- This installer has additional installation wizard and includes static OpenSSL libraries in every releases, the size would be much bigger than the zip tarball, but you don't need to take care of the OpenSSL dependencies.
+  1. Directly download the installer.
+  2. Run the installer and follow the steps to install it on your system.
+
+Using Chocolatey.
+- Run "choco install transgui" to install the latest version of Transmission Remote GUI.
+
+MACOS:
+
+Without a package manager.
+  1. Download the app image from release page.
+  2. Open the image file to mount the image.
+  3. Directly run the application or drag the app icon to your disk / Application folder.
+
+Using Homebrew.
+- You need to have Homebrew installed. Execute this command to install Transmission Remote Gui: "brew install --cask transmission-remote-gui"
 
 COMMAND LINE PARAMETERS
 

@@ -287,7 +287,7 @@ Move up=Μετακίνηση επάνω
 No updates have been found.~You are running the latest version of %s=Δεν βρέθηκαν ενημερώσεις.~Χρησιμοποιείτε τη νεώτερη έκδοση του %s
 Queue position=Θέση Ουράς
 Queue=Ουρά
-Torrents that are idle for N minuets aren't counted toward the Download queue or Upload queue=Τα ανενεργά torrents για N λεπτά δεν υπολογίζονται στην Ουρά Λήψεων ή την Ουρά Αποστολών
+Torrents that are idle for N minutes aren't counted toward the Download queue or Upload queue=Τα ανενεργά torrents για N λεπτά δεν υπολογίζονται στην Ουρά Λήψεων ή την Ουρά Αποστολών
 Tracker grouping=Ομαδοποίηση ιχνηλατών
 Upload queue size=Μέγεθος ουράς αποστολών
 View=Προβολή
@@ -316,7 +316,7 @@ Connect to %s=Σύνδεση σε %s
 Connect to Transmission using proxy server=Σύνδεση στον Transmission μέσω proxy server
 Connect to Transmission=Σύνδεση στο Transmission
 Connection name=Όνομα σύνδεσης
-Could not connect to tracker==Αδύνατη η σύνδεση στον ιχνηλάτη
+Could not connect to tracker=Αδύνατη η σύνδεση στον ιχνηλάτη
 Data display=Προβολή δεδομένων
 Data refresh interval when minimized=Ανανέωση δεδομένων υπό ελαχιστοποίηση
 Data refresh interval=Διάστημα ανανέωσης δεδομένων
@@ -342,7 +342,7 @@ Show advanced options=Προβολή προχωρημένων επιλογών
 Show notifications in tray icon=Προβολή ειδοποιήσεων στο εικονίδιο γραμμής εργασιών
 System integration=Ενσωμάτωση στο λειτουργικό σύστημα
 Torrent already exists in the list=Το torrent υπάρχει ήδη στη λίστα
-Torrent not registered with this tracker==Το torrent δεν είναι εγγεγραμμένο στον ιχνηλάτη
+Torrent not registered with this tracker=Το torrent δεν είναι εγγεγραμμένο στον ιχνηλάτη
 Unable to find path mapping.~Use the application's options to setup path mappings=Αδύνατη η εύρεση του μονοπατιού.~Χρησιμοποιήστε τις επιλογές της εφαρμογής για καθορισμό των μονοπατιών
 Update trackers for the existing torrent?=Ενημέρωση ιχνηλατών για το υπάρχον torrent?
 You need to restart the application to apply changes=Απαιτείται επανεκκίνηση για εφαρμογή των αλλαγών

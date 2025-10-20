@@ -287,7 +287,7 @@ Move up=Wyżej
 No updates have been found.~You are running the latest version of %s=Aktualizacja nie została znaleziona.~Używasz najnowszej wersji %s
 Queue position=Pozycja w kolejce
 Queue=Kolejka
-Torrents that are idle for N minuets aren't counted toward the Download queue or Upload queue=Torrenty, które są bezczynne przez N minut, są pominięte z kolejki pobierania lub wysyłania
+Torrents that are idle for N minutes aren't counted toward the Download queue or Upload queue=Torrenty, które są bezczynne przez N minut, są pominięte z kolejki pobierania lub wysyłania
 Tracker grouping=Grupowanie trackerów
 Upload queue size=Rozmiar kolejki wysyłania
 View=Widok
@@ -318,7 +318,7 @@ Connect to %s=Połącz z %s
 Connect to Transmission using proxy server=Połącz z Transmission przy użyciu serwera proxy
 Connect to Transmission=Połącz z Transmission
 Connection name=Nazwa połączenia
-Could not connect to tracker==Nie można połączyć się z trackerem
+Could not connect to tracker=Nie można połączyć się z trackerem
 Data display=Wyświetlaj dane
 Data refresh interval when minimized=Interwał odświeżania danych, gdy zminimalizowane
 Data refresh interval=Interwał odświeżania danych
@@ -344,7 +344,7 @@ Show advanced options=Pokaż opcje zaawansowane
 Show notifications in tray icon=Pokaż powiadomienia w ikonie na pasku
 System integration=Integracja systemu
 Torrent already exists in the list=Torrent już istnieje na liście
-Torrent not registered with this tracker==Torrent nie jest zarejestrowany na tym trackerze
+Torrent not registered with this tracker=Torrent nie jest zarejestrowany na tym trackerze
 Unable to find path mapping.~Use the application's options to setup path mappings=Nie można znaleźć mapowania ścieżki.~Użyj opcji w aplikacji do konfiguracji mapowania ścieżki
 Update trackers for the existing torrent?=Zaktualizować trackery dla istniejącego torrenta?
 You need to restart the application to apply changes=Musisz ponownie uruchomić aplikację, aby zastosować zmiany

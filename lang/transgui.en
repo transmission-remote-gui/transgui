@@ -287,7 +287,7 @@ Move up=Move up
 No updates have been found.~You are running the latest version of %s=No updates have been found.~You are running the latest version of %s
 Queue position=Queue position
 Queue=Queue
-Torrents that are idle for N minuets aren't counted toward the Download queue or Upload queue=Torrents that are idle for N minutes aren't counted toward the Download queue or Upload queue
+Torrents that are idle for N minutes aren't counted toward the Download queue or Upload queue=Torrents that are idle for N minutes aren't counted toward the Download queue or Upload queue
 Tracker grouping=Tracker grouping
 Upload queue size=Upload queue size
 View=View
@@ -318,7 +318,7 @@ Connect to %s=Connect to %s
 Connect to Transmission using proxy server=Connect to Transmission using proxy server
 Connect to Transmission=Connect to Transmission
 Connection name=Connection name
-Could not connect to tracker==Could not connect to tracker
+Could not connect to tracker=Could not connect to tracker
 Data display=Data display
 Data refresh interval when minimized=Data refresh interval when minimized
 Data refresh interval=Data refresh interval

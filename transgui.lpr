@@ -57,5 +57,10 @@ begin
 
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
+  
+{$ifdef windows}
+  Application.MainFormOnTaskBar:=true;  // make taskbar button follow main form monitor
+{$endif}
+
   Application.Run;
 end.

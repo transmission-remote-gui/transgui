@@ -287,7 +287,7 @@ Move up=Перасунуць угору
 No updates have been found.~You are running the latest version of %s=Абнаўленьні ня знойдзеныя.~Вы маеце найноўшую вэрсію %s
 Queue position=Месца ў чарзе
 Queue=Чарга
-Torrents that are idle for N minuets aren't counted toward the Download queue or Upload queue=Торэнты, што былі неактыўныя N хвілін ня ўлічваюцца ў чарзе запампоўкі ці аддачы
+Torrents that are idle for N minutes aren't counted toward the Download queue or Upload queue=Торэнты, што былі неактыўныя N хвілін ня ўлічваюцца ў чарзе запампоўкі ці аддачы
 Tracker grouping=Гуртаваньне па трэкерах
 Upload queue size=Памер чэргі аддачы
 View=Выгляд
@@ -316,7 +316,7 @@ Connect to %s=Падлучэньне да %s
 Connect to Transmission using proxy server=Падлучыцца да Transmission праз проксі-сэрвэр
 Connect to Transmission=Падлучыцца да Transmission
 Connection name=Назва злучэньня
-Could not connect to tracker==Немагчыма падлучыцца да трэкеру
+Could not connect to tracker=Немагчыма падлучыцца да трэкеру
 Data display=Адлюстраваньне дадзеных
 Data refresh interval when minimized=Інтэрвал абнаўленьня дадзеных у згорнутым стане
 Data refresh interval=Інтэрвал абнаўленьня дадзеных
@@ -342,7 +342,7 @@ Show advanced options=Паказаць пашыраныя парамэтры
 Show notifications in tray icon=Адлюстроўваць паведамленьні з абразку ў трэі
 System integration=Інтэграцыя зь сістэмай
 Torrent already exists in the list=Торэнт ужо ёсьць у сьпісе
-Torrent not registered with this tracker==Торэнт не зарэгістраваны на гэтым трэкеры
+Torrent not registered with this tracker=Торэнт не зарэгістраваны на гэтым трэкеры
 Unable to find path mapping.~Use the application's options to setup path mappings=Немагчыма знайсьці адпаведнасьць шляхоў.~Скарыстайцеся парамэтрамі прыкладаньня для наладжваньня адпаведнасьці шляхоў
 Update trackers for the existing torrent?=Абнавіць трэкеры для існуючага торэнту?
 You need to restart the application to apply changes=Неабходны перазапуск прыкладаньня, каб ужыць зьмены

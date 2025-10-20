@@ -1,6 +1,6 @@
 # Transmission Remote GUI
 
-[![Build Status](https://travis-ci.org/transmission-remote-gui/transgui.svg?branch=master)](https://travis-ci.org/transmission-remote-gui/transgui)
+[![Build Status](https://app.travis-ci.com/transmission-remote-gui/transgui.svg?branch=master)](https://app.travis-ci.com/transmission-remote-gui/transgui)
 
 ![Screenshot](http://i.imgur.com/XBbF4Vh.png)
 
@@ -19,7 +19,7 @@
     - [Using Chocolatey](#using-chocolatey)
   - [macOS](#macos)
     - [Without a package manager](#without-a-package-manager)
-    - [Homebrew-Cask](#homebrew-cask)
+    - [Homebrew](#homebrew)
 - [Command line parameters](#command-line-parameters)
 - [Portable mode](#portable-mode)
 - [Fixed hotkeys](#fixed-hotkeys)
@@ -68,8 +68,9 @@ Build the program by yourself.
   - Free Pascal Compiler 2.6.2+ and Lazarus 1.6 is used to develop Transmission Remote GUI.
 2. Download the sources archive and extract it to some folder or perform svn checkout.
 3. Open terminal/command line prompt and cd to the sources folder.
-4. Execute `make` command to build the application.
-5. Execute `make zipdist` command to create a release .zip archive in the `Release` sub-folder.
+4. Execute `lazbuild -B "transgui.lpi" --lazarusdir=/usr/lib/lazarus/default/` command to build the transgui.res file.
+5. Execute `make` command to build the application.
+6. Execute `make zipdist` command to create a release .zip archive in the `Release` sub-folder.
 
 ### Windows
 
@@ -77,7 +78,7 @@ Build the program by yourself.
 
 - Zip tarball release is much more small than the installer one, which can save you some bandwidth, disk space and time, just simply download and extract the zip tarball to wherever you want, directly execute `transgui.exe` or add shortcut for it.
 
-**Note**: The first time you use this program, you may need to install some additional dependencies (if you need SSL/TLS enabled), including [Visual C++ Redistributable Package](https://www.microsoft.com/download/details.aspx?id=40784)([Direct link](http://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe)) and [OpenSSL libs](https://wiki.openssl.org/index.php/Binaries)([Direct link](https://slproweb.com/products/Win32OpenSSL.html)), this only needs to be done once.
+**Note**: The first time you use this program, you may need to install some additional dependencies (if you need SSL/TLS enabled), including [Visual C++ Redistributable Package](https://www.microsoft.com/download/details.aspx?id=40784)([Direct link](https://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe)) and [OpenSSL libs](https://wiki.openssl.org/index.php/Binaries)([Direct link](https://slproweb.com/products/Win32OpenSSL.html)), this only needs to be done once.
 
 #### Installer
 
@@ -88,7 +89,7 @@ This installer has additional installation wizard and includes static OpenSSL li
 
 #### Using [Chocolatey](https://chocolatey.org)
 
-Run `cinst transgui` to install the latest version of Transmission Remote GUI.
+Run `choco install transgui` to install the latest version of Transmission Remote GUI.
 
 ### macOS
 
@@ -100,15 +101,11 @@ This method needs no additional pre-requirement or dependency, just:
 2. Open the image file to mount the image.
 3. Directly run the application or drag the app icon to your disk / Application folder.
 
-#### Homebrew-Cask
+#### Homebrew
 
-You need to have [Homebrew](https://brew.sh/) installed, and [Homebrew-Cask](https://caskroom.github.io/) enabled, with Homebrew, you can enable Homebrew-Cask by a single command, skip this step if you already got it:
+You need to have [Homebrew](https://brew.sh/) installed. Execute this command to install Transmission Remote Gui:
 
-- `brew tap caskroom/cask`
-
-With Homebrew-Cask, directly execute this command to install Transmission Remote Gui:
-
-- `brew cask install transmission-remote-gui`
+- `brew install --cask transmission-remote-gui`
 
 ## Command line parameters
 

@@ -531,7 +531,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
       object cbStalled: TCheckBox
         Left = 8
         Height = 17
-        Hint = 'Torrents that are idle for N minuets aren''t counted toward the Download queue or Upload queue'
+        Hint = 'Torrents that are idle for N minutes aren''t counted toward the Download queue or Upload queue'
         Top = 68
         Width = 251
         Caption = 'Consider active torrents as stalled when idle for:'

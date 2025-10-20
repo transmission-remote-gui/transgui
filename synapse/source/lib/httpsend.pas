@@ -289,10 +289,10 @@ begin
   FProxyPass := '';
   FAliveHost := '';
   FAlivePort := '';
-  FProtocol := '1.0';
+  FProtocol := '1.1';
   FKeepAlive := True;
   FStatus100 := False;
-  FUserAgent := 'Mozilla/4.0 (compatible; Synapse)';
+  FUserAgent := 'Mozilla/4.0 (compatible; transmission-remote-gui)';
   FDownloadSize := 0;
   FUploadSize := 0;
   FAddPortNumberToHost := true;
@@ -368,9 +368,12 @@ end;
 
 function THTTPSend.InternalConnect(needssl: Boolean): Boolean;
 begin
+  FSock.PreferIP4 := False; //try to use IPv6
   if FSock.Socket = INVALID_SOCKET then
     Result := InternalDoConnect(needssl)
   else
+    if FSock.LastError <> 0 then
+      FSock.PreferIP4 := True; //fallback to IPv4
     if (FAliveHost <> FTargetHost) or (FAlivePort <> FTargetPort)
       or FSock.CanRead(0) then
       Result := InternalDoConnect(needssl)

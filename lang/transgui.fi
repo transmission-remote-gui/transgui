@@ -286,7 +286,7 @@ Move up=Siirrä ylemmäksi
 No updates have been found.~You are running the latest version of %s=Uusia päivityksiä ei löytynyt.~Käytössäsi on jo uusin versio %s
 Queue position=Sijainti jonossa
 Queue=Jono
-Torrents that are idle for N minuets aren't counted toward the Download queue or Upload queue=Torrentit jotka olleet toimettomina X minuuttia, eivät nouse Lataus- tai Lähetysjonossa ylemmäksi
+Torrents that are idle for N minutes aren't counted toward the Download queue or Upload queue=Torrentit jotka olleet toimettomina X minuuttia, eivät nouse Lataus- tai Lähetysjonossa ylemmäksi
 Tracker grouping=Seurantapalvelinten ryhmittely
 Upload queue size=Lähetysjonon koko
 View=Näytä
@@ -315,7 +315,7 @@ Connect to %s=Yhdistä %s
 Connect to Transmission using proxy server=Käytä välityspalvelinta
 Connect to Transmission=Yhdistä
 Connection name=Yhteyden nimi
-Could not connect to tracker==Yhdistäminen seurantapalvelimeen epäonnistui
+Could not connect to tracker=Yhdistäminen seurantapalvelimeen epäonnistui
 Data display=Tietojen näyttäminen
 Data refresh interval when minimized=Tietojen päivityksen aikaväli, kun ohjelma pienennetty
 Data refresh interval=Tietojen päivityksen aikaväli
@@ -342,7 +342,7 @@ Show advanced options=Näytä edistyneet asetukset
 Show notifications in tray icon=Näytä ilmoitukset tehtäväpalkin kuvakkeessa
 System integration=Järjestelmä integraatio
 Torrent already exists in the list=Torrent on jo listalla
-Torrent not registered with this tracker==Torrenttia ei ole rekisteröity tämän seurantapalvelimen kanssa
+Torrent not registered with this tracker=Torrenttia ei ole rekisteröity tämän seurantapalvelimen kanssa
 Unable to find path mapping.~Use the application's options to setup path mappings=Unable to find path mapping.~Use the application's options to setup path mappings
 Update trackers for the existing torrent?=Päivitä nykyisen torrentin seurantapalvelimet?
 You need to restart the application to apply changes=Ohjelma täytyy käynnistää uudelleen jotta asetukset tulevat voimaan

@@ -35,7 +35,8 @@ unit rpc;
 interface
 
 uses
-  Classes, SysUtils, Forms, httpsend, syncobjs, fpjson, jsonparser, ssl_openssl;
+  Classes, SysUtils, Forms, httpsend, syncobjs, fpjson, jsonparser, ssl_openssl,
+  ZStream, jsonscanner;
 
 resourcestring
   sTransmissionAt = 'Transmission%s at %s:%s';
@@ -155,6 +156,27 @@ var
 implementation
 
 uses Main, ssl_openssl_lib, synafpc, blcksock;
+
+function TranslateTableToObjects(reply: TJSONObject) : TJSONObject;
+var
+  array_tor, fields, out_torrents : TJSONArray;
+  object_tor : TJSONObject;
+  i, j : integer;
+begin
+  fields:=reply.Arrays['torrents'].Arrays[0];
+  out_torrents:=TJSONArray.Create;
+  for i:=1 to reply.Arrays['torrents'].Count - 1 do
+  begin
+    array_tor:=reply.Arrays['torrents'].Arrays[i];
+    object_tor:=TJSONObject.Create;
+    for j:=0 to fields.Count - 1 do
+      object_tor.Add(fields.Items[j].AsString, array_tor.Items[j].Clone);
+
+    out_torrents.Add(object_tor);
+  end;
+  Result:=TJSONObject.Create(['torrents', out_torrents]);
+  reply.Free;
+end;
 
 { TRpcThread }
 
@@ -630,6 +652,55 @@ begin
   CreateHttp;
 end;
 
+type TGzipDecompressionStream=class(TDecompressionStream)
+public
+  constructor create(Asource:TStream);
+end;
+
+constructor TGzipDecompressionStream.create(Asource:TStream);
+var gzHeader:array[1..10] of byte;
+begin
+  {
+    paszlib is based on a relatively old zlib version that didn't implement
+    reading the gzip header. we "implement" this ourselves by skipping the first
+    10 bytes which is just enough for the data Transmission sends.
+  }
+  inherited create(Asource, True);
+  Asource.Read(gzHeader,sizeof(gzHeader));
+end;
+
+function DecompressGzipContent(source: TStream): TMemoryStream;
+var
+  buf : array[1..16384] of byte;
+  numRead : integer;
+  decomp : TGzipDecompressionStream;
+begin
+  decomp:=TGzipDecompressionStream.create(source);
+  Result:=TMemoryStream.create;
+  repeat
+    numRead:=decomp.read(buf,sizeof(buf));
+    Result.Write(buf,numRead);
+  until numRead < sizeof(buf);
+  Result.Position:=0;
+  decomp.Free;
+end;
+
+function CreateJsonParser(serverResp : THTTPSend): TJSONParser;
+var decompressed : TMemoryStream;
+begin
+  if serverResp.Headers.IndexOf('Content-Encoding: gzip') <> -1 then
+  begin
+    { need to fully decompress as the parser relies on a working Seek() }
+    decompressed:=DecompressGzipContent(serverResp.Document);
+    Result:=TJSONParser.Create(decompressed, [joUTF8]);
+    decompressed.Free;
+  end
+  else
+  begin
+    Result:=TJSONParser.Create(serverResp.Document, [joUTF8]);
+  end;
+end;
+
 function TRpc.SendRequest(req: TJSONObject; ReturnArguments: boolean; ATimeOut: integer): TJSONObject;
 var
   obj: TJSONData;
@@ -657,6 +728,8 @@ begin
       Http.Document.Write(PChar(s)^, Length(s));
       s:='';
       Http.Headers.Clear;
+      Http.Headers.Add('Accept-Encoding: gzip');
+      Http.MimeType:='application/json';
       if XTorrentSession <> '' then
         Http.Headers.Add(XTorrentSession);
       if ATimeOut >= 0 then
@@ -750,7 +823,7 @@ begin
           break;
         end;
         Http.Document.Position:=0;
-        jp:=TJSONParser.Create(Http.Document);
+        jp:=CreateJsonParser(Http);
         HttpLock.Leave;
         locked:=False;
         RequestStartTime:=0;
@@ -811,26 +884,55 @@ begin
   until i >= RetryCnt;
 end;
 
+procedure DeleteIfRpcLessThan(Fields: TStringList; Field: string; RpcVer: integer; NeededRpcVer: integer);
+var
+  idx: integer;
+begin
+  idx := Fields.IndexOf(Field);
+  if (idx <> -1) and (RpcVer < NeededRpcVer) then
+    Fields.Delete(idx);
+end;
+
 function TRpc.RequestInfo(TorrentId: integer; const Fields: array of const; const ExtraFields: array of string): TJSONObject;
 var
   req, args: TJSONObject;
   _fields: TJSONArray;
   i: integer;
+  sl: TStringList;
 begin
   Result:=nil;
   req:=TJSONObject.Create;
+  sl:=TStringList.Create;
   try
     req.Add('method', 'torrent-get');
     args:=TJSONObject.Create;
     if TorrentId <> 0 then
       args.Add('ids', TJSONArray.Create([TorrentId]));
-    _fields:=TJSONArray.Create(Fields);
-    for i:=Low(ExtraFields) to High(ExtraFields) do
-      _fields.Add(ExtraFields[i]);
+    _fields:=TJSONArray.Create;
+    for i:=Low(Fields) to High(Fields) do
+      if (Fields[i].VType=vtAnsiString) then
+         sl.Add(String(Fields[i].VAnsiString));
+    sl.AddStrings(ExtraFields);
+    sl.Sort;
+
+    DeleteIfRpcLessThan(sl, 'labels', FRPCVersion, 16);
+
+    for i:=sl.Count-2 downto 0 do
+      if (sl[i]=sl[i+1]) then
+        sl.Delete(i+1);
+    for i:=0 to sl.Count-1 do
+      _fields.Add(sl[i]);
     args.Add('fields', _fields);
+    if FRPCVersion >= 16 then
+      args.Add('format', 'table');
+
     req.Add('arguments', args);
-    Result:=SendRequest(req);
+    if FRPCVersion >= 16 then
+      Result:=TranslateTableToObjects(SendRequest(req))
+    else
+      Result:=SendRequest(req);
   finally
+    sl.Free;
     req.Free;
   end;
 end;

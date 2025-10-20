@@ -3,7 +3,7 @@
 For bug report, please provide version info of:
 
 1. Operating system
-2. Transmission Deamon
+2. Transmission Daemon
 3. Transmission Remote GUI
 
 This is not the project on SourceForge: https://sourceforge.net/projects/transgui but a forked version
