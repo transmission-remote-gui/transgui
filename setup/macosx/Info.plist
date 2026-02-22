@@ -30,6 +30,12 @@
 	<true/>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Transmission Remote GUI needs local network access to connect to Transmission daemon.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_http._tcp</string>
+	</array>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
