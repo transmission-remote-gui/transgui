@@ -49,7 +49,7 @@ endif
 [compiler]
 unitdir=synapse/source/lib
 options=-MObjFPC -dLCL -dLCL$(LCL_WIDGETSET) $(COMP_OPT)
-options_darwin=-k-macosx_version_min -k10.5 -XR/Developer/SDKs/MacOSX10.5.sdk/
+options_darwin=-k-macosx_version_min -k10.13 -k-framework -kUserNotifications
 
 #Lazarus dirs
 unitdir=$(LAZARUS_DIR)/lcl/units/$(FULL_TARGET)

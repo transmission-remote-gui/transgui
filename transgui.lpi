@@ -211,7 +211,7 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CustomOptions Value="-Sa -CX -XX"/>
+      <CustomOptions Value="-Sa -CX -XX -k-framework -kUserNotifications"/>
       <ExecuteBefore>
         <ShowAllMessages Value="True"/>
       </ExecuteBefore>

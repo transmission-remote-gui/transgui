@@ -1,0 +1,32 @@
+name: macOS Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    name: Build macOS DMG (Apple Silicon)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Lazarus/FPC
+        run: brew install lazarus
+
+      - name: Build DMG
+        run: cd setup/macosx && ./create_app_new.sh
+        env:
+          CI: true
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: transgui-macos-arm64
+          path: Release/transgui-*.dmg
+          if-no-files-found: error
