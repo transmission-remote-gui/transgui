@@ -1547,6 +1547,7 @@ begin
   txTorrentHeader.Font.Size:=txTransferHeader.Font.Size;
   TrayIcon.Icon.Assign(Application.Icon);
   RpcObj:=TRpc.Create;
+  RpcObj.InitSSL;
   FTorrents:=TVarList.Create(gTorrents.Columns.Count, 0);
   FTorrents.ExtraColumns:=TorrentsExtraColumns;
   gTorrents.Items.ExtraColumns:=TorrentsExtraColumns;
@@ -3051,7 +3052,6 @@ var
   i: integer;
 begin
   Result:=False;
-  RpcObj.InitSSL;
   tmp:=SysToUTF8(GetTempDir(True)) + 'GeoIP.dat.gz';
   if not FileExistsUTF8(tmp) or AUpdate then begin
     if MessageDlg('', sGeoIPConfirm, mtConfirmation, mbYesNo, 0, mbYes) <> mrYes then
