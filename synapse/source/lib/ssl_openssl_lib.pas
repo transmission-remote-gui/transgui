@@ -113,8 +113,13 @@ const
 var
   {$IFNDEF MSWINDOWS}
     {$IFDEF DARWIN}
-    DLLSSLName: string = 'libssl.dylib';
-    DLLUtilName: string = 'libcrypto.dylib';
+    // Modern macOS (Sequoia/Tahoe and later) aborts the process when an
+    // *unversioned* libcrypto.dylib / libssl.dylib is dlopen'ed ("Invalid
+    // dylib load ... does not have a stable ABI"). Default to versioned
+    // names and resolve real candidates in InitSSLInterface (see DARWIN
+    // fallback block) so the app never loads the guarded unversioned lib.
+    DLLSSLName: string = 'libssl.3.dylib';
+    DLLUtilName: string = 'libcrypto.3.dylib';
     {$ELSE}
      {$IFDEF OS2}
       {$IFDEF OS2GCC}
@@ -1859,8 +1864,30 @@ begin
 {$ENDIF}
 end;
 
+{$IFDEF DARWIN}
+// Try a list of candidate dylib names/paths, returning the first that loads.
+// Used on macOS to avoid the (now fatal) unversioned libcrypto/libssl load.
+function LoadLibList(const Names: array of string): HModule;
+var
+  i: Integer;
+begin
+  Result := 0;
+  for i := Low(Names) to High(Names) do
+  begin
+    if Names[i] = '' then
+      Continue;
+    Result := LoadLib(Names[i]);
+    if Result <> 0 then
+      Exit;
+  end;
+end;
+{$ENDIF}
+
 function InitSSLInterface: Boolean;
 var
+{$IFDEF DARWIN}
+  ExeDir: string;
+{$ENDIF}
   s: string;
   x: integer;
 begin
@@ -1886,6 +1913,33 @@ begin
         SSLLibHandle := LoadLib(DLLSSLName2);
       if (SSLUtilHandle = 0) then
         SSLUtilHandle := LoadLib(DLLUtilName2);
+  {$ENDIF}
+  {$IFDEF DARWIN}
+      // Resolve a real (versioned) OpenSSL: bundled inside the .app first,
+      // then common Homebrew prefixes, then versioned names on the default
+      // search path. The unversioned libcrypto.dylib/libssl.dylib are never
+      // tried because modern macOS aborts the process if they are loaded.
+      ExeDir := ExtractFilePath(ParamStr(0));
+      if (SSLUtilHandle = 0) then
+        SSLUtilHandle := LoadLibList([
+          ExeDir + 'libcrypto.3.dylib',
+          ExeDir + '../Frameworks/libcrypto.3.dylib',
+          '/opt/homebrew/opt/openssl@3/lib/libcrypto.3.dylib',
+          '/usr/local/opt/openssl@3/lib/libcrypto.3.dylib',
+          '/opt/homebrew/opt/openssl@1.1/lib/libcrypto.1.1.dylib',
+          '/usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib',
+          'libcrypto.3.dylib',
+          'libcrypto.1.1.dylib']);
+      if (SSLLibHandle = 0) then
+        SSLLibHandle := LoadLibList([
+          ExeDir + 'libssl.3.dylib',
+          ExeDir + '../Frameworks/libssl.3.dylib',
+          '/opt/homebrew/opt/openssl@3/lib/libssl.3.dylib',
+          '/usr/local/opt/openssl@3/lib/libssl.3.dylib',
+          '/opt/homebrew/opt/openssl@1.1/lib/libssl.1.1.dylib',
+          '/usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib',
+          'libssl.3.dylib',
+          'libssl.1.1.dylib']);
   {$ENDIF}
 {$ENDIF}
       if (SSLLibHandle <> 0) and (SSLUtilHandle <> 0) then

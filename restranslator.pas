@@ -37,7 +37,8 @@ unit ResTranslator;
 interface
 
 uses
-  Classes, StrUtils, SysUtils, FileUtil, LazFileUtils, LResources, TypInfo, LCLProc, LazUTF8;
+  Classes, StrUtils, SysUtils, FileUtil, LazFileUtils, LResources, TypInfo, LCLProc, LazUTF8,
+  Translations;
 
 type
 
@@ -257,6 +258,19 @@ end;
 procedure SupplementTranslationFiles; overload;
 begin
   SupplementTranslationFiles(DefaultLangDir);
+end;
+
+// LazGetLanguageIDs was deprecated since Lazarus 2.3.0 and removed from LazUTF8
+// in newer Lazarus versions (use Translations.GetLanguageID instead). Provide a
+// local, version-independent equivalent so transgui builds against both the
+// 4.8 release and the development (main) branch.
+procedure LazGetLanguageIDs(var Lang, FallbackLang: String);
+var
+  LangID: TLanguageID;
+begin
+  LangID := GetLanguageID;
+  Lang := LangID.LanguageID;
+  FallbackLang := LangID.LanguageCode;
 end;
 
 procedure MakeTranslationFile; overload;
