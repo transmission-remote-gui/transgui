@@ -152,20 +152,61 @@ end;
 
 procedure TVarList.SetColCnt(const AValue: integer);
 var
-  i, j, ocnt, ncnt: integer;
-  p: PVariant;
+  i, j, ocnt, ncnt, copycnt: integer;
+  oldrow, newrow: PVariant;
+  newrows: TList;
 begin
+  if AValue < 0 then
+    raise Exception.Create('Invalid column count.');
   if FColCnt = AValue then exit;
   ocnt:=FColCnt + IntCols;
-  FColCnt:=AValue;
-  ncnt:=FColCnt + IntCols;
-  for i:=0 to Count - 1 do begin
-    p:=GetRow(i);
-    for j:=ncnt to ocnt - 1 do
-      VarClear(p[j]);
-    ReAllocMem(p, ncnt*SizeOf(variant));
-    if ncnt > ocnt then
-      FillChar(p[ocnt], (ncnt - ocnt)*SizeOf(variant), 0);
+  ncnt:=AValue + IntCols;
+  copycnt:=Min(ocnt, ncnt);
+  newrows:=TList.Create;
+  try
+    newrows.Capacity:=Count;
+    for i:=0 to Count - 1 do
+      newrows.Add(nil);
+
+    for i:=0 to Count - 1 do begin
+      oldrow:=inherited Get(i);
+      if oldrow = nil then
+        continue;
+      newrow:=AllocMem(ncnt*SizeOf(variant));
+      try
+        for j:=0 to copycnt - 1 do
+          newrow[j]:=oldrow[j];
+      except
+        for j:=0 to ncnt - 1 do
+          VarClear(newrow[j]);
+        FreeMem(newrow);
+        raise;
+      end;
+      newrows[i]:=newrow;
+    end;
+
+    for i:=0 to Count - 1 do begin
+      newrow:=newrows[i];
+      if newrow = nil then
+        continue;
+      oldrow:=inherited Get(i);
+      Put(i, newrow);
+      newrows[i]:=nil;
+      for j:=0 to ocnt - 1 do
+        VarClear(oldrow[j]);
+      FreeMem(oldrow);
+    end;
+    FColCnt:=AValue;
+  finally
+    for i:=0 to newrows.Count - 1 do begin
+      newrow:=newrows[i];
+      if newrow <> nil then begin
+        for j:=0 to ncnt - 1 do
+          VarClear(newrow[j]);
+        FreeMem(newrow);
+      end;
+    end;
+    newrows.Free;
   end;
 end;
 
@@ -227,18 +268,20 @@ end;
 destructor TVarList.Destroy;
 begin
   FOnDataChanged:=nil;
+  Clear;
   inherited Destroy;
 end;
 
 procedure TVarList.Clear;
 var
-  i: integer;
+  i, j: integer;
   v: PVariant;
 begin
   for i:=0 to Count - 1 do begin
     v:=inherited Get(i);
     if v <> nil then begin
-      VarClear(v^);
+      for j:=0 to ColCnt + IntCols - 1 do
+        VarClear(v[j]);
       FreeMem(v);
     end;
   end;
