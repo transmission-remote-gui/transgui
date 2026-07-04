@@ -618,8 +618,8 @@ procedure TRpc.InitSSL;
 {$ifndef darwin}
   procedure CheckOpenSSL;
   const
-  OpenSSLVersions: array[1..4] of string =
-  ('0.9.8', '1.0.0', '1.0.2', '1.1.0');
+  OpenSSLVersions: array[1..6] of string =
+  ('3', '1.1', '1.1.0', '1.0.2', '1.0.0', '0.9.8');
   var
     hLib1, hLib2: TLibHandle;
     i: integer;
