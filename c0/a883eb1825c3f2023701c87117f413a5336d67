@@ -1,0 +1,21 @@
+setup/unix/use-buster-archive-apt.sh
+  s_55e272af14711b::t_6908439c056562 1-33
+.travis.yml
+  s_55e272af14711b::t_6908439c056562 102,109,118,131,144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c0a883eb1825c3f2023701c87117f413a5336d67",
+  "prompts": {},
+  "sessions": {
+    "s_55e272af14711b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f2999-7559-72a3-84c1-c8bb925901dc",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Ubuntu <peter@jitsi.peterhsu.tw>"
+    }
+  }
+}
