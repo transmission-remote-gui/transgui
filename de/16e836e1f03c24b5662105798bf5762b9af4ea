@@ -1,0 +1,19 @@
+setup/unix/use-buster-archive-apt.sh
+  s_55e272af14711b::t_61443e4959c974 5,7,18,30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "de16e836e1f03c24b5662105798bf5762b9af4ea",
+  "prompts": {},
+  "sessions": {
+    "s_55e272af14711b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f2999-7559-72a3-84c1-c8bb925901dc",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
