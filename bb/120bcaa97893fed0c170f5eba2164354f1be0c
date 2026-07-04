@@ -1,0 +1,19 @@
+AGENTS.md
+  s_7d1a63cd497855::t_d4e9727535ecfa 1-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "bb120bcaa97893fed0c170f5eba2164354f1be0c",
+  "prompts": {},
+  "sessions": {
+    "s_7d1a63cd497855": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f2cc0-9659-7f93-81e1-a9e5e4a6d6fb",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
