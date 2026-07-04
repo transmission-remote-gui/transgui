@@ -1,6 +1,6 @@
 # Transmission Remote GUI
 
-[![Build Status](https://app.travis-ci.com/transmission-remote-gui/transgui.svg?branch=master)](https://app.travis-ci.com/transmission-remote-gui/transgui)
+[![CI](https://github.com/transmission-remote-gui/transgui/actions/workflows/ci.yml/badge.svg)](https://github.com/transmission-remote-gui/transgui/actions/workflows/ci.yml)
 
 ![Screenshot](http://i.imgur.com/XBbF4Vh.png)
 

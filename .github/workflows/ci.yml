@@ -1,0 +1,366 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+    tags:
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+jobs:
+  static:
+    name: Test / Static / ${{ matrix.task }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        task:
+          - shfmt
+          - shellcheck
+          - markdown-link-check
+          - eclint
+          - doctoc
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 10
+          persist-credentials: false
+
+      - name: Run shfmt
+        if: matrix.task == 'shfmt'
+        run: |
+          set -euo pipefail
+          docker run --rm -v "$PWD:/sh" -w /sh peterdavehello/shfmt:3.4.0 shfmt -sr -i 2 -l -w -ci .
+          git diff --color
+          git diff --stat=220 --color --exit-code
+
+      - name: Install shellcheck
+        if: matrix.task == 'shellcheck'
+        run: |
+          set -euo pipefail
+          if ! command -v shellcheck > /dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y shellcheck
+          fi
+
+      - name: Run shellcheck
+        if: matrix.task == 'shellcheck'
+        run: |
+          set -euo pipefail
+          find . -type f -name "*.sh" | xargs -n 1 shellcheck
+
+      - uses: actions/setup-node@v6
+        if: matrix.task == 'markdown-link-check' || matrix.task == 'eclint' || matrix.task == 'doctoc'
+        with:
+          node-version: 24
+
+      - name: Run markdown-link-check
+        if: matrix.task == 'markdown-link-check'
+        run: |
+          set -euo pipefail
+          cat > markdown-link-check.json <<'JSON'
+          {
+            "ignorePatterns": [
+              {
+                "pattern": "^https://github\\.com/transmission-remote-gui/transgui/actions/workflows/ci\\.yml/badge\\.svg$"
+              },
+              {
+                "pattern": "^https://www\\.microsoft\\.com/download/details\\.aspx\\?id=40784$"
+              },
+              {
+                "pattern": "^https://download\\.microsoft\\.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86\\.exe$"
+              }
+            ]
+          }
+          JSON
+
+          npm install -g markdown-link-check
+          find . -type f -name "*.md" | xargs -n 1 markdown-link-check -c markdown-link-check.json
+
+      - name: Run eclint
+        if: matrix.task == 'eclint'
+        run: |
+          set -euo pipefail
+          npm install -g eclint
+          eclint check lang/ setup/ Makefile* *.txt
+
+      - name: Run doctoc
+        if: matrix.task == 'doctoc'
+        run: |
+          set -euo pipefail
+          npm install -g doctoc
+          doctoc --title "## Table of Contents" --github README.md > /dev/null
+
+          if ! git diff --quiet README.md; then
+            echo 'README.md "Table of Contents" dated! Please update it' >&2
+            git diff -w README.md >&2
+            exit 1
+          fi
+
+  zip-tarball-test:
+    name: Test / Zip tarball smoke
+    runs-on: ubuntu-latest
+    needs: static
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 10
+          persist-credentials: false
+
+      - name: Set program version
+        run: |
+          set -euo pipefail
+          echo "PROG_VER=$(head -n 1 VERSION.txt)" >> "$GITHUB_ENV"
+
+      - name: Build zip tarball
+        run: |
+          set -euo pipefail
+          docker run -e DEBIAN_FRONTEND=noninteractive --rm -v "${PWD}:/transgui" debian:buster-backports bash -c "cd /transgui/ && ./setup/unix/use-buster-archive-apt.sh debian && ./setup/unix/debian-ubuntu-install_deps.sh && lazbuild -B transgui.lpi --lazarusdir=/usr/lib/lazarus/default/ && make -j\$(nproc) zipdist && ls -al ./Release/transgui-${PROG_VER}-x86_64-linux.zip"
+
+  linux-build:
+    name: Build / Linux / ${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    needs: static
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            image: debian:buster-backports
+            distro: debian
+            artifact_name: transgui-linux-x86_64
+            artifact_arch: x86_64
+            privileged: false
+            qemu: false
+          - arch: i686
+            image: i386/debian:buster-backports
+            distro: debian
+            artifact_name: transgui-linux-i686
+            artifact_arch: i686
+            privileged: true
+            qemu: false
+          - arch: armv6l
+            image: balenalib/rpi-raspbian:buster
+            distro: raspbian
+            artifact_name: transgui-linux-armv6l
+            artifact_arch: armv6l
+            privileged: false
+            qemu: true
+          - arch: armv7l
+            image: balenalib/armv7hf-debian:buster
+            distro: debian
+            artifact_name: transgui-linux-armv7l
+            artifact_arch: armv7l
+            privileged: false
+            qemu: true
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 10
+          persist-credentials: false
+
+      - uses: docker/setup-qemu-action@v4
+        if: matrix.qemu
+        with:
+          platforms: arm
+
+      - name: Set program version
+        run: |
+          set -euo pipefail
+          echo "PROG_VER=$(head -n 1 VERSION.txt)" >> "$GITHUB_ENV"
+
+      - name: Build Linux package
+        run: |
+          set -euo pipefail
+          docker_args=(
+            -e DEBIAN_FRONTEND=noninteractive
+            --rm
+            -v "${PWD}:/transgui"
+          )
+
+          if [ "${{ matrix.privileged }}" = "true" ]; then
+            docker_args+=(--privileged)
+          fi
+
+          build_script="cd /transgui/setup/unix/ && ./use-buster-archive-apt.sh ${{ matrix.distro }} && ./debian-ubuntu-install_deps.sh && apt upgrade -y && git config --global --add safe.directory /transgui && ./build.sh"
+          container_cmd=(bash -c "$build_script")
+
+          if [ "${{ matrix.arch }}" = "i686" ]; then
+            container_cmd=(linux32 --32bit "${container_cmd[@]}")
+          fi
+
+          docker run "${docker_args[@]}" "${{ matrix.image }}" "${container_cmd[@]}"
+
+      - name: Print checksums
+        run: |
+          set -euo pipefail
+          artifact="Release/transgui-${PROG_VER}-${{ matrix.artifact_arch }}-Linux.txz"
+          md5sum "$artifact"
+          shasum -a 1 "$artifact"
+          shasum -a 256 "$artifact"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: Release/transgui-*-${{ matrix.artifact_arch }}-Linux.txz
+          if-no-files-found: error
+
+      - name: Submit to VirusTotal
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          VIRUSTOTAL_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VIRUSTOTAL_API_KEY:-}" ]; then
+            echo "VIRUSTOTAL_API_KEY is not set; skipping VirusTotal submission."
+            exit 0
+          fi
+
+          artifact="Release/transgui-${PROG_VER}-${{ matrix.artifact_arch }}-Linux.txz"
+          if ! curl --fail-with-body -F "file=@$artifact" -F "apikey=${VIRUSTOTAL_API_KEY}" https://www.virustotal.com/vtapi/v2/file/scan; then
+            echo "VirusTotal submission failed for $artifact; continuing without failing the build." >&2
+          fi
+
+          if [ -f ./transgui ]; then
+            if ! curl --fail-with-body -F "file=@./transgui" -F "apikey=${VIRUSTOTAL_API_KEY}" https://www.virustotal.com/vtapi/v2/file/scan; then
+              echo "VirusTotal submission failed for ./transgui; continuing without failing the build." >&2
+            fi
+          else
+            echo "./transgui not found; skipping single-binary VirusTotal submission."
+          fi
+
+  macos-build:
+    name: Build / macOS DMG
+    runs-on: macos-15-intel
+    needs: static
+    env:
+      sourceforge_mirror: pilotfiber
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 10
+          persist-credentials: false
+
+      - name: Set program version
+        run: |
+          set -euo pipefail
+          echo "PROG_VER=$(head -n 1 VERSION.txt)" >> "$GITHUB_ENV"
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          cd setup/macosx
+          ./install_deps.sh
+
+      - name: Build DMG
+        run: |
+          set -euo pipefail
+          cd setup/macosx
+          ./create_app_new.sh
+
+      - name: Print checksums
+        run: |
+          set -euo pipefail
+          artifact="Release/transgui-${PROG_VER}.dmg"
+          md5 "$artifact"
+          shasum -a 1 "$artifact"
+          shasum -a 256 "$artifact"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: transgui-macos-dmg
+          path: Release/transgui-*.dmg
+          if-no-files-found: error
+
+      - name: Submit to VirusTotal
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          VIRUSTOTAL_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VIRUSTOTAL_API_KEY:-}" ]; then
+            echo "VIRUSTOTAL_API_KEY is not set; skipping VirusTotal submission."
+            exit 0
+          fi
+
+          artifact="Release/transgui-${PROG_VER}.dmg"
+          if ! curl --fail-with-body -F "file=@$artifact" -F "apikey=${VIRUSTOTAL_API_KEY}" https://www.virustotal.com/vtapi/v2/file/scan; then
+            echo "VirusTotal submission failed for $artifact; continuing without failing the build." >&2
+          fi
+
+          if [ -f ./transgui ]; then
+            if ! curl --fail-with-body -F "file=@./transgui" -F "apikey=${VIRUSTOTAL_API_KEY}" https://www.virustotal.com/vtapi/v2/file/scan; then
+              echo "VirusTotal submission failed for ./transgui; continuing without failing the build." >&2
+            fi
+          else
+            echo "./transgui not found; skipping single-binary VirusTotal submission."
+          fi
+
+  publish-release:
+    name: Release / GitHub Release
+    runs-on: ubuntu-latest
+    needs:
+      - zip-tarball-test
+      - linux-build
+      - macos-build
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    concurrency:
+      group: release-${{ github.ref }}
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 10
+          persist-credentials: false
+
+      - name: Set program version
+        run: |
+          set -euo pipefail
+          echo "PROG_VER=$(head -n 1 VERSION.txt)" >> "$GITHUB_ENV"
+
+      - uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+
+      - name: Publish release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          files=(
+            "artifacts/transgui-linux-x86_64/transgui-${PROG_VER}-x86_64-Linux.txz"
+            "artifacts/transgui-linux-i686/transgui-${PROG_VER}-i686-Linux.txz"
+            "artifacts/transgui-linux-armv6l/transgui-${PROG_VER}-armv6l-Linux.txz"
+            "artifacts/transgui-linux-armv7l/transgui-${PROG_VER}-armv7l-Linux.txz"
+            "artifacts/transgui-macos-dmg/transgui-${PROG_VER}.dmg"
+          )
+
+          for file in "${files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "Missing release asset: $file" >&2
+              find artifacts -maxdepth 3 -type f -print >&2
+              exit 1
+            fi
+          done
+
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "${files[@]}"
+          else
+            gh release create "$GITHUB_REF_NAME" "${files[@]}" --title "$GITHUB_REF_NAME" --notes ""
+          fi
