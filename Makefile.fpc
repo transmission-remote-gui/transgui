@@ -32,12 +32,15 @@ $(info Using Lazarus dir: $(LAZARUS_DIR))
 LAZRES=$(LAZARUS_DIR)/tools/lazres$(SRCEXEEXT)
 
 # Widgetset
-LCL_WIDGETSET=gtk2
-ifneq ($(findstring $(OS_TARGET),win32,win64),)
-LCL_WIDGETSET=win32
+LCL_WIDGETSET ?= gtk2
+ifeq ($(strip $(LCL_WIDGETSET)),)
+override LCL_WIDGETSET := gtk2
 endif
-ifneq ($(findstring $(OS_TARGET),darwin),)
-LCL_WIDGETSET=cocoa
+ifneq ($(filter $(OS_TARGET),win32 win64),)
+override LCL_WIDGETSET := win32
+endif
+ifneq ($(filter $(OS_TARGET),darwin),)
+override LCL_WIDGETSET := cocoa
 endif
 
 ifeq ($(DEBUG),)

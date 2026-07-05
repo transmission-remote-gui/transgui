@@ -55,22 +55,33 @@ The installers are listed on the GitHub [Releases](https://github.com/transmissi
 There are precompiled program's binaries for i386 and x86_64 Linux architectures.
 
 - Download and extract the release for your architecture.
+- Current Linux release archives use the `gtk2` widgetset suffix.
+- Custom Linux builds can select either `gtk2` or `gtk3`.
 
 Now you can execute the `transgui` binary. *(Change the `transgui` file permissions to executable if needed)*
 
 Additionally, you can create a desktop or menu shortcut to the transgui executable, and run the program using the created shortcut.
 
+The Linux archives are GTK-specific, not a promise of one universal Linux binary. If a Linux build does not start, include this diagnostic output in bug reports:
+
+```sh
+ldd ./transgui | grep -E 'gtk|gdk|pango|cairo|fontconfig|X11|not found'
+objdump -T ./transgui | grep -o 'GLIBC_[0-9.]*' | sort -Vu | tail -1
+```
+
 #### Harder way
 
 Build the program by yourself.
+The examples below explicitly select `gtk3` for modern Linux desktops. To build the GTK2 variant, use `--ws=gtk2` and `make LCL_WIDGETSET=gtk2`, or omit both because GTK2 remains the default.
 
 1. Make sure you have working Lazarus and Free Pascal compiler installed.
   - Free Pascal Compiler 2.6.2+ and Lazarus 1.6 is used to develop Transmission Remote GUI.
 2. Download the sources archive and extract it to some folder or perform svn checkout.
 3. Open terminal/command line prompt and cd to the sources folder.
-4. Execute `lazbuild -B "transgui.lpi" --lazarusdir=/usr/lib/lazarus/default/` command to build the transgui.res file.
-5. Execute `make` command to build the application.
-6. Execute `make zipdist` command to create a release .zip archive in the `Release` sub-folder.
+4. Execute `lazbuild -B "transgui.lpi" --ws=gtk3 --lazarusdir=/usr/lib/lazarus/default/` command to build the transgui.res file.
+5. Execute `make LCL_WIDGETSET=gtk3` command to build the application.
+6. Execute `make LCL_WIDGETSET=gtk3 zipdist` command to create a release .zip archive in the `Release` sub-folder.
+  The legacy `zipdist` archive name does not include the selected GTK widgetset.
 
 ### Windows
 

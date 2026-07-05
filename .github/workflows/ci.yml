@@ -186,6 +186,7 @@ jobs:
           set -euo pipefail
           docker_args=(
             -e DEBIAN_FRONTEND=noninteractive
+            -e LCL_WIDGETSET=gtk2
             --rm
             -v "${PWD}:/transgui"
           )
@@ -206,7 +207,7 @@ jobs:
       - name: Print checksums
         run: |
           set -euo pipefail
-          artifact="Release/transgui-${PROG_VER}-${{ matrix.artifact_arch }}-Linux.txz"
+          artifact="Release/transgui-${PROG_VER}-${{ matrix.artifact_arch }}-Linux-gtk2.txz"
           md5sum "$artifact"
           shasum -a 1 "$artifact"
           shasum -a 256 "$artifact"
@@ -214,7 +215,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact_name }}
-          path: Release/transgui-*-${{ matrix.artifact_arch }}-Linux.txz
+          path: Release/transgui-*-${{ matrix.artifact_arch }}-Linux-gtk2.txz
           if-no-files-found: error
 
       - name: Submit to VirusTotal
@@ -228,7 +229,7 @@ jobs:
             exit 0
           fi
 
-          artifact="Release/transgui-${PROG_VER}-${{ matrix.artifact_arch }}-Linux.txz"
+          artifact="Release/transgui-${PROG_VER}-${{ matrix.artifact_arch }}-Linux-gtk2.txz"
           if ! curl --fail-with-body -F "file=@$artifact" -F "apikey=${VIRUSTOTAL_API_KEY}" https://www.virustotal.com/vtapi/v2/file/scan; then
             echo "VirusTotal submission failed for $artifact; continuing without failing the build." >&2
           fi
@@ -344,10 +345,10 @@ jobs:
         run: |
           set -euo pipefail
           files=(
-            "artifacts/transgui-linux-x86_64/transgui-${PROG_VER}-x86_64-Linux.txz"
-            "artifacts/transgui-linux-i686/transgui-${PROG_VER}-i686-Linux.txz"
-            "artifacts/transgui-linux-armv6l/transgui-${PROG_VER}-armv6l-Linux.txz"
-            "artifacts/transgui-linux-armv7l/transgui-${PROG_VER}-armv7l-Linux.txz"
+            "artifacts/transgui-linux-x86_64/transgui-${PROG_VER}-x86_64-Linux-gtk2.txz"
+            "artifacts/transgui-linux-i686/transgui-${PROG_VER}-i686-Linux-gtk2.txz"
+            "artifacts/transgui-linux-armv6l/transgui-${PROG_VER}-armv6l-Linux-gtk2.txz"
+            "artifacts/transgui-linux-armv7l/transgui-${PROG_VER}-armv7l-Linux-gtk2.txz"
             "artifacts/transgui-macos-dmg/transgui-${PROG_VER}.dmg"
           )
 
