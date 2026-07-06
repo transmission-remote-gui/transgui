@@ -1,0 +1,37 @@
+setup/unix/build.sh
+  s_b4b0d7897807e1::t_34c4fa03c87405 48
+  s_b4b0d7897807e1::t_543267b3d2df97 10
+  s_b4b0d7897807e1::t_b6501fab3791b7 64
+  s_b4b0d7897807e1::t_de00db3029c3d3 9,49-50,65
+  s_b4b0d7897807e1::t_38712577d9db8a 3-4,8,11,13-23,27-30,45-47,51,57-58,60
+  s_b4b0d7897807e1::t_5d60eebb51094c 43-44
+  s_b4b0d7897807e1::t_8ae8ae0feebba1 55,61-62
+  s_b4b0d7897807e1::t_b6e33ed265021b 54
+  s_b4b0d7897807e1::t_3d61cb8b2bfb4e 12,24-26,31-42
+varlist.pas
+  s_b4b0d7897807e1::t_3b959d6266b52a 157,165,168,184,188,200-201,208
+  s_b4b0d7897807e1::t_d350243c0719fa 270
+  s_b4b0d7897807e1::t_b6501fab3791b7 160-161
+  s_b4b0d7897807e1::t_38712577d9db8a 276,282-283
+  s_b4b0d7897807e1::t_874856c0cba665 155-156,163-164,166-167,169-183,185-187,189-199,202-207
+vargrid.pas
+  s_b4b0d7897807e1::t_7749f47bbc6006 1213
+  s_b4b0d7897807e1::t_38712577d9db8a 1095,1101-1102,1210-1211
+  s_b4b0d7897807e1::t_4558eaedb9e7a7 594-599
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f0b018f1aef300fabf84244c1ce3ac5051c530b1",
+  "prompts": {},
+  "sessions": {
+    "s_b4b0d7897807e1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f335f-c7b4-7883-831d-2769eac78b7b",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
