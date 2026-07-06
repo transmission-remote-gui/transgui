@@ -1,0 +1,46 @@
+README.md
+  s_3eb45f9704438a::t_74d0e8bccdc6d7 58-59
+  s_3eb45f9704438a::t_6a29f300bd951c 65-71,81-82
+  s_3eb45f9704438a::t_c873e572ef7071 84
+  s_3eb45f9704438a::t_27ca8404016656 75
+  s_3eb45f9704438a::t_130c8c80ff860b 83
+.github/workflows/ci.yml
+  s_3eb45f9704438a::t_919f636f9c8ce2 348-351
+  s_3eb45f9704438a::t_c2c39ba57b835e 189
+  s_3eb45f9704438a::t_130c8c80ff860b 210,218,232
+Makefile
+  s_3eb45f9704438a::t_6a29f300bd951c 309
+setup/unix/debian-ubuntu-install_deps.sh
+  s_3eb45f9704438a::t_f7a73cfdd45990 40
+  s_3eb45f9704438a::t_130c8c80ff860b 44
+  s_3eb45f9704438a::t_6a29f300bd951c 5-34,36-39,42
+  s_3eb45f9704438a::t_861128857980cf 41,43,45-52
+Makefile.fpc
+  s_3eb45f9704438a::t_6a29f300bd951c 35
+setup/unix/verify_linux_binary.sh
+  s_3eb45f9704438a::t_27ca8404016656 18-23,25,27,46,52
+  s_3eb45f9704438a::t_6a29f300bd951c 1-2,4-12,14-17,24,26,28-45,47-51,53-65,67,72-76
+  s_3eb45f9704438a::t_255839446dadc4 13,66,68-71
+  s_3eb45f9704438a::t_97234946f45df3 3
+setup/unix/build.sh
+  s_3eb45f9704438a::t_6a29f300bd951c 7-10,12-19,21-24,29-31,33-38,44,46-56,58-60,62-64,66,70
+  s_3eb45f9704438a::t_130c8c80ff860b 20,32,39-43,45
+  s_3eb45f9704438a::t_27ca8404016656 28
+  s_3eb45f9704438a::t_255839446dadc4 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "309b29f5552a53f09e0d02cc25b53eef14c4a52b",
+  "prompts": {},
+  "sessions": {
+    "s_3eb45f9704438a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f36fe-6db1-7101-b8d4-15a498cd8869",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
