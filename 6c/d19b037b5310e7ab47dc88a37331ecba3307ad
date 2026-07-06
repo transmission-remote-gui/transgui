@@ -1,0 +1,34 @@
+varlist.pas
+  s_b4b0d7897807e1::t_38712577d9db8a 277,283-284
+  s_b4b0d7897807e1::t_b6501fab3791b7 160-161
+  s_b4b0d7897807e1::t_3b959d6266b52a 157,165,169,185,189,201-202,209
+  s_b4b0d7897807e1::t_874856c0cba665 155-156,163-164,166,168,170-184,186-188,190-200,203-208
+  s_b4b0d7897807e1::t_e6a41ceebce860 167
+  s_b4b0d7897807e1::t_d350243c0719fa 271
+setup/unix/build.sh
+  s_b4b0d7897807e1::t_38712577d9db8a 7,11,15-17,21,29
+  s_b4b0d7897807e1::t_a45f8784260e30 8
+  s_b4b0d7897807e1::t_e6a41ceebce860 10
+  s_b4b0d7897807e1::t_34c4fa03c87405 18
+  s_b4b0d7897807e1::t_de00db3029c3d3 19-20
+  s_b4b0d7897807e1::t_5d60eebb51094c 14
+  s_b4b0d7897807e1::t_351ed0eb565ea8 9,12-13
+vargrid.pas
+  s_b4b0d7897807e1::t_38712577d9db8a 1089,1095-1096,1204-1205
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "6cd19b037b5310e7ab47dc88a37331ecba3307ad",
+  "prompts": {},
+  "sessions": {
+    "s_b4b0d7897807e1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f335f-c7b4-7883-831d-2769eac78b7b",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
