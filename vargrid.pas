@@ -1086,21 +1086,20 @@ var
   v: variant;
   dc: integer;
 begin
-  if (ACol < 0) or (ARow < 0) then
-    exit;
+  CellAttribs.Text:='';
   CellAttribs.ImageIndex:=-1;
   CellAttribs.Indent:=0;
   CellAttribs.Options:=[];
   CellAttribs.State:=cbUnchecked;
   CellAttribs.Expanded:=True;
+  if (ACol < 0) or (ARow < 0) then
+    exit;
   if ACol >= FixedCols then begin
     dc:=ColToDataCol(ACol);
     if ARow >= FixedRows then begin
       v:=Items[dc, ARow - FixedRows];
       if not VarIsNull(v) and not VarIsEmpty(v) then
         CellAttribs.Text:=UTF8Encode(WideString(v))
-      else
-        CellAttribs.Text:='';
     end
     else
       CellAttribs.Text:=ColumnFromGridColumn(ACol).Title.Caption;
@@ -1202,8 +1201,12 @@ end;
 
 destructor TVarGrid.Destroy;
 begin
+  if FItems <> nil then begin
+    FItems.OnDataChanged:=nil;
+    FItems.Free;
+    FItems:=nil;
+  end;
   inherited Destroy;
-  FItems.Free;
 end;
 
 function TVarGrid.EditorByStyle(Style: TColumnButtonStyle): TWinControl;
