@@ -1,0 +1,66 @@
+.github/workflows/ci.yml
+  s_3eb45f9704438a::t_c2c39ba57b835e 189
+  s_3eb45f9704438a::t_130c8c80ff860b 210,218,232
+  s_3eb45f9704438a::t_919f636f9c8ce2 348-351
+setup/unix/build.sh
+  s_3eb45f9704438a::t_190dcec4550047 76-78,84-86,89-93,98,100-111
+  s_3eb45f9704438a::t_8f6fef197b40b1 8,10-12,25-26
+  s_3eb45f9704438a::t_6a29f300bd951c 7,27,33,35-42,47-50,55-57,60,62-65,97,112-117,121-122,129-130,136
+  s_3eb45f9704438a::t_e5bc15fba67584 43-45,59,73,94-96
+  s_3eb45f9704438a::t_0e1f7cde763ed9 61
+  s_3eb45f9704438a::t_16456ed541dac5 28-29,31-32
+  s_3eb45f9704438a::t_51fa6e93dd6017 75,99
+  s_3eb45f9704438a::t_130c8c80ff860b 66-70
+  s_3eb45f9704438a::t_2f25c8529f897c 46,58,72
+  s_3eb45f9704438a::t_8a72ab15ab22dc 9,13-24
+  s_3eb45f9704438a::t_104c526c1fd1f3 132
+  s_3eb45f9704438a::t_02c43ea777d0fd 30
+  s_3eb45f9704438a::t_27ca8404016656 54
+  s_3eb45f9704438a::t_255839446dadc4 34
+  s_3eb45f9704438a::t_c104b4300379a3 118-120,124-126,128
+  s_3eb45f9704438a::t_58a77a953d1ccd 71,74,79-83,87-88
+setup/unix/verify_linux_binary.sh
+  s_3eb45f9704438a::t_27ca8404016656 28-31
+  s_3eb45f9704438a::t_086daa32042fc0 13-14,18-25
+  s_3eb45f9704438a::t_6a29f300bd951c 1-2,4-5,7-12,15-17,34,66-69,71-75,77-80,83-89,117-118
+  s_3eb45f9704438a::t_39f8419827716e 26-27,32-33,64,70,76
+  s_3eb45f9704438a::t_8fb1fe76d4b360 35-60,62,65
+  s_3eb45f9704438a::t_2f25c8529f897c 90-92,114-116
+  s_3eb45f9704438a::t_190dcec4550047 94-113
+  s_3eb45f9704438a::t_c104b4300379a3 61,63,93
+  s_3eb45f9704438a::t_97234946f45df3 3
+  s_3eb45f9704438a::t_16456ed541dac5 6,81-82
+setup/macosx/create_app_new.sh
+  s_3eb45f9704438a::t_efadc06ea0683c 29
+setup/unix/debian-ubuntu-install_deps.sh
+  s_3eb45f9704438a::t_6a29f300bd951c 5-34,36-39
+  s_3eb45f9704438a::t_c104b4300379a3 53
+  s_3eb45f9704438a::t_8f6fef197b40b1 40-44,46-52,54
+  s_3eb45f9704438a::t_861128857980cf 45,55-58
+Makefile
+  s_3eb45f9704438a::t_6a29f300bd951c 309
+Makefile.fpc
+  s_3eb45f9704438a::t_6a29f300bd951c 35
+README.md
+  s_3eb45f9704438a::t_c873e572ef7071 84
+  s_3eb45f9704438a::t_6a29f300bd951c 65-71,81-82
+  s_3eb45f9704438a::t_74d0e8bccdc6d7 58-59
+  s_3eb45f9704438a::t_27ca8404016656 75
+  s_3eb45f9704438a::t_130c8c80ff860b 83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "36bcc580c1f021ecd492eb57d7f2d0ff9e313e29",
+  "prompts": {},
+  "sessions": {
+    "s_3eb45f9704438a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f36fe-6db1-7101-b8d4-15a498cd8869",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
