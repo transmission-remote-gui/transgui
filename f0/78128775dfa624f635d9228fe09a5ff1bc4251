@@ -1,0 +1,62 @@
+setup/unix/debian-ubuntu-install_deps.sh
+  s_3eb45f9704438a::t_861128857980cf 45,55-58
+  s_3eb45f9704438a::t_6a29f300bd951c 5-34,36-39
+  s_3eb45f9704438a::t_8f6fef197b40b1 40-44,46-52,54
+  s_3eb45f9704438a::t_c104b4300379a3 53
+setup/unix/build.sh
+  s_3eb45f9704438a::t_2f25c8529f897c 41,53,67
+  s_3eb45f9704438a::t_c104b4300379a3 113-115,119-121,123
+  s_3eb45f9704438a::t_27ca8404016656 49
+  s_3eb45f9704438a::t_0e1f7cde763ed9 56
+  s_3eb45f9704438a::t_e5bc15fba67584 38-40,54,68,89-91
+  s_3eb45f9704438a::t_255839446dadc4 29
+  s_3eb45f9704438a::t_8f6fef197b40b1 8,10-12,25-26
+  s_3eb45f9704438a::t_130c8c80ff860b 61-65
+  s_3eb45f9704438a::t_6a29f300bd951c 7,27-28,30-37,42-45,50-52,55,57-60,92,107-112,116-117,124-125,127,131
+  s_3eb45f9704438a::t_58a77a953d1ccd 66,69,74-78,82-83
+  s_3eb45f9704438a::t_51fa6e93dd6017 70,94
+  s_3eb45f9704438a::t_190dcec4550047 71-73,79-81,84-88,93,95-106
+  s_3eb45f9704438a::t_8a72ab15ab22dc 9,13-24
+setup/unix/verify_linux_binary.sh
+  s_3eb45f9704438a::t_97234946f45df3 3
+  s_3eb45f9704438a::t_27ca8404016656 28-31
+  s_3eb45f9704438a::t_190dcec4550047 94-113
+  s_3eb45f9704438a::t_39f8419827716e 26-27,32-33,64,70,76
+  s_3eb45f9704438a::t_c104b4300379a3 61,63,93
+  s_3eb45f9704438a::t_8fb1fe76d4b360 35-60,62,65
+  s_3eb45f9704438a::t_086daa32042fc0 13-14,18-25
+  s_3eb45f9704438a::t_2f25c8529f897c 90-92,114-116
+  s_3eb45f9704438a::t_6a29f300bd951c 1-2,4-12,15-17,34,66-69,71-75,77-89,117-118
+.github/workflows/ci.yml
+  s_3eb45f9704438a::t_130c8c80ff860b 210,218,232
+  s_3eb45f9704438a::t_919f636f9c8ce2 348-351
+  s_3eb45f9704438a::t_c2c39ba57b835e 189
+setup/macosx/create_app_new.sh
+  s_3eb45f9704438a::t_39f8419827716e 29
+Makefile.fpc
+  s_3eb45f9704438a::t_6a29f300bd951c 35
+Makefile
+  s_3eb45f9704438a::t_6a29f300bd951c 309
+README.md
+  s_3eb45f9704438a::t_74d0e8bccdc6d7 58-59
+  s_3eb45f9704438a::t_27ca8404016656 75
+  s_3eb45f9704438a::t_130c8c80ff860b 83
+  s_3eb45f9704438a::t_6a29f300bd951c 65-71,81-82
+  s_3eb45f9704438a::t_c873e572ef7071 84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f078128775dfa624f635d9228fe09a5ff1bc4251",
+  "prompts": {},
+  "sessions": {
+    "s_3eb45f9704438a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f36fe-6db1-7101-b8d4-15a498cd8869",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
