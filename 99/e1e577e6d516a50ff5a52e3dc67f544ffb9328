@@ -1,0 +1,59 @@
+setup/macosx/create_app_new.sh
+  s_3eb45f9704438a::t_39f8419827716e 29
+Makefile.fpc
+  s_3eb45f9704438a::t_6a29f300bd951c 35
+setup/unix/build.sh
+  s_3eb45f9704438a::t_27ca8404016656 31
+  s_3eb45f9704438a::t_6a29f300bd951c 7-10,12-19,24-27,32-34,37,39-42,74,89-94,98-99,106-107,109,113
+  s_3eb45f9704438a::t_130c8c80ff860b 43-47
+  s_3eb45f9704438a::t_58a77a953d1ccd 48,51,56-60,64-65
+  s_3eb45f9704438a::t_51fa6e93dd6017 52,76
+  s_3eb45f9704438a::t_c104b4300379a3 95-97,101-103,105
+  s_3eb45f9704438a::t_2f25c8529f897c 23,35,49
+  s_3eb45f9704438a::t_190dcec4550047 53-55,61-63,66-70,75,77-88
+  s_3eb45f9704438a::t_e5bc15fba67584 20-22,36,50,71-73
+  s_3eb45f9704438a::t_255839446dadc4 11
+  s_3eb45f9704438a::t_0e1f7cde763ed9 38
+setup/unix/debian-ubuntu-install_deps.sh
+  s_3eb45f9704438a::t_c104b4300379a3 40-43,45-51
+  s_3eb45f9704438a::t_861128857980cf 44,52-56
+  s_3eb45f9704438a::t_6a29f300bd951c 5-34,36-39
+setup/unix/verify_linux_binary.sh
+  s_3eb45f9704438a::t_086daa32042fc0 13-14,18-25
+  s_3eb45f9704438a::t_39f8419827716e 26-27,32-33,64,70,76
+  s_3eb45f9704438a::t_97234946f45df3 3
+  s_3eb45f9704438a::t_c104b4300379a3 61,63,93
+  s_3eb45f9704438a::t_190dcec4550047 94-113
+  s_3eb45f9704438a::t_8fb1fe76d4b360 35-60,62,65
+  s_3eb45f9704438a::t_2f25c8529f897c 90-92,114-116
+  s_3eb45f9704438a::t_6a29f300bd951c 1-2,4-12,15-17,34,66-69,71-75,77-89,117-118
+  s_3eb45f9704438a::t_27ca8404016656 28-31
+Makefile
+  s_3eb45f9704438a::t_6a29f300bd951c 309
+.github/workflows/ci.yml
+  s_3eb45f9704438a::t_130c8c80ff860b 210,218,232
+  s_3eb45f9704438a::t_919f636f9c8ce2 348-351
+  s_3eb45f9704438a::t_c2c39ba57b835e 189
+README.md
+  s_3eb45f9704438a::t_c873e572ef7071 84
+  s_3eb45f9704438a::t_74d0e8bccdc6d7 58-59
+  s_3eb45f9704438a::t_6a29f300bd951c 65-71,81-82
+  s_3eb45f9704438a::t_27ca8404016656 75
+  s_3eb45f9704438a::t_130c8c80ff860b 83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "99e1e577e6d516a50ff5a52e3dc67f544ffb9328",
+  "prompts": {},
+  "sessions": {
+    "s_3eb45f9704438a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f36fe-6db1-7101-b8d4-15a498cd8869",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
