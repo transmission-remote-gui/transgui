@@ -1,0 +1,35 @@
+main.pas
+  s_b2ea4058e0592f::t_ee9696832a0579 5064-5069,5073-5081,5086,5091-5101,5105-5108
+  s_b2ea4058e0592f::t_bce060c1aaf8e6 726-728
+  s_b2ea4058e0592f::t_4af740f56ca668 5070,5088,5103
+  s_b2ea4058e0592f::t_5a9a4dfcff94b4 1582,1589
+  s_b2ea4058e0592f::t_5e60a4f86ec8ec 5056-5057,5062-5063
+  s_b2ea4058e0592f::t_6ee4f04283c717 7985-7993,7996-8003
+  s_b2ea4058e0592f::t_23d930dea83dbe 1910,4570
+  s_b2ea4058e0592f::t_f05a716f94c1eb 1584
+  s_b2ea4058e0592f::t_9ab4e2fa644627 669,785-786
+  s_b2ea4058e0592f::t_26c988a699c558 5071-5072,5089-5090,5102,5104
+  s_b2ea4058e0592f::t_7c09e06c25a142 2033
+  s_b2ea4058e0592f::t_dbfa200a9c5600 5082-5085,5087
+  s_b2ea4058e0592f::t_9b0be2708cb9c1 1585-1588
+  s_b2ea4058e0592f::t_e4146efd28982c 1583,1590
+  s_b2ea4058e0592f::t_5a81d114d99349 5058-5061
+  s_b2ea4058e0592f::t_f372f137b6ab92 671-673
+  s_b2ea4058e0592f::t_80fb1001038535 7994-7995
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "84644a8532d457b987f74873f18f81ab4a2c300a",
+  "prompts": {},
+  "sessions": {
+    "s_b2ea4058e0592f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4094-97d3-7862-9e93-333f5c83ef2d",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
