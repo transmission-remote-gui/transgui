@@ -298,7 +298,7 @@ inherited OptionsForm: TOptionsForm
       object cbLangLeftRight: TComboBox
         Left = 392
         Height = 23
-        Top = 148
+        Top = 146
         Width = 136
         Anchors = [akTop, akLeft, akRight]
         DropDownCount = 60
