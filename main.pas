@@ -666,7 +666,11 @@ type
     procedure pmFilesPopup(Sender: TObject);
     procedure pmTorrentsPopup(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
+    procedure VSplitterCanOffset(Sender: TObject; var NewOffset: Integer; var Accept: Boolean);
     procedure VSplitterChangeBounds(Sender: TObject);
+    procedure VSplitterMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure VSplitterMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure VSplitterMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     function CorrectPath (path: string): string; // PETROV
   private
     FStarted: boolean;
@@ -719,6 +723,9 @@ type
     FCalcAvg: boolean;
     FPasswords: TStringList;
     FAppProps:TApplicationProperties;
+    FVSplitterDragging: boolean;
+    FVSplitterDragHeight: integer;
+    FVSplitterDragY: integer;
 
     procedure UpdateUI;
     procedure UpdateUIRpcVersion(RpcVersion: integer);
@@ -775,6 +782,8 @@ type
     procedure CheckAddTorrents;
     procedure CheckClipboardLink;
     procedure CenterDetailsWait;
+    procedure SetInfoPaneHeight(AHeight: integer);
+    procedure SetInfoPaneSplitterPosition(APosition: integer);
     procedure ReadLocalFolderWatch;
     function GetPageInfoType(pg: TTabSheet): TAdvInfoType;
     procedure DetailsUpdated;
@@ -1570,6 +1579,15 @@ begin
   FPendingTorrents:=TStringList.Create;
   FFilesCapt:=tabFiles.Caption;
   FPasswords:=TStringList.Create;
+{$ifdef LCLgtk2}
+{$if declared(TCanOffsetEvent)}
+  VSplitter.OnCanOffset:=@VSplitterCanOffset;
+{$else}
+  VSplitter.OnMouseDown:=@VSplitterMouseDown;
+  VSplitter.OnMouseMove:=@VSplitterMouseMove;
+  VSplitter.OnMouseUp:=@VSplitterMouseUp;
+{$endif}
+{$endif}
 
   FSlowResponse:=TProgressImage.Create(MainToolBar);
   with FSlowResponse do begin
@@ -1889,7 +1907,11 @@ procedure TMainForm.FormShow(Sender: TObject);
 begin
   if not FMainFormShown then begin
     FMainFormShown:=True;
+{$ifdef LCLgtk2}
+    SetInfoPaneSplitterPosition(Ini.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
+{$else}
     VSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
+{$endif}
     HSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
     MakeFullyVisible;
   end;
@@ -2012,7 +2034,11 @@ procedure TMainForm.acInfoPaneExecute(Sender: TObject);
 begin
   acInfoPane.Checked:=not acInfoPane.Checked;
   PageInfo.Visible:=acInfoPane.Checked;
+{$ifdef LCLgtk2}
+  SetInfoPaneHeight(PageInfo.Height);
+{$else}
   VSplitter.Top:=PageInfo.Top - VSplitter.Height;
+{$endif}
   VSplitter.Visible:=acInfoPane.Checked;
   if VSplitter.Visible then
     PageInfoChange(nil)
@@ -4549,7 +4575,11 @@ end;
 procedure TMainForm.gTorrentsResize(Sender: TObject);
 begin
   if not FStarted then begin
+{$ifdef LCLgtk2}
+    SetInfoPaneSplitterPosition(Ini.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
+{$else}
     VSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'VSplitter', VSplitter.GetSplitterPosition));
+{$endif}
     HSplitter.SetSplitterPosition(Ini.ReadInteger('MainForm', 'HSplitter', HSplitter.GetSplitterPosition));
   end;
 end;
@@ -5033,6 +5063,47 @@ begin
 {$ifdef windows}
   Update;
 {$endif windows}
+end;
+
+procedure TMainForm.VSplitterCanOffset(Sender: TObject; var NewOffset: Integer; var Accept: Boolean);
+begin
+  if NewOffset <> 0 then
+    SetInfoPaneHeight(PageInfo.Height - NewOffset);
+  NewOffset:=0;
+  Accept:=False;
+end;
+
+procedure TMainForm.VSplitterMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if Button <> mbLeft then
+    exit;
+  FVSplitterDragging:=True;
+  FVSplitterDragHeight:=PageInfo.Height;
+  FVSplitterDragY:=Mouse.CursorPos.Y;
+  SetCaptureControl(VSplitter);
+end;
+
+procedure TMainForm.VSplitterMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+begin
+  if not FVSplitterDragging then
+    exit;
+  if not (ssLeft in Shift) then begin
+    FVSplitterDragging:=False;
+    SetCaptureControl(nil);
+    exit;
+  end;
+  SetInfoPaneHeight(FVSplitterDragHeight - (Mouse.CursorPos.Y - FVSplitterDragY));
+end;
+
+procedure TMainForm.VSplitterMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if not FVSplitterDragging then
+    exit;
+  FVSplitterDragging:=False;
+  SetCaptureControl(nil);
+  if Button <> mbLeft then
+    exit;
+  SetInfoPaneHeight(FVSplitterDragHeight - (Mouse.CursorPos.Y - FVSplitterDragY));
 end;
 
 procedure TMainForm.UrlLabelClick(Sender: TObject);
@@ -7909,6 +7980,25 @@ procedure TMainForm.CenterDetailsWait;
 begin
   panDetailsWait.Left:=PageInfo.Left + (PageInfo.Width - panDetailsWait.Width) div 2;
   panDetailsWait.Top:=PageInfo.Top + (PageInfo.Height - panDetailsWait.Height) div 2;
+end;
+
+procedure TMainForm.SetInfoPaneHeight(AHeight: integer);
+var
+  MinHeight, MaxHeight: integer;
+begin
+  MinHeight:=Max(VSplitter.MinSize, PageInfo.Constraints.MinHeight);
+  MaxHeight:=PageInfo.Height + panTop.Height - Max(VSplitter.MinSize, panTop.Constraints.MinHeight);
+  if MaxHeight < MinHeight then
+    MaxHeight:=MinHeight;
+  AHeight:=Max(MinHeight, Min(AHeight, MaxHeight));
+  if PageInfo.Height <> AHeight then
+    PageInfo.Height:=AHeight;
+  VSplitter.Top:=PageInfo.Top - VSplitter.Height;
+end;
+
+procedure TMainForm.SetInfoPaneSplitterPosition(APosition: integer);
+begin
+  SetInfoPaneHeight(PageInfo.Height + VSplitter.Top - APosition);
 end;
 
 function TMainForm.GetPageInfoType(pg: TTabSheet): TAdvInfoType;
