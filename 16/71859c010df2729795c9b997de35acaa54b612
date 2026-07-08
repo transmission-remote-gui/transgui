@@ -1,0 +1,21 @@
+main.pas
+  s_50c2144422bfd1::t_762723bd1cd7bc 5585-5588,5590-5607,5609,5888,5957,5989,5991-5992
+rpc.pas
+  s_50c2144422bfd1::t_1e81df6ba3b355 60-67,274-277,429-444,463-470,571-585,587-626,628,630-631,636,638-662,664,1176-1178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "1671859c010df2729795c9b997de35acaa54b612",
+  "prompts": {},
+  "sessions": {
+    "s_50c2144422bfd1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4131-2bf0-7d32-ae05-7786887a8d44",
+        "model": "unknown"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
