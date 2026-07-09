@@ -1,0 +1,21 @@
+lang/transgui.zh
+  s_c17871863a57a9::t_986848dd607d44 382-385
+lang/transgui.template
+  s_c17871863a57a9::t_6fa126a87b1193 111-112,123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "ec22bf2ceb8f8a2270e1b6218365ba446b544f4e",
+  "prompts": {},
+  "sessions": {
+    "s_c17871863a57a9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1f319e9e-2b43-4d44-88e1-9e2e498e4f92",
+        "model": "unknown"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
