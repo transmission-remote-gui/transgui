@@ -66,7 +66,7 @@ inherited ConnOptionsForm: TConnOptionsForm
       object edPassword: TEdit
         Left = 180
         Height = 23
-        Top = 153
+        Top = 154
         Width = 316
         Anchors = [akTop, akLeft, akRight]
         EchoMode = emPassword

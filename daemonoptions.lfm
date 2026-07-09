@@ -109,7 +109,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
       object edSeedRatio: TFloatSpinEdit
         Left = 431
         Height = 21
-        Top = 134
+        Top = 132
         Width = 66
         Anchors = [akTop, akRight]
         Increment = 0.1
@@ -345,7 +345,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         object edMaxUp: TSpinEdit
           Left = 455
           Height = 21
-          Top = 28
+          Top = 29
           Width = 66
           Anchors = [akTop, akRight]
           Increment = 10
@@ -416,7 +416,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         object txTo: TLabel
           Left = 150
           Height = 14
-          Top = 104
+          Top = 103
           Width = 49
           Alignment = taCenter
           AutoSize = False
@@ -436,7 +436,7 @@ inherited DaemonOptionsForm: TDaemonOptionsForm
         object edAltUp: TSpinEdit
           Left = 455
           Height = 21
-          Top = 28
+          Top = 29
           Width = 66
           Anchors = [akTop, akRight]
           Increment = 10
