@@ -1,0 +1,22 @@
+main.pas
+  s_851458448550f1::t_355de890960b43 5082-5106
+  s_851458448550f1::t_c36a22c48ba8b4 5079-5081
+  s_851458448550f1::t_bb2e5ccfad05cf 5107-5108
+  s_851458448550f1::t_23ed3b853765ec 669,671-673,726-728,785-786,1582-1590,1910-1912,1914,2037-2039,2041,4578-4580,4582,5068-5078,7985-8003
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "418515099cb545a6960aeb5367cfcb418e053d42",
+  "prompts": {},
+  "sessions": {
+    "s_851458448550f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4631-d259-7042-b69c-df95c0b66115",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
