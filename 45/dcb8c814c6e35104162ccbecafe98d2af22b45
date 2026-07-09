@@ -1,0 +1,121 @@
+lang/transgui.it
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_8a13f2cddf433d::t_7a0dbac6f238fb 383-386
+lang/transgui.zh
+  s_39d3db8bc6e964::t_76f46fe34c8001 386-387
+lang/transgui.ro
+  s_8a13f2cddf433d::t_417ee7cd1aab20 117
+  s_8a13f2cddf433d::t_ec7e2adc34c3b1 350-386
+lang/transgui.fr
+  s_8a13f2cddf433d::t_c86c71b7c329ba 350-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+lang/transgui.pt
+  s_8a13f2cddf433d::t_9f211cecac2603 368-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 122
+lang/transgui.template
+  s_c17871863a57a9::t_6fa126a87b1193 121
+lang/transgui.lv
+  s_8a13f2cddf433d::t_417ee7cd1aab20 104
+  s_8a13f2cddf433d::t_b979fa96bcb2d6 351-387
+lang/transgui.be
+  s_8a13f2cddf433d::t_417ee7cd1aab20 104
+  s_8a13f2cddf433d::t_63995926f5f494 350-386
+lang/transgui.cs
+  s_8a13f2cddf433d::t_417ee7cd1aab20 118
+  s_8a13f2cddf433d::t_de1d5974f311c5 350-386
+lang/transgui.ko
+  s_39d3db8bc6e964::t_76f46fe34c8001 266
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_8a13f2cddf433d::t_aea7b3c25cb01e 381-386
+lang/transgui.en
+  s_39d3db8bc6e964::t_76f46fe34c8001 366
+  s_8a13f2cddf433d::t_a761c712a8631b 383-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+lang/transgui.sv
+  s_8a13f2cddf433d::t_2621ca0a574beb 382-387
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+lang/transgui.es
+  s_8a13f2cddf433d::t_b0f78ed493709b 380-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+lang/transgui.hr
+  s_8a13f2cddf433d::t_816384e21f65e1 350-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+lang/transgui.ru
+  s_8a13f2cddf433d::t_111ca64d0c04b6 119
+lang/transgui.hu
+  s_8a13f2cddf433d::t_51a7ce4f3215b2 383-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_76f46fe34c8001 269
+lang/transgui.nl
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_76f46fe34c8001 82
+  s_8a13f2cddf433d::t_1ee6f0e768559b 383-386
+lang/transgui.no
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_8a13f2cddf433d::t_ef6fc27cd51a06 350-386
+lang/transgui.de
+  s_8a13f2cddf433d::t_49f606f3e2c4a3 350-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+lang/transgui.lt
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_76f46fe34c8001 366
+lang/transgui.fi
+  s_8a13f2cddf433d::t_36866e83153336 350-386
+  s_39d3db8bc6e964::t_76f46fe34c8001 227
+  s_8a13f2cddf433d::t_417ee7cd1aab20 118
+lang/transgui.pl
+  s_39d3db8bc6e964::t_76f46fe34c8001 366
+  s_8a13f2cddf433d::t_ae994c2f7aceb3 383-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+lang/transgui.pt_br
+  s_8a13f2cddf433d::t_1c992ef6feaafe 350-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 122
+lang/transgui.el
+  s_8a13f2cddf433d::t_da453ba269ab4b 350-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+lang/transgui.da
+  s_8a13f2cddf433d::t_0a6ce8919b6c3f 350-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 224
+lang/transgui.tr
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_8a13f2cddf433d::t_a28d732d1477f5 363-386
+lang/transgui.ca
+  s_8a13f2cddf433d::t_ed4bfdae8a7ba6 350-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_76f46fe34c8001 68,158
+lang/transgui.uk
+  s_8a13f2cddf433d::t_8234d0570274ca 383-386
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "45dcb8c814c6e35104162ccbecafe98d2af22b45",
+  "prompts": {},
+  "sessions": {
+    "s_39d3db8bc6e964": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4819-3136-73d3-b811-13b8f114705d",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    },
+    "s_8a13f2cddf433d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b8047648ffecHM86GTQYAeoJZ",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": null
+    },
+    "s_c17871863a57a9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1f319e9e-2b43-4d44-88e1-9e2e498e4f92",
+        "model": "unknown"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
