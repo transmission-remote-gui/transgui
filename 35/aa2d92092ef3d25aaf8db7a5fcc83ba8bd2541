@@ -1,0 +1,242 @@
+lang/transgui.fi
+  s_39d3db8bc6e964::t_d7695f7343ef03 358-359,374,388
+  s_39d3db8bc6e964::t_a69d624433177c 355-357,360-373,375-381,383-387
+  s_39d3db8bc6e964::t_76f46fe34c8001 229
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+  s_39d3db8bc6e964::t_cecfdc457418d3 353-354
+  s_8a13f2cddf433d::t_36866e83153336 352
+  s_39d3db8bc6e964::t_54ff95da252f57 270
+  s_39d3db8bc6e964::t_cbcef146a30059 119-120
+  s_8a13f2cddf433d::t_417ee7cd1aab20 118
+lang/transgui.ro
+  s_39d3db8bc6e964::t_3ee40574779e33 269
+  s_8a13f2cddf433d::t_417ee7cd1aab20 117
+  s_39d3db8bc6e964::t_cbcef146a30059 118-119
+  s_39d3db8bc6e964::t_cecfdc457418d3 353-354
+  s_39d3db8bc6e964::t_2676bdd4af747f 355-357,360-373,375-381,383-384,386-387
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+  s_39d3db8bc6e964::t_d7695f7343ef03 358-359,374,388
+  s_8a13f2cddf433d::t_ec7e2adc34c3b1 352,385
+lang/transgui.es
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+  s_39d3db8bc6e964::t_5e8e52083c9e35 365
+  s_8a13f2cddf433d::t_b0f78ed493709b 382-388
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+lang/transgui.pt_br
+  s_39d3db8bc6e964::t_cbcef146a30059 123-124
+  s_8a13f2cddf433d::t_417ee7cd1aab20 122
+  s_8a13f2cddf433d::t_1c992ef6feaafe 352-381,383-388
+  s_39d3db8bc6e964::t_3171a8f8883630 168
+  s_39d3db8bc6e964::t_3ee40574779e33 271
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+lang/transgui.uk
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121,367
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_8a13f2cddf433d::t_8234d0570274ca 385-388
+lang/transgui.template
+  s_39d3db8bc6e964::t_3ee40574779e33 273
+  s_c17871863a57a9::t_6fa126a87b1193 121
+  s_39d3db8bc6e964::t_cbcef146a30059 122-123
+  s_39d3db8bc6e964::t_5e8e52083c9e35 370
+lang/transgui.fr
+  s_8a13f2cddf433d::t_c86c71b7c329ba 352-381,383-388
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+lang/transgui.lv
+  s_39d3db8bc6e964::t_cbcef146a30059 105-106
+  s_39d3db8bc6e964::t_d7695f7343ef03 358-359,374,388
+  s_8a13f2cddf433d::t_417ee7cd1aab20 104
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+  s_39d3db8bc6e964::t_cecfdc457418d3 353-354
+  s_39d3db8bc6e964::t_3ee40574779e33 271
+  s_39d3db8bc6e964::t_520c7faab2b7fb 355-357,360-373,375-381,383-387
+  s_8a13f2cddf433d::t_b979fa96bcb2d6 352
+lang/transgui.ca
+  s_39d3db8bc6e964::t_d7695f7343ef03 358-359,374,388
+  s_39d3db8bc6e964::t_76f46fe34c8001 68,160
+  s_8a13f2cddf433d::t_ed4bfdae8a7ba6 352,385
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+  s_39d3db8bc6e964::t_cecfdc457418d3 353-354
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+  s_39d3db8bc6e964::t_0b5edfc83ba618 355-357,360-373,375-381,383-384,386-387
+lang/transgui.no
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_cecfdc457418d3 353-354
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+  s_39d3db8bc6e964::t_520c7faab2b7fb 355-357,360-373,375-381,383-387
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+  s_8a13f2cddf433d::t_ef6fc27cd51a06 352
+  s_39d3db8bc6e964::t_d7695f7343ef03 358-359,374,388
+lang/transgui.cs
+  s_8a13f2cddf433d::t_417ee7cd1aab20 118
+  s_39d3db8bc6e964::t_cbcef146a30059 119-120
+  s_39d3db8bc6e964::t_cecfdc457418d3 353-354
+  s_39d3db8bc6e964::t_d7695f7343ef03 358-359,374,388
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+  s_39d3db8bc6e964::t_0b5edfc83ba618 355-357,360-373,375-381,383-387
+  s_8a13f2cddf433d::t_de1d5974f311c5 352
+lang/transgui.lt
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_3ee40574779e33 271
+  s_39d3db8bc6e964::t_5e8e52083c9e35 367
+  s_39d3db8bc6e964::t_76f46fe34c8001 368
+lang/transgui.be
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+  s_39d3db8bc6e964::t_cbcef146a30059 105-106,374
+  s_8a13f2cddf433d::t_417ee7cd1aab20 104
+  s_8a13f2cddf433d::t_63995926f5f494 352
+  s_39d3db8bc6e964::t_d7695f7343ef03 358-359,388
+  s_39d3db8bc6e964::t_cecfdc457418d3 353-354
+  s_39d3db8bc6e964::t_0b5edfc83ba618 355-357,360-373,375-381,383-387
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+lang/transgui.el
+  s_39d3db8bc6e964::t_a69d624433177c 355-357,360-373,375-381,383-387
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_39d3db8bc6e964::t_d7695f7343ef03 358-359,374,388
+  s_8a13f2cddf433d::t_da453ba269ab4b 352
+  s_39d3db8bc6e964::t_cecfdc457418d3 353-354
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+lang/transgui.tr
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_8a13f2cddf433d::t_a28d732d1477f5 365-382,384-388
+  s_39d3db8bc6e964::t_5e8e52083c9e35 383
+  s_39d3db8bc6e964::t_54ff95da252f57 270
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+lang/transgui.it
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_8a13f2cddf433d::t_7a0dbac6f238fb 385-388
+  s_39d3db8bc6e964::t_5e8e52083c9e35 367
+lang/transgui.hu
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_5e8e52083c9e35 367
+  s_8a13f2cddf433d::t_51a7ce4f3215b2 385
+  s_39d3db8bc6e964::t_3171a8f8883630 341
+  s_39d3db8bc6e964::t_d7695f7343ef03 386-388
+lang/transgui.pl
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_8a13f2cddf433d::t_ae994c2f7aceb3 385-388
+  s_39d3db8bc6e964::t_76f46fe34c8001 368
+  s_39d3db8bc6e964::t_5e8e52083c9e35 367
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+lang/transgui.ru
+  s_8a13f2cddf433d::t_111ca64d0c04b6 119
+  s_39d3db8bc6e964::t_397429949be065 385-388
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+lang/transgui.zh_tw
+  s_39d3db8bc6e964::t_e5d5b678d6e757 385
+  s_39d3db8bc6e964::t_cbcef146a30059 386-387
+  s_39d3db8bc6e964::t_54ff95da252f57 274
+  s_39d3db8bc6e964::t_5e8e52083c9e35 365
+lang/transgui.ko
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+  s_39d3db8bc6e964::t_5e8e52083c9e35 365
+  s_39d3db8bc6e964::t_76f46fe34c8001 268
+  s_8a13f2cddf433d::t_aea7b3c25cb01e 383-388
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+lang/transgui.hr
+  s_39d3db8bc6e964::t_d7695f7343ef03 358-359,374,388
+  s_39d3db8bc6e964::t_3ee40574779e33 271
+  s_8a13f2cddf433d::t_816384e21f65e1 352
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_cecfdc457418d3 353-354
+  s_39d3db8bc6e964::t_520c7faab2b7fb 355-357,360-373,375-381,383-387
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+lang/transgui.de
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_8a13f2cddf433d::t_49f606f3e2c4a3 352-381,383-388
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+lang/transgui.nl
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+  s_39d3db8bc6e964::t_5e8e52083c9e35 367
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121,232
+  s_39d3db8bc6e964::t_76f46fe34c8001 82
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_8a13f2cddf433d::t_1ee6f0e768559b 385-388
+lang/transgui.zh
+  s_39d3db8bc6e964::t_54ff95da252f57 268
+  s_39d3db8bc6e964::t_5e8e52083c9e35 364
+  s_39d3db8bc6e964::t_76f46fe34c8001 386-387
+lang/transgui.sv
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_8a13f2cddf433d::t_2621ca0a574beb 384
+  s_39d3db8bc6e964::t_3ee40574779e33 271
+  s_39d3db8bc6e964::t_cecfdc457418d3 385-386
+  s_39d3db8bc6e964::t_d7695f7343ef03 387-389
+  s_39d3db8bc6e964::t_5e8e52083c9e35 366
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121,243
+lang/transgui.en
+  s_39d3db8bc6e964::t_5e8e52083c9e35 367
+  s_39d3db8bc6e964::t_76f46fe34c8001 368
+  s_8a13f2cddf433d::t_417ee7cd1aab20 119
+  s_39d3db8bc6e964::t_cbcef146a30059 120-121
+  s_39d3db8bc6e964::t_3ee40574779e33 271
+  s_8a13f2cddf433d::t_a761c712a8631b 385-388
+lang/transgui.da
+  s_39d3db8bc6e964::t_a69d624433177c 355-357,360-371,373,375-381,383-387
+  s_8a13f2cddf433d::t_417ee7cd1aab20 224
+  s_39d3db8bc6e964::t_5e8e52083c9e35 382
+  s_8a13f2cddf433d::t_0a6ce8919b6c3f 352,372
+  s_39d3db8bc6e964::t_cbcef146a30059 225-226
+  s_39d3db8bc6e964::t_d7695f7343ef03 358-359,374,388
+  s_39d3db8bc6e964::t_cecfdc457418d3 353-354
+  s_39d3db8bc6e964::t_54ff95da252f57 31
+lang/transgui.pt
+  s_8a13f2cddf433d::t_417ee7cd1aab20 122
+  s_39d3db8bc6e964::t_3171a8f8883630 168
+  s_39d3db8bc6e964::t_cbcef146a30059 123-124,371
+  s_39d3db8bc6e964::t_5e8e52083c9e35 365
+  s_39d3db8bc6e964::t_54ff95da252f57 271
+  s_8a13f2cddf433d::t_9f211cecac2603 370,372-388
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "35aa2d92092ef3d25aaf8db7a5fcc83ba8bd2541",
+  "prompts": {},
+  "sessions": {
+    "s_39d3db8bc6e964": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4819-3136-73d3-b811-13b8f114705d",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    },
+    "s_8a13f2cddf433d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b8047648ffecHM86GTQYAeoJZ",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": null
+    },
+    "s_c17871863a57a9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1f319e9e-2b43-4d44-88e1-9e2e498e4f92",
+        "model": "unknown"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
