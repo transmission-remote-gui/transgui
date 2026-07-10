@@ -321,6 +321,7 @@ type
     procedure SetSizeRecvBuffer(Size: Integer);
     function GetSizeSendBuffer: Integer;
     procedure SetSizeSendBuffer(Size: Integer);
+    function GetSocketError: Integer;
     procedure SetNonBlockMode(Value: Boolean);
     procedure SetTTL(TTL: integer);
     function GetTTL:integer;
@@ -1240,6 +1241,7 @@ type
     FSSHChannelArg2: string;
     FCertComplianceLevel: integer;
     FSNIHost: string;
+    FDataTimeout: integer;
     procedure ReturnError;
     procedure SetCertCAFile(const Value: string); virtual;
     function DoVerifyCert:boolean;
@@ -1433,6 +1435,10 @@ type
        The value is cleared after the connection is established.
       (SNI support requires OpenSSL 0.9.8k or later. Cryptlib not supported, yet )  }
     property SNIHost:string read FSNIHost write FSNIHost;
+
+    {:Timeout for SSL/TLS application data operations. A negative value preserves
+      the plugin default behavior.}
+    property DataTimeout: integer read FDataTimeout write FDataTimeout;
   end;
 
   {:@abstract(Default SSL plugin with no SSL support.)
@@ -1921,6 +1927,7 @@ procedure TBlockSocket.Connect(IP, Port: string);
 var
   Sin: TVarSin;
   b: boolean;
+  x: integer;
 begin
   SetSin(Sin, IP, Port);
   if FLastError = 0 then
@@ -1932,11 +1939,24 @@ begin
       // connect in non-blocking mode
       b := NonBlockMode;
       NonBlockMode := true;
-      SockCheck(synsock.Connect(FSocket, Sin));
-      if (FLastError = WSAEINPROGRESS) OR (FLastError = WSAEWOULDBLOCK) then
-        if not CanWrite(FConnectionTimeout) then
-          FLastError := WSAETIMEDOUT;
-      NonBlockMode := b;
+      try
+        SockCheck(synsock.Connect(FSocket, Sin));
+        if (FLastError = WSAEINPROGRESS) OR (FLastError = WSAEWOULDBLOCK) then
+          if not CanWrite(FConnectionTimeout) then
+          begin
+            if (FLastError = 0) or (FLastError = WSAEINPROGRESS) or
+               (FLastError = WSAEWOULDBLOCK) then
+              FLastError := WSAETIMEDOUT;
+          end
+          else
+          begin
+            x := GetSocketError;
+            FLastError := x;
+            FLastErrorDesc := GetErrorDescEx;
+          end;
+      finally
+        NonBlockMode := b;
+      end;
     end
     else
       SockCheck(synsock.Connect(FSocket, Sin));
@@ -2066,7 +2086,8 @@ begin
           SockCheck(r);
         end
         else
-          FLastError := WSAETIMEDOUT;
+          if FLastError = 0 then
+            FLastError := WSAETIMEDOUT;
       end;
       if FLastError <> 0 then
         Break;
@@ -2364,7 +2385,8 @@ begin
         end;
       end
       else
-        FLastError := WSAETIMEDOUT;
+        if FLastError = 0 then
+          FLastError := WSAETIMEDOUT;
     end;
   end;
   if FConvertLineEnd and (Result <> '') then
@@ -2770,7 +2792,7 @@ var
   ti, tr: Integer;
   n: integer;
 begin
-  if (FHeartbeatRate <> 0) and (Timeout <> -1) then
+  if (FHeartbeatRate <> 0) and (Timeout > 0) then
   begin
     ti := Timeout div FHeartbeatRate;
     tr := Timeout mod FHeartbeatRate;
@@ -2781,20 +2803,26 @@ begin
     tr := Timeout;
   end;
   Result := InternalCanRead(tr);
-  if not Result then
-    for n := 0 to ti do
+  if not Result and (Timeout <> 0) then
+    for n := 1 to ti do
     begin
       DoHeartbeat;
       if FStopFlag then
       begin
         Result := False;
         FStopFlag := False;
+        FLastError := WSAECONNABORTED;
         Break;
       end;
       Result := InternalCanRead(FHeartbeatRate);
       if Result then
         break;
     end;
+  if not Result and FStopFlag then
+  begin
+    FStopFlag := False;
+    FLastError := WSAECONNABORTED;
+  end;
   ExceptCheck;
   if Result then
     DoStatus(HR_CanRead, '');
@@ -2830,7 +2858,7 @@ var
   ti, tr: Integer;
   n: integer;
 begin
-  if (FHeartbeatRate <> 0) and (Timeout <> -1) then
+  if (FHeartbeatRate <> 0) and (Timeout > 0) then
   begin
     ti := Timeout div FHeartbeatRate;
     tr := Timeout mod FHeartbeatRate;
@@ -2841,20 +2869,26 @@ begin
     tr := Timeout;
   end;
   Result := InternalCanWrite(tr);
-  if not Result then
-    for n := 0 to ti do
+  if not Result and (Timeout <> 0) then
+    for n := 1 to ti do
     begin
       DoHeartbeat;
       if FStopFlag then
       begin
         Result := False;
         FStopFlag := False;
+        FLastError := WSAECONNABORTED;
         Break;
       end;
       Result := InternalCanWrite(FHeartbeatRate);
       if Result then
         break;
     end;
+  if not Result and FStopFlag then
+  begin
+    FStopFlag := False;
+    FLastError := WSAECONNABORTED;
+  end;
   ExceptCheck;
   if Result then
     DoStatus(HR_CanWrite, '');
@@ -2954,6 +2988,33 @@ begin
   d.Option := SOT_SendBuff;
   d.Value := Size;
   DelayedOption(d);
+end;
+
+function TBlockSocket.GetSocketError: Integer;
+var
+  l: Integer;
+{$IFDEF CIL}
+  buf: TMemory;
+{$ENDIF}
+begin
+  Result := 0;
+  l := SizeOf(Result);
+{$IFDEF CIL}
+  SetLength(buf, l);
+  if synsock.GetSockOpt(FSocket, integer(SOL_SOCKET), integer(SO_ERROR), buf, l) = SOCKET_ERROR then
+  begin
+    SockCheck(SOCKET_ERROR);
+    Result := FLastError;
+  end
+  else
+    Result := System.BitConverter.ToInt32(buf, 0);
+{$ELSE}
+  if synsock.GetSockOpt(FSocket, SOL_SOCKET, SO_ERROR, @Result, l) = SOCKET_ERROR then
+  begin
+    SockCheck(SOCKET_ERROR);
+    Result := FLastError;
+  end;
+{$ENDIF}
 end;
 
 procedure TBlockSocket.SetNonBlockMode(Value: Boolean);
@@ -4184,6 +4245,7 @@ begin
   FSSHChannelArg2 := '';
   FCertComplianceLevel := -1; //default
   FSNIHost := '';
+  FDataTimeout := -1;
 end;
 
 procedure TCustomSSL.Assign(const Value: TCustomSSL);
@@ -4206,6 +4268,7 @@ begin
   FPFXfile := Value.PFXfile;
   FCertComplianceLevel := Value.CertComplianceLevel;
   FSNIHost := Value.FSNIHost;
+  FDataTimeout := Value.DataTimeout;
 end;
 
 procedure TCustomSSL.ReturnError;
