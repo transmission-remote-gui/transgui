@@ -1,0 +1,59 @@
+lang/transgui.it
+  s_8d10415ac27e99::t_0f594a13b766dd 119-121,367,385-388
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 271
+lang/transgui.uk
+  s_8d10415ac27e99::t_2ecd030aa15bd1 367
+  s_8d10415ac27e99::t_a6785c4de2d180 368
+  s_8d10415ac27e99::t_38e807c29e3049 119-121,271,385-388
+lang/transgui.be
+  s_8d10415ac27e99::t_da248f9df01b00 387
+  s_8d10415ac27e99::t_99c90efa7dc0ec 355-384
+  s_8d10415ac27e99::t_85e84903fee71f 104-106,271,352-354,385-386,388
+lang/transgui.sv
+  s_8d10415ac27e99::t_90c8abfc3d346e 119-121,243,366,384-389
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 271
+lang/transgui.tr
+  s_8d10415ac27e99::t_abc865e73ba253 119-121,365-388
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 270
+lang/transgui.ca
+  s_8d10415ac27e99::t_cc1c26e837b69f 355-357
+  s_8d10415ac27e99::t_205910e9f53cab 358-388
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 68,119-121,160,271,352-354
+lang/transgui.ko
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 271
+  s_8d10415ac27e99::t_092dcb0d58badf 119-121,268,365,383-388
+lang/transgui.pt_br
+  s_8d10415ac27e99::t_a6785c4de2d180 271
+  s_8d10415ac27e99::t_1339a4feec20e5 122-124,168,352-388
+lang/transgui.ro
+  s_8d10415ac27e99::t_c1ba64aee73be4 117-119,269,358-388
+  s_8d10415ac27e99::t_34fee3e39d1bb0 352
+  s_8d10415ac27e99::t_aceec52d0afc00 355-357
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 353-354
+lang/transgui.hr
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 271
+  s_8d10415ac27e99::t_8aaac71afabebe 119-121,352-388
+lang/transgui.pt
+  s_8d10415ac27e99::t_ffbdfae637aa1d 122-124,168,271,370-388
+  s_8d10415ac27e99::t_ae6cd62dc3a1b4 365
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 366
+lang/transgui.lv
+  s_8d10415ac27e99::t_5a1f814aac3fef 104-106,352-388
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 271
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "c0f65d1512b3066af72a493d04f3c919b97c27ba",
+  "prompts": {},
+  "sessions": {
+    "s_8d10415ac27e99": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f48bd-8902-7290-93aa-d25ea24e08d5",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": null
+    }
+  }
+}
