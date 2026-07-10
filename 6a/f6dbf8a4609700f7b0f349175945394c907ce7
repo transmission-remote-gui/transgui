@@ -1,0 +1,89 @@
+lang/transgui.fr
+  s_8d10415ac27e99::t_b641f93a6bd0b5 363
+  s_8d10415ac27e99::t_119b61779d8cc2 119-121,271,352-359,367-388
+  s_8d10415ac27e99::t_d18c3c5569b0ad 360-362
+  s_8d10415ac27e99::t_3205114330645c 364-366
+lang/transgui.be
+  s_8d10415ac27e99::t_85e84903fee71f 104-106,271,352-354,385-386,388
+  s_8d10415ac27e99::t_da248f9df01b00 387
+  s_8d10415ac27e99::t_99c90efa7dc0ec 355-384
+lang/transgui.sv
+  s_8d10415ac27e99::t_90c8abfc3d346e 119-121,243,366,384-389
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 271
+lang/transgui.hu
+  s_8d10415ac27e99::t_dd0369c4ee0e23 119-121,367,385-388
+  s_8d10415ac27e99::t_ab2a63e9b6edef 341
+lang/transgui.ko
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 271
+  s_8d10415ac27e99::t_092dcb0d58badf 119-121,268,365,383-388
+lang/transgui.tr
+  s_8d10415ac27e99::t_abc865e73ba253 119-121,365-388
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 270
+lang/transgui.ro
+  s_8d10415ac27e99::t_c1ba64aee73be4 117-119,358-388
+  s_8d10415ac27e99::t_34fee3e39d1bb0 352
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 353-354
+  s_8d10415ac27e99::t_b641f93a6bd0b5 355
+  s_8d10415ac27e99::t_2efd5810bd4333 269
+  s_8d10415ac27e99::t_aceec52d0afc00 356-357
+lang/transgui.pt_br
+  s_8d10415ac27e99::t_1339a4feec20e5 122-124,352,355-388
+  s_8d10415ac27e99::t_a6785c4de2d180 271
+  s_8d10415ac27e99::t_1ba098fd2e7947 168
+  s_8d10415ac27e99::t_c3edf0879288d5 353-354
+lang/transgui.fi
+  s_8d10415ac27e99::t_bc2f4fb0ce3445 352-354
+  s_8d10415ac27e99::t_a1455f20275fd1 118-120,229,270,359-388
+  s_8d10415ac27e99::t_b641f93a6bd0b5 355
+  s_8d10415ac27e99::t_5595cc9be8d9cc 356-358
+lang/transgui.es
+  s_8d10415ac27e99::t_ca4feb9928494b 119-121,271,365,388
+  s_8d10415ac27e99::t_8bca07591e0047 382
+  s_8d10415ac27e99::t_c3edf0879288d5 383-384
+  s_8d10415ac27e99::t_3c65c7a9fba5c4 385-387
+lang/transgui.nl
+  s_8d10415ac27e99::t_829d2965067347 82,119-121,271,367,385-388
+  s_8d10415ac27e99::t_2efd5810bd4333 232
+lang/transgui.hr
+  s_8d10415ac27e99::t_8aaac71afabebe 119-121,352-388
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 271
+lang/transgui.it
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 271
+  s_8d10415ac27e99::t_0f594a13b766dd 119-121,367,385-388
+lang/transgui.pt
+  s_8d10415ac27e99::t_ae6cd62dc3a1b4 365
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 366
+  s_8d10415ac27e99::t_2efd5810bd4333 271
+  s_8d10415ac27e99::t_c3edf0879288d5 371-372
+  s_8d10415ac27e99::t_1ba098fd2e7947 168
+  s_8d10415ac27e99::t_ffbdfae637aa1d 122-124,370,373-388
+lang/transgui.lv
+  s_8d10415ac27e99::t_5a1f814aac3fef 104-106,352-388
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 271
+lang/transgui.ca
+  s_8d10415ac27e99::t_c3edf0879288d5 353-354
+  s_8d10415ac27e99::t_2efd5810bd4333 163
+  s_8d10415ac27e99::t_205910e9f53cab 358-388
+  s_8d10415ac27e99::t_cc1c26e837b69f 355-357
+  s_8d10415ac27e99::t_cbe6bb5c6c8485 68,119-121,160,271,352
+lang/transgui.uk
+  s_8d10415ac27e99::t_38e807c29e3049 119-121,271,385-388
+  s_8d10415ac27e99::t_f5da9907b9793e 368
+  s_8d10415ac27e99::t_2ecd030aa15bd1 367
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "6af6dbf8a4609700f7b0f349175945394c907ce7",
+  "prompts": {},
+  "sessions": {
+    "s_8d10415ac27e99": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f48bd-8902-7290-93aa-d25ea24e08d5",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
