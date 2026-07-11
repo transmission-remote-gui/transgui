@@ -1,0 +1,42 @@
+rpc.pas
+  s_a72e7aadfe0758::t_cf9f837f904968 1082
+  s_a72e7aadfe0758::t_6dd92f96629ba1 763
+  s_a72e7aadfe0758::t_89f502c2ff1795 733,745,747,749,754,1056
+  s_a72e7aadfe0758::t_90622e2321d4b5 119,1050,1076-1081
+  s_a72e7aadfe0758::t_be0109565b6e18 1047,1062
+  s_a72e7aadfe0758::t_064ee80f99ef27 84,118,271,275-279,617,1004,1048-1049,1071-1074,1116
+  s_a72e7aadfe0758::t_aef5e83cb219f3 120,761-762,1093-1105,1108,1124
+  s_a72e7aadfe0758::t_9e9d3b2556503f 718,734,748,755,1057
+  s_a72e7aadfe0758::t_b5a684c77a039a 1075
+  s_a72e7aadfe0758::t_334fa96c8c3f03 1063-1066
+synapse/source/lib/blcksock.pas
+  s_a72e7aadfe0758::t_89f502c2ff1795 1243,1437,1440,2373-2374,2799,2806-2810,2865,2872-2876,4229
+  s_a72e7aadfe0758::t_9e9d3b2556503f 2074-2075
+  s_a72e7aadfe0758::t_a7a3430d0bad31 2780,2791,2846,2857
+  s_a72e7aadfe0758::t_e14dcdad7592fe 1438-1439,4206
+synapse/source/lib/ssl_openssl.pas
+  s_a72e7aadfe0758::t_e335730c4e64ae 511
+  s_a72e7aadfe0758::t_fbacbd3fe0b1c7 524-527,572,676,702-703,732
+  s_a72e7aadfe0758::t_18103c068cdaaa 530
+  s_a72e7aadfe0758::t_bfdec9e00191e5 700-701,704,762
+  s_a72e7aadfe0758::t_89f502c2ff1795 114,506-510,512-523,528-529,658-659,666-667,669,682,684,686,688-695,697-698,707,713-714,722-723,725,738-744,746,748,750-757,759-760,766
+  s_a72e7aadfe0758::t_e14dcdad7592fe 668,687,696,724,749,758
+  s_a72e7aadfe0758::t_05d4e24c0a9131 566-571,573-586
+  s_a72e7aadfe0758::t_bf747c9ce24051 670-675,677-679,681,726-731,733-735,737
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "eacd13714d1bc169f217fa6ad060a594692a170b",
+  "prompts": {},
+  "sessions": {
+    "s_a72e7aadfe0758": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4cd3-b111-7732-be9c-6feebd9af434",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
