@@ -1,0 +1,19 @@
+rpc.pas
+  s_a72e7aadfe0758::t_5516fe76587db3 1069-1070,1072-1087,1090-1091
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "0288cb770fa67cf6304596b12784922ea197902e",
+  "prompts": {},
+  "sessions": {
+    "s_a72e7aadfe0758": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4cd3-b111-7732-be9c-6feebd9af434",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
