@@ -1,0 +1,30 @@
+rpc.pas
+  s_1d8343c47a82f6::t_ecf17509211d8b 61,274,571,636,664,666-669
+  s_1d8343c47a82f6::t_03fa51549c92e9 63,275,566,576,582-590,592-598,602,604-605,610-611,620,629-630,633-634,637-652,655-660,663,665,670
+  s_1d8343c47a82f6::t_9bb7a6f5e66393 555,631-632,635,653-654
+  s_50c2144422bfd1::t_1e81df6ba3b355 60,62,64-66,273,276,549-554,556-564,567-570,572-575,577-581,591,599-601,603,606-609,612-613,615,617,619,625,627-628,661-662,671,673
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "fc2cb9419580992d62c500caf3a3e88e5c3cb846",
+  "prompts": {},
+  "sessions": {
+    "s_1d8343c47a82f6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4cd3-aaed-7801-9a6b-374848b52baa",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    },
+    "s_50c2144422bfd1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4131-2bf0-7d32-ae05-7786887a8d44",
+        "model": "unknown"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
