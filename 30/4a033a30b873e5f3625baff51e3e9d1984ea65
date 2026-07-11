@@ -1,0 +1,40 @@
+rpc.pas
+  s_a72e7aadfe0758::t_b5a684c77a039a 1073
+  s_a72e7aadfe0758::t_89f502c2ff1795 732,744,746,748,753,1054,1112-1113
+  s_a72e7aadfe0758::t_6dd92f96629ba1 760-761
+  s_a72e7aadfe0758::t_90622e2321d4b5 119,1048,1074-1079
+  s_a72e7aadfe0758::t_be0109565b6e18 1045,1060
+  s_a72e7aadfe0758::t_064ee80f99ef27 84,118,270,274-278,616,1002,1046-1047,1069-1072,1100,1110-1111,1114
+  s_a72e7aadfe0758::t_334fa96c8c3f03 1061-1064
+  s_a72e7aadfe0758::t_9e9d3b2556503f 717,733,747,754,1055
+  s_a72e7aadfe0758::t_cf9f837f904968 1080
+synapse/source/lib/blcksock.pas
+  s_a72e7aadfe0758::t_a7a3430d0bad31 2780,2791,2846,2857
+  s_a72e7aadfe0758::t_e14dcdad7592fe 1438-1439,4206
+  s_a72e7aadfe0758::t_9e9d3b2556503f 2074-2075
+  s_a72e7aadfe0758::t_89f502c2ff1795 1243,1437,1440,2373-2374,2799,2806-2810,2865,2872-2876,4229
+synapse/source/lib/ssl_openssl.pas
+  s_a72e7aadfe0758::t_e14dcdad7592fe 668,687,696,724,749,758
+  s_a72e7aadfe0758::t_bfdec9e00191e5 700-701,704,762
+  s_a72e7aadfe0758::t_89f502c2ff1795 114,506-523,528-529,658-659,666-667,669,682,684,686,688-695,697-698,707,713-714,722-723,725,738-744,746,748,750-757,759-760,766
+  s_a72e7aadfe0758::t_fbacbd3fe0b1c7 524-527,572,676,702-703,732
+  s_a72e7aadfe0758::t_bf747c9ce24051 670-675,677-679,681,726-731,733-735,737
+  s_a72e7aadfe0758::t_05d4e24c0a9131 566-571,573-586
+  s_a72e7aadfe0758::t_18103c068cdaaa 530
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "304a033a30b873e5f3625baff51e3e9d1984ea65",
+  "prompts": {},
+  "sessions": {
+    "s_a72e7aadfe0758": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4cd3-b111-7732-be9c-6feebd9af434",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
