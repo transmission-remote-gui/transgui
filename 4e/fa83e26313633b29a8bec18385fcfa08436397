@@ -1,0 +1,19 @@
+lang/transgui.zh
+  s_c3346d326f41c8::t_0f4b63516380e8 3,9,44,49,59-60,162,170,214,273,323,325,364,377-378
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "4efa83e26313633b29a8bec18385fcfa08436397",
+  "prompts": {},
+  "sessions": {
+    "s_c3346d326f41c8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5686-d0c0-7830-b9de-303cf01cb25d",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
