@@ -111,6 +111,8 @@ type
     function Init(server:Boolean): Boolean;
     function DeInit: Boolean;
     function Prepare(server:Boolean): Boolean;
+    procedure SetWaitError;
+    function WaitForIO(Error: integer; StartTick: LongWord): Boolean;
     function LoadPFX(pfxdata: ansistring): Boolean;
     function CreateSelfSignedCert(Host: string): Boolean; override;
   public
@@ -502,6 +504,36 @@ begin
     DeInit;
 end;
 
+procedure TSSLOpenSSL.SetWaitError;
+begin
+  if FSocket.LastError <> 0 then
+  begin
+    FLastError:=FSocket.LastError;
+    FLastErrorDesc:=FSocket.LastErrorDesc;
+  end
+  else
+  begin
+    FLastError:=WSAETIMEDOUT;
+    FLastErrorDesc:=TBlockSocket.GetErrorDesc(WSAETIMEDOUT);
+  end;
+end;
+
+function TSSLOpenSSL.WaitForIO(Error: integer; StartTick: LongWord): Boolean;
+var
+  Timeout: integer;
+begin
+  Timeout:=DataTimeout - integer(TickDelta(StartTick, GetTick));
+  if Timeout >= 0 then
+    if Error = SSL_ERROR_WANT_READ then
+      Result:=FSocket.CanRead(Timeout)
+    else
+      Result:=FSocket.CanWrite(Timeout)
+  else
+    Result:=False;
+  if not Result then
+    SetWaitError;
+end;
+
 function TSSLOpenSSL.Connect: boolean;
 var
   x: integer;
@@ -537,17 +569,33 @@ begin
     begin
       b := Fsocket.NonBlockMode;
       Fsocket.NonBlockMode := true;
-      repeat
-        x := sslconnect(FSsl);
-        err := SslGetError(FSsl, x);
-        if err = SSL_ERROR_WANT_READ then
-          if not FSocket.CanRead(FSocket.ConnectionTimeout) then
-            break;
-        if err = SSL_ERROR_WANT_WRITE then
-          if not FSocket.CanWrite(FSocket.ConnectionTimeout) then
-            break;
-      until (err <> SSL_ERROR_WANT_READ) and (err <> SSL_ERROR_WANT_WRITE);
-      Fsocket.NonBlockMode := b;
+      try
+        repeat
+          if FSocket.StopFlag then
+          begin
+            FSocket.StopFlag:=False;
+            FLastError:=WSAECONNABORTED;
+            FLastErrorDesc:=TBlockSocket.GetErrorDesc(WSAECONNABORTED);
+            Exit;
+          end;
+          x := sslconnect(FSsl);
+          err := SslGetError(FSsl, x);
+          if err = SSL_ERROR_WANT_READ then
+            if not FSocket.CanRead(FSocket.ConnectionTimeout) then
+            begin
+              SetWaitError;
+              Exit;
+            end;
+          if err = SSL_ERROR_WANT_WRITE then
+            if not FSocket.CanWrite(FSocket.ConnectionTimeout) then
+            begin
+              SetWaitError;
+              Exit;
+            end;
+        until (err <> SSL_ERROR_WANT_READ) and (err <> SSL_ERROR_WANT_WRITE);
+      finally
+        Fsocket.NonBlockMode := b;
+      end;
       if err <> SSL_ERROR_NONE then
       begin
         SSLcheck;
@@ -619,31 +667,63 @@ end;
 function TSSLOpenSSL.SendBuffer(Buffer: TMemory; Len: Integer): Integer;
 var
   err: integer;
+  StartTick: LongWord;
+  OldNonBlockMode: Boolean;
 {$IFDEF CIL}
   s: ansistring;
 {$ENDIF}
 begin
   FLastError := 0;
   FLastErrorDesc := '';
-  repeat
+  StartTick:=GetTick;
+  OldNonBlockMode:=FSocket.NonBlockMode;
+  if (DataTimeout >= 0) and not OldNonBlockMode then
+    FSocket.NonBlockMode:=True;
+  try
+    repeat
+      if FSocket.StopFlag then
+      begin
+        FSocket.StopFlag:=False;
+        FLastError:=WSAECONNABORTED;
+        FLastErrorDesc:=TBlockSocket.GetErrorDesc(WSAECONNABORTED);
+        Result:=0;
+        Exit;
+      end;
 {$IFDEF CIL}
-    s := StringOf(Buffer);
-    Result := SslWrite(FSsl, s, Len);
+      s := StringOf(Buffer);
+      Result := SslWrite(FSsl, s, Len);
 {$ELSE}
-    Result := SslWrite(FSsl, Buffer , Len);
+      Result := SslWrite(FSsl, Buffer , Len);
 {$ENDIF}
-    err := SslGetError(FSsl, Result);
-  until (err <> SSL_ERROR_WANT_READ) and (err <> SSL_ERROR_WANT_WRITE);
+      err := SslGetError(FSsl, Result);
+      if (DataTimeout >= 0) and
+         ((err = SSL_ERROR_WANT_READ) or (err = SSL_ERROR_WANT_WRITE)) then
+        if not WaitForIO(err, StartTick) then
+        begin
+          Result:=0;
+          Exit;
+        end;
+    until (err <> SSL_ERROR_WANT_READ) and (err <> SSL_ERROR_WANT_WRITE);
+  finally
+    if (DataTimeout >= 0) and not OldNonBlockMode then
+      FSocket.NonBlockMode:=OldNonBlockMode;
+  end;
   if err = SSL_ERROR_ZERO_RETURN then
-    Result := 0
+  begin
+    Result:=0;
+    FLastError:=WSAECONNRESET;
+    FLastErrorDesc:=TBlockSocket.GetErrorDesc(WSAECONNRESET);
+  end
   else
     if (err <> 0) then
-      FLastError := err;
+      FLastError:=err;
 end;
 
 function TSSLOpenSSL.RecvBuffer(Buffer: TMemory; Len: Integer): Integer;
 var
   err: integer;
+  StartTick: LongWord;
+  OldNonBlockMode: Boolean;
 {$IFDEF CIL}
   sb: stringbuilder;
   s: ansistring;
@@ -651,27 +731,51 @@ var
 begin
   FLastError := 0;
   FLastErrorDesc := '';
-  repeat
+  StartTick:=GetTick;
+  OldNonBlockMode:=FSocket.NonBlockMode;
+  if (DataTimeout >= 0) and not OldNonBlockMode then
+    FSocket.NonBlockMode:=True;
+  try
+    repeat
+      if FSocket.StopFlag then
+      begin
+        FSocket.StopFlag:=False;
+        FLastError:=WSAECONNABORTED;
+        FLastErrorDesc:=TBlockSocket.GetErrorDesc(WSAECONNABORTED);
+        Result:=0;
+        Exit;
+      end;
 {$IFDEF CIL}
-    sb := StringBuilder.Create(Len);
-    Result := SslRead(FSsl, sb, Len);
-    if Result > 0 then
-    begin
-      sb.Length := Result;
-      s := sb.ToString;
-      System.Array.Copy(BytesOf(s), Buffer, length(s));
-    end;
+      sb := StringBuilder.Create(Len);
+      Result := SslRead(FSsl, sb, Len);
+      if Result > 0 then
+      begin
+        sb.Length := Result;
+        s := sb.ToString;
+        System.Array.Copy(BytesOf(s), Buffer, length(s));
+      end;
 {$ELSE}
-    Result := SslRead(FSsl, Buffer , Len);
+      Result := SslRead(FSsl, Buffer , Len);
 {$ENDIF}
-    err := SslGetError(FSsl, Result);
-  until (err <> SSL_ERROR_WANT_READ) and (err <> SSL_ERROR_WANT_WRITE);
+      err := SslGetError(FSsl, Result);
+      if (DataTimeout >= 0) and
+         ((err = SSL_ERROR_WANT_READ) or (err = SSL_ERROR_WANT_WRITE)) then
+        if not WaitForIO(err, StartTick) then
+        begin
+          Result:=0;
+          Exit;
+        end;
+    until (err <> SSL_ERROR_WANT_READ) and (err <> SSL_ERROR_WANT_WRITE);
+  finally
+    if (DataTimeout >= 0) and not OldNonBlockMode then
+      FSocket.NonBlockMode:=OldNonBlockMode;
+  end;
   if err = SSL_ERROR_ZERO_RETURN then
-    Result := 0
+    Result:=0
   {pf}// Verze 1.1.0 byla s else tak jak to ted mam,
       // ve verzi 1.1.1 bylo ELSE zruseno, ale pak je SSL_ERROR_ZERO_RETURN
       // propagovano jako Chyba.
-  {pf} else {/pf} if (err <> 0) then   
+  {pf} else {/pf} if (err <> 0) then
     FLastError := err;
 end;
 

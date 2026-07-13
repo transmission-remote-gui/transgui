@@ -81,6 +81,7 @@ type
     procedure DoFillSessionInfo;
     procedure NotifyCheckStatus;
     procedure CheckStatusHandler(Data: PtrInt);
+    function IsTerminated: boolean;
   protected
     procedure Execute; override;
   public
@@ -114,6 +115,9 @@ type
     procedure SetStatus(const AValue: string);
     procedure SetTorrentFields(const AValue: string);
     procedure CreateHttp;
+    procedure HttpHeartbeat(Sender: TObject);
+    procedure HttpSocketCreated(Sender: TObject);
+    procedure StopRpcThread;
   public
     Http: THTTPSend;
     HttpLock: TCriticalSection;
@@ -251,13 +255,10 @@ begin
     end;
   except
     Status:=Exception(ExceptObject).Message;
-    FRpc.RpcThread:=nil;
     NotifyCheckStatus;
   end;
-  FRpc.RpcThread:=nil;
   FRpc.FConnected:=False;
   FRpc.FRPCVersion:=0;
-  Sleep(20);
 end;
 
 constructor TRpcThread.Create;
@@ -267,7 +268,13 @@ end;
 
 destructor TRpcThread.Destroy;
 begin
+  Application.RemoveAsyncCalls(Self);
   inherited Destroy;
+end;
+
+function TRpcThread.IsTerminated: boolean;
+begin
+  Result:=Terminated;
 end;
 
 procedure TRpcThread.SetStatus(const AValue: string);
@@ -607,6 +614,7 @@ end;
 
 destructor TRpc.Destroy;
 begin
+  Disconnect;
   Http.Free;
   HttpLock.Free;
   FLock.Free;
@@ -707,7 +715,7 @@ var
   res: TJSONObject;
   jp: TJSONParser;
   s: string;
-  i, j, OldTimeOut, RetryCnt: integer;
+  i, j, OldTimeOut, OldDataTimeOut, OldNonblockSendTimeOut, RetryCnt: integer;
   locked, r: boolean;
 begin
   if FRpcPath = '' then
@@ -722,6 +730,8 @@ begin
     locked:=True;
     try
       OldTimeOut:=Http.Timeout;
+      OldDataTimeOut:=Http.Sock.SSL.DataTimeout;
+      OldNonblockSendTimeOut:=Http.Sock.NonblockSendTimeout;
       RequestStartTime:=Now;
       Http.Document.Clear;
       s:=req.AsJSON;
@@ -732,17 +742,25 @@ begin
       Http.MimeType:='application/json';
       if XTorrentSession <> '' then
         Http.Headers.Add(XTorrentSession);
-      if ATimeOut >= 0 then
+      if ATimeOut >= 0 then begin
         Http.Timeout:=ATimeOut;
+        Http.Sock.SSL.DataTimeout:=ATimeOut;
+        Http.Sock.NonblockSendTimeout:=ATimeOut;
+      end;
       try
         r:=Http.HTTPMethod('POST', Url + FRpcPath);
       finally
         Http.Timeout:=OldTimeOut;
+        Http.Sock.SSL.DataTimeout:=OldDataTimeOut;
+        Http.Sock.NonblockSendTimeout:=OldNonblockSendTimeOut;
       end;
       if not r then begin
         if FMainThreadId <> GetCurrentThreadId then
           ReconnectAllowed:=True;
         Status:=Http.Sock.LastErrorDesc;
+        if not (Http.Sock.SSL is TSSLNone) then
+          Http.Sock.SSL.Shutdown;
+        Http.Sock.AbortSocket;
         break;
       end
       else begin
@@ -983,7 +1001,7 @@ end;
 
 function TRpc.GetConnecting: boolean;
 begin
-  Result:=not FConnected and Assigned(RpcThread);
+  Result:=not FConnected and Assigned(RpcThread) and not RpcThread.Finished;
 end;
 
 function TRpc.GetInfoStatus: string;
@@ -1026,18 +1044,40 @@ begin
   Http.Free;
   Http:=THTTPSend.Create;
   Http.Protocol:='1.1';
+  // Let Abort interrupt blocking socket waits during disconnect.
+  Http.Sock.HeartbeatRate:=250;
+  Http.Sock.OnHeartbeat:=@HttpHeartbeat;
+  Http.Sock.OnCreateSocket:=@HttpSocketCreated;
 
   i := Ini.ReadInteger('NetWork', 'HttpTimeout', 30);
   if (i < 2) or (i > 999) then i:= 30; // default
   Ini.WriteInteger('NetWork', 'HttpTimeout', i);
   Http.Timeout:= i * 1000;
+  Http.Sock.SSL.DataTimeout:=Http.Timeout;
+  Http.Sock.NonblockSendTimeout:=Http.Timeout;
 
   i := Ini.ReadInteger('NetWork', 'ConnectTimeout', 0);
   if (i < 0) or (i > 999) then i:= 0; // default
   Ini.WriteInteger('NetWork', 'ConnectTimeout', i);
-  Http.FSock.ConnectionTimeout := i * 1000;
+  // A positive timeout makes TCP and TLS handshakes cancellable.
+  if i = 0 then
+    Http.FSock.ConnectionTimeout:=Http.Timeout
+  else
+    Http.FSock.ConnectionTimeout:=i * 1000;
 
   Http.Headers.NameValueSeparator:=':';
+end;
+
+procedure TRpc.HttpHeartbeat(Sender: TObject);
+begin
+  if Assigned(RpcThread) and (RpcThread.ThreadID = GetCurrentThreadId) and
+     RpcThread.IsTerminated then
+    TBlockSocket(Sender).StopFlag:=True;
+end;
+
+procedure TRpc.HttpSocketCreated(Sender: TObject);
+begin
+  TBlockSocket(Sender).NonBlockMode:=True;
 end;
 
 procedure TRpc.Lock;
@@ -1050,8 +1090,23 @@ begin
   FLock.Leave;
 end;
 
+procedure TRpc.StopRpcThread;
+begin
+  if Assigned(RpcThread) then begin
+    RpcThread.Terminate;
+    Http.Abort;
+    RpcThread.WaitFor;
+    if not (Http.Sock.SSL is TSSLNone) then
+      Http.Sock.SSL.Shutdown;
+    Http.Sock.AbortSocket;
+    Http.Sock.StopFlag:=False;
+    FreeAndNil(RpcThread);
+  end;
+end;
+
 procedure TRpc.Connect;
 begin
+  StopRpcThread;
   CurTorrentId:=0;
   XTorrentSession:='';
   RequestFullInfo:=True;
@@ -1059,7 +1114,7 @@ begin
   RefreshNow:=[];
   RpcThread:=TRpcThread.Create;
   with RpcThread do begin
-    FreeOnTerminate:=True;
+    FreeOnTerminate:=False;
     FRpc:=Self;
     Suspended:=False;
   end;
@@ -1067,21 +1122,10 @@ end;
 
 procedure TRpc.Disconnect;
 begin
-  if Assigned(RpcThread) then begin
-    RpcThread.Terminate;
-    while Assigned(RpcThread) do begin
-      Application.ProcessMessages;
-      try
-        Http.Sock.CloseSocket;
-      except
-      end;
-      Sleep(20);
-    end;
-  end;
+  StopRpcThread;
   Status:='';
   RequestStartTime:=0;
   FRpcPath:='';
 end;
 
 end.
-
