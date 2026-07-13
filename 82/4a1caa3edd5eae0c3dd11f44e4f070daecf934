@@ -1,0 +1,21 @@
+lang/transgui.zh
+  s_c3346d326f41c8::t_0f4b63516380e8 3-4,6,9,44-45,49,59-60,115,162,170,173,214,216,230,244,258,268,273,290,323,325,354-357,364-365,377-378
+lang/transgui.zh_tw
+  s_c3346d326f41c8::t_8b09fe592e099b 3,14,20,25,28,33-34,41,50,65,67-68,77,81,90,114,139,167,175,178,220,223,236,241-242,247,250,274,280,293,300,302-303,322,328,349-350,355-358,365-366,379-380
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "824a1caa3edd5eae0c3dd11f44e4f070daecf934",
+  "prompts": {},
+  "sessions": {
+    "s_c3346d326f41c8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5686-d0c0-7830-b9de-303cf01cb25d",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
