@@ -1,0 +1,23 @@
+synapse/source/lib/ssl_openssl_lib.pas
+  s_e94c0c2953e29e::t_e31ebef47046dd 2001-2002,2014-2015
+  s_e94c0c2953e29e::t_e2bbfb19b9f41f 2016-2017
+synapse/source/lib/ssl_openssl.pas
+  s_e94c0c2953e29e::t_e2bbfb19b9f41f 186-188,206-212,267-269,273-276,278-281,283,285,287,289,291
+  s_e94c0c2953e29e::t_b2e60eacb964f8 265,272,284,288,398,427,429,432,437,439,442
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "7f1d174cf87c15a4cc8d7a8ef502b8869bc37f7c",
+  "prompts": {},
+  "sessions": {
+    "s_e94c0c2953e29e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f717d-6fe1-7f12-a862-552c8cf07ebf",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
