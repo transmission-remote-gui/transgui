@@ -1,0 +1,91 @@
+lang/transgui.hr
+  s_c454ea4812d6e8::t_ce1761da12e58a 10,28,70,162,166,193
+  s_c454ea4812d6e8::t_6e2ce98792e168 21
+restranslator.pas
+  s_c454ea4812d6e8::t_b9e7a42d3b6b60 160,162,164-194,198-199,201,204-211,213-214,216-219,794-828,830,845-848,850,852-853,855-865,867-869
+  s_c454ea4812d6e8::t_52a8aa3dd27436 161,163,195-197,203,227-228
+  s_c454ea4812d6e8::t_49064bce15cc5f 703,714-725
+  s_c454ea4812d6e8::t_ff47e97c91251c 730
+  s_c454ea4812d6e8::t_26b5b286ea912d 202,220-226
+  s_c454ea4812d6e8::t_21729d93c889fd 200,212,215
+lang/transgui.zh_tw
+  s_c454ea4812d6e8::t_42a5f370e8c1d9 10,21
+  s_c454ea4812d6e8::t_d1c69c814ae9c5 300
+lang/transgui.fi
+  s_c454ea4812d6e8::t_2492ec460412de 10,21,28,70,161,165,192
+main.lfm
+  s_c454ea4812d6e8::t_fc1928f7d63101 2009,2211
+lang/transgui.it
+  s_c454ea4812d6e8::t_3007f6d9e97545 10,21,28,70,162,166,193
+lang/transgui.lt
+  s_c454ea4812d6e8::t_5460421209ec35 10,21,70,162,166,193,200
+lang/transgui.da
+  s_c454ea4812d6e8::t_c0e21a94a2ec73 15-16,26,28-29,120,286
+lang/transgui.ko
+  s_c454ea4812d6e8::t_20ad9865e7277a 10,21,28,70,162,166,193,200
+lang/transgui.pt
+  s_c454ea4812d6e8::t_3b73067b92b435 10,29,74,167,171,199
+  s_c454ea4812d6e8::t_6e2ce98792e168 21
+lang/transgui.es
+  s_c454ea4812d6e8::t_277330707ec60d 10,21
+lang/transgui.fr
+  s_c454ea4812d6e8::t_5f7ed2c1882694 10,21
+lang/transgui.ro
+  s_c454ea4812d6e8::t_ce1761da12e58a 10,28,68,160,164,191
+  s_c454ea4812d6e8::t_6e2ce98792e168 21
+lang/transgui.tr
+  s_c454ea4812d6e8::t_185d7f49008c0c 10,21,28,70,162,166,193,200
+lang/transgui.pt_br
+  s_c454ea4812d6e8::t_ce1761da12e58a 10,29,74,167,171,199
+  s_c454ea4812d6e8::t_6e2ce98792e168 21
+lang/transgui.de
+  s_c454ea4812d6e8::t_f37b8d248fef5e 10,21,28,70,162,166,193,200
+lang/transgui.hu
+  s_c454ea4812d6e8::t_c50d7ef7eda372 10,21,28,70,162,166,193
+lang/transgui.lv
+  s_c454ea4812d6e8::t_6e2ce98792e168 20
+  s_c454ea4812d6e8::t_ce1761da12e58a 9-14,17-18,21,26,64,147,150,176,183
+lang/transgui.el
+  s_c454ea4812d6e8::t_b6aa1ec521e1ec 10,21,28,70,162,166,193
+lang/transgui.zh
+  s_c454ea4812d6e8::t_d1c69c814ae9c5 300
+  s_c454ea4812d6e8::t_173808f3aec45f 10,21
+lang/transgui.ru
+  s_c454ea4812d6e8::t_39eb639e47e7c4 10-15,18-19,21-22,28,70,162,165,191,198
+lang/transgui.cs
+  s_c454ea4812d6e8::t_039d9f1ba8f02d 10,20,27,69,161,165,192
+lang/transgui.en
+  s_c454ea4812d6e8::t_9e0eec2f24ea83 10,21,28,70,162,166,193
+lang/transgui.no
+  s_c454ea4812d6e8::t_26b5b286ea912d 10,12,17-22,28,70,162,166,193
+lang/transgui.pl
+  s_c454ea4812d6e8::t_f4516727127fa6 10,21,28,70,162,166,193
+lang/transgui.uk
+  s_c454ea4812d6e8::t_b68965b64cc02f 10-15,18-19,21-22,28,70,162,165,191,198
+lang/transgui.template
+  s_c454ea4812d6e8::t_9503245337557d 10,21,28,71,164,168,195
+lang/transgui.nl
+  s_c454ea4812d6e8::t_5056320d7c4d02 10,21,70
+lang/transgui.sv
+  s_c454ea4812d6e8::t_8f84926e794f7c 10,20-21,28,70,162,166,193
+lang/transgui.ca
+  s_c454ea4812d6e8::t_6fde15a2b7b081 10,21,28,166,193
+lang/transgui.be
+  s_c454ea4812d6e8::t_8f7c32846df5eb 9-14,17-18,20-21,26,64,147,150,176,183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "6884af95b2277ba241ba42d26d982f2a90b79543",
+  "prompts": {},
+  "sessions": {
+    "s_c454ea4812d6e8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c28-72d9-7a83-8455-99228719e63a",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
