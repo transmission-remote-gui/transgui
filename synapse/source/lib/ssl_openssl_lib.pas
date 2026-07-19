@@ -140,14 +140,19 @@ var
 type
 {$IFDEF CIL}
   SslPtr = IntPtr;
+  SslSize = UIntPtr;
 {$ELSE}
   SslPtr = Pointer;
+  SslSize = PtrUInt;
 {$ENDIF}
   PSslPtr = ^SslPtr;
   PSSL_CTX = SslPtr;
   PSSL = SslPtr;
   PSSL_METHOD = SslPtr;
   PX509 = SslPtr;
+  PX509_STORE = SslPtr;
+  PX509_STORE_CTX = SslPtr;
+  PX509_VERIFY_PARAM = SslPtr;
   PX509_NAME = SslPtr;
   PEVP_MD	= SslPtr;
   PInteger = ^Integer;
@@ -159,6 +164,8 @@ type
   PASN1_INTEGER = SslPtr;
   PPasswdCb = SslPtr;
   PFunction = procedure;
+  TSSLVerifyCallback = function(PreverifyOk: Integer;
+    StoreContext: PX509_STORE_CTX): Integer; cdecl;
   PSTACK = SslPtr; {pf}
   TSkPopFreeFunc = procedure(p:SslPtr); cdecl; {pf}
   TX509Free = procedure(x: PX509); cdecl; {pf}
@@ -239,6 +246,7 @@ const
 
   SSL_CTRL_SET_TLSEXT_HOSTNAME = 55;
   TLSEXT_NAMETYPE_host_name = 0;
+  X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS = $4;
 
 var
   SSLLibHandle: TLibHandle = 0;
@@ -374,6 +382,16 @@ var
 
   [DllImport(DLLSSLName, CharSet = CharSet.Ansi,
     SetLastError = False, CallingConvention= CallingConvention.cdecl,
+    EntryPoint = 'SSL_CTX_set_default_verify_paths')]
+    function SslCtxSetDefaultVerifyPaths(ctx: PSSL_CTX):Integer; external;
+
+  [DllImport(DLLSSLName, CharSet = CharSet.Ansi,
+    SetLastError = False, CallingConvention= CallingConvention.cdecl,
+    EntryPoint = 'SSL_CTX_get_cert_store')]
+    function SslCtxGetCertStore(ctx: PSSL_CTX):PX509_STORE; external;
+
+  [DllImport(DLLSSLName, CharSet = CharSet.Ansi,
+    SetLastError = False, CallingConvention= CallingConvention.cdecl,
     EntryPoint = 'SSL_CTX_ctrl')]
     function SslCtxCtrl(ctx: PSSL_CTX; cmd: integer; larg: integer; parg: IntPtr): integer; external;
 
@@ -435,7 +453,8 @@ var
   [DllImport(DLLSSLName, CharSet = CharSet.Ansi,
     SetLastError = False, CallingConvention= CallingConvention.cdecl,
     EntryPoint = 'SSL_CTX_set_verify')]
-    procedure SslCtxSetVerify(ctx: PSSL_CTX; mode: Integer; arg2: PFunction); external;
+    procedure SslCtxSetVerify(ctx: PSSL_CTX; mode: Integer;
+      arg2: TSSLVerifyCallback); external;
 
   [DllImport(DLLSSLName, CharSet = CharSet.Ansi,
     SetLastError = False, CallingConvention= CallingConvention.cdecl,
@@ -459,6 +478,11 @@ var
 
   [DllImport(DLLSSLName, CharSet = CharSet.Ansi,
     SetLastError = False, CallingConvention= CallingConvention.cdecl,
+    EntryPoint = 'SSL_get0_param')]
+    function SslGet0Param(ssl: PSSL):PX509_VERIFY_PARAM; external;
+
+  [DllImport(DLLSSLName, CharSet = CharSet.Ansi,
+    SetLastError = False, CallingConvention= CallingConvention.cdecl,
     EntryPoint = 'SSL_ctrl')]
     function SslCtrl(ssl: PSSL; cmd: integer; larg: integer; parg: IntPtr): integer; external;
 
@@ -471,6 +495,34 @@ var
     SetLastError = False, CallingConvention= CallingConvention.cdecl,
     EntryPoint = 'X509_free')]
     procedure X509Free(x: PX509); external;
+
+  [DllImport(DLLUtilName, CharSet = CharSet.Ansi,
+    SetLastError = False, CallingConvention= CallingConvention.cdecl,
+    EntryPoint = 'X509_STORE_add_cert')]
+    function X509StoreAddCert(Store: PX509_STORE; Cert: PX509):Integer; external;
+
+  [DllImport(DLLUtilName, CharSet = CharSet.Ansi,
+    SetLastError = False, CallingConvention= CallingConvention.cdecl,
+    EntryPoint = 'X509_STORE_CTX_get_current_cert')]
+    function X509StoreCtxGetCurrentCert(StoreContext: PX509_STORE_CTX):PX509; external;
+
+  [DllImport(DLLUtilName, CharSet = CharSet.Ansi,
+    SetLastError = False, CallingConvention= CallingConvention.cdecl,
+    EntryPoint = 'X509_VERIFY_PARAM_set_hostflags')]
+    procedure X509VerifyParamSetHostFlags(Param: PX509_VERIFY_PARAM;
+      Flags: Cardinal); external;
+
+  [DllImport(DLLUtilName, CharSet = CharSet.Ansi,
+    SetLastError = False, CallingConvention= CallingConvention.cdecl,
+    EntryPoint = 'X509_VERIFY_PARAM_set1_host')]
+    function X509VerifyParamSet1Host(Param: PX509_VERIFY_PARAM;
+      Name: string; NameLen: SslSize):Integer; external;
+
+  [DllImport(DLLUtilName, CharSet = CharSet.Ansi,
+    SetLastError = False, CallingConvention= CallingConvention.cdecl,
+    EntryPoint = 'X509_VERIFY_PARAM_set1_ip_asc')]
+    function X509VerifyParamSet1IPAsc(Param: PX509_VERIFY_PARAM;
+      IPAddress: string):Integer; external;
 
   [DllImport(DLLUtilName, CharSet = CharSet.Ansi,
     SetLastError = False, CallingConvention= CallingConvention.cdecl,
@@ -740,6 +792,8 @@ var
   procedure SslCtxSetDefaultPasswdCbUserdata(ctx: PSSL_CTX; u: SslPtr);
 //  function SslCtxLoadVerifyLocations(ctx: PSSL_CTX; const CAfile: PChar; const CApath: PChar):Integer;
   function SslCtxLoadVerifyLocations(ctx: PSSL_CTX; const CAfile: AnsiString; const CApath: AnsiString):Integer;
+  function SslCtxSetDefaultVerifyPaths(ctx: PSSL_CTX):Integer;
+  function SslCtxGetCertStore(ctx: PSSL_CTX):PX509_STORE;
   function SslCtxCtrl(ctx: PSSL_CTX; cmd: integer; larg: integer; parg: SslPtr): integer;
   function SslNew(ctx: PSSL_CTX):PSSL;
   procedure SslFree(ssl: PSSL);
@@ -752,16 +806,26 @@ var
   function SslPending(ssl: PSSL):Integer;
   function SslGetVersion(ssl: PSSL):AnsiString;
   function SslGetPeerCertificate(ssl: PSSL):PX509;
-  procedure SslCtxSetVerify(ctx: PSSL_CTX; mode: Integer; arg2: PFunction);
+  procedure SslCtxSetVerify(ctx: PSSL_CTX; mode: Integer;
+    arg2: TSSLVerifyCallback);
   function SSLGetCurrentCipher(s: PSSL):SslPtr;
   function SSLCipherGetName(c: SslPtr): AnsiString;
   function SSLCipherGetBits(c: SslPtr; var alg_bits: Integer):Integer;
   function SSLGetVerifyResult(ssl: PSSL):Integer;
+  function SslGet0Param(ssl: PSSL):PX509_VERIFY_PARAM;
   function SSLCtrl(ssl: PSSL; cmd: integer; larg: integer; parg: SslPtr):Integer;
 
 // libeay.dll
   function X509New: PX509;
   procedure X509Free(x: PX509);
+  function X509StoreAddCert(Store: PX509_STORE; Cert: PX509):Integer;
+  function X509StoreCtxGetCurrentCert(StoreContext: PX509_STORE_CTX):PX509;
+  procedure X509VerifyParamSetHostFlags(Param: PX509_VERIFY_PARAM;
+    Flags: Cardinal);
+  function X509VerifyParamSet1Host(Param: PX509_VERIFY_PARAM;
+    const Name: AnsiString; NameLen: SslSize):Integer;
+  function X509VerifyParamSet1IPAsc(Param: PX509_VERIFY_PARAM;
+    const IPAddress: AnsiString):Integer;
   function X509NameOneline(a: PX509_NAME; var buf: AnsiString; size: Integer):AnsiString;
   function X509GetSubjectName(a: PX509):PX509_NAME;
   function X509GetIssuerName(a: PX509):PX509_NAME;
@@ -809,7 +873,7 @@ var
   function Asn1IntegerSet(a: PASN1_INTEGER; v: integer): integer;
   function Asn1IntegerGet(a: PASN1_INTEGER): integer; {pf}
   function i2dX509bio(b: PBIO; x: PX509): integer;
-  function d2iX509bio(b:PBIO; x:PX509):  PX509;    {pf}
+  function d2iX509bio(b:PBIO; x:PSslPtr):  PX509;    {pf}
   function PEMReadBioX509(b:PBIO; {var x:PX509;}x:PSslPtr; callback:PFunction; cb_arg: SslPtr):  PX509;    {pf}
   procedure SkX509PopFree(st: PSTACK; func: TSkPopFreeFunc); {pf}
 
@@ -823,6 +887,8 @@ var
 
 {$ENDIF}
 
+function SSLHostVerificationAvailable:Boolean;
+function SSLWindowsCertificateVerificationAvailable:Boolean;
 function IsSSLloaded: Boolean;
 function InitSSLInterface: Boolean;
 function DestroySSLInterface: Boolean;
@@ -866,6 +932,8 @@ type
   TSslCtxSetDefaultPasswdCb = procedure(ctx: PSSL_CTX; cb: SslPtr); cdecl;
   TSslCtxSetDefaultPasswdCbUserdata = procedure(ctx: PSSL_CTX; u: SslPtr); cdecl;
   TSslCtxLoadVerifyLocations = function(ctx: PSSL_CTX; const CAfile: PAnsiChar; const CApath: PAnsiChar):Integer; cdecl;
+  TSslCtxSetDefaultVerifyPaths = function(ctx: PSSL_CTX):Integer; cdecl;
+  TSslCtxGetCertStore = function(ctx: PSSL_CTX):PX509_STORE; cdecl;
   TSslCtxCtrl = function(ctx: PSSL_CTX; cmd: integer; larg: integer; parg: SslPtr): integer; cdecl;
   TSslNew = function(ctx: PSSL_CTX):PSSL; cdecl;
   TSslFree = procedure(ssl: PSSL); cdecl;
@@ -878,17 +946,28 @@ type
   TSslPending = function(ssl: PSSL):Integer; cdecl;
   TSslGetVersion = function(ssl: PSSL):PAnsiChar; cdecl;
   TSslGetPeerCertificate = function(ssl: PSSL):PX509; cdecl;
-  TSslCtxSetVerify = procedure(ctx: PSSL_CTX; mode: Integer; arg2: SslPtr); cdecl;
+  TSslCtxSetVerify = procedure(ctx: PSSL_CTX; mode: Integer;
+    arg2: TSSLVerifyCallback); cdecl;
   TSSLGetCurrentCipher = function(s: PSSL):SslPtr; cdecl;
   TSSLCipherGetName = function(c: Sslptr):PAnsiChar; cdecl;
   TSSLCipherGetBits = function(c: SslPtr; alg_bits: PInteger):Integer; cdecl;
   TSSLGetVerifyResult = function(ssl: PSSL):Integer; cdecl;
+  TSslGet0Param = function(ssl: PSSL):PX509_VERIFY_PARAM; cdecl;
   TSSLCtrl = function(ssl: PSSL; cmd: integer; larg: integer; parg: SslPtr):Integer; cdecl;
 
   TSSLSetTlsextHostName = function(ssl: PSSL; buf: PAnsiChar):Integer; cdecl;
 
 // libeay.dll
   TX509New = function: PX509; cdecl;
+  TX509StoreAddCert = function(Store: PX509_STORE; Cert: PX509):Integer; cdecl;
+  TX509StoreCtxGetCurrentCert = function(
+    StoreContext: PX509_STORE_CTX):PX509; cdecl;
+  TX509VerifyParamSetHostFlags = procedure(Param: PX509_VERIFY_PARAM;
+    Flags: Cardinal); cdecl;
+  TX509VerifyParamSet1Host = function(Param: PX509_VERIFY_PARAM;
+    Name: PAnsiChar; NameLen: SslSize):Integer; cdecl;
+  TX509VerifyParamSet1IPAsc = function(Param: PX509_VERIFY_PARAM;
+    IPAddress: PAnsiChar):Integer; cdecl;
   TX509NameOneline = function(a: PX509_NAME; buf: PAnsiChar; size: Integer):PAnsiChar; cdecl;
   TX509GetSubjectName = function(a: PX509):PX509_NAME; cdecl;
   TX509GetIssuerName = function(a: PX509):PX509_NAME; cdecl;
@@ -934,7 +1013,7 @@ type
   TAsn1IntegerSet = function(a: PASN1_INTEGER; v: integer): integer; cdecl;
   TAsn1IntegerGet = function(a: PASN1_INTEGER): integer; cdecl; {pf}
   Ti2dX509bio = function(b: PBIO; x: PX509): integer; cdecl;
-  Td2iX509bio = function(b:PBIO;  x:PX509):   PX509;   cdecl; {pf}
+  Td2iX509bio = function(b:PBIO;  x:PSslPtr):   PX509;   cdecl; {pf}
   TPEMReadBioX509 = function(b:PBIO;  {var x:PX509;}x:PSslPtr; callback:PFunction; cb_arg:SslPtr): PX509;   cdecl; {pf}
   TSkX509PopFree = procedure(st: PSTACK; func: TSkPopFreeFunc); cdecl; {pf}
   Ti2dPrivateKeyBio= function(b: PBIO; pkey: EVP_PKEY): integer; cdecl;
@@ -974,6 +1053,8 @@ var
   _SslCtxSetDefaultPasswdCb: TSslCtxSetDefaultPasswdCb = nil;
   _SslCtxSetDefaultPasswdCbUserdata: TSslCtxSetDefaultPasswdCbUserdata = nil;
   _SslCtxLoadVerifyLocations: TSslCtxLoadVerifyLocations = nil;
+  _SslCtxSetDefaultVerifyPaths: TSslCtxSetDefaultVerifyPaths = nil;
+  _SslCtxGetCertStore: TSslCtxGetCertStore = nil;
   _SslCtxCtrl: TSslCtxCtrl = nil;
   _SslNew: TSslNew = nil;
   _SslFree: TSslFree = nil;
@@ -991,10 +1072,16 @@ var
   _SSLCipherGetName: TSSLCipherGetName = nil;
   _SSLCipherGetBits: TSSLCipherGetBits = nil;
   _SSLGetVerifyResult: TSSLGetVerifyResult = nil;
+  _SslGet0Param: TSslGet0Param = nil;
   _SSLCtrl: TSSLCtrl = nil;
 
 // libeay.dll
   _X509New: TX509New = nil;
+  _X509StoreAddCert: TX509StoreAddCert = nil;
+  _X509StoreCtxGetCurrentCert: TX509StoreCtxGetCurrentCert = nil;
+  _X509VerifyParamSetHostFlags: TX509VerifyParamSetHostFlags = nil;
+  _X509VerifyParamSet1Host: TX509VerifyParamSet1Host = nil;
+  _X509VerifyParamSet1IPAsc: TX509VerifyParamSet1IPAsc = nil;
   _X509NameOneline: TX509NameOneline = nil;
   _X509GetSubjectName: TX509GetSubjectName = nil;
   _X509GetIssuerName: TX509GetIssuerName = nil;
@@ -1258,6 +1345,22 @@ begin
     Result := 0;
 end;
 
+function SslCtxSetDefaultVerifyPaths(ctx: PSSL_CTX):Integer;
+begin
+  if InitSSLInterface and Assigned(_SslCtxSetDefaultVerifyPaths) then
+    Result := _SslCtxSetDefaultVerifyPaths(ctx)
+  else
+    Result := 0;
+end;
+
+function SslCtxGetCertStore(ctx: PSSL_CTX):PX509_STORE;
+begin
+  if InitSSLInterface and Assigned(_SslCtxGetCertStore) then
+    Result := _SslCtxGetCertStore(ctx)
+  else
+    Result := nil;
+end;
+
 function SslCtxCtrl(ctx: PSSL_CTX; cmd: integer; larg: integer; parg: SslPtr): integer;
 begin
   if InitSSLInterface and Assigned(_SslCtxCtrl) then
@@ -1356,11 +1459,11 @@ begin
     Result := nil;
 end;
 
-//procedure SslCtxSetVerify(ctx: PSSL_CTX; mode: Integer; arg2: SslPtr);
-procedure SslCtxSetVerify(ctx: PSSL_CTX; mode: Integer; arg2: PFunction);
+procedure SslCtxSetVerify(ctx: PSSL_CTX; mode: Integer;
+  arg2: TSSLVerifyCallback);
 begin
   if InitSSLInterface and Assigned(_SslCtxSetVerify) then
-    _SslCtxSetVerify(ctx, mode, @arg2);
+    _SslCtxSetVerify(ctx, mode, arg2);
 end;
 
 function SSLGetCurrentCipher(s: PSSL):SslPtr;
@@ -1400,6 +1503,14 @@ begin
     Result := X509_V_ERR_APPLICATION_VERIFICATION;
 end;
 
+function SslGet0Param(ssl: PSSL):PX509_VERIFY_PARAM;
+begin
+  if InitSSLInterface and Assigned(_SslGet0Param) then
+    Result := _SslGet0Param(ssl)
+  else
+    Result := nil;
+end;
+
 
 function SSLCtrl(ssl: PSSL; cmd: integer; larg: integer; parg: SslPtr):Integer;
 begin
@@ -1422,6 +1533,47 @@ procedure X509Free(x: PX509);
 begin
   if InitSSLInterface and Assigned(_X509Free) then
     _X509Free(x);
+end;
+
+function X509StoreAddCert(Store: PX509_STORE; Cert: PX509):Integer;
+begin
+  if InitSSLInterface and Assigned(_X509StoreAddCert) then
+    Result := _X509StoreAddCert(Store, Cert)
+  else
+    Result := 0;
+end;
+
+function X509StoreCtxGetCurrentCert(StoreContext: PX509_STORE_CTX):PX509;
+begin
+  if InitSSLInterface and Assigned(_X509StoreCtxGetCurrentCert) then
+    Result := _X509StoreCtxGetCurrentCert(StoreContext)
+  else
+    Result := nil;
+end;
+
+procedure X509VerifyParamSetHostFlags(Param: PX509_VERIFY_PARAM;
+  Flags: Cardinal);
+begin
+  if InitSSLInterface and Assigned(_X509VerifyParamSetHostFlags) then
+    _X509VerifyParamSetHostFlags(Param, Flags);
+end;
+
+function X509VerifyParamSet1Host(Param: PX509_VERIFY_PARAM;
+  const Name: AnsiString; NameLen: SslSize):Integer;
+begin
+  if InitSSLInterface and Assigned(_X509VerifyParamSet1Host) then
+    Result := _X509VerifyParamSet1Host(Param, PAnsiChar(Name), NameLen)
+  else
+    Result := 0;
+end;
+
+function X509VerifyParamSet1IPAsc(Param: PX509_VERIFY_PARAM;
+  const IPAddress: AnsiString):Integer;
+begin
+  if InitSSLInterface and Assigned(_X509VerifyParamSet1IPAsc) then
+    Result := _X509VerifyParamSet1IPAsc(Param, PAnsiChar(IPAddress))
+  else
+    Result := 0;
 end;
 
 //function SslX509NameOneline(a: PX509_NAME; buf: PChar; size: Integer):PChar;
@@ -1726,10 +1878,10 @@ begin
     Result := 0;
 end;
 
-function d2iX509bio(b: PBIO; x: PX509): PX509; {pf}
+function d2iX509bio(b: PBIO; x: PSslPtr): PX509; {pf}
 begin
   if InitSSLInterface and Assigned(_d2iX509bio) then
-    Result := _d2iX509bio(x,b)
+    Result := _d2iX509bio(b,x)
   else
     Result := nil;
 end;
@@ -1841,6 +1993,31 @@ end;
 
 {$ENDIF}
 
+function SSLHostVerificationAvailable:Boolean;
+begin
+{$IFDEF CIL}
+  Result := True;
+{$ELSE}
+  Result := InitSSLInterface and Assigned(_SslCtxSetVerify)
+    and Assigned(_SslGet0Param)
+    and Assigned(_X509VerifyParamSetHostFlags)
+    and Assigned(_X509VerifyParamSet1Host)
+    and Assigned(_X509VerifyParamSet1IPAsc);
+{$ENDIF}
+end;
+
+function SSLWindowsCertificateVerificationAvailable:Boolean;
+begin
+{$IFDEF CIL}
+  Result := True;
+{$ELSE}
+  Result := InitSSLInterface and Assigned(_SslCtxSetVerify)
+    and Assigned(_SslCtxGetCertStore)
+    and Assigned(_X509StoreAddCert)
+    and Assigned(_X509StoreCtxGetCurrentCert);
+{$ENDIF}
+end;
+
 function LoadLib(const Value: String): HModule;
 begin
 {$IFDEF CIL}
@@ -1918,6 +2095,8 @@ begin
         _SslCtxSetDefaultPasswdCb := GetProcAddr(SSLLibHandle, 'SSL_CTX_set_default_passwd_cb');
         _SslCtxSetDefaultPasswdCbUserdata := GetProcAddr(SSLLibHandle, 'SSL_CTX_set_default_passwd_cb_userdata');
         _SslCtxLoadVerifyLocations := GetProcAddr(SSLLibHandle, 'SSL_CTX_load_verify_locations');
+        _SslCtxSetDefaultVerifyPaths := GetProcAddr(SSLLibHandle, 'SSL_CTX_set_default_verify_paths');
+        _SslCtxGetCertStore := GetProcAddr(SSLLibHandle, 'SSL_CTX_get_cert_store');
         _SslCtxCtrl := GetProcAddr(SSLLibHandle, 'SSL_CTX_ctrl');
         _SslNew := GetProcAddr(SSLLibHandle, 'SSL_new');
         _SslFree := GetProcAddr(SSLLibHandle, 'SSL_free');
@@ -1935,10 +2114,16 @@ begin
         _SslCipherGetName := GetProcAddr(SSLLibHandle, 'SSL_CIPHER_get_name');
         _SslCipherGetBits := GetProcAddr(SSLLibHandle, 'SSL_CIPHER_get_bits');
         _SslGetVerifyResult := GetProcAddr(SSLLibHandle, 'SSL_get_verify_result');
+        _SslGet0Param := GetProcAddr(SSLLibHandle, 'SSL_get0_param');
         _SslCtrl := GetProcAddr(SSLLibHandle, 'SSL_ctrl');
 
         _X509New := GetProcAddr(SSLUtilHandle, 'X509_new');
         _X509Free := GetProcAddr(SSLUtilHandle, 'X509_free');
+        _X509StoreAddCert := GetProcAddr(SSLUtilHandle, 'X509_STORE_add_cert');
+        _X509StoreCtxGetCurrentCert := GetProcAddr(SSLUtilHandle, 'X509_STORE_CTX_get_current_cert');
+        _X509VerifyParamSetHostFlags := GetProcAddr(SSLUtilHandle, 'X509_VERIFY_PARAM_set_hostflags');
+        _X509VerifyParamSet1Host := GetProcAddr(SSLUtilHandle, 'X509_VERIFY_PARAM_set1_host');
+        _X509VerifyParamSet1IPAsc := GetProcAddr(SSLUtilHandle, 'X509_VERIFY_PARAM_set1_ip_asc');
         _X509NameOneline := GetProcAddr(SSLUtilHandle, 'X509_NAME_oneline');
         _X509GetSubjectName := GetProcAddr(SSLUtilHandle, 'X509_get_subject_name');
         _X509GetIssuerName := GetProcAddr(SSLUtilHandle, 'X509_get_issuer_name');
@@ -2114,6 +2299,8 @@ begin
     _SslCtxSetDefaultPasswdCb := nil;
     _SslCtxSetDefaultPasswdCbUserdata := nil;
     _SslCtxLoadVerifyLocations := nil;
+    _SslCtxSetDefaultVerifyPaths := nil;
+    _SslCtxGetCertStore := nil;
     _SslCtxCtrl := nil;
     _SslNew := nil;
     _SslFree := nil;
@@ -2131,10 +2318,16 @@ begin
     _SslCipherGetName := nil;
     _SslCipherGetBits := nil;
     _SslGetVerifyResult := nil;
+    _SslGet0Param := nil;
     _SslCtrl := nil;
 
     _X509New := nil;
     _X509Free := nil;
+    _X509StoreAddCert := nil;
+    _X509StoreCtxGetCurrentCert := nil;
+    _X509VerifyParamSetHostFlags := nil;
+    _X509VerifyParamSet1Host := nil;
+    _X509VerifyParamSet1IPAsc := nil;
     _X509NameOneline := nil;
     _X509GetSubjectName := nil;
     _X509GetIssuerName := nil;

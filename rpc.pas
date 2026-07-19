@@ -626,8 +626,8 @@ procedure TRpc.InitSSL;
 {$ifndef darwin}
   procedure CheckOpenSSL;
   const
-  OpenSSLVersions: array[1..6] of string =
-  ('3', '1.1', '1.1.0', '1.0.2', '1.0.0', '0.9.8');
+  OpenSSLVersions: array[1..5] of string =
+  ('3', '1.1', '1.1.0', '1.0.2', '1.0.0');
   var
     hLib1, hLib2: TLibHandle;
     i: integer;
@@ -1054,6 +1054,7 @@ begin
   Ini.WriteInteger('NetWork', 'HttpTimeout', i);
   Http.Timeout:= i * 1000;
   Http.Sock.SSL.DataTimeout:=Http.Timeout;
+  Http.Sock.SSL.VerifyCert:=True;
   Http.Sock.NonblockSendTimeout:=Http.Timeout;
 
   i := Ini.ReadInteger('NetWork', 'ConnectTimeout', 0);

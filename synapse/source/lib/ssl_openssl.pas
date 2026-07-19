@@ -92,7 +92,7 @@ interface
 
 uses
   SysUtils, Classes,
-  blcksock, synsock, synautil,
+  blcksock, synsock, synautil, synaip,
 {$IFDEF CIL}
   System.Text,
 {$ENDIF}
@@ -107,13 +107,14 @@ type
     FSsl: PSSL;
     Fctx: PSSL_CTX;
     function SSLCheck: Boolean;
-    function SetSslKeys: boolean;
+    function SetSslKeys(server:Boolean): boolean;
     function Init(server:Boolean): Boolean;
     function DeInit: Boolean;
     function Prepare(server:Boolean): Boolean;
     procedure SetWaitError;
     function WaitForIO(Error: integer; StartTick: LongWord): Boolean;
     function LoadPFX(pfxdata: ansistring): Boolean;
+    function ConfigureHostVerification: Boolean;
     function CreateSelfSignedCert(Host: string): Boolean; override;
   public
     {:See @inherited}
@@ -164,6 +165,526 @@ type
   end;
 
 implementation
+
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+uses
+  Windows;
+
+type
+  TWinCertContext = record
+    EncodingType: DWORD;
+    EncodedData: PByte;
+    EncodedSize: DWORD;
+    CertInfo: Pointer;
+    CertStore: Pointer;
+  end;
+  PWinCertContext = ^TWinCertContext;
+  TPAnsiCharArray = array[0..0] of PAnsiChar;
+  PPAnsiCharArray = ^TPAnsiCharArray;
+  TWinCertEnhKeyUsage = record
+    UsageIdentifierCount: DWORD;
+    UsageIdentifiers: PPAnsiCharArray;
+  end;
+  PWinCertEnhKeyUsage = ^TWinCertEnhKeyUsage;
+
+const
+  CRYPT_E_NOT_FOUND = DWORD($80092004);
+  X509_ASN_ENCODING = $00000001;
+  PKCS_7_ASN_ENCODING = $00010000;
+  CERT_FIND_EXISTING = $000D0000;
+  CERT_STORE_PROV_SYSTEM_A = 9;
+  CERT_STORE_READONLY_FLAG = $00008000;
+  CERT_SYSTEM_STORE_CURRENT_USER = $00010000;
+  CERT_SYSTEM_STORE_LOCAL_MACHINE = $00020000;
+  ANY_ENHANCED_KEY_USAGE_OID = '2.5.29.37.0';
+  SERVER_AUTH_OID = '1.3.6.1.5.5.7.3.1';
+  X509_R_CERT_ALREADY_IN_HASH_TABLE = 101;
+
+threadvar
+  WindowsVerifyError: string;
+  WindowsCurrentUserDisallowedStore: Pointer;
+  WindowsLocalMachineDisallowedStore: Pointer;
+
+function WinCertOpenStore(Provider: Pointer; EncodingType: DWORD;
+  CryptProvider: PtrUInt; Flags: DWORD; StoreName: Pointer): Pointer; stdcall;
+  external 'crypt32.dll' name 'CertOpenStore';
+function WinCertEnumCertificatesInStore(Store: Pointer;
+  Previous: PWinCertContext): PWinCertContext; stdcall;
+  external 'crypt32.dll' name 'CertEnumCertificatesInStore';
+function WinCertCreateCertificateContext(EncodingType: DWORD;
+  EncodedData: PByte; EncodedSize: DWORD): PWinCertContext; stdcall;
+  external 'crypt32.dll' name 'CertCreateCertificateContext';
+function WinCertFindCertificateInStore(Store: Pointer; EncodingType: DWORD;
+  FindFlags: DWORD; FindType: DWORD; FindParameter: Pointer;
+  Previous: PWinCertContext): PWinCertContext; stdcall;
+  external 'crypt32.dll' name 'CertFindCertificateInStore';
+function WinCertGetEnhancedKeyUsage(CertContext: PWinCertContext; Flags: DWORD;
+  Usage: PWinCertEnhKeyUsage; var UsageSize: DWORD): LongBool; stdcall;
+  external 'crypt32.dll' name 'CertGetEnhancedKeyUsage';
+function WinCertFreeCertificateContext(CertContext: PWinCertContext): LongBool;
+  stdcall; external 'crypt32.dll' name 'CertFreeCertificateContext';
+function WinCertCloseStore(Store: Pointer; Flags: DWORD): LongBool;
+  stdcall; external 'crypt32.dll' name 'CertCloseStore';
+
+function OpenWindowsCertificateStore(const StoreName: PAnsiChar;
+  Location: DWORD): Pointer;
+begin
+  Result := WinCertOpenStore(Pointer(PtrUInt(CERT_STORE_PROV_SYSTEM_A)), 0, 0,
+    Location or CERT_STORE_READONLY_FLAG, StoreName);
+end;
+
+function OpenWindowsDisallowedStores(out ErrorDescription: string): Boolean;
+begin
+  Result := False;
+  ErrorDescription := '';
+  WindowsVerifyError := '';
+  WindowsCurrentUserDisallowedStore :=
+    OpenWindowsCertificateStore('Disallowed',
+      CERT_SYSTEM_STORE_CURRENT_USER);
+  if WindowsCurrentUserDisallowedStore = nil then
+  begin
+    ErrorDescription :=
+      'Unable to open the current-user Windows Disallowed certificate store.';
+    Exit;
+  end;
+  WindowsLocalMachineDisallowedStore :=
+    OpenWindowsCertificateStore('Disallowed',
+      CERT_SYSTEM_STORE_LOCAL_MACHINE);
+  if WindowsLocalMachineDisallowedStore = nil then
+  begin
+    WinCertCloseStore(WindowsCurrentUserDisallowedStore, 0);
+    WindowsCurrentUserDisallowedStore := nil;
+    ErrorDescription :=
+      'Unable to open the local-machine Windows Disallowed certificate store.';
+    Exit;
+  end;
+  Result := True;
+end;
+
+procedure CloseWindowsDisallowedStores;
+begin
+  if WindowsLocalMachineDisallowedStore <> nil then
+    WinCertCloseStore(WindowsLocalMachineDisallowedStore, 0);
+  if WindowsCurrentUserDisallowedStore <> nil then
+    WinCertCloseStore(WindowsCurrentUserDisallowedStore, 0);
+  WindowsLocalMachineDisallowedStore := nil;
+  WindowsCurrentUserDisallowedStore := nil;
+  WindowsVerifyError := '';
+end;
+
+function EncodedCertificateInStore(Store: Pointer; EncodedData: PByte;
+  EncodedSize: DWORD; out LookupFailed: Boolean): Boolean;
+var
+  Certificate: PWinCertContext;
+  Match: PWinCertContext;
+  FindError: DWORD;
+begin
+  Result := False;
+  LookupFailed := True;
+  Certificate := WinCertCreateCertificateContext(X509_ASN_ENCODING,
+    EncodedData, EncodedSize);
+  if Certificate = nil then
+    Exit;
+  try
+    Match := WinCertFindCertificateInStore(Store,
+      X509_ASN_ENCODING or PKCS_7_ASN_ENCODING, 0, CERT_FIND_EXISTING,
+      Certificate, nil);
+    if Match = nil then
+    begin
+      FindError := GetLastError;
+      LookupFailed := FindError <> CRYPT_E_NOT_FOUND;
+      Exit;
+    end;
+    WinCertFreeCertificateContext(Match);
+    LookupFailed := False;
+    Result := True;
+  finally
+    WinCertFreeCertificateContext(Certificate);
+  end;
+end;
+
+function X509CertificateInStore(Store: Pointer; Certificate: PX509;
+  out CheckFailed: Boolean): Boolean;
+var
+  Bio: PBIO;
+  DER: AnsiString;
+  DERSize: integer;
+begin
+  Result := False;
+  CheckFailed := True;
+  if Certificate = nil then
+    Exit;
+  Bio := BioNew(BioSMem);
+  if Bio = nil then
+    Exit;
+  try
+    if i2dX509bio(Bio, Certificate) <> 1 then
+      Exit;
+    DERSize := BioCtrlPending(Bio);
+    if DERSize <= 0 then
+      Exit;
+    SetLength(DER, DERSize);
+    if BioRead(Bio, DER, DERSize) <> DERSize then
+      Exit;
+    Result := EncodedCertificateInStore(Store, PByte(PAnsiChar(DER)),
+      DWORD(DERSize), CheckFailed);
+  finally
+    BioFreeAll(Bio);
+  end;
+end;
+
+function WindowsCertificateAllowsServerAuth(CertContext: PWinCertContext;
+  out CheckFailed: Boolean): Boolean;
+var
+  UsageBuffer: Pointer;
+  Usage: PWinCertEnhKeyUsage;
+  UsageSize: DWORD;
+  UsageError: DWORD;
+  I: DWORD;
+begin
+  Result := False;
+  CheckFailed := True;
+  UsageBuffer := nil;
+  UsageSize := 0;
+  SetLastError(ERROR_SUCCESS);
+  if not WinCertGetEnhancedKeyUsage(CertContext, 0, nil, UsageSize) then
+  begin
+    UsageError := GetLastError;
+    if UsageError = CRYPT_E_NOT_FOUND then
+    begin
+      CheckFailed := False;
+      Result := True;
+    end;
+    Exit;
+  end;
+  if (UsageSize < SizeOf(TWinCertEnhKeyUsage))
+    or (UsageSize > DWORD(High(Integer))) then
+    Exit;
+  GetMem(UsageBuffer, UsageSize);
+  try
+    Usage := PWinCertEnhKeyUsage(UsageBuffer);
+    SetLastError(ERROR_SUCCESS);
+    if not WinCertGetEnhancedKeyUsage(CertContext, 0, Usage, UsageSize) then
+      Exit;
+    if Usage^.UsageIdentifierCount = 0 then
+    begin
+      UsageError := GetLastError;
+      CheckFailed := False;
+      Result := UsageError = CRYPT_E_NOT_FOUND;
+      Exit;
+    end;
+    if Usage^.UsageIdentifiers = nil then
+      Exit;
+    for I := 0 to Usage^.UsageIdentifierCount - 1 do
+      if (Usage^.UsageIdentifiers^[I] <> nil)
+        and ((StrComp(Usage^.UsageIdentifiers^[I],
+          ANY_ENHANCED_KEY_USAGE_OID) = 0)
+        or (StrComp(Usage^.UsageIdentifiers^[I], SERVER_AUTH_OID) = 0)) then
+      begin
+        CheckFailed := False;
+        Result := True;
+        Exit;
+      end;
+    CheckFailed := False;
+  finally
+    FreeMem(UsageBuffer);
+  end;
+end;
+
+function WindowsVerifyCallback(PreverifyOk: integer;
+  StoreContext: PX509_STORE_CTX): integer; cdecl;
+var
+  Certificate: PX509;
+  CheckFailed: Boolean;
+begin
+  Result := 0;
+  if PreverifyOk = 0 then
+    Exit;
+  try
+    Certificate := X509StoreCtxGetCurrentCert(StoreContext);
+    if Certificate = nil then
+    begin
+      WindowsVerifyError :=
+        'OpenSSL did not provide the current certificate in the peer chain.';
+      Exit;
+    end;
+    if WindowsCurrentUserDisallowedStore = nil then
+    begin
+      WindowsVerifyError :=
+        'Unable to open the current-user Windows Disallowed certificate store.';
+      Exit;
+    end;
+    if WindowsLocalMachineDisallowedStore = nil then
+    begin
+      WindowsVerifyError :=
+        'Unable to open the local-machine Windows Disallowed certificate store.';
+      Exit;
+    end;
+    if X509CertificateInStore(WindowsCurrentUserDisallowedStore, Certificate,
+      CheckFailed) then
+    begin
+      WindowsVerifyError :=
+        'The Windows certificate policy distrusts a certificate in the peer chain.';
+      Exit;
+    end;
+    if CheckFailed then
+    begin
+      WindowsVerifyError :=
+        'Unable to check the current-user Windows Disallowed certificate store.';
+      Exit;
+    end;
+    if X509CertificateInStore(WindowsLocalMachineDisallowedStore, Certificate,
+      CheckFailed) then
+    begin
+      WindowsVerifyError :=
+        'The Windows certificate policy distrusts a certificate in the peer chain.';
+      Exit;
+    end;
+    if CheckFailed then
+    begin
+      WindowsVerifyError :=
+        'Unable to check the local-machine Windows Disallowed certificate store.';
+      Exit;
+    end;
+    Result := 1;
+  except
+    WindowsVerifyError :=
+      'Unable to apply the Windows certificate distrust policy.';
+    Result := 0;
+  end;
+end;
+
+function ImportWindowsRootStore(Store: Pointer; CurrentUserDisallowed: Pointer;
+  LocalMachineDisallowed: Pointer; OpenSSLStore: PX509_STORE;
+  var LoadedCount: integer; out ErrorDescription: string): Boolean;
+var
+  CertContext: PWinCertContext;
+  Bio: PBIO;
+  Cert: PX509;
+  DER: AnsiString;
+  EnumError: DWORD;
+  OpenSSLError: integer;
+  UsageCheckFailed: Boolean;
+  DisallowedLookupFailed: Boolean;
+begin
+  Result := False;
+  CertContext := nil;
+  try
+    while True do
+    begin
+      CertContext := WinCertEnumCertificatesInStore(Store, CertContext);
+      if CertContext = nil then
+      begin
+        EnumError := GetLastError;
+        if (EnumError <> CRYPT_E_NOT_FOUND)
+          and (EnumError <> ERROR_NO_MORE_FILES) then
+        begin
+          ErrorDescription :=
+            'Unable to enumerate a Windows ROOT certificate store.';
+          Exit;
+        end;
+        Break;
+      end;
+      if (CertContext^.EncodedSize = 0)
+        or (CertContext^.EncodedSize > DWORD(High(Integer))) then
+      begin
+        ErrorDescription :=
+          'A Windows ROOT certificate store contains an invalid certificate.';
+        Exit;
+      end;
+      if not WindowsCertificateAllowsServerAuth(CertContext,
+        UsageCheckFailed) then
+      begin
+        if UsageCheckFailed then
+        begin
+          ErrorDescription :=
+            'Unable to check a Windows root certificate trust purpose.';
+          Exit;
+        end;
+        Continue;
+      end;
+      if EncodedCertificateInStore(CurrentUserDisallowed,
+        CertContext^.EncodedData, CertContext^.EncodedSize,
+        DisallowedLookupFailed) then
+        Continue;
+      if DisallowedLookupFailed then
+      begin
+        ErrorDescription :=
+          'Unable to check the current-user Windows Disallowed certificate store.';
+        Exit;
+      end;
+      if EncodedCertificateInStore(LocalMachineDisallowed,
+        CertContext^.EncodedData, CertContext^.EncodedSize,
+        DisallowedLookupFailed) then
+        Continue;
+      if DisallowedLookupFailed then
+      begin
+        ErrorDescription :=
+          'Unable to check the local-machine Windows Disallowed certificate store.';
+        Exit;
+      end;
+      SetString(DER, PAnsiChar(CertContext^.EncodedData),
+        CertContext^.EncodedSize);
+      Bio := BioNew(BioSMem);
+      if Bio = nil then
+      begin
+        ErrorDescription := 'OpenSSL could not allocate a certificate buffer.';
+        Exit;
+      end;
+      try
+        if BioWrite(Bio, DER, Length(DER)) <> Length(DER) then
+        begin
+          ErrorDescription := 'OpenSSL could not read a Windows root certificate.';
+          Exit;
+        end;
+        Cert := d2iX509bio(Bio, nil);
+        if Cert = nil then
+        begin
+          ErrorDescription := 'OpenSSL could not decode a Windows root certificate.';
+          Exit;
+        end;
+        try
+          ErrClearError;
+          if X509StoreAddCert(OpenSSLStore, Cert) = 1 then
+            Inc(LoadedCount)
+          else
+          begin
+            OpenSSLError := ErrGetError;
+            if (OpenSSLError and $fff) <> X509_R_CERT_ALREADY_IN_HASH_TABLE then
+            begin
+              ErrorDescription :=
+                'OpenSSL could not trust a Windows root certificate.';
+              Exit;
+            end;
+            ErrClearError;
+            Inc(LoadedCount);
+          end;
+        finally
+          X509Free(Cert);
+        end;
+      finally
+        BioFreeAll(Bio);
+      end;
+    end;
+    Result := True;
+  finally
+    if CertContext <> nil then
+      WinCertFreeCertificateContext(CertContext);
+  end;
+end;
+
+function LoadDefaultVerifyPaths(Ctx: PSSL_CTX;
+  out ErrorDescription: string): Boolean;
+var
+  CurrentUserRoot: Pointer;
+  LocalMachineRoot: Pointer;
+  CurrentUserDisallowed: Pointer;
+  LocalMachineDisallowed: Pointer;
+  OpenSSLStore: PX509_STORE;
+  LoadedCount: integer;
+begin
+  Result := False;
+  ErrorDescription := '';
+  LoadedCount := 0;
+  if not SSLWindowsCertificateVerificationAvailable then
+  begin
+    ErrorDescription :=
+      'Windows certificate policy checks require OpenSSL 1.0.2 or later.';
+    Exit;
+  end;
+  CurrentUserRoot := OpenWindowsCertificateStore('ROOT',
+    CERT_SYSTEM_STORE_CURRENT_USER);
+  if CurrentUserRoot = nil then
+  begin
+    ErrorDescription :=
+      'Unable to open the current-user Windows ROOT certificate store.';
+    Exit;
+  end;
+  LocalMachineRoot := OpenWindowsCertificateStore('ROOT',
+    CERT_SYSTEM_STORE_LOCAL_MACHINE);
+  if LocalMachineRoot = nil then
+  begin
+    WinCertCloseStore(CurrentUserRoot, 0);
+    ErrorDescription :=
+      'Unable to open the local-machine Windows ROOT certificate store.';
+    Exit;
+  end;
+  CurrentUserDisallowed := OpenWindowsCertificateStore('Disallowed',
+    CERT_SYSTEM_STORE_CURRENT_USER);
+  if CurrentUserDisallowed = nil then
+  begin
+    WinCertCloseStore(LocalMachineRoot, 0);
+    WinCertCloseStore(CurrentUserRoot, 0);
+    ErrorDescription :=
+      'Unable to open the current-user Windows Disallowed certificate store.';
+    Exit;
+  end;
+  LocalMachineDisallowed := OpenWindowsCertificateStore('Disallowed',
+    CERT_SYSTEM_STORE_LOCAL_MACHINE);
+  if LocalMachineDisallowed = nil then
+  begin
+    WinCertCloseStore(CurrentUserDisallowed, 0);
+    WinCertCloseStore(LocalMachineRoot, 0);
+    WinCertCloseStore(CurrentUserRoot, 0);
+    ErrorDescription :=
+      'Unable to open the local-machine Windows Disallowed certificate store.';
+    Exit;
+  end;
+  try
+    OpenSSLStore := SslCtxGetCertStore(Ctx);
+    if OpenSSLStore = nil then
+    begin
+      ErrorDescription := 'OpenSSL did not provide a certificate store.';
+      Exit;
+    end;
+    if not ImportWindowsRootStore(CurrentUserRoot, CurrentUserDisallowed,
+      LocalMachineDisallowed, OpenSSLStore, LoadedCount,
+      ErrorDescription) then
+      Exit;
+    if not ImportWindowsRootStore(LocalMachineRoot, CurrentUserDisallowed,
+      LocalMachineDisallowed, OpenSSLStore, LoadedCount,
+      ErrorDescription) then
+      Exit;
+    if LoadedCount = 0 then
+    begin
+      ErrorDescription := 'The Windows certificate stores contain no trusted roots.';
+      Exit;
+    end;
+    Result := True;
+  finally
+    WinCertCloseStore(LocalMachineDisallowed, 0);
+    WinCertCloseStore(CurrentUserDisallowed, 0);
+    WinCertCloseStore(LocalMachineRoot, 0);
+    WinCertCloseStore(CurrentUserRoot, 0);
+  end;
+end;
+{$ENDIF}
+{$ENDIF}
+
+{$IFNDEF MSWINDOWS}
+function LoadDefaultVerifyPaths(Ctx: PSSL_CTX;
+  out ErrorDescription: string): Boolean;
+begin
+  Result := SslCtxSetDefaultVerifyPaths(Ctx) = 1;
+  if Result then
+    ErrorDescription := ''
+  else
+    ErrorDescription := 'OpenSSL could not load the default certificate paths.';
+end;
+{$ELSE}
+{$IFDEF CIL}
+function LoadDefaultVerifyPaths(Ctx: PSSL_CTX;
+  out ErrorDescription: string): Boolean;
+begin
+  Result := SslCtxSetDefaultVerifyPaths(Ctx) = 1;
+  if Result then
+    ErrorDescription := ''
+  else
+    ErrorDescription := 'OpenSSL could not load the default certificate paths.';
+end;
+{$ENDIF}
+{$ENDIF}
 
 {==============================================================================}
 
@@ -358,12 +879,14 @@ begin
   end;
 end;
 
-function TSSLOpenSSL.SetSslKeys: boolean;
+function TSSLOpenSSL.SetSslKeys(server:Boolean): boolean;
 var
   st: TFileStream;
-  s: string;
+  s, DefaultVerifyError: string;
+  DefaultVerifyFailed: Boolean;
 begin
   Result := False;
+  DefaultVerifyFailed := False;
   if not assigned(FCtx) then
     Exit;
   try
@@ -387,6 +910,12 @@ begin
     if FCertCAFile <> '' then
       if SslCtxLoadVerifyLocations(FCtx, FCertCAFile, '') <> 1 then
         Exit;
+    if not server and FVerifyCert and (FCertCAFile = '') then
+      if not LoadDefaultVerifyPaths(FCtx, DefaultVerifyError) then
+      begin
+        DefaultVerifyFailed := True;
+        Exit;
+      end;
     if FPFXfile <> '' then
     begin
       try
@@ -410,6 +939,11 @@ begin
     Result := True;
   finally
     SSLCheck;
+    if DefaultVerifyFailed then
+    begin
+      FLastError := X509_V_ERR_APPLICATION_VERIFICATION;
+      FLastErrorDesc := DefaultVerifyError;
+    end;
   end;
 end;
 
@@ -449,7 +983,25 @@ begin
     s := FCiphers;
     SslCtxSetCipherList(Fctx, s);
     if FVerifyCert then
+    begin
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+      if not SSLWindowsCertificateVerificationAvailable then
+      begin
+        FLastError := X509_V_ERR_APPLICATION_VERIFICATION;
+        FLastErrorDesc :=
+          'Windows certificate policy checks require OpenSSL 1.0.2 or later.';
+        Exit;
+      end;
+      SslCtxSetVerify(FCtx, SSL_VERIFY_PEER,
+        @WindowsVerifyCallback)
+{$ELSE}
       SslCtxSetVerify(FCtx, SSL_VERIFY_PEER, nil)
+{$ENDIF}
+{$ELSE}
+      SslCtxSetVerify(FCtx, SSL_VERIFY_PEER, nil)
+{$ENDIF}
+    end
     else
       SslCtxSetVerify(FCtx, SSL_VERIFY_NONE, nil);
 {$IFNDEF CIL}
@@ -463,7 +1015,7 @@ begin
       CreateSelfSignedcert(FSocket.ResolveIPToName(FSocket.GetRemoteSinIP));
     end;
 
-    if not SetSSLKeys then
+    if not SetSSLKeys(server) then
       Exit
     else
     begin
@@ -534,15 +1086,59 @@ begin
     SetWaitError;
 end;
 
+function NormalizeTLSIdentityHost(const Host: AnsiString;
+  out IsIPAddress: Boolean): AnsiString;
+var
+  ZoneDelimiter: integer;
+begin
+  Result := Host;
+  ZoneDelimiter := Pos('%', Result);
+  if ZoneDelimiter <> 0 then
+  begin
+    Result := Copy(Result, 1, ZoneDelimiter - 1);
+    if Pos(':', Result) <> 0 then
+    begin
+      IsIPAddress := True;
+      Exit;
+    end;
+    Result := Host;
+  end;
+  IsIPAddress := IsIP(Result) or IsIP6(Result) or (Pos(':', Result) <> 0);
+end;
+
 function TSSLOpenSSL.Connect: boolean;
 var
   x: integer;
   b: boolean;
   err: integer;
+  IdentityHost: AnsiString;
+  IdentityIsIPAddress: Boolean;
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+  WindowsStoreError: string;
+{$ENDIF}
+{$ENDIF}
 begin
   Result := False;
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+  CloseWindowsDisallowedStores;
+{$ENDIF}
+{$ENDIF}
   if FSocket.Socket = INVALID_SOCKET then
     Exit;
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+  if FVerifyCert then
+    if not OpenWindowsDisallowedStores(WindowsStoreError) then
+    begin
+      FLastError := X509_V_ERR_APPLICATION_VERIFICATION;
+      FLastErrorDesc := WindowsStoreError;
+      Exit;
+    end;
+  try
+{$ENDIF}
+{$ENDIF}
   if Prepare(False) then
   begin
 {$IFDEF CIL}
@@ -554,14 +1150,29 @@ begin
       SSLCheck;
       Exit;
     end;
-    if SNIHost<>'' then
-      SSLCtrl(Fssl, SSL_CTRL_SET_TLSEXT_HOSTNAME, TLSEXT_NAMETYPE_host_name, PAnsiChar(AnsiString(SNIHost)));
+    if FVerifyCert and (SNIHost <> '') then
+      if not ConfigureHostVerification then
+        Exit;
+    IdentityHost := NormalizeTLSIdentityHost(AnsiString(SNIHost),
+      IdentityIsIPAddress);
+    if (IdentityHost <> '') and not IdentityIsIPAddress then
+      SSLCtrl(Fssl, SSL_CTRL_SET_TLSEXT_HOSTNAME,
+        TLSEXT_NAMETYPE_host_name, PAnsiChar(IdentityHost));
     if FSocket.ConnectionTimeout <= 0 then //do blocking call of SSL_Connect
     begin
       x := sslconnect(FSsl);
       if x < 1 then
       begin
         SSLcheck;
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+        if WindowsVerifyError <> '' then
+        begin
+          FLastError := X509_V_ERR_APPLICATION_VERIFICATION;
+          FLastErrorDesc := WindowsVerifyError;
+        end;
+{$ENDIF}
+{$ENDIF}
         Exit;
       end;
     end
@@ -599,6 +1210,15 @@ begin
       if err <> SSL_ERROR_NONE then
       begin
         SSLcheck;
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+        if WindowsVerifyError <> '' then
+        begin
+          FLastError := X509_V_ERR_APPLICATION_VERIFICATION;
+          FLastErrorDesc := WindowsVerifyError;
+        end;
+{$ENDIF}
+{$ENDIF}
         Exit;
       end;
     end;
@@ -608,15 +1228,102 @@ begin
     FSSLEnabled := True;
     Result := True;
   end;
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+  finally
+    CloseWindowsDisallowedStores;
+  end;
+{$ENDIF}
+{$ENDIF}
+end;
+
+function TSSLOpenSSL.ConfigureHostVerification: Boolean;
+var
+  Param: PX509_VERIFY_PARAM;
+  Host: AnsiString;
+  HostIsIPAddress: Boolean;
+begin
+  Result := False;
+  Host := NormalizeTLSIdentityHost(AnsiString(SNIHost), HostIsIPAddress);
+  if Host = '' then
+  begin
+    FLastError := X509_V_ERR_APPLICATION_VERIFICATION;
+    FLastErrorDesc := 'TLS hostname verification requires a target hostname.';
+    Exit;
+  end;
+  if not SSLHostVerificationAvailable then
+  begin
+    FLastError := X509_V_ERR_APPLICATION_VERIFICATION;
+    FLastErrorDesc := 'TLS hostname verification requires OpenSSL 1.0.2 or later.';
+    Exit;
+  end;
+{$IFDEF CIL}
+  try
+{$ENDIF}
+  Param := SslGet0Param(Fssl);
+  if Param = nil then
+  begin
+    FLastError := X509_V_ERR_APPLICATION_VERIFICATION;
+    FLastErrorDesc := 'OpenSSL did not provide certificate verification parameters.';
+    Exit;
+  end;
+  if HostIsIPAddress then
+    Result := X509VerifyParamSet1IPAsc(Param, Host) = 1
+  else
+  begin
+    X509VerifyParamSetHostFlags(Param, X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS);
+    Result := X509VerifyParamSet1Host(Param, Host, 0) = 1;
+  end;
+  if not Result then
+  begin
+    if SSLCheck then
+    begin
+      FLastError := X509_V_ERR_APPLICATION_VERIFICATION;
+      FLastErrorDesc := 'OpenSSL rejected the TLS verification hostname.';
+    end;
+  end;
+{$IFDEF CIL}
+  except
+    on Exception do
+    begin
+      Result := False;
+      FLastError := X509_V_ERR_APPLICATION_VERIFICATION;
+      FLastErrorDesc :=
+        'TLS hostname verification is unavailable in the loaded OpenSSL runtime.';
+    end;
+  end;
+{$ENDIF}
 end;
 
 function TSSLOpenSSL.Accept: boolean;
 var
   x: integer;
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+  WindowsStoreError: string;
+{$ENDIF}
+{$ENDIF}
 begin
   Result := False;
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+  CloseWindowsDisallowedStores;
+{$ENDIF}
+{$ENDIF}
   if FSocket.Socket = INVALID_SOCKET then
     Exit;
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+  if FVerifyCert then
+    if not OpenWindowsDisallowedStores(WindowsStoreError) then
+    begin
+      FLastError := X509_V_ERR_APPLICATION_VERIFICATION;
+      FLastErrorDesc := WindowsStoreError;
+      Exit;
+    end;
+  try
+{$ENDIF}
+{$ENDIF}
   if Prepare(True) then
   begin
 {$IFDEF CIL}
@@ -632,11 +1339,27 @@ begin
     if x < 1 then
     begin
       SSLcheck;
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+      if WindowsVerifyError <> '' then
+      begin
+        FLastError := X509_V_ERR_APPLICATION_VERIFICATION;
+        FLastErrorDesc := WindowsVerifyError;
+      end;
+{$ENDIF}
+{$ENDIF}
       Exit;
     end;
     FSSLEnabled := True;
     Result := True;
   end;
+{$IFDEF MSWINDOWS}
+{$IFNDEF CIL}
+  finally
+    CloseWindowsDisallowedStores;
+  end;
+{$ENDIF}
+{$ENDIF}
 end;
 
 function TSSLOpenSSL.Shutdown: boolean;
