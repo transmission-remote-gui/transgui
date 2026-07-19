@@ -1,0 +1,32 @@
+restranslator.pas
+  s_c454ea4812d6e8::t_021811a54779df 177
+  s_c454ea4812d6e8::t_52a8aa3dd27436 162-165,167-169,172-176,178-179
+  s_c454ea4812d6e8::t_21deee93112f3b 91-92
+  s_c454ea4812d6e8::t_e903eb6f48ba66 846
+  s_c454ea4812d6e8::t_e66d7e64f587f4 142,170-171
+  s_c454ea4812d6e8::t_e685ae49489a56 718-719,754,764,789
+  s_c454ea4812d6e8::t_d69a2a089c10b9 739,761,763,786-788
+  s_c454ea4812d6e8::t_c1f3fb72d99e39 756-760,762
+  s_c454ea4812d6e8::t_b7c761d60cf3c2 682-684
+  s_c454ea4812d6e8::t_93772c5d32d685 166,665-666
+lang/transgui.zh_tw
+  s_c454ea4812d6e8::t_d1c69c814ae9c5 2-3,300
+lang/transgui.zh
+  s_c454ea4812d6e8::t_d1c69c814ae9c5 2-3,300
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "995678a898e95affd72ca101e09d0cdbb937d083",
+  "prompts": {},
+  "sessions": {
+    "s_c454ea4812d6e8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c28-72d9-7a83-8455-99228719e63a",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
