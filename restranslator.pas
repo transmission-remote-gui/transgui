@@ -157,6 +157,75 @@ begin
   Result := Pos(Separator, S) > 0;
 end;
 
+function AccessKey(const Value: AnsiString): char;
+var
+  i: integer;
+begin
+  Result := #0;
+  i := 1;
+  while i < Length(Value) do begin
+    if Value[i] = '&' then begin
+      if Value[i + 1] = '&' then
+        Inc(i)
+      else begin
+        Result := Value[i + 1];
+        exit;
+      end;
+    end;
+    Inc(i);
+  end;
+end;
+
+function StripAccessKey(const Value: AnsiString): AnsiString;
+var
+  i: integer;
+begin
+  Result := '';
+  i := 1;
+  while i <= Length(Value) do begin
+    if Value[i] <> '&' then
+      Result := Result + Value[i]
+    else if (i < Length(Value)) and (Value[i + 1] = '&') then begin
+      Result := Result + '&&';
+      Inc(i);
+    end
+    else if i = Length(Value) then
+      Result := Result + '&';
+    Inc(i);
+  end;
+end;
+
+function ApplyAccessKey(const Source, Translation: AnsiString): AnsiString;
+var
+  Key, UpperKey: char;
+  i: integer;
+  Marker: AnsiString;
+begin
+  Result := Translation;
+  if AccessKey(Result) <> #0 then
+    exit;
+
+  Key := AccessKey(Source);
+  if Key = #0 then
+    exit;
+
+  UpperKey := UpCase(Key);
+  for i := 1 to Length(Result) do
+    if (Result[i] in ['A'..'Z', 'a'..'z']) and
+      (UpCase(Result[i]) = UpperKey) then begin
+      Insert('&', Result, i);
+      exit;
+    end;
+
+  Marker := '(&' + UpCase(Key) + ')';
+  if AnsiEndsStr('...', Result) then
+    Insert(Marker, Result, Length(Result) - 2)
+  else if AnsiEndsStr('…', Result) then
+    Insert(Marker, Result, Length(Result) - Length('…') + 1)
+  else
+    Result := Result + Marker;
+end;
+
 function ExtractLangName(const FileName: TFilename): AnsiString;
 begin
   with TTranslateStringList.Create(FileName) do
@@ -631,7 +700,7 @@ end;
 procedure TTranslateStringList.Merge(Source: TTranslateStringList; const NamesOnly: boolean = false);
 var
   i, j: integer;
-  n: string;
+  n, NeutralName, NeutralValue, SourceName, StoredNeutralValue: string;
 begin
   CheckSpecialChars;
   Source.Sort;
@@ -642,11 +711,23 @@ begin
       continue;
     n:=Source.CNames[i];
     if n <> '' then begin
+      NeutralValue:=n;
+      if NamesOnly then begin
+        SourceName:=AnsiDequotedStr(n, QuoteChar);
+        NeutralName:=StripAccessKey(SourceName);
+        if NeutralName <> SourceName then begin
+          NeutralName:=NormaliseQuotedStr(NeutralName);
+          StoredNeutralValue:=CValues[NeutralName];
+          if StoredNeutralValue <> '' then
+            NeutralValue:=NormaliseQuotedStr(ApplyAccessKey(SourceName,
+              AnsiDequotedStr(StoredNeutralValue, QuoteChar)));
+        end;
+      end;
       j:=IndexOfName(n);
       if j < 0 then begin
         // New string
         if NamesOnly then
-          j:=Add(n + NameValueSeparator + n)
+          j:=Add(n + NameValueSeparator + NeutralValue)
         else
           j:=Add(Source.Strings[i]);
       end;
@@ -710,8 +791,43 @@ function TResTranslator.InternalTranslateString(const Value: AnsiString; IsExter
     end;
   end;
 
+  function TranslationName(const AValue: AnsiString): AnsiString;
+  begin
+    if HasSeparator(AValue, FStrResLst.NameValueSeparator) then
+      Result := AnsiQuotedStr(AValue, FStrResLst.QuoteChar)
+    else
+      Result := AValue;
+  end;
+
+  function TryGetTranslation(const AKey: AnsiString; out ATranslation,
+    AName: AnsiString): boolean;
+  var
+    StoredValue: AnsiString;
+  begin
+    AName := TranslationName(AKey);
+    StoredValue := FStrResLst.CValues[AName];
+    Result := StoredValue <> '';
+    if Result then
+      ATranslation := AnsiDequotedStr(StoredValue, FStrResLst.QuoteChar);
+  end;
+
+  function AddTranslation(const AKey, AValue: AnsiString;
+    MarkExternal: boolean): integer;
+  var
+    Name: AnsiString;
+  begin
+    Name := TranslationName(AKey);
+    Result := FStrResLst.Add(Name + FStrResLst.NameValueSeparator +
+      TranslationName(AValue));
+    FStrResLst.Options[Result] := [tsoNew, tsoUsed];
+    if MarkExternal then
+      FStrResLst.Options[Result] :=
+        FStrResLst.Options[Result] + [tsoExternal];
+    FModified := True;
+  end;
+
 var
-  ClearValue: AnsiString;
+  ClearValue, NeutralValue: AnsiString;
   Original, s, n: AnsiString;
   i: integer;
 begin
@@ -726,29 +842,31 @@ begin
     RemoveTrailingChars(ClearValue, FWordDelims);
   if HasAlpha then
   begin
-    with FStrResLst do begin
-      if HasSeparator(ClearValue, NameValueSeparator) then
-        n := AnsiQuotedStr(ClearValue, QuoteChar)
-      else
-        n := ClearValue;
-
-      s:=CValues[n];
-      if (s = '') then begin
-        i:=Add(n + NameValueSeparator + n);
-        Options[i]:=[tsoNew, tsoUsed];
-        FModified := True;
-        Result := Original;
-      end
-      else begin
-        Result := StringReplace(Result, ClearValue, AnsiDequotedStr(s, QuoteChar), [rfReplaceAll]);
-        Result := StringReplace(Result, '~', LineEnding, [rfReplaceAll]);
-      end;
+    if TryGetTranslation(ClearValue, s, n) then begin
+      s := ApplyAccessKey(ClearValue, s);
+      Result := StringReplace(Result, ClearValue, s, [rfReplaceAll]);
+      Result := StringReplace(Result, '~', LineEnding, [rfReplaceAll]);
       if IsExternal then begin
-        i:=IndexOfName(n);
+        i := FStrResLst.IndexOfName(n);
         if i >= 0 then
-          Options[i]:=Options[i] + [tsoExternal];
+          FStrResLst.Options[i] :=
+            FStrResLst.Options[i] + [tsoExternal];
       end;
+      exit;
     end;
+
+    NeutralValue := StripAccessKey(ClearValue);
+    if (NeutralValue <> ClearValue) and
+      TryGetTranslation(NeutralValue, s, n) then begin
+      s := ApplyAccessKey(ClearValue, s);
+      AddTranslation(ClearValue, s, IsExternal);
+      Result := StringReplace(Result, ClearValue, s, [rfReplaceAll]);
+      Result := StringReplace(Result, '~', LineEnding, [rfReplaceAll]);
+      exit;
+    end;
+
+    AddTranslation(ClearValue, ClearValue, IsExternal);
+    Result := Original;
   end;
 end;
 

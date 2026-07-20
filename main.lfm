@@ -2006,7 +2006,7 @@ inherited MainForm: TMainForm
       end
     end
     object miView: TMenuItem
-      Caption = 'View'
+      Caption = '&View'
       object MenuItem88: TMenuItem
         Action = acSelectAll
       end
@@ -2208,7 +2208,7 @@ inherited MainForm: TMainForm
         Caption = '-'
       end
       object miAbout: TMenuItem
-        Caption = 'About...'
+        Caption = '&About...'
         OnClick = miAboutClick
       end
     end
