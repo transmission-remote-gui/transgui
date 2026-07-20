@@ -57,6 +57,13 @@ type
   private
     ResultData: TJSONData;
     FRpc: TRpc;
+    FPiecesSkip: integer;
+    FStaticInfoId: integer;
+    FLastPieces: string;
+    FLastPiecesTime: TDateTime;
+    FLastHashString: string;
+    FLastCreator: string;
+    FLastDateCreated: double;
 
     function GetAdvInfo: TAdvInfoType;
     function GetCurTorrentId: cardinal;
@@ -264,6 +271,10 @@ end;
 constructor TRpcThread.Create;
 begin
   inherited Create(True);
+  FPiecesSkip := 0;
+  FStaticInfoId := -1;
+  FLastPiecesTime := 0;
+  FLastDateCreated := 0;
 end;
 
 destructor TRpcThread.Destroy;
@@ -542,23 +553,131 @@ procedure TRpcThread.GetInfo(TorrentId: integer);
 var
   args: TJSONObject;
   t: TJSONArray;
+  to0: TJSONObject;
+  ExtraFields: array of string;
+  i: integer;
+  NeedStatic: boolean;
+  NeedPieces: boolean;
+  TorrentChanged: boolean;
+  MetadataComplete: boolean;
+
+  procedure InjectStr(o: TJSONObject; const AKey, AValue: string);
+  begin
+    if o.IndexOfName(AKey) < 0 then
+      o.Add(AKey, AValue)
+    else
+      o.Strings[AKey] := AValue;
+  end;
+
 begin
+  SetLength(ExtraFields, 0);
+  TorrentChanged := TorrentId <> FStaticInfoId;
+  if TorrentChanged then begin
+    // A different torrent is selected: force a fresh fetch of immutable data this round.
+    FPiecesSkip := 0;
+    FStaticInfoId := -1;
+    FLastHashString := '';
+    FLastCreator := '';
+    FLastDateCreated := 0;
+    FLastPieces := '';
+    FLastPiecesTime := 0;
+    NeedStatic := True;
+  end
+  else
+    NeedStatic := False;
+
+  if FRpc.RPCVersion >= 5 then begin
+    // Also refresh immediately after the General tab has been inactive for a full throttle window.
+    NeedPieces := (FPiecesSkip <= 0) or (FLastPiecesTime = 0) or
+                  (Now - FLastPiecesTime >= RefreshInterval*4);
+    if NeedPieces then
+      FPiecesSkip := 3
+    else
+      Dec(FPiecesSkip);
+  end
+  else
+    NeedPieces := False;
+
+  if FRpc.RPCVersion >= 7 then begin
+    SetLength(ExtraFields, 2);
+    ExtraFields[0] := 'magnetLink';
+    ExtraFields[1] := 'metadataPercentComplete';
+  end;
+
+  if NeedStatic then begin
+    i := Length(ExtraFields);
+    SetLength(ExtraFields, i + 3);
+    ExtraFields[i]     := 'hashString';
+    ExtraFields[i + 1] := 'creator';
+    ExtraFields[i + 2] := 'dateCreated';
+  end;
+
+  if NeedPieces then begin
+    i := Length(ExtraFields);
+    SetLength(ExtraFields, i + 1);
+    ExtraFields[i] := 'pieces';
+  end;
+
   args:=FRpc.RequestInfo(TorrentId, ['totalSize', 'sizeWhenDone', 'leftUntilDone', 'pieceCount', 'pieceSize', 'haveValid',
-                                    'hashString', 'comment', 'downloadedEver', 'uploadedEver', 'corruptEver', 'errorString',
+                                    'comment', 'downloadedEver', 'uploadedEver', 'corruptEver', 'errorString',
                                     'announceResponse', 'downloadLimit', 'downloadLimitMode', 'uploadLimit', 'uploadLimitMode',
-                                    'maxConnectedPeers', 'nextAnnounceTime', 'dateCreated', 'creator', 'eta', 'peersSendingToUs',
+                                    'maxConnectedPeers', 'nextAnnounceTime', 'eta', 'peersSendingToUs',
                                     'seeders','peersGettingFromUs','leechers', 'uploadRatio', 'addedDate', 'doneDate',
-                                    'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id', 'pieces',
-                                    'trackerStats', 'secondsDownloading', 'secondsSeeding', 'magnetLink', 'isPrivate', 'labels']);
+                                    'activityDate', 'downloadLimited', 'uploadLimited', 'downloadDir', 'id',
+                                    'trackerStats', 'secondsDownloading', 'secondsSeeding', 'isPrivate', 'labels'], ExtraFields);
   try
     if args <> nil then begin
       t:=args.Arrays['torrents'];
       if t.Count > 0 then
-        ResultData:=t.Objects[0]
+        to0:=t.Objects[0]
       else
-        ResultData:=nil;
-      if not Terminated then
+        to0:=nil;
+      ResultData:=to0;
+      if not Terminated then begin
+        if to0 <> nil then begin
+          MetadataComplete := (to0.IndexOfName('metadataPercentComplete') < 0) or
+                              (to0.Floats['metadataPercentComplete'] >= 1.0);
+          // For metadata-incomplete magnets, creator/dateCreated (and pieces) are still empty.
+          // Keep refreshing them until metadata arrives instead of caching blank/zero values.
+          if not MetadataComplete then begin
+            FStaticInfoId := -1;
+            FPiecesSkip := 0;
+            FLastPiecesTime := 0;
+          end;
+          if NeedPieces then begin
+            // Freshly fetched: cache the large bitfield for throttled refreshes.
+            FLastPieces := to0.Strings['pieces'];
+            FLastPiecesTime := Now;
+          end
+          else
+            if FRpc.RPCVersion >= 5 then
+              // Throttled: reuse the last known value so the UI is completely unchanged.
+              InjectStr(to0, 'pieces', FLastPieces);
+          if NeedStatic then begin
+            FLastHashString := to0.Strings['hashString'];
+            FLastCreator := to0.Strings['creator'];
+            FLastDateCreated := to0.Floats['dateCreated'];
+            if MetadataComplete then
+              FStaticInfoId := TorrentId;
+          end
+          else begin
+            InjectStr(to0, 'hashString', FLastHashString);
+            InjectStr(to0, 'creator', FLastCreator);
+            to0.Floats['dateCreated'] := FLastDateCreated;
+          end;
+        end
+        else begin
+          // The selected torrent disappeared before this response; do not retain an empty cache.
+          FStaticInfoId := -1;
+          FPiecesSkip := 0;
+          FLastPieces := '';
+          FLastHashString := '';
+          FLastCreator := '';
+          FLastDateCreated := 0;
+          FLastPiecesTime := 0;
+        end;
         Synchronize(@DoFillInfo);
+      end;
     end;
   finally
     args.Free;
