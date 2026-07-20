@@ -1,0 +1,33 @@
+README.md
+  s_c5b5cf099c8050::t_2a4644658ebfbe 68
+  s_8c561082880c27::t_fff62e4b1f34d2 148,190,193
+  s_8c561082880c27::t_843648b15a3e71 79,81,85
+  s_8c561082880c27::t_cf7e2a39a6a77d 33,42,49
+  s_8c561082880c27::t_fddfc93f4386f1 98,100,106,131,139
+  s_c5b5cf099c8050::t_27c3463c446acd 55
+  s_c5b5cf099c8050::t_d374f51a951dfa 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "552b50968b040a5bd135096e25023f6ce5f1c6c4",
+  "prompts": {},
+  "sessions": {
+    "s_8c561082880c27": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f8081-dd38-7743-898c-f5c5cb3d7ece",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    },
+    "s_c5b5cf099c8050": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07f72f2f0ffeCGqV1iSfEmu0TL",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": null
+    }
+  }
+}
