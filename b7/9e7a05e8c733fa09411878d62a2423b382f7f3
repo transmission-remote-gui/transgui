@@ -1,0 +1,47 @@
+README.md
+  s_8c561082880c27::t_70e87c8ca36ac8 67
+  s_8c561082880c27::t_fddfc93f4386f1 100,106,139
+  s_8c561082880c27::t_843648b15a3e71 79,85
+  s_c5b5cf099c8050::t_27c3463c446acd 55
+  s_8c561082880c27::t_9e5ff2c830c679 98,163,190
+  s_70b9ae3fd27ba2::t_11dc4a37e93c4f 140
+  s_8c561082880c27::t_fff62e4b1f34d2 193
+  s_8c561082880c27::t_cf7e2a39a6a77d 33,42
+  s_8c561082880c27::t_2c60720dcf4b63 158
+  s_70b9ae3fd27ba2::t_40f66041778a12 162
+  s_c5b5cf099c8050::t_d374f51a951dfa 5
+  s_70b9ae3fd27ba2::t_0d7dcddfc6130d 102
+  s_8c561082880c27::t_68055977835338 35,45,49,59,61,68-73,81,112,114-115,123-135,148,152,154,157,159,164,167,171,173-175,178-179,198
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "b79e7a05e8c733fa09411878d62a2423b382f7f3",
+  "prompts": {},
+  "sessions": {
+    "s_70b9ae3fd27ba2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07f631f67ffellrCr2gdFbzlmm",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": null
+    },
+    "s_8c561082880c27": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f8081-dd38-7743-898c-f5c5cb3d7ece",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    },
+    "s_c5b5cf099c8050": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07f72f2f0ffeCGqV1iSfEmu0TL",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": null
+    }
+  }
+}
