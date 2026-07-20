@@ -1,0 +1,23 @@
+setup/win/setup.iss
+  s_ccc764e929fd76::t_c9f73e043aafef 112-117
+setup/win_amd64/setup.iss
+  s_ccc764e929fd76::t_c9f73e043aafef 114-119
+synapse/source/lib/ssl_openssl_lib.pas
+  s_ccc764e929fd76::t_401554e7a71d0f 109-110,133-136,1932-1933,1948-1949,1959-1960,1962-1963,1971-1972
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "31b5ee4967d92ade8f1710c0bfb81c588c6b7a56",
+  "prompts": {},
+  "sessions": {
+    "s_ccc764e929fd76": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f80e4-b79e-7f63-a560-0d369b564a23",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
