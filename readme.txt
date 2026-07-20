@@ -1,5 +1,5 @@
 Transmission Remote GUI.
-Copyright (c) 2008-2019 by Yury Sidorov and Transmission Remote GUI working group.
+Copyright (c) 2008-2019 by Yury Sidorov and the Transmission Remote GUI working group.
 
 Transmission Remote GUI is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,18 +21,18 @@ file, but you are not obligated to do so. If you do not wish to do so, delete
 this exception statement from your version.
 *********************************************************************************
 
-Transmission Remote GUI is feature rich cross platform front-end to remotely control Transmission daemon via its RPC protocol. It is faster and has more functionality than builtin Transmission web interface.
+Transmission Remote GUI is a feature-rich, cross-platform front-end to remotely control a Transmission daemon via its RPC protocol. It is faster and has more functionality than the built-in Transmission web interface.
 
-Transmission Remote GUI is developed using Lazarus RAD and Free Pascal compiler.
+Transmission Remote GUI is developed using Lazarus RAD and the Free Pascal compiler.
 
 Features:
- * Native application for Windows, Linux and MacOS X
+ * Native application for Windows, Linux and macOS
  * uTorrent-like interface
  * Select files to download
- * Choose files priority
+ * Choose file priority
  * View details about connected peers
  * Full information about each torrent
- * Per torrent options
+ * Per-torrent options
 
 Project home:
 https://github.com/transmission-remote-gui/transgui
@@ -42,43 +42,42 @@ INSTALLATION
 The installers are listed on the GitHub Releases page:
 https://github.com/transmission-remote-gui/transgui/releases/latest
 
-Different platform installation instructions:
+Installation instructions for different platforms:
 
 LINUX:
 
 Easy way (recommended).
 
-There are precompiled program's binaries for i386 and x86_64 Linux architectures.
-- Download a .zip archive for your architecture.
-- Unzip it to your home dir.
-- Create a desktop or menu shortcut to the transgui executable.
-  * (If needed, change the transgui file permissions to executable).
-- Run the program using the created shortcut.
+Precompiled binaries for supported Linux architectures are available on the Releases page.
+- Download and extract the release for your architecture.
+- Run the transgui executable directly or using a desktop or menu shortcut.
+  * (Make the transgui file executable if needed.)
 
 Harder way.
 
 Build the program by yourself.
-- Make sure you have working Lazarus and Free Pascal compiler installed.
-  * Free Pascal Compiler 2.6.2 and Lazarus 1.6 is used to develop Transmission Remote GUI. You may use different versions of FPC and Lazarus at your own risk.
-- Download the sources archive and extract it to some folder or perform svn checkout.
-- Open terminal/command line prompt and cd to the sources folder;
-- Execute "make" command to build the application;
-- Execute "make zipdist" command to create a release .zip archive in the "Release" sub-folder.
+- Make sure you have Lazarus and the Free Pascal compiler installed and working.
+- Download the source archive and extract it to a folder, or clone the repository.
+- Open a terminal/command-line prompt and cd to the source folder;
+- Execute the "lazbuild -B transgui.lpi --lazarusdir=<lazarus_dir>" command to build the transgui.res file, replacing <lazarus_dir> with your Lazarus installation path;
+- Execute the "make LAZARUS_DIR=<lazarus_dir>" command to build the application;
+- Execute the "make LAZARUS_DIR=<lazarus_dir> zipdist" command to create a release .zip archive in the "Release" sub-folder.
 
 WINDOWS:
 
-Portable zip tarball (recommended).
-- Zip tarball release is much more small than the installer one, which can save you some bandwidth, disk space and time, just simply download and extract the zip tarball to wherever you want, directly execute "transgui.exe" or add shortcut for it.
-- Please note that, the first time you use this program, you may need to install some additional dependencies (if you need SSL/TLS enabled), including:
-  - Visual C++ Redistributable Package
-    - https://www.microsoft.com/download/details.aspx?id=40784
-    - https://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe
-  - OpenSSL libs
-    - https://wiki.openssl.org/index.php/Binaries
-    - https://slproweb.com/products/Win32OpenSSL.html
+Portable zip archive (recommended).
+- The zip archive release is much smaller than the installer one, which can save you some bandwidth, disk space and time. Simply download and extract the zip archive wherever you want, then run "transgui.exe" directly or create a shortcut to it.
+- If you need SSL/TLS support with a portable release, download the source archive for the tag matching your release:
+  https://github.com/transmission-remote-gui/transgui/tags
+- Copy the project's OpenSSL DLLs into the same folder as "transgui.exe":
+  - 32-bit: setup/win/openssl
+  - 64-bit: setup/win_amd64/openssl
+- If Windows reports that MSVCR120.dll is missing, install the Microsoft Visual C++ 2013 Redistributable; if VCRUNTIME140.dll is missing, install the latest v14 Redistributable. Download the package matching your build architecture from Microsoft's supported Visual C++ Redistributable downloads:
+  https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist
+- Do not mix files from different releases or architectures.
 
 Installer.
-- This installer has additional installation wizard and includes static OpenSSL libraries in every releases, the size would be much bigger than the zip tarball, but you don't need to take care of the OpenSSL dependencies.
+- This installer has an additional installation wizard and bundles the OpenSSL DLLs in every release; its size is much larger than the zip archive, but you don't need to take care of the OpenSSL dependencies.
   1. Directly download the installer.
   2. Run the installer and follow the steps to install it on your system.
 
@@ -88,19 +87,20 @@ Using Chocolatey.
 MACOS:
 
 Without a package manager.
-  1. Download the app image from release page.
+This method requires no additional prerequisites or dependencies:
+  1. Download the disk image from the release page.
   2. Open the image file to mount the image.
-  3. Directly run the application or drag the app icon to your disk / Application folder.
+  3. Directly run the application or drag the app icon to your disk / Applications folder.
 
 Using Homebrew.
-- You need to have Homebrew installed. Execute this command to install Transmission Remote Gui: "brew install --cask transmission-remote-gui"
+- You need to have Homebrew installed. Execute this command to install Transmission Remote GUI: "brew install --cask transmission-remote-gui"
 
 COMMAND LINE PARAMETERS
 
-You can specify path to a .torrent file or a magnet link as a command line parameter. The program will add the specified torrent.
+You can specify a path to a .torrent file or a magnet link as a command-line parameter. The program will add the specified torrent.
 
--hidden : Start the program hidden. Only the program's tray icon will be visible.
---home=<home_dir> : Specifies a home directory for the program. All program's settings are stored in the home directory. You can run multiple instances of the program by specifying different home directories.
+-hidden: Start the program hidden. Only the program's tray icon will be visible.
+--home=<home_dir>: Specifies a home directory for the program. All the program's settings are stored in the home directory. You can run multiple instances of the program by specifying different home directories. This option takes precedence over portable mode and the default user-profile location.
 
 PORTABLE MODE
 
@@ -108,66 +108,72 @@ If the program finds the transgui.ini file in the same folder as the binary file
 
 FIXED SHORTCUTS
 
-Alt + 1 : All Torrents
-Alt + 2 : Downloading
-Alt + 3 : Completed
-Alt + 4 : Active
-Alt + 5 : Inactive
-Alt + 6 : Stopped
-Alt + 7 : Error
-Alt + 8 : Waiting
-Alt + S : Searchbox (filter torrents by keywords) - Esc cancel filter and clean the box.
-Alt + G : Info Pane - General Tab
-Alt + K : Info Pane - Trackers Tab
-Alt + P : Info Pane - Peers Tab
-Alt + F : Info Pane - Files Tab
+Alt + 1: All Torrents
+Alt + 2: Downloading
+Alt + 3: Completed
+Alt + 4: Active
+Alt + 5: Inactive
+Alt + 6: Stopped
+Alt + 7: Error
+Alt + 8: Waiting
+Alt + S: Search box (filter torrents by keywords) - Esc cancels the filter and clears the box.
+Alt + G: Info Pane - General Tab
+Alt + K: Info Pane - Trackers Tab
+Alt + P: Info Pane - Peers Tab
+Alt + F: Info Pane - Files Tab
 
 
 ADVANCED PARAMETERS
 
-There are some parameters in the transgui.ini file, that can not be modified via the GUI.
-More info on: https://github.com/transmission-remote-gui/transgui/issues/924  (File Manager & Shortcuts)
-, https://github.com/transmission-remote-gui/transgui/issues/1020  (User Defined Menu -Windows Only-)
-and https://github.com/transmission-remote-gui/transgui/issues/1070  (.torrent Auto Opening)
+There are some parameters in the transgui.ini file that cannot be modified via the GUI.
+More info on: https://github.com/transmission-remote-gui/transgui/issues/924 (File Manager & Shortcuts),
+https://github.com/transmission-remote-gui/transgui/issues/1020 (User-Defined Menu -Windows Only-)
+and https://github.com/transmission-remote-gui/transgui/issues/1070 (.torrent Auto Opening)
 
 [Interface]
 ; Maximum number of elements in the folder history list
 MaxFoldersHistory=10
 
 [Interface]
-;In Linux/MacOs Only if "Open Container Folder" give you error
-FileOpenDoc=0
+; If "Open Container Folder" gives you an error, try the nondefault value for your platform
+; Linux: FileOpenDoc=0 (default 1)
+; macOS: FileOpenDoc=1 (default 0)
 
 [Interface]
-;Alternate File Manager (Windows Only)
+; Alternate File Manager (Windows Only)
 FileManagerDefault={Full path to your File Manager .exe}
-FileManagerDefaultParam={Alternate parameters, could be left blank}
+FileManagerDefaultParam={Alternate parameters (may be left blank)}
 
 [Interface]
-;System Wide Shortcut key (Windows Only)
-GlobalHotkey={Virtual Key Code} full list here http://docwiki.embarcadero.com/RADStudio/Seattle/en/Virtual_Key_Codes (Plus VK_A...VK_Z and VK_0..VK_9)
-GlobalHotkeyMod={Modifier Key} [MOD_SHIFT , MOD_CONTROL , MOD_ALT , MOD_WIN alone or combined with + sign]
+; System-wide Shortcut key (Windows Only)
+; Full list: https://docwiki.embarcadero.com/RADStudio/Seattle/en/Virtual_Key_Codes (Plus VK_A...VK_Z and VK_0..VK_9)
+GlobalHotkey={Virtual Key Code}
+; MOD_SHIFT, MOD_CONTROL, MOD_ALT, MOD_WIN alone or combined with a + sign
+GlobalHotkeyMod={Modifier Key}
 
 [Interface]
-WatchLocalFolder= {LOCAL Folder to watch for torrent files}
-WatchDestinationFolder= {REMOTE destination where the data would be saved if missing or empty last destination folder is used}
-WatchInterval=1 {Time period in MINUTES between folder scans for torrents, may be fractional values 0,50 = 30 seconds}
+WatchLocalFolder={LOCAL Folder to watch for torrent files}
+WatchDestinationFolder={REMOTE destination where the data would be saved; if this value is missing or empty, the last destination folder is used}
+; Time period in MINUTES between folder scans for torrents
+; Fractional values are allowed; use 0.5 or 0,5 for 30 seconds, depending on locale
+WatchInterval=1
 
 
 [Shortcuts]
-;Modify all the shortcuts of the GUI here
+; Modify all the shortcuts of the GUI here
 
 [Usermenu]
 Caption1={Caption in the menu}
-ExeName1={Full path to the program .exe you want to add to menu}
-Params1="%s" {Usually "%s" but some programs may require additional parameters}
-Caption2={same for item 2}
-ExeName2={same for item 2}
-Params2={same for item 2}
+ExeName1={Full path to the program .exe you want to add to the menu}
+; Usually "%s" but some programs may require additional parameters
+Params1="%s"
+Caption2={Same for item 2}
+ExeName2={Same for item 2}
+Params2={Same for item 2}
 
 [StatusBarPanels]
-;Customize the width of the statusbar panels to fit your language
-;0 is the left most panel and 7 is the right most panel.
+; Customize the width of the status bar panels to fit your language
+; 0 is the leftmost panel and 7 is the rightmost panel.
 0=327
 1=152
 2=152
@@ -178,10 +184,12 @@ Params2={same for item 2}
 7=130
 
 [MainForm]
-BigToolBarHeight=48 {Height of the Big Icon Toolbar if missing default is 64}
+; Size of the Big Icon Toolbar buttons (defaults to 64 if missing)
+BigToolBarHeight=48
 
 [MainForm]
-FromNow=1 {1=Shows the dates relatives to now , 0=Absolute Dates MM/DD/YY HH:MM:SS}
+; 1=Shows dates relative to now, 0=Shows absolute dates using the system date and time format
+FromNow=1
 *********************************************************************************
 Big Icons
 
