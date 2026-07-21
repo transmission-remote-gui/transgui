@@ -1,0 +1,25 @@
+setup/win/setup.iss
+  s_ccc764e929fd76::t_db3463c6f28743 112-113
+synapse/source/lib/ssl_openssl_lib.pas
+  s_ccc764e929fd76::t_db3463c6f28743 133-136
+  s_ccc764e929fd76::t_d0c880cf2aa2e6 1940-1941
+  s_ccc764e929fd76::t_ac1368e6b08e28 896-897,1004,1457-1463,1956-1957,1967-1968,1970-1971,1979-1980,2160
+setup/win_amd64/setup.iss
+  s_ccc764e929fd76::t_db3463c6f28743 114-115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "272e76645ed5aabbf50121e259a06423492eb7c7",
+  "prompts": {},
+  "sessions": {
+    "s_ccc764e929fd76": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f80e4-b79e-7f63-a560-0d369b564a23",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
