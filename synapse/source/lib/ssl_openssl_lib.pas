@@ -130,10 +130,10 @@ var
      {$ENDIF OS2}
     {$ENDIF}
   {$ELSE}
-  DLLSSLName: string = 'libssl-1_1.dll';
-  DLLSSLName2: string = 'libssl-1_1-x64.dll';
-  DLLUtilName: string = 'libcrypto-1_1.dll';
-  DLLUtilName2: string = 'libcrypto-1_1-x64.dll';
+  DLLSSLName: string = 'libssl-3.dll';
+  DLLSSLName2: string = 'libssl-3-x64.dll';
+  DLLUtilName: string = 'libcrypto-3.dll';
+  DLLUtilName2: string = 'libcrypto-3-x64.dll';
   {$ENDIF}
 {$ENDIF}
 
@@ -893,6 +893,8 @@ type
   TX509GetSubjectName = function(a: PX509):PX509_NAME; cdecl;
   TX509GetIssuerName = function(a: PX509):PX509_NAME; cdecl;
   TX509NameHash = function(x: PX509_NAME):Cardinal; cdecl;
+  TX509NameHashEx = function(x: PX509_NAME; libctx: Pointer;
+    propq: PAnsiChar; ok: PInteger): Cardinal; cdecl;
   TX509Digest = function(data: PX509; _type: PEVP_MD; md: PAnsiChar; len: PInteger):Integer; cdecl;
   TX509print = function(b: PBIO; a: PX509): integer; cdecl;
   TX509SetVersion = function(x: PX509; version: integer): integer; cdecl;
@@ -999,6 +1001,7 @@ var
   _X509GetSubjectName: TX509GetSubjectName = nil;
   _X509GetIssuerName: TX509GetIssuerName = nil;
   _X509NameHash: TX509NameHash = nil;
+  _X509NameHashEx: TX509NameHashEx = nil;
   _X509Digest: TX509Digest = nil;
   _X509print: TX509print = nil;
   _X509SetVersion: TX509SetVersion = nil;
@@ -1451,8 +1454,13 @@ end;
 
 function X509NameHash(x: PX509_NAME):Cardinal;
 begin
-  if InitSSLInterface and Assigned(_X509NameHash) then
-    Result := _X509NameHash(x)
+  if InitSSLInterface then
+    if Assigned(_X509NameHash) then
+      Result := _X509NameHash(x)
+    else if Assigned(_X509NameHashEx) then
+      Result := _X509NameHashEx(x, nil, nil, nil)
+    else
+      Result := 0
   else
     Result := 0;
 end;
@@ -1929,6 +1937,8 @@ begin
         _SslWrite := GetProcAddr(SSLLibHandle, 'SSL_write');
         _SslPending := GetProcAddr(SSLLibHandle, 'SSL_pending');
         _SslGetPeerCertificate := GetProcAddr(SSLLibHandle, 'SSL_get_peer_certificate');
+        if not Assigned(_SslGetPeerCertificate) then
+          _SslGetPeerCertificate := GetProcAddr(SSLLibHandle, 'SSL_get1_peer_certificate');
         _SslGetVersion := GetProcAddr(SSLLibHandle, 'SSL_get_version');
         _SslCtxSetVerify := GetProcAddr(SSLLibHandle, 'SSL_CTX_set_verify');
         _SslGetCurrentCipher := GetProcAddr(SSLLibHandle, 'SSL_get_current_cipher');
@@ -1943,6 +1953,8 @@ begin
         _X509GetSubjectName := GetProcAddr(SSLUtilHandle, 'X509_get_subject_name');
         _X509GetIssuerName := GetProcAddr(SSLUtilHandle, 'X509_get_issuer_name');
         _X509NameHash := GetProcAddr(SSLUtilHandle, 'X509_NAME_hash');
+        if not Assigned(_X509NameHash) then
+          _X509NameHashEx := GetProcAddr(SSLUtilHandle, 'X509_NAME_hash_ex');
         _X509Digest := GetProcAddr(SSLUtilHandle, 'X509_digest');
         _X509print := GetProcAddr(SSLUtilHandle, 'X509_print');
         _X509SetVersion := GetProcAddr(SSLUtilHandle, 'X509_set_version');
@@ -1952,7 +1964,11 @@ begin
         _X509Sign := GetProcAddr(SSLUtilHandle, 'X509_sign');
         _X509GmtimeAdj := GetProcAddr(SSLUtilHandle, 'X509_gmtime_adj');
         _X509SetNotBefore := GetProcAddr(SSLUtilHandle, 'X509_set_notBefore');
+        if not Assigned(_X509SetNotBefore) then
+          _X509SetNotBefore := GetProcAddr(SSLUtilHandle, 'X509_set1_notBefore');
         _X509SetNotAfter := GetProcAddr(SSLUtilHandle, 'X509_set_notAfter');
+        if not Assigned(_X509SetNotAfter) then
+          _X509SetNotAfter := GetProcAddr(SSLUtilHandle, 'X509_set1_notAfter');
         _X509GetSerialNumber := GetProcAddr(SSLUtilHandle, 'X509_get_serialNumber');
         _EvpPkeyNew := GetProcAddr(SSLUtilHandle, 'EVP_PKEY_new');
         _EvpPkeyFree := GetProcAddr(SSLUtilHandle, 'EVP_PKEY_free');
@@ -1960,6 +1976,8 @@ begin
         _EVPCleanup := GetProcAddr(SSLUtilHandle, 'EVP_cleanup');
         _EvpGetDigestByName := GetProcAddr(SSLUtilHandle, 'EVP_get_digestbyname');
         _SSLeayversion := GetProcAddr(SSLUtilHandle, 'SSLeay_version');
+        if not Assigned(_SSLeayversion) then
+          _SSLeayversion := GetProcAddr(SSLUtilHandle, 'OpenSSL_version');
         _ErrErrorString := GetProcAddr(SSLUtilHandle, 'ERR_error_string_n');
         _ErrGetError := GetProcAddr(SSLUtilHandle, 'ERR_get_error');
         _ErrClearError := GetProcAddr(SSLUtilHandle, 'ERR_clear_error');
@@ -2139,6 +2157,7 @@ begin
     _X509GetSubjectName := nil;
     _X509GetIssuerName := nil;
     _X509NameHash := nil;
+    _X509NameHashEx := nil;
     _X509Digest := nil;
     _X509print := nil;
     _X509SetVersion := nil;
