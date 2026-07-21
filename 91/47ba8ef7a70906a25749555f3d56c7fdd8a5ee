@@ -1,0 +1,60 @@
+README.md
+  s_8c561082880c27::t_cf7e2a39a6a77d 33,42
+  s_8c561082880c27::t_70e87c8ca36ac8 67
+  s_8c561082880c27::t_96bc225304a362 71,85,115,139-140,148,164-166,192-193,196-197
+  s_70b9ae3fd27ba2::t_0d7dcddfc6130d 102
+  s_8c561082880c27::t_fddfc93f4386f1 106
+  s_70b9ae3fd27ba2::t_40f66041778a12 162
+  s_8c561082880c27::t_843648b15a3e71 79
+  s_8c561082880c27::t_9e5ff2c830c679 98,163
+  s_8c561082880c27::t_c91981a8d4c453 69,100
+  s_8c561082880c27::t_68055977835338 35,45,49,59,61,68,70,72-73,112,114,123-135,152,154,157,159,169,173,175-177,180-181,202
+  s_c5b5cf099c8050::t_27c3463c446acd 55
+  s_c5b5cf099c8050::t_d374f51a951dfa 5
+  s_8c561082880c27::t_447108926c3dc9 81
+  s_8c561082880c27::t_bacec1eafc5276 158
+readme.txt
+  s_8c561082880c27::t_e68341d18f889b 132
+  s_8c561082880c27::t_a41aba7f270845 2,24,26,29,32,35,45,51,59-60,62,64-65,70,94,97,101,103,112-124,143,145,148,150,161,165,167-169,172-173
+  s_8c561082880c27::t_dc05ee331c5cec 72-76
+  s_8c561082880c27::t_c91981a8d4c453 61,92
+  s_8c561082880c27::t_1f5fa4f2d94769 78
+  s_8c561082880c27::t_96bc225304a362 63,81,104,129-131,139,153-157,184-185,188-189
+  s_8c561082880c27::t_447108926c3dc9 71
+  s_8c561082880c27::t_bacec1eafc5276 149
+  s_8c561082880c27::t_74ea88acb17000 91
+  s_8c561082880c27::t_203e502368abdd 77
+  s_8c561082880c27::t_2c6bbfdbbe7b49 52-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "9147ba8ef7a70906a25749555f3d56c7fdd8a5ee",
+  "prompts": {},
+  "sessions": {
+    "s_70b9ae3fd27ba2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07f631f67ffellrCr2gdFbzlmm",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": null
+    },
+    "s_8c561082880c27": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f8081-dd38-7743-898c-f5c5cb3d7ece",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    },
+    "s_c5b5cf099c8050": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07f72f2f0ffeCGqV1iSfEmu0TL",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": null
+    }
+  }
+}
