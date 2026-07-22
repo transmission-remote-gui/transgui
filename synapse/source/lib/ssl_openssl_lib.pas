@@ -130,10 +130,17 @@ var
      {$ENDIF OS2}
     {$ENDIF}
   {$ELSE}
+  {$IFDEF WIN64}
+  DLLSSLName: string = 'libssl-3-x64.dll';
+  DLLSSLName2: string = 'libssl-3.dll';
+  DLLUtilName: string = 'libcrypto-3-x64.dll';
+  DLLUtilName2: string = 'libcrypto-3.dll';
+  {$ELSE}
   DLLSSLName: string = 'libssl-3.dll';
   DLLSSLName2: string = 'libssl-3-x64.dll';
   DLLUtilName: string = 'libcrypto-3.dll';
   DLLUtilName2: string = 'libcrypto-3-x64.dll';
+  {$ENDIF}
   {$ENDIF}
 {$ENDIF}
 
@@ -1890,10 +1897,28 @@ begin
       SSLUtilHandle := LoadLib(DLLUtilName);
       SSLLibHandle := LoadLib(DLLSSLName);
   {$IFDEF MSWINDOWS}
+    {$IFDEF WIN64}
+      if (SSLLibHandle = 0) or (SSLUtilHandle = 0) then
+      begin
+        if SSLLibHandle <> 0 then
+        begin
+          FreeLibrary(SSLLibHandle);
+          SSLLibHandle := 0;
+        end;
+        if SSLUtilHandle <> 0 then
+        begin
+          FreeLibrary(SSLUtilHandle);
+          SSLUtilHandle := 0;
+        end;
+        SSLUtilHandle := LoadLib(DLLUtilName2);
+        SSLLibHandle := LoadLib(DLLSSLName2);
+      end;
+    {$ELSE}
       if (SSLLibHandle = 0) then
         SSLLibHandle := LoadLib(DLLSSLName2);
       if (SSLUtilHandle = 0) then
         SSLUtilHandle := LoadLib(DLLUtilName2);
+    {$ENDIF}
   {$ENDIF}
 {$ENDIF}
       if (SSLLibHandle <> 0) and (SSLUtilHandle <> 0) then
@@ -2062,7 +2087,7 @@ begin
 {$IFNDEF CIL}
           FreeLibrary(SSLUtilHandle);
 {$ENDIF}
-          SSLLibHandle := 0;
+          SSLUtilHandle := 0;
         end;
         Result := False;
       end;
