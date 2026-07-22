@@ -4,7 +4,9 @@ set -ex
 
 case "${1-}" in
   debian)
-    printf '%s\n' 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99archive
+    printf '%s\n' \
+      'Acquire::Check-Valid-Until "false";' \
+      'Acquire::Retries "5";' > /etc/apt/apt.conf.d/99archive
     for source_file in /etc/apt/sources.list /etc/apt/sources.list.d/*.list; do
       [ -f "$source_file" ] || continue
       sed -i \
@@ -15,7 +17,9 @@ case "${1-}" in
     done
     ;;
   raspbian)
-    printf '%s\n' 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99archive
+    printf '%s\n' \
+      'Acquire::Check-Valid-Until "false";' \
+      'Acquire::Retries "5";' > /etc/apt/apt.conf.d/99archive
     for source_file in /etc/apt/sources.list /etc/apt/sources.list.d/*.list; do
       [ -f "$source_file" ] || continue
       sed -i \
