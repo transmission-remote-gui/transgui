@@ -176,6 +176,11 @@ begin
     VCVersionInstalled(VC_2013_REDIST_X86_ADD_40660)));
 end;
 
+function IsExistingInstallation: Boolean;
+begin
+  Result := FileExists(ExpandConstant('{app}\{#AppExeName}'));
+end;
+
 
 procedure InitializeWizard();
 begin
@@ -186,6 +191,10 @@ begin
   end;
   idpDownloadAfter(wpReady);
 end;
+
+[InstallDelete]
+Type: files; Name: "{app}\libcrypto-1_1.dll"; Components: openssl; Check: IsExistingInstallation
+Type: files; Name: "{app}\libssl-1_1.dll"; Components: openssl; Check: IsExistingInstallation
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
