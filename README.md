@@ -101,11 +101,23 @@ This method needs no additional pre-requirement or dependency, just:
 2. Open the image file to mount the image.
 3. Directly run the application or drag the app icon to your disk / Application folder.
 
+If you run into the following error:
+
+> Apple could not verify “Transmission Remote GUI” ...
+
+See #1499 for more info. Alternatively, use the Homebrew method.
+
 #### Homebrew
 
-You need to have [Homebrew](https://brew.sh/) installed. Execute this command to install Transmission Remote Gui:
+You need to have [Homebrew](https://brew.sh/) installed. Execute these two commands to install Transmission Remote GUI:
 
-- `brew install --cask transmission-remote-gui`
+```
+brew install --cask transmission-remote-gui
+
+xattr -dr com.apple.quarantine '/Applications/Transmission Remote GUI.app'
+```
+
+See #1499 for more info on the second command.
 
 ## Command line parameters
 
