@@ -1,0 +1,21 @@
+synapse/source/lib/ssl_openssl_lib.pas
+  s_ccc764e929fd76::t_1530f923a0a0fe 1900-1916
+  s_ccc764e929fd76::t_08592dee88aeee 133-138,144
+  s_ccc764e929fd76::t_3c72b1222bf54e 1921
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "1dd2da63406970827c922f9657c1c6d00c1082e3",
+  "prompts": {},
+  "sessions": {
+    "s_ccc764e929fd76": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f80e4-b79e-7f63-a560-0d369b564a23",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
