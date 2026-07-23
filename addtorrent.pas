@@ -242,6 +242,25 @@ end;
 
 procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJSONArray);
 
+const
+  MaxFolderDepth = 64;
+  MaxFolderRows = 1024;
+  MaxFolderPathLength = 1024;
+
+  procedure _SetFileLevels(list: TVarList; const path: string; var idx: integer; cnt, level: integer);
+  var
+    s: string;
+  begin
+    while idx < cnt do begin
+      s:=StringReplace(UTF8Encode(widestring(list[idxFileFullPath, idx])), ':', '_', [rfReplaceAll, rfIgnoreCase]);
+      s:=ExtractFilePath(s);
+      if (path <> '') and (Pos(path, s) <> 1) then
+        break;
+      list[idxFileLevel, idx]:=level;
+      Inc(idx);
+    end;
+  end;
+
   procedure _AddFolders(list: TVarList; const path: string; var idx: integer; cnt, level: integer);
   var
     s, ss: string;
@@ -271,7 +290,14 @@ procedure TFilesTree.FillTree(ATorrentId: integer; files, priorities, wanted: TJ
         p:=PChar(ss);
         while (p^ <> #0) and not (p^ in ['/','\']) do
           Inc(p);
-        if p^ <> #0 then begin
+        if (p^ = #0) then begin
+          list[idxFileLevel, idx]:=level;
+          Inc(idx)
+        end
+        else if (level >= MaxFolderDepth) or (list.Count - cnt >= MaxFolderRows) or
+                (Length(path) + (p - PChar(ss) + 1) > MaxFolderPathLength) then
+          _SetFileLevels(list, path, idx, cnt, level)
+        else begin
           SetLength(ss, p - PChar(ss) + 1);
           j:=list.Count;
           list[idxFileLevel, j]:=level;
