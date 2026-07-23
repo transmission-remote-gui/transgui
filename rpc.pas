@@ -829,6 +829,30 @@ begin
 end;
 
 function TRpc.SendRequest(req: TJSONObject; ReturnArguments: boolean; ATimeOut: integer): TJSONObject;
+
+  procedure StripHtmlTags(var AText: string);
+  var
+    ReadPos, WritePos: integer;
+  begin
+    ReadPos:=1;
+    WritePos:=1;
+    while ReadPos <= Length(AText) do begin
+      if AText[ReadPos] = '<' then begin
+        Inc(ReadPos);
+        while (ReadPos <= Length(AText)) and (AText[ReadPos] <> '>') do
+          Inc(ReadPos);
+        if ReadPos <= Length(AText) then
+          Inc(ReadPos);
+      end
+      else begin
+        AText[WritePos]:=AText[ReadPos];
+        Inc(WritePos);
+        Inc(ReadPos);
+      end;
+    end;
+    SetLength(AText, WritePos - 1);
+  end;
+
 var
   obj: TJSONData;
   res: TJSONObject;
@@ -930,16 +954,7 @@ begin
             s:=StringReplace(s, '</p>', LineEnding, [rfReplaceAll, rfIgnoreCase]);
             s:=StringReplace(s, '</h1>', LineEnding, [rfReplaceAll, rfIgnoreCase]);
             s:=StringReplace(s, '<li>', LineEnding+'* ', [rfReplaceAll, rfIgnoreCase]);
-            j:=1;
-            while j <= Length(s) do begin
-              if s[j] = '<' then begin
-                while (j <= Length(s)) and (s[j] <> '>') do
-                  System.Delete(s, j, 1);
-                System.Delete(s, j, 1);
-              end
-              else
-                Inc(j);
-            end;
+            StripHtmlTags(s);
             while Pos('  ', s) > 0 do
               s:=StringReplace(s, '  ', ' ', [rfReplaceAll]);
             while Pos(LineEnding + ' ', s) > 0 do
