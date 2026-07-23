@@ -1,0 +1,34 @@
+setup/win/setup.iss
+  s_5c9467569e5850::t_1bc752c19544cf 187
+  s_5c9467569e5850::t_6150a8c6236e44 175
+  s_ccc764e929fd76::t_d66ddb50650c7a 140-148,150-158,163
+setup/win_amd64/setup.iss
+  s_ccc764e929fd76::t_d66ddb50650c7a 142-150,152-160
+  s_ccc764e929fd76::t_dd45ed2000b351 165
+  s_5c9467569e5850::t_d0e7be5059e1f5 189
+  s_5c9467569e5850::t_8a21f8c0c88fe1 177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "5777b32537812661b6addbf2db3023009548dbf9",
+  "prompts": {},
+  "sessions": {
+    "s_5c9467569e5850": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07500d197ffe9aJIHSB9AGxwwE",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    },
+    "s_ccc764e929fd76": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f80e4-b79e-7f63-a560-0d369b564a23",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
