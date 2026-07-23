@@ -1170,12 +1170,20 @@ begin
   Result:=False;
 end;
 
+function HasIPCRecordDelimiter(const Value: string): boolean;
+begin
+  Result:=(Pos(#0, Value) > 0) or (Pos(#10, Value) > 0) or
+    (Pos(#13, Value) > 0);
+end;
+
 procedure AddTorrentFile(const FileName: string);
 var
   h: System.THandle;
   t: TDateTime;
   s: string;
 begin
+  if HasIPCRecordDelimiter(FileName) then
+    exit;
   if not IsProtocolSupported(FileName) and not FileExistsUTF8(FileName) then
     exit;
   t:=Now;
@@ -7896,6 +7904,7 @@ var
   i: integer;
   h: System.THandle;
   s: string;
+  sl: TStringList;
   WasHidden: boolean;
 begin
   h:=FileOpenUTF8(FIPCFileName, fmOpenRead or fmShareDenyWrite);
@@ -7915,7 +7924,13 @@ begin
       exit;
     end;
 
-    FPendingTorrents.Text:=FPendingTorrents.Text + s;
+    sl:=TStringList.Create;
+    try
+      sl.Text:=s;
+      FPendingTorrents.AddStrings(sl);
+    finally
+      sl.Free;
+    end;
   end;
 
   if FAddingTorrent <> 0 then
@@ -7966,6 +7981,8 @@ begin
     if not IsProtocolSupported(s) then
       exit;
     if (Pos('magnet:', LazUTF8.UTF8LowerCase(s)) <> 1) and (LazUTF8.UTF8LowerCase(Copy(s, Length(s) - Length(strTorrentExt) + 1, MaxInt)) <> strTorrentExt) then
+      exit;
+    if HasIPCRecordDelimiter(s) then
       exit;
 
     AddTorrentFile(s);
