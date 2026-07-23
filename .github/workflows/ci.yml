@@ -73,12 +73,6 @@ jobs:
             "ignorePatterns": [
               {
                 "pattern": "^https://github\\.com/transmission-remote-gui/transgui/actions/workflows/ci\\.yml/badge\\.svg$"
-              },
-              {
-                "pattern": "^https://www\\.microsoft\\.com/download/details\\.aspx\\?id=40784$"
-              },
-              {
-                "pattern": "^https://download\\.microsoft\\.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86\\.exe$"
               }
             ]
           }
