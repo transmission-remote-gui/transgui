@@ -138,44 +138,31 @@ Root: HKCU; Subkey: "Software\Classes\Magnet\shell"; ValueType: string; ValueNam
 Root: HKCU; Subkey: "Software\Classes\Magnet\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Flags: uninsdeletevalue; Tasks: regmagnet
 
 [Code]
-#IFDEF UNICODE
-  #DEFINE AW "W"
-#ELSE
-  #DEFINE AW "A"
-#ENDIF
-type
-  INSTALLSTATE = Longint;
 const
-  INSTALLSTATE_INVALIDARG = -2;  { An invalid parameter was passed to the function. }
-  INSTALLSTATE_UNKNOWN = -1;     { The product is neither advertised or installed. }
-  INSTALLSTATE_ADVERTISED = 1;   { The product is advertised but not installed. }
-  INSTALLSTATE_ABSENT = 2;       { The product is installed for a different user. }
-  INSTALLSTATE_DEFAULT = 5;      { The product is installed for the current user. }
+  VC_REDIST_MIN_MAJOR = 14;
+  VC_REDIST_MIN_MINOR = 44;
+  VC_REDIST_MIN_BUILD = 35211;
+  VC_RUNTIME_KEY = 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\X64';
 
-  { Visual C++ 2013 Redistributable 12.0.21005 / 12.0.30501.0 }
-  VC_2013_REDIST_X86_MIN = '{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}';
-
-  VC_2013_REDIST_X86_ADD = '{F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}';
-
-  { Visual C++ 2013 Redistributable 12.0.40660.0 }
-  VC_2013_REDIST_X86_MIN_40660 = '{E30D8B21-D82D-3211-82CC-0F0A5D1495E8}';
-
-  VC_2013_REDIST_X86_ADD_40660 = '{7DAD0258-515C-3DD4-8964-BD714199E0F7}';
-
-function MsiQueryProductState(szProduct: string): INSTALLSTATE;
-  external 'MsiQueryProductState{#AW}@msi.dll stdcall';
-
-function VCVersionInstalled(const ProductID: string): Boolean;
+function VCVersionInstalled(const RootKey: Integer): Boolean;
+var
+  Installed: Cardinal;
+  Major, Minor, Bld: Cardinal;
 begin
-  Result := MsiQueryProductState(ProductID) = INSTALLSTATE_DEFAULT;
+  Result := RegQueryDWordValue(RootKey, VC_RUNTIME_KEY, 'Installed', Installed) and
+    (Installed = 1) and
+    RegQueryDWordValue(RootKey, VC_RUNTIME_KEY, 'Major', Major) and
+    RegQueryDWordValue(RootKey, VC_RUNTIME_KEY, 'Minor', Minor) and
+    RegQueryDWordValue(RootKey, VC_RUNTIME_KEY, 'Bld', Bld) and
+    ((Major > VC_REDIST_MIN_MAJOR) or
+     ((Major = VC_REDIST_MIN_MAJOR) and (Minor > VC_REDIST_MIN_MINOR)) or
+     ((Major = VC_REDIST_MIN_MAJOR) and (Minor = VC_REDIST_MIN_MINOR) and
+      (Bld >= VC_REDIST_MIN_BUILD)));
 end;
 
 function VCRedistNeedsInstall: Boolean;
 begin
-  Result := not ((VCVersionInstalled(VC_2013_REDIST_X86_MIN) and
-    VCVersionInstalled(VC_2013_REDIST_X86_ADD)) or
-    (VCVersionInstalled(VC_2013_REDIST_X86_MIN_40660) and
-    VCVersionInstalled(VC_2013_REDIST_X86_ADD_40660)));
+  Result := not VCVersionInstalled(HKLM64);
 end;
 
 function IsExistingInstallation: Boolean;
@@ -187,10 +174,7 @@ end;
 procedure InitializeWizard();
 begin
   if VCRedistNeedsInstall then
-  begin
-    idpAddFileSize('https://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe', ExpandConstant('{tmp}\vcredist_x86.exe'), 6510544);
-    idpAddMirror('https://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe', 'http://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe');
-  end;
+    idpAddFileComp('https://aka.ms/vs/17/release/vc_redist.x64.exe', ExpandConstant('{tmp}\vc_redist.x64.exe'), 'openssl');
   idpDownloadAfter(wpReady);
 end;
 
@@ -202,7 +186,7 @@ Type: files; Name: "{app}\libssl-1_1-x64.dll"; Components: openssl; Check: IsExi
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here
 ; the conditional installation Check
-Filename: "{tmp}\vcredist_x86"; Parameters: "/q"; Check: VCRedistNeedsInstall
+Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; Check: VCRedistNeedsInstall and IsComponentSelected('openssl')
 
 [UninstallDelete]
 Type: filesandordirs ; Name: "{localappdata}\{#AppName}"
