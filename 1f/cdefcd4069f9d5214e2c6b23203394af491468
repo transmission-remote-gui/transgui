@@ -1,0 +1,25 @@
+setup/win_amd64/setup.iss
+  s_ccc764e929fd76::t_51943eaadc3b3b 165
+  s_ccc764e929fd76::t_d66ddb50650c7a 142-150,152-160
+  s_ccc764e929fd76::t_16a7eafd83ac0d 177,189
+setup/win/setup.iss
+  s_ccc764e929fd76::t_d66ddb50650c7a 140-148,150-158,163
+  s_ccc764e929fd76::t_c331073340f816 175
+  s_ccc764e929fd76::t_5cfa076f83eb50 187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "1fcdefcd4069f9d5214e2c6b23203394af491468",
+  "prompts": {},
+  "sessions": {
+    "s_ccc764e929fd76": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f80e4-b79e-7f63-a560-0d369b564a23",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
