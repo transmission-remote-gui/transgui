@@ -447,6 +447,37 @@ begin
 end;
 {$endif unix}
 
+{$ifdef darwin}
+function DarwinOpenURL(const FileName: String): Integer;
+var
+  TargetName: String;
+  WrkProcess: TProcess;
+begin
+  Result:=-1;
+  TargetName:=FileName;
+  WrkProcess:=TProcess.Create(nil);
+  try
+    WrkProcess.Options:=[poNoConsole,poWaitOnExit];
+    WrkProcess.Executable:='/usr/bin/open';
+    if not FileExistsUTF8(WrkProcess.Executable) then
+      exit;
+    if TargetName <> '' then
+      if TargetName[1] = '-' then
+        TargetName:='./' + TargetName;
+    WrkProcess.Parameters.Add(TargetName);
+    try
+      WrkProcess.Execute;
+      Result:=WrkProcess.ExitStatus;
+    except
+      on EProcess do
+        Result:=-1;
+    end;
+  finally
+    WrkProcess.Free;
+  end;
+end;
+{$endif darwin}
+
 function OpenURL(const URL, Params: string): boolean;
 {$ifdef mswindows}
 var
@@ -463,7 +494,7 @@ begin
 {$endif mswindows}
 
 {$ifdef darwin}
-  Result:=fpSystem('open "' + URL + '"') = 0;
+  Result:=DarwinOpenURL(URL) = 0;
 {$else darwin}
 
   {$ifdef unix}
