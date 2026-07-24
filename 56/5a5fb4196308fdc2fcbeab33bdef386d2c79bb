@@ -1,0 +1,26 @@
+setup/macosx/create_app_new.sh
+  s_3516c96fd23f4d::t_a70d6a4a331263 130,141
+  s_3516c96fd23f4d::t_df08a9ce84aff6 18-19,57-62,108,127
+  s_3516c96fd23f4d::t_7917ee8c59c09e 131-132,136-138,142-144
+  s_3516c96fd23f4d::t_8ef4738d23095b 12,17,54-55,157-161
+  s_3516c96fd23f4d::t_08365372d91ead 133
+  s_3516c96fd23f4d::t_8abe9f397f3425 85-88,145
+  s_3516c96fd23f4d::t_d6100550109da9 3,16,20-44,53,56,63-71,81-84,89-92,102,134-135,139-140,146-149,154-156
+  s_3516c96fd23f4d::t_4e5fd3c110f5d0 45-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "565a5fb4196308fdc2fcbeab33bdef386d2c79bb",
+  "prompts": {},
+  "sessions": {
+    "s_3516c96fd23f4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f909e-a2ea-71f2-8139-034b7ee2d77c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
