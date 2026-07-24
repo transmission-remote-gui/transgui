@@ -1,0 +1,22 @@
+utils.pas
+  s_3516c96fd23f4d::t_577856a507e362 450-452
+  s_3516c96fd23f4d::t_e7206bd396e5b7 471-480,497
+  s_3516c96fd23f4d::t_0137cdc7dc9dfa 468-470
+  s_3516c96fd23f4d::t_dde0f74287e1ec 453-467
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "3c1f4ce5706930f3056be93dd343669609797cb6",
+  "prompts": {},
+  "sessions": {
+    "s_3516c96fd23f4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f909e-a2ea-71f2-8139-034b7ee2d77c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
