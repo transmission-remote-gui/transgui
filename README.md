@@ -16,6 +16,7 @@
   - [Windows](#windows)
     - [Portable zip archive (recommended)](#portable-zip-archive-recommended)
     - [Installer](#installer)
+    - [Using scoop](#using-scoop)
     - [Using Chocolatey](#using-chocolatey)
   - [macOS](#macos)
     - [Without a package manager](#without-a-package-manager)
@@ -85,6 +86,10 @@ This installer has an additional installation wizard and bundles the OpenSSL DLL
 
 1. Directly download the installer.
 2. Run the installer and follow the steps to install it on your system.
+
+#### Using [scoop](https://scoop.sh/)
+
+Run `scoop install transgui` to install the latest version of Transmission Remote GUI.
 
 #### Using [Chocolatey](https://chocolatey.org)
 
