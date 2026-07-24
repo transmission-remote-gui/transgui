@@ -1,0 +1,24 @@
+setup/win/setup.iss
+  s_ccc764e929fd76::t_3cc2966db09b50 139-140,175,177,193-197,201
+setup/win_amd64/setup.iss
+  s_ccc764e929fd76::t_3cc2966db09b50 141-142,177,179,195-199,203
+setup/vcredist_authenticode.iss
+  s_ccc764e929fd76::t_e91c2dac602975 1-3,64-67,189,202,207-208
+  s_ccc764e929fd76::t_3cc2966db09b50 4-63,68-188,190-201,203-206,209-234
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "3ba4b0093f211522abeb19a7cf9ba30a4037ec7c",
+  "prompts": {},
+  "sessions": {
+    "s_ccc764e929fd76": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f80e4-b79e-7f63-a560-0d369b564a23",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
