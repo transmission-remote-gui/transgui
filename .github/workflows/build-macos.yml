@@ -1,0 +1,37 @@
+name: macOS Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    name: Build macOS DMG (Apple Silicon)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install FPC
+        run: brew install --cask fpc-laz
+
+      - name: Install Lazarus
+        run: |
+          curl -fsSL "https://downloads.sourceforge.net/project/lazarus/Lazarus%20macOS%20x86-64/Lazarus%203.6/Lazarus-3.6-macosx-x86_64.pkg" -o /tmp/Lazarus-3.6.pkg
+          sudo installer -pkg /tmp/Lazarus-3.6.pkg -target /
+
+      - name: Build DMG
+        run: cd setup/macosx && ./create_app_new.sh
+        env:
+          CI: true
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: transgui-macos
+          path: Release/transgui-*.dmg
+          if-no-files-found: error
