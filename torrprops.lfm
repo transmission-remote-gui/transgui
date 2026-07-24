@@ -1,6 +1,6 @@
 inherited TorrPropsForm: TTorrPropsForm
   Left = 364
-  Height = 270
+  Height = 314
   Top = 185
   Width = 517
   HorzScrollBar.Page = 349
@@ -11,7 +11,7 @@ inherited TorrPropsForm: TTorrPropsForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Torrent properties'
-  ClientHeight = 270
+  ClientHeight = 314
   ClientWidth = 517
   Constraints.MinHeight = 186
   Constraints.MinWidth = 350
@@ -19,8 +19,8 @@ inherited TorrPropsForm: TTorrPropsForm
   Position = poMainFormCenter
   object Buttons: TButtonPanel[0]
     Left = 8
-    Height = 26
-    Top = 236
+    Height = 22
+    Top = 284
     Width = 501
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
@@ -41,7 +41,7 @@ inherited TorrPropsForm: TTorrPropsForm
   end
   object Page: TPageControl[1]
     Left = 8
-    Height = 220
+    Height = 268
     Top = 8
     Width = 501
     ActivePage = tabGeneral
@@ -51,64 +51,64 @@ inherited TorrPropsForm: TTorrPropsForm
     TabOrder = 0
     object tabGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 194
-      ClientWidth = 493
+      ClientHeight = 229
+      ClientWidth = 495
       object txKbs1: TLabel
-        Left = 420
-        Height = 14
+        Left = 415
+        Height = 16
         Top = 37
-        Width = 22
+        Width = 29
         Anchors = [akTop, akRight]
         Caption = 'KB/s'
         ParentColor = False
       end
       object txKbs2: TLabel
-        Left = 420
-        Height = 14
+        Left = 415
+        Height = 16
         Top = 69
-        Width = 22
+        Width = 29
         Anchors = [akTop, akRight]
         Caption = 'KB/s'
         ParentColor = False
       end
       object txName: TLabel
         Left = 10
-        Height = 14
+        Height = 16
         Top = 10
-        Width = 32
+        Width = 40
         Caption = 'Name:'
         ParentColor = False
         ShowAccelChar = False
       end
       object txPeerLimit: TLabel
         Left = 10
-        Height = 14
-        Top = 101
-        Width = 48
+        Height = 16
+        Top = 131
+        Width = 63
         Caption = 'Peer limit:'
         ParentColor = False
       end
       object txMinutes: TLabel
-        Left = 420
-        Height = 14
-        Top = 163
-        Width = 38
+        Left = 409
+        Height = 16
+        Top = 193
+        Width = 51
         Anchors = [akTop, akRight]
         Caption = 'minutes'
         ParentColor = False
       end
       object cbMaxDown: TCheckBox
         Left = 10
-        Height = 17
+        Height = 18
         Top = 36
-        Width = 147
+        Width = 185
         Caption = 'Maximum download speed:'
         OnClick = cbMaxDownClick
         TabOrder = 0
       end
       object edMaxDown: TSpinEdit
-        Left = 340
-        Height = 21
+        Left = 342
+        Height = 16
         Top = 34
         Width = 66
         Anchors = [akTop, akRight]
@@ -118,16 +118,16 @@ inherited TorrPropsForm: TTorrPropsForm
       end
       object cbMaxUp: TCheckBox
         Left = 10
-        Height = 17
+        Height = 18
         Top = 68
-        Width = 133
+        Width = 168
         Caption = 'Maximum upload speed:'
         OnClick = cbMaxUpClick
         TabOrder = 2
       end
       object edMaxUp: TSpinEdit
-        Left = 340
-        Height = 21
+        Left = 342
+        Height = 16
         Top = 66
         Width = 66
         Anchors = [akTop, akRight]
@@ -136,9 +136,9 @@ inherited TorrPropsForm: TTorrPropsForm
         TabOrder = 3
       end
       object edPeerLimit: TSpinEdit
-        Left = 340
-        Height = 21
-        Top = 98
+        Left = 342
+        Height = 16
+        Top = 128
         Width = 66
         Anchors = [akTop, akRight]
         MaxValue = 999
@@ -148,18 +148,18 @@ inherited TorrPropsForm: TTorrPropsForm
       end
       object cbSeedRatio: TCheckBox
         Left = 10
-        Height = 17
-        Top = 131
-        Width = 71
+        Height = 18
+        Top = 161
+        Width = 86
         AllowGrayed = True
         Caption = 'Seed ratio:'
         OnClick = cbSeedRatioClick
         TabOrder = 5
       end
       object edSeedRatio: TFloatSpinEdit
-        Left = 340
-        Height = 21
-        Top = 129
+        Left = 342
+        Height = 16
+        Top = 159
         Width = 66
         Anchors = [akTop, akRight]
         Increment = 0.1
@@ -170,24 +170,34 @@ inherited TorrPropsForm: TTorrPropsForm
       end
       object cbIdleSeedLimit: TCheckBox
         Left = 10
-        Height = 17
-        Top = 162
-        Width = 170
+        Height = 18
+        Top = 192
+        Width = 211
         AllowGrayed = True
         Caption = 'Stop seeding when inactive for:'
         OnClick = cbIdleSeedLimitClick
         TabOrder = 7
       end
       object edIdleSeedLimit: TSpinEdit
-        Left = 340
-        Height = 21
-        Top = 160
+        Left = 342
+        Height = 16
+        Top = 190
         Width = 66
         Anchors = [akTop, akRight]
         MaxValue = 999999
         MinValue = 1
         TabOrder = 8
         Value = 1
+      end
+      object cbSequential: TCheckBox
+        Left = 10
+        Height = 18
+        Top = 100
+        Width = 147
+        Caption = 'Sequential download'
+        TabOrder = 9
+        ParentShowHint = False
+        ShowHint = True
       end
     end
     object tabAdvanced: TTabSheet
