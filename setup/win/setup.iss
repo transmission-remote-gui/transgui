@@ -168,6 +168,72 @@ begin
   Result := FileExists(ExpandConstant('{app}\{#AppExeName}'));
 end;
 
+function QuotePowerShellString(const Value: String): String;
+begin
+  Result := Value;
+  StringChangeEx(Result, '''', '''''', True);
+  Result := '''' + Result + '''';
+end;
+
+function VerifyVCRedistSignature(const FileName: String;
+  var ResultCode: Integer): Boolean;
+var
+  PowerShellCommand: String;
+  PowerShellStarted: Boolean;
+begin
+  PowerShellCommand :=
+    '$signature = Microsoft.PowerShell.Security\Get-AuthenticodeSignature ' +
+    '-LiteralPath ' + QuotePowerShellString(FileName) + ' -ErrorAction Stop; ' +
+    'if ($null -eq $signature.SignerCertificate) { exit 11 }; ' +
+    'if ($signature.Status -ne ' +
+    '[System.Management.Automation.SignatureStatus]::Valid) { exit 12 }; ' +
+    '$publisher = $signature.SignerCertificate.GetNameInfo(' +
+    '[System.Security.Cryptography.X509Certificates.X509NameType]::SimpleName, ' +
+    '$false); ' +
+    'if (-not [string]::Equals($publisher, ''Microsoft Corporation'', ' +
+    '[System.StringComparison]::Ordinal)) { exit 13 }; exit 0';
+  PowerShellCommand := 'try { ' + PowerShellCommand +
+    ' } catch { exit 10 }';
+
+  PowerShellStarted := Exec(
+    ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'),
+    '-NoLogo -NoProfile -NonInteractive -Command ' + PowerShellCommand,
+    '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+  if not PowerShellStarted then
+    Log(Format('Could not start Authenticode verification (error %d: %s).', [
+      ResultCode, SysErrorMessage(ResultCode)]))
+  else if ResultCode <> 0 then
+    Log(Format('Authenticode verification failed with exit code %d.', [ResultCode]));
+
+  Result := PowerShellStarted and (ResultCode = 0);
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  FileName: String;
+  ResultCode: Integer;
+begin
+  Result := '';
+  if not (VCRedistNeedsInstall and IsComponentSelected('openssl')) then
+    Exit;
+
+  FileName := ExpandConstant('{tmp}\vc_redist.x86.exe');
+  if not FileExists(FileName) then
+  begin
+    Log('The downloaded Visual C++ runtime installer is missing.');
+    Result := 'Setup could not verify the downloaded Microsoft Visual C++ ' +
+      'Runtime because the file is missing. Cancel Setup and try again, or ' +
+      'install the runtime manually from Microsoft.';
+    Exit;
+  end;
+
+  if not VerifyVCRedistSignature(FileName, ResultCode) then
+    Result := 'Setup could not verify that the downloaded Microsoft Visual ' +
+      'C++ Runtime is authentic. Cancel Setup and try again, or install the ' +
+      'runtime manually from Microsoft.';
+end;
+
 
 procedure InitializeWizard();
 begin
