@@ -3086,7 +3086,7 @@ var
   i: integer;
 begin
   Result:=False;
-  tmp:=SysToUTF8(GetTempDir(True)) + 'GeoIP.dat.gz';
+  tmp:=FHomeDir + 'GeoIP.dat.gz';
   if not FileExistsUTF8(tmp) or AUpdate then begin
     if MessageDlg('', sGeoIPConfirm, mtConfirmation, mbYesNo, 0, mbYes) <> mrYes then
       exit;
