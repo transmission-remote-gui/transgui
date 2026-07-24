@@ -1,0 +1,24 @@
+setup/macosx/create_app_new.sh
+  s_3516c96fd23f4d::t_4e5fd3c110f5d0 45-52
+  s_3516c96fd23f4d::t_8ef4738d23095b 12,17,54-55,153-157
+  s_3516c96fd23f4d::t_d6100550109da9 3,16,20-44,53,56,63-71,81-88,98,129-131,135-136,142-145,150-152
+  s_3516c96fd23f4d::t_a70d6a4a331263 126,137
+  s_3516c96fd23f4d::t_7917ee8c59c09e 127-128,132-134,138-140
+  s_3516c96fd23f4d::t_df08a9ce84aff6 18-19,57-62,104,123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "e1ac16fa0ac7bf6b33b79a7e88379939f5372371",
+  "prompts": {},
+  "sessions": {
+    "s_3516c96fd23f4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f909e-a2ea-71f2-8139-034b7ee2d77c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
