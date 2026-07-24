@@ -138,6 +138,8 @@ Root: HKCU; Subkey: "Software\Classes\Magnet\shell"; ValueType: string; ValueNam
 Root: HKCU; Subkey: "Software\Classes\Magnet\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Flags: uninsdeletevalue; Tasks: regmagnet
 
 [Code]
+#include "..\vcredist_authenticode.iss"
+
 const
   VC_REDIST_MIN_MAJOR = 14;
   VC_REDIST_MIN_MINOR = 44;
@@ -168,6 +170,37 @@ end;
 function IsExistingInstallation: Boolean;
 begin
   Result := FileExists(ExpandConstant('{app}\{#AppExeName}'));
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  FailureReason: String;
+  FileName: String;
+  TrustStatus: Integer;
+begin
+  Result := '';
+  if not (VCRedistNeedsInstall and IsComponentSelected('openssl')) then
+    Exit;
+
+  FileName := ExpandConstant('{tmp}\vc_redist.x64.exe');
+  if not FileExists(FileName) then
+  begin
+    Log('The downloaded Visual C++ runtime installer is missing.');
+    Result := 'Setup could not verify the downloaded Microsoft Visual C++ ' +
+      'Runtime because the file is missing. Cancel Setup and try again, or ' +
+      'install the runtime manually from Microsoft.';
+    Exit;
+  end;
+
+  if not VerifyMicrosoftAuthenticodeSignature(FileName, TrustStatus,
+    FailureReason) then
+  begin
+    Log(Format('Authenticode verification failed: %s (status %d).', [
+      FailureReason, TrustStatus]));
+    Result := 'Setup could not verify that the downloaded Microsoft Visual ' +
+      'C++ Runtime is authentic. Cancel Setup and try again, or install the ' +
+      'runtime manually from Microsoft.';
+  end;
 end;
 
 
