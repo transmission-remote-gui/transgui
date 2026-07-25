@@ -1,0 +1,33 @@
+setup/macosx/create_app_new.sh
+  s_3516c96fd23f4d::t_1d3fb251f282c4 3
+  s_3516c96fd23f4d::t_5f426dcfcc9911 135
+  s_3516c96fd23f4d::t_f292bd0d5f92c1 151
+  s_3516c96fd23f4d::t_8ef4738d23095b 12,17,56-57,162-166
+  s_3516c96fd23f4d::t_4e5fd3c110f5d0 47-54
+  s_3516c96fd23f4d::t_8abe9f397f3425 87-90
+  s_3516c96fd23f4d::t_7917ee8c59c09e 137-138,142-144,148-150
+  s_3516c96fd23f4d::t_08365372d91ead 139
+  s_3516c96fd23f4d::t_8a2e1db9973d28 42-43
+  s_3516c96fd23f4d::t_df08a9ce84aff6 18-19,59-64,114
+  s_3516c96fd23f4d::t_06125731b0f9b7 25
+  s_3516c96fd23f4d::t_ce13284db020da 91-94
+  s_3516c96fd23f4d::t_601dca72429b77 134
+  s_3516c96fd23f4d::t_d6100550109da9 16,20-24,26-41,44-46,55,58,65-73,83-86,95-98,140-141,145-146,152-155,160-161
+  s_3516c96fd23f4d::t_a70d6a4a331263 136,147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "7fcfe1f2ab72d0fcce1a425d24b970d190dbd902",
+  "prompts": {},
+  "sessions": {
+    "s_3516c96fd23f4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f909e-a2ea-71f2-8139-034b7ee2d77c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
