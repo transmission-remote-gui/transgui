@@ -6321,26 +6321,38 @@ begin
 
     row:=j;
 
+    j:=0;
+    while (j < FTrackers.Count) and (ptruint(FTrackers.Objects[j]) > 0) do
+      Inc(j);
+    if j < FTrackers.Count then begin
+      FTrackers.BeginUpdate;
+      try
+        for i:=j + 1 to FTrackers.Count - 1 do
+          if ptruint(FTrackers.Objects[i]) > 0 then begin
+            FTrackers.Exchange(i, j);
+            Inc(j);
+          end;
+        for i:=FTrackers.Count - 1 downto j do
+          FTrackers.Delete(i);
+      finally
+        FTrackers.EndUpdate;
+      end;
+    end;
+
     if acTrackerGrouping.Checked then begin
       if not VarIsNull(lvFilter.Items[0, row - 1]) then begin
         lvFilter.Items[0, row]:=NULL;
         Inc(row);
       end;
 
-      i:=0;
-      while i < FTrackers.Count do begin
+      for i:=0 to FTrackers.Count - 1 do begin
         j:=ptruint(FTrackers.Objects[i]);
-        if j > 0 then begin
-          lvFilter.Items[ 0, row]:=UTF8Decode(Format('%s (%d)', [FTrackers[i], j]));
-          lvFilter.Items[-1, row]:=NULL;
-          lvFilter.Items[-2, row]:=3;
-          if FTrackers[i] = TrackerFilter then
-            crow:=row;
-          Inc(i);
-          Inc(row);
-        end
-        else
-          FTrackers.Delete(i);
+        lvFilter.Items[ 0, row]:=UTF8Decode(Format('%s (%d)', [FTrackers[i], j]));
+        lvFilter.Items[-1, row]:=NULL;
+        lvFilter.Items[-2, row]:=3;
+        if FTrackers[i] = TrackerFilter then
+          crow:=row;
+        Inc(row);
       end;
     end;
 
