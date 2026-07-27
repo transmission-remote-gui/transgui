@@ -926,7 +926,7 @@ begin
 
         if Http.ResultCode = 301 then begin
           s:=Trim(Http.Headers.Values['Location']);
-          if (s <> '') and (i = 1) then begin
+          if (s <> '') and (Copy(s, 1, 1) = '/') and (Copy(s, 1, 2) <> '//') and (i = 1) then begin
             j:=Length(s);
             if Copy(s, j - 4, MaxInt) = '/web/' then
               SetLength(s, j - 4)
