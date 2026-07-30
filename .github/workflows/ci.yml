@@ -237,7 +237,7 @@ jobs:
 
   macos-build:
     name: Build / macOS DMG
-    runs-on: macos-15-intel
+    runs-on: macos-15
     needs: static
     env:
       sourceforge_mirror: pilotfiber
