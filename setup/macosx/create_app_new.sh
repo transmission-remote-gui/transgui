@@ -20,8 +20,8 @@ set -ex
 
 prog_ver="$(cat ../../VERSION.txt)"
 build="$(git rev-list --abbrev-commit --max-count=1 HEAD ../..)"
-lazarus_ver="$(lazbuild -v 2> /dev/null)"
-fpc_ver="$(fpc -i V 2> /dev/null | head -n 1)"
+lazarus_ver="$(lazbuild -v 2> /dev/null || true)"
+fpc_ver="$(fpc -i V 2> /dev/null | head -n 1 || true)"
 appname="Transmission Remote GUI"
 dmg_dist_file="../../Release/transgui-$prog_ver.dmg"
 dmgfolder=./Release
