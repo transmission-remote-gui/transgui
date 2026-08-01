@@ -1,0 +1,22 @@
+README.md
+  s_e94c0c2953e29e::t_55c233e3edf15d 21,94,110-114
+  s_e94c0c2953e29e::t_106cce1040a0c7 96,102-103
+  s_e94c0c2953e29e::t_d3ad3693fc65b2 104-108
+  s_e94c0c2953e29e::t_6374908b3e075e 109
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "cba2d4bac7ab55bd54cf3fbcb3aa01ea60e840e9",
+  "prompts": {},
+  "sessions": {
+    "s_e94c0c2953e29e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f717d-6fe1-7f12-a862-552c8cf07ebf",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
