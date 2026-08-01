@@ -240,6 +240,7 @@ jobs:
     runs-on: macos-15-intel
     needs: static
     env:
+      HOMEBREW_NO_AUTO_UPDATE: 1
       sourceforge_mirror: pilotfiber
 
     steps:
@@ -256,8 +257,14 @@ jobs:
       - name: Install dependencies
         run: |
           set -euo pipefail
+          brew install openssl@3
           cd setup/macosx
           ./install_deps.sh
+
+      - name: Verify OpenSSL loading
+        run: |
+          set -euo pipefail
+          ./setup/macosx/tests/verify_openssl_loader.sh "$(brew --prefix openssl@3)"
 
       - name: Build DMG
         run: |

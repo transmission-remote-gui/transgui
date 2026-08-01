@@ -87,13 +87,33 @@ Using Chocolatey.
 MACOS:
 
 Without a package manager.
-This method requires no additional prerequisites or dependencies:
+This installation method does not require a package manager:
   1. Download the disk image from the release page.
   2. Open the image file to mount the image.
   3. Directly run the application or drag the app icon to your disk / Applications folder.
 
+The disk image does not bundle OpenSSL. HTTPS RPC connections require a
+compatible OpenSSL installation. For new installations, use OpenSSL 3 from
+Homebrew ("brew install openssl@3") or MacPorts ("sudo port install openssl3").
+On Apple Silicon, MacPorts must use the "+universal" variant for the current
+x86_64 disk image
+("sudo port install openssl3 +universal"). Existing OpenSSL 1.1 installations
+are detected for compatibility, but OpenSSL 1.1 is end-of-life and is not
+recommended for new installations.
+
+OpenSSL must match the application's CPU architecture. The current disk image
+contains an x86_64 application, so Apple Silicon users need Rosetta 2 and an
+x86_64 or universal OpenSSL build, such as Intel Homebrew installed under
+"/usr/local". The arm64 libraries installed by native Homebrew under
+"/opt/homebrew" cannot be loaded by the current disk image. Native arm64 builds
+prefer "/opt/homebrew" but can also use compatible Homebrew libraries under
+"/usr/local/opt".
+
 Using Homebrew.
 - You need to have Homebrew installed. Execute this command to install Transmission Remote GUI: "brew install --cask transmission-remote-gui"
+
+The cask does not bundle OpenSSL. HTTPS RPC connections have the same OpenSSL
+and CPU architecture requirements described above.
 
 COMMAND LINE PARAMETERS
 
