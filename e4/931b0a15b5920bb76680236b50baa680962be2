@@ -1,0 +1,66 @@
+synapse/source/lib/ssl_openssl_lib.pas
+  s_e94c0c2953e29e::t_8a8263768c6222 123-124,1892-1896,1934-1935
+  s_e94c0c2953e29e::t_fe2f1c1497a236 1986
+  s_e94c0c2953e29e::t_6b8837594393f6 125-126,1897-1898
+  s_e94c0c2953e29e::t_deaabe5bcd52db 113-117,121-122,1932-1933,1936-1939,1941-1942,1982
+  s_e94c0c2953e29e::t_b98be2b5faf64d 1943-1951,1953-1979
+  s_e94c0c2953e29e::t_001b90f20cfeae 1940
+  s_e94c0c2953e29e::t_62836bcaae9dfb 1886-1891,1899-1931,1952,1980,2003-2005,2032,2158,2167,2243
+setup/macosx/tests/verify_openssl_loader.sh
+  s_e94c0c2953e29e::t_bd5df5327affe5 10
+  s_e94c0c2953e29e::t_1128d0cc5b89d2 1-9,11-15,18-19,25-30
+  s_e94c0c2953e29e::t_d3ad3693fc65b2 20-24,31
+  s_e94c0c2953e29e::t_55c233e3edf15d 16-17
+  s_e94c0c2953e29e::t_660cdeecb344b8 32
+setup/macosx/tests/openssl_loader_probe.pas
+  s_e94c0c2953e29e::t_9917cac7b4d892 87-88,99-100,148-153,162,170-173
+  s_e94c0c2953e29e::t_d7cb170bf96d95 17,19
+  s_e94c0c2953e29e::t_5ee824d65bda08 49
+  s_e94c0c2953e29e::t_1128d0cc5b89d2 1-14,23,26,28-29,104-108,110,112,123-126,134-141,174
+  s_e94c0c2953e29e::t_4d35fc2c559181 51-52,54-55
+  s_e94c0c2953e29e::t_660cdeecb344b8 21,25,27,46-47,50,53,56,64,71-75,80-86,101-103
+  s_e94c0c2953e29e::t_3c8032590d5ed4 113,118-122
+  s_e94c0c2953e29e::t_ac1bd27e2d5631 48
+  s_e94c0c2953e29e::t_99d3d9bda48c61 144-147
+  s_e94c0c2953e29e::t_e9800cea8d3f1e 18,34-43,57-60,114,116,154,156
+  s_e94c0c2953e29e::t_1d5dfe8c076982 142-143
+  s_e94c0c2953e29e::t_55c233e3edf15d 15,22,127-133
+  s_e94c0c2953e29e::t_001b90f20cfeae 16,62-63,65-70
+  s_e94c0c2953e29e::t_deaabe5bcd52db 20,24,30-33,44-45,61,109,111
+  s_e94c0c2953e29e::t_ff4ab56c7b01b1 163-169
+  s_e94c0c2953e29e::t_8a8263768c6222 76-79,89-98,115,117,155,157-161
+main.pas
+  s_e94c0c2953e29e::t_6b8837594393f6 5176,5178,5180
+  s_e94c0c2953e29e::t_8a8263768c6222 5177
+.github/workflows/ci.yml
+  s_e94c0c2953e29e::t_1128d0cc5b89d2 260,264-267
+  s_e94c0c2953e29e::t_a2fdf7e03ae29f 268
+  s_e94c0c2953e29e::t_ff4ab56c7b01b1 243
+README.md
+  s_e94c0c2953e29e::t_04f9f59fb93c61 118,128-129
+  s_e94c0c2953e29e::t_d3ad3693fc65b2 105-109
+  s_e94c0c2953e29e::t_c6b1e47fd0bd40 112-115
+  s_e94c0c2953e29e::t_6374908b3e075e 110
+  s_e94c0c2953e29e::t_1c044e45ad12c7 123-124
+  s_e94c0c2953e29e::t_106cce1040a0c7 97,103-104
+  s_e94c0c2953e29e::t_a35e15f0364d8f 121-122
+  s_e94c0c2953e29e::t_55c233e3edf15d 21,95,111
+  s_e94c0c2953e29e::t_8523758938efa8 116-117
+  s_e94c0c2953e29e::t_91019f736ff40c 130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "e4931b0a15b5920bb76680236b50baa680962be2",
+  "prompts": {},
+  "sessions": {
+    "s_e94c0c2953e29e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f717d-6fe1-7f12-a862-552c8cf07ebf",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
