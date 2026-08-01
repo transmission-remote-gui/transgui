@@ -56,7 +56,7 @@ type
   TOnDrawCellEvent = procedure (Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean) of object;
   TOnSortColumnEvent = procedure (Sender: TVarGrid; var ASortCol: integer) of object;
   TCellNotifyEvent = procedure (Sender: TVarGrid; ACol, ARow, ADataCol: integer) of object;
-  TOnQuickSearch = procedure (Sender: TVarGrid; var SearchText: string; var ARow: integer) of object;
+  TOnQuickSearch = procedure (Sender: TVarGrid; var SearchText: string; var ARow: integer; var Found: boolean) of object;
 
   { TVarGridStringEditor }
 
@@ -901,6 +901,7 @@ end;
 procedure TVarGrid.UTF8KeyPress(var UTF8Key: TUTF8Char);
 var
   i, r: integer;
+  Found: boolean;
 begin
   inherited UTF8KeyPress(UTF8Key);
   if UTF8Key = #0 then
@@ -914,8 +915,9 @@ begin
   FCurSearch:=FCurSearch + UTF8Key;
   if Assigned(FOnQuickSearch) then begin
     r:=i;
-    FOnQuickSearch(Self, FCurSearch, r);
-    if r <> i then
+    Found:=False;
+    FOnQuickSearch(Self, FCurSearch, r, Found);
+    if Found then
       Row:=r;
   end
   else begin

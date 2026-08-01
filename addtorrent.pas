@@ -128,7 +128,7 @@ type
     procedure DoCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure DoCheckBoxClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);
     procedure DoDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
-    procedure DoQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer);
+    procedure DoQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer; var Found: boolean);
     procedure DoTreeButtonClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);
     procedure DoAfterSort(Sender: TObject);
     procedure ExpandFolder(ARow: integer);
@@ -858,12 +858,13 @@ begin
   end;
 end;
 
-procedure TFilesTree.DoQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer);
+procedure TFilesTree.DoQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer; var Found: boolean);
 var
   i: integer;
   s: string;
   v: variant;
 begin
+  Found:=False;
   s:= LazUTF8.UTF8UpperCase(SearchText);
   for i:=ARow to Sender.Items.Count - 1 do begin
     v:=Sender.Items[idxFileName, i];
@@ -871,6 +872,7 @@ begin
       continue;
     if Pos(s, Trim(LazUTF8.UTF8UpperCase((widestring(v))))) > 0 then begin
       ARow:=i;
+      Found:=True;
       EnsureRowVisible(ARow);
       break;
     end;
