@@ -3995,6 +3995,7 @@ begin
     gTorrents.Tag:=1;
     gTorrents.EnsureSelectionVisible;
     TorrentIds:=GetSelectedTorrents;
+    id:=TorrentIds[VarArrayLowBound(TorrentIds, 1)];
     args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited', 'uploadLimit', 'uploadLimitMode', 'uploadLimited',
                                   'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit', 'seedIdleLimit', 'seedIdleMode', 'trackers']);
     if args = nil then begin
