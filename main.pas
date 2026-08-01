@@ -626,7 +626,7 @@ type
     procedure gTorrentsDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
     procedure gTorrentsEditorHide(Sender: TObject);
     procedure gTorrentsEditorShow(Sender: TObject);
-    procedure gTorrentsQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer);
+    procedure gTorrentsQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer; var Found: boolean);
     procedure gTorrentsResize(Sender: TObject);
     procedure gTorrentsSetEditText(Sender: TObject; ACol, ARow: Integer; const Value: string);
     procedure gTorrentsSortColumn(Sender: TVarGrid; var ASortCol: integer);
@@ -4562,12 +4562,13 @@ begin
   gTorrents.RemoveSelection;
 end;
 
-procedure TMainForm.gTorrentsQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer);
+procedure TMainForm.gTorrentsQuickSearch(Sender: TVarGrid; var SearchText: string; var ARow: integer; var Found: boolean);
 var
   i: integer;
   s: string;
   v: variant;
 begin
+  Found:=False;
   s:=UTF8UpperCase(SearchText);
   for i:=ARow to gTorrents.Items.Count - 1 do begin
     v:=gTorrents.Items[idxName, i];
@@ -4575,6 +4576,7 @@ begin
       continue;
     if Pos(s, Trim(UTF8UpperCase(UTF8Encode(widestring(v))))) > 0 then begin
       ARow:=i;
+      Found:=True;
       break;
     end;
   end;
