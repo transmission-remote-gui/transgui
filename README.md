@@ -52,7 +52,7 @@ The installers are listed on the GitHub [Releases](https://github.com/transmissi
 
 #### Easy way (recommended)
 
-Precompiled binaries for supported Linux architectures are available on the Releases page.
+Precompiled GTK2 binaries for supported Linux architectures are available on the Releases page.
 
 - Download and extract the release for your architecture.
 
@@ -70,6 +70,8 @@ Build the program by yourself.
 4. Execute the `lazbuild -B transgui.lpi --lazarusdir=<lazarus_dir>` command to build the transgui.res file, replacing `<lazarus_dir>` with your Lazarus installation path.
 5. Execute the `make LAZARUS_DIR=<lazarus_dir>` command to build the application.
 6. Execute the `make LAZARUS_DIR=<lazarus_dir> zipdist` command to create a release .zip archive in the `Release` sub-folder.
+
+GTK2 is the default widgetset. To build with GTK3, ensure the GTK3 LCL interface units are available, add `--ws=gtk3` to the `lazbuild` command, and add `LCL_WIDGETSET=gtk3` to both `make` commands.
 
 ### Windows
 

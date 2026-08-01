@@ -123,41 +123,64 @@ jobs:
           docker run -e DEBIAN_FRONTEND=noninteractive --rm -v "${PWD}:/transgui" debian:buster-backports bash -c "cd /transgui/ && ./setup/unix/use-buster-archive-apt.sh debian && ./setup/unix/debian-ubuntu-install_deps.sh && lazbuild -B transgui.lpi --lazarusdir=/usr/lib/lazarus/default/ && make -j\$(nproc) zipdist && ls -al ./Release/transgui-${PROG_VER}-x86_64-linux.zip"
 
   linux-build:
-    name: Build / Linux / ${{ matrix.arch }}
+    name: Build / Linux / ${{ matrix.arch }} / ${{ matrix.widgetset }}
     runs-on: ubuntu-latest
     needs: static
+    continue-on-error: ${{ startsWith(github.ref, 'refs/tags/') && !matrix.publish }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - arch: x86_64
+            widgetset: gtk2
             image: debian:buster-backports
             distro: debian
             artifact_name: transgui-linux-x86_64
             artifact_arch: x86_64
+            archive_suffix: ''
+            publish: true
             privileged: false
             qemu: false
           - arch: i686
+            widgetset: gtk2
             image: i386/debian:buster-backports
             distro: debian
             artifact_name: transgui-linux-i686
             artifact_arch: i686
+            archive_suffix: ''
+            publish: true
             privileged: true
             qemu: false
           - arch: armv6l
+            widgetset: gtk2
             image: balenalib/rpi-raspbian:buster
             distro: raspbian
             artifact_name: transgui-linux-armv6l
             artifact_arch: armv6l
+            archive_suffix: ''
+            publish: true
             privileged: false
             qemu: true
           - arch: armv7l
+            widgetset: gtk2
             image: balenalib/armv7hf-debian:buster
             distro: debian
             artifact_name: transgui-linux-armv7l
             artifact_arch: armv7l
+            archive_suffix: ''
+            publish: true
             privileged: false
             qemu: true
+          - arch: x86_64
+            widgetset: gtk3
+            image: debian:buster-backports
+            distro: debian
+            artifact_name: transgui-linux-x86_64-gtk3
+            artifact_arch: x86_64
+            archive_suffix: '-gtk3'
+            publish: false
+            privileged: false
+            qemu: false
 
     steps:
       - uses: actions/checkout@v7
@@ -180,6 +203,7 @@ jobs:
           set -euo pipefail
           docker_args=(
             -e DEBIAN_FRONTEND=noninteractive
+            -e "LCL_WIDGETSET=${{ matrix.widgetset }}"
             --rm
             -v "${PWD}:/transgui"
           )
@@ -197,10 +221,32 @@ jobs:
 
           docker run "${docker_args[@]}" "${{ matrix.image }}" "${container_cmd[@]}"
 
+      - name: Smoke test GTK3 startup
+        if: matrix.widgetset == 'gtk3'
+        run: |
+          set -euo pipefail
+          docker run -e DEBIAN_FRONTEND=noninteractive --rm -v "${PWD}:/transgui" "${{ matrix.image }}" bash -c '
+            set -euo pipefail
+            cd /transgui
+            ./setup/unix/use-buster-archive-apt.sh debian
+            apt-get update -yqq
+            apt-get install -yqq --no-install-recommends libgtk-3-0 xvfb xauth
+            smoke_home="$(mktemp -d)"
+            trap '\''rm -rf "$smoke_home"'\'' EXIT
+            set +e
+            timeout 5s xvfb-run -a ./transgui --home="$smoke_home" -hidden
+            status=$?
+            set -e
+            if [ "$status" -ne 124 ]; then
+              echo "GTK3 startup smoke test exited with status $status" >&2
+              exit 1
+            fi
+          '
+
       - name: Print checksums
         run: |
           set -euo pipefail
-          artifact="Release/transgui-${PROG_VER}-${{ matrix.artifact_arch }}-Linux.txz"
+          artifact="Release/transgui-${PROG_VER}-${{ matrix.artifact_arch }}-Linux${{ matrix.archive_suffix }}.txz"
           md5sum "$artifact"
           shasum -a 1 "$artifact"
           shasum -a 256 "$artifact"
@@ -208,11 +254,11 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact_name }}
-          path: Release/transgui-*-${{ matrix.artifact_arch }}-Linux.txz
+          path: Release/transgui-*-${{ matrix.artifact_arch }}-Linux${{ matrix.archive_suffix }}.txz
           if-no-files-found: error
 
       - name: Submit to VirusTotal
-        if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/') && matrix.publish
         env:
           VIRUSTOTAL_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}
         run: |
@@ -222,7 +268,7 @@ jobs:
             exit 0
           fi
 
-          artifact="Release/transgui-${PROG_VER}-${{ matrix.artifact_arch }}-Linux.txz"
+          artifact="Release/transgui-${PROG_VER}-${{ matrix.artifact_arch }}-Linux${{ matrix.archive_suffix }}.txz"
           if ! curl --fail-with-body -F "file=@$artifact" -F "apikey=${VIRUSTOTAL_API_KEY}" https://www.virustotal.com/vtapi/v2/file/scan; then
             echo "VirusTotal submission failed for $artifact; continuing without failing the build." >&2
           fi
