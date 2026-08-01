@@ -1,0 +1,22 @@
+synapse/source/lib/ssl_openssl_lib.pas
+  s_e94c0c2953e29e::t_fe2f1c1497a236 1976
+  s_e94c0c2953e29e::t_b98be2b5faf64d 1933-1941,1943-1969
+  s_e94c0c2953e29e::t_62836bcaae9dfb 1882-1922,1942,1970,1993-1995,2022,2148,2157,2233
+  s_e94c0c2953e29e::t_deaabe5bcd52db 113-117,121-122,1923-1932,1972
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "eaa5adc61279bda18b38fd8ee89bd01f278fff15",
+  "prompts": {},
+  "sessions": {
+    "s_e94c0c2953e29e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f717d-6fe1-7f12-a862-552c8cf07ebf",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
