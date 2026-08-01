@@ -1,0 +1,29 @@
+setup/macosx/tests/openssl_loader_probe.pas
+  s_e94c0c2953e29e::t_deaabe5bcd52db 16,19-20,24-34,41,43
+  s_e94c0c2953e29e::t_55c233e3edf15d 15,17,49-55
+  s_e94c0c2953e29e::t_1128d0cc5b89d2 1-14,18,21-23,35-40,42,44-48,56-64
+setup/macosx/tests/verify_openssl_loader.sh
+  s_e94c0c2953e29e::t_d3ad3693fc65b2 20-24,31
+  s_e94c0c2953e29e::t_bd5df5327affe5 10
+  s_e94c0c2953e29e::t_55c233e3edf15d 16-17
+  s_e94c0c2953e29e::t_1128d0cc5b89d2 1-9,11-15,18-19,25-30
+.github/workflows/ci.yml
+  s_e94c0c2953e29e::t_1128d0cc5b89d2 259,263-266
+  s_e94c0c2953e29e::t_a2fdf7e03ae29f 267
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "103dcadc4cdb2c40d950dcc7c7a680e3ba3567bb",
+  "prompts": {},
+  "sessions": {
+    "s_e94c0c2953e29e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f717d-6fe1-7f12-a862-552c8cf07ebf",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
