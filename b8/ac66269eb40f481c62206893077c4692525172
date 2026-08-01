@@ -1,0 +1,27 @@
+setup/macosx/tests/verify_openssl_loader.sh
+  s_e94c0c2953e29e::t_660cdeecb344b8 32
+synapse/source/lib/ssl_openssl_lib.pas
+  s_e94c0c2953e29e::t_001b90f20cfeae 1931
+setup/macosx/tests/openssl_loader_probe.pas
+  s_e94c0c2953e29e::t_660cdeecb344b8 18,22,24,33-34,37,40,43,47,54-65,70-72
+  s_e94c0c2953e29e::t_5ee824d65bda08 36
+  s_e94c0c2953e29e::t_9917cac7b4d892 66-69,107-117
+  s_e94c0c2953e29e::t_001b90f20cfeae 16,45-46,48-53
+  s_e94c0c2953e29e::t_ac1bd27e2d5631 35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "b8ac66269eb40f481c62206893077c4692525172",
+  "prompts": {},
+  "sessions": {
+    "s_e94c0c2953e29e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f717d-6fe1-7f12-a862-552c8cf07ebf",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
