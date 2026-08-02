@@ -1219,6 +1219,13 @@ begin
 end;
 end;
 
+function ReadIntfScale(ADefault: integer): integer;
+begin
+  Result:=Ini.ReadInteger('Interface', 'Scaling', ADefault);
+  if (Result < 10) or (Result > 200) then
+    Result:=ADefault;
+end;
+
 function CheckAppParams: boolean;
 var
   i: integer;
@@ -1339,7 +1346,7 @@ begin
   SizeNames[4]:=sGByte;
   SizeNames[5]:=sTByte;
 
-  IntfScale:=Ini.ReadInteger('Interface', 'Scaling', 100);
+  IntfScale:=ReadIntfScale(100);
 
   Result:=True;
 end;
@@ -2221,7 +2228,7 @@ begin
     cbShowAddTorrentWindow.Checked:=Ini.ReadBool('Interface', 'ShowAddTorrentWindow', True);
     cbDeleteTorrentFile.Checked:=Ini.ReadBool('Interface', 'DeleteTorrentFile', False);
     cbLinksFromClipboard.Checked:=Ini.ReadBool('Interface', 'LinksFromClipboard', True);
-    edIntfScale.Value:=Ini.ReadInteger('Interface', 'Scaling', 100);
+    edIntfScale.Value:=ReadIntfScale(IntfScale);
     cbCheckNewVersion.Checked:=Ini.ReadBool('Interface', 'CheckNewVersion', False);
     edCheckVersionDays.Value:=Ini.ReadInteger('Interface', 'CheckNewVersionDays', 5);
     cbCheckNewVersionClick(nil);
