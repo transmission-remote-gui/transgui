@@ -120,7 +120,7 @@ jobs:
       - name: Build zip tarball
         run: |
           set -euo pipefail
-          docker run -e DEBIAN_FRONTEND=noninteractive --rm -v "${PWD}:/transgui" debian:buster-backports bash -c "cd /transgui/ && ./setup/unix/use-buster-archive-apt.sh debian && ./setup/unix/debian-ubuntu-install_deps.sh && lazbuild -B transgui.lpi --lazarusdir=/usr/lib/lazarus/default/ && make -j\$(nproc) zipdist && ls -al ./Release/transgui-${PROG_VER}-x86_64-linux.zip"
+          docker run -e DEBIAN_FRONTEND=noninteractive --rm -v "${PWD}:/transgui" debian:bookworm bash -c "cd /transgui/ && ./setup/unix/debian-ubuntu-install_deps.sh && lazbuild -B transgui.lpi --lazarusdir=/usr/lib/lazarus/default/ && make -j\$(nproc) zipdist && ls -al ./Release/transgui-${PROG_VER}-x86_64-linux.zip"
 
   linux-build:
     name: Build / Linux / ${{ matrix.arch }}
@@ -131,29 +131,25 @@ jobs:
       matrix:
         include:
           - arch: x86_64
-            image: debian:buster-backports
-            distro: debian
+            image: debian:bookworm
             artifact_name: transgui-linux-x86_64
             artifact_arch: x86_64
             privileged: false
             qemu: false
           - arch: i686
-            image: i386/debian:buster-backports
-            distro: debian
+            image: i386/debian:bookworm
             artifact_name: transgui-linux-i686
             artifact_arch: i686
             privileged: true
             qemu: false
           - arch: armv6l
-            image: balenalib/rpi-raspbian:buster
-            distro: raspbian
+            image: balenalib/rpi-raspbian:bookworm
             artifact_name: transgui-linux-armv6l
             artifact_arch: armv6l
             privileged: false
             qemu: true
           - arch: armv7l
-            image: balenalib/armv7hf-debian:buster
-            distro: debian
+            image: balenalib/armv7hf-debian:bookworm
             artifact_name: transgui-linux-armv7l
             artifact_arch: armv7l
             privileged: false
@@ -188,7 +184,7 @@ jobs:
             docker_args+=(--privileged)
           fi
 
-          build_script="cd /transgui/setup/unix/ && ./use-buster-archive-apt.sh ${{ matrix.distro }} && ./debian-ubuntu-install_deps.sh && apt upgrade -y && git config --global --add safe.directory /transgui && ./build.sh"
+          build_script="cd /transgui/setup/unix/ && ./debian-ubuntu-install_deps.sh && apt upgrade -y && git config --global --add safe.directory /transgui && ./build.sh"
           container_cmd=(bash -c "$build_script")
 
           if [ "${{ matrix.arch }}" = "i686" ]; then

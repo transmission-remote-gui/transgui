@@ -49,6 +49,7 @@ LINUX:
 Easy way (recommended).
 
 Precompiled binaries for supported Linux architectures are available on the Releases page.
+They require glibc 2.34 or newer.
 - Download and extract the release for your architecture.
 - Run the transgui executable directly or using a desktop or menu shortcut.
   * (Make the transgui file executable if needed.)

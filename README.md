@@ -53,6 +53,7 @@ The installers are listed on the GitHub [Releases](https://github.com/transmissi
 #### Easy way (recommended)
 
 Precompiled binaries for supported Linux architectures are available on the Releases page.
+They require glibc 2.34 or newer.
 
 - Download and extract the release for your architecture.
 
