@@ -1,0 +1,19 @@
+setup/macosx/create_app_new.sh
+  s_02d8eae72626c4::t_5341782ddbd9f3 20,69-71,103-115,119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "fcf54025d03ac22898346983f27325e1defca0a2",
+  "prompts": {},
+  "sessions": {
+    "s_02d8eae72626c4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc8f6-fd45-7cf1-bf73-0824cab60b6c",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
