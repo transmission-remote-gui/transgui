@@ -1,0 +1,21 @@
+README.md
+  s_8c561082880c27::t_9c48221b35873e 80
+readme.txt
+  s_8c561082880c27::t_858a1b2d7fa7aa 70-72,74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "f5eb7fb1792d165932252a9cff1df9e19fb15cc7",
+  "prompts": {},
+  "sessions": {
+    "s_8c561082880c27": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f8081-dd38-7743-898c-f5c5cb3d7ece",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
