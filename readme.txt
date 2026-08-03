@@ -67,9 +67,11 @@ WINDOWS:
 
 Portable zip archive (recommended).
 - The zip archive release is much smaller than the installer one, which can save you some bandwidth, disk space and time. Simply download and extract the zip archive wherever you want, then run "transgui.exe" directly or create a shortcut to it.
-- If you need SSL/TLS support with a portable release, download the source archive for the tag matching your release:
+- If you need SSL/TLS support with a portable release, install the OpenSSL 3.x Light package matching your build architecture from Shining Light Productions:
+  https://slproweb.com/products/Win32OpenSSL.html
+- Alternatively, download the source archive for the tag matching your release:
   https://github.com/transmission-remote-gui/transgui/tags
-- Copy the project's OpenSSL DLLs into the same folder as "transgui.exe":
+- For this alternative, copy the project's OpenSSL DLLs into the same folder as "transgui.exe":
   - 32-bit: setup/win/openssl
   - 64-bit: setup/win_amd64/openssl
 - If Windows reports that MSVCR120.dll is missing, install the Microsoft Visual C++ 2013 Redistributable; if VCRUNTIME140.dll is missing, install the latest v14 Redistributable. Download the package matching your build architecture from Microsoft's supported Visual C++ Redistributable downloads:
