@@ -388,3 +388,10 @@ Right->Left (Reading Only)=Direita->Esquerda (Apenas leitura)
 Toolbar=Barra de ferramentas
 Unauthorized User=Utilizador não autorizado
 User Menu=Menu de utilizador
+
+Config file=Ficheiro de configuração
+Label grouping=Agrupar por rótulos
+Labels=Rótulos
+Set labels=Definir rótulos
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Isto irá substituir todos os rótulos existentes.~Pode definir vários rótulos separados por vírgulas ou deixar vazio para limpar os rótulos
+Application option=Opção da aplicação

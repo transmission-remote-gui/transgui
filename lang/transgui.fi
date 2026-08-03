@@ -388,3 +388,10 @@ Total: %s=Yhteensä: %s
 Unauthorized User=Valtuuttamaton käyttäjä
 User Menu=Käyttäjävalikko
 for example: *.avi *.mkv tom*jerry*.avi=esimerkiksi: *.avi *.mkv tom*jerry*.avi
+
+Config file=Asetustiedosto
+Label grouping=Tunnisteiden ryhmittely
+Labels=Tunnisteet
+Set labels=Aseta tunnisteet
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Tämä korvaa kaikki olemassa olevat tunnisteet.~Voit asettaa useita tunnisteita pilkulla erotettuina tai jättää tyhjäksi tyhjentääksesi tunnisteet
+Application option=Sovellusasetus

@@ -388,3 +388,10 @@ Total: %s=Toplam: %s
 Unauthorized User=Yetkisiz Kullanıcı
 User Menu=Kullanıcı Menüsü
 for example: *.avi *.mkv tom*jerry*.avi=örnek: *.avi *.mkv tom*jerry*.avi
+
+Config file=Yapılandırma dosyası
+Label grouping=Etikete göre grupla
+Labels=Etiketler
+Set labels=Etiketleri ayarla
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Bu, mevcut tüm etiketlerin üzerine yazacaktır.~Birden fazla etiketi virgülle ayırarak ayarlayabilir veya etiketleri temizlemek için boş bırakabilirsiniz
+Application option=Uygulama seçeneği

@@ -387,3 +387,10 @@ Unauthorized User=Vartotojas neautorizuotas
 Big Toolbar=Didelė įrankių juosta
 Client Certificate=Kliento sertifikatas
 Private Key=Asmeninis raktas
+
+Config file=Konfigūracijos failas
+Label grouping=Grupuoti pagal žymes
+Labels=Žymos
+Set labels=Nustatyti žymes
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Tai perrašys visas esamas žymes.~Galite nustatyti kelias žymes, atskirtas kableliais, arba palikti tuščią, kad išvalytumėte žymes
+Application option=Programos parinktis

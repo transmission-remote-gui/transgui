@@ -388,3 +388,10 @@ Total: %s=Totalt: %s
 Unauthorized User=Uautorisert bruker
 User Menu=Brukermeny
 for example: *.avi *.mkv tom*jerry*.avi=for eksempel: *.avi *.mkv tom*jerry*.avi
+
+Config file=Konfigurasjonsfil
+Label grouping=Grupper etter etiketter
+Labels=Etiketter
+Set labels=Angi etiketter
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Dette vil overskrive alle eksisterende etiketter.~Du kan angi flere etiketter atskilt med komma eller la det stå tomt for å fjerne etiketter
+Application option=Programalternativ

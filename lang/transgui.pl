@@ -388,3 +388,10 @@ Unauthorized User=Nieupoważniony użytkownik
 Big Toolbar=Duży pasek narzędzi
 Client Certificate=Certyfikat klienta
 Private Key=Klucz prywatny
+
+Config file=Plik konfiguracyjny
+Label grouping=Grupuj według etykiet
+Labels=Etykiety
+Set labels=Ustaw etykiety
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=To spowoduje nadpisanie wszystkich istniejących etykiet.~Możesz ustawić wiele etykiet oddzielonych przecinkami lub pozostawić puste, aby wyczyścić etykiety
+Application option=Opcja aplikacji

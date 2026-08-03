@@ -388,3 +388,10 @@ Total: %s=Усяго: %s
 Unauthorized User=Неаўтарызаваны карыстальнік
 User Menu=Мэню карыстальніка
 for example: *.avi *.mkv tom*jerry*.avi=напрыклад: *.avi *.mkv tom*jerry*.avi
+
+Config file=Файл канфігурацыі
+Label grouping=Групаваньне па мэтках
+Labels=Мэткі
+Set labels=Задаць мэткі
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Гэта заменіць усе наяўныя мэткі.~Вы можаце задаць некалькі мэтак праз коску або пакінуць пустым, каб ачысьціць мэткі
+Application option=Опцыя праграмы

@@ -388,3 +388,10 @@ Total: %s=Ukupno: %s
 Unauthorized User=Neovlašteni korisnik
 User Menu=Korisnički izbornik
 for example: *.avi *.mkv tom*jerry*.avi=na primjer: *.avi *.mkv tom*jerry*.avi
+
+Config file=Konfiguracijska datoteka
+Label grouping=Grupiraj po oznakama
+Labels=Oznake
+Set labels=Postavi oznake
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Ovo će zamijeniti sve postojeće oznake.~Možete postaviti više oznaka odvojenih zarezom ili ostaviti prazno za čišćenje oznaka
+Application option=Opcija aplikacije

@@ -388,3 +388,10 @@ Big Toolbar=Barra de herramientas grande
 Client Certificate=Certificado de cliente
 Private Key=Clave privada
 Unauthorized User=Usuario no autorizado
+
+Config file=Archivo de configuración
+Label grouping=Agrupar por etiquetas
+Labels=Etiquetas
+Set labels=Establecer etiquetas
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Esto sobrescribirá cualquier etiqueta existente.~Puede establecer varias etiquetas separadas por comas o dejarlo vacío para borrar las etiquetas
+Application option=Opción de la aplicación

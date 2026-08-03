@@ -387,3 +387,10 @@ Right->Left (Reading Only)=从右向左（只读）
 Host not found=主机未找到
 User Menu=用户菜单
 Unauthorized User=未认证用户
+
+Config file=配置文件
+Label grouping=标签分组
+Labels=标签
+Set labels=设置标签
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=这将覆盖任何现有的标签。~您可以用逗号分隔设置多个标签，或留空以清除标签
+Application option=应用程序选项

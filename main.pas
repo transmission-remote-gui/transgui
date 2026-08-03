@@ -149,6 +149,9 @@ resourcestring
   sPrivateOn = 'ON';
   sPrivateOff = 'OFF';
 
+  sSetLabels = 'Set labels';
+  sSetLabelsPrompt = 'This will overwrite any existing labels.' + LineEnding + 'You can set multiple labels separated by a comma or leave empty to clear labels.';
+
 type
 
   { TMyHashMap example from hashmapdemo }
@@ -3762,9 +3765,8 @@ begin
   i:=gTorrents.Items.IndexOf(idxTorrentId, ids[0]);
   if VarIsEmpty(gTorrents.Items[idxPath, i]) then
     exit;
-  if InputQuery('Set labels',
-      'This will overwrite any existing labels.' + sLineBreak +
-      'You can set multiple labels separated by a comma or leave empty to clear labels.',
+  if InputQuery(sSetLabels,
+      sSetLabelsPrompt,
       input) then begin
     AppBusy;
     req := TJSONObject.Create;

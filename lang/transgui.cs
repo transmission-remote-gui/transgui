@@ -388,3 +388,10 @@ Total: %s=Celkem: %s
 Unauthorized User=Neautorizovaný uživatel
 User Menu=Uživatelská nabídka
 for example: *.avi *.mkv tom*jerry*.avi=například: *.avi *.mkv tom*jerry*.avi
+
+Config file=Konfigurační soubor
+Label grouping=Seskupit podle štítků
+Labels=Štítky
+Set labels=Nastavit štítky
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Tím se přepíší všechny existující štítky.~Můžete nastavit více štítků oddělených čárkou, nebo je nechat prázdné pro vymazání štítků
+Application option=Možnost aplikace
