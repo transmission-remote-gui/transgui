@@ -1,0 +1,25 @@
+setup/win_amd64/setup.iss
+  s_8d9f2bc7b0f229::t_de5ea0467c1043 92
+setup/win/make_setup.bat
+  s_8d9f2bc7b0f229::t_de5ea0467c1043 27
+setup/win/setup.iss
+  s_8d9f2bc7b0f229::t_de5ea0467c1043 90
+setup/win_amd64/make_setup.bat
+  s_8d9f2bc7b0f229::t_de5ea0467c1043 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "523883eb61262434695d53ff5cfb84b162e1fb92",
+  "prompts": {},
+  "sessions": {
+    "s_8d9f2bc7b0f229": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fce14-3f1d-7dc1-9c3d-bba673410440",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
