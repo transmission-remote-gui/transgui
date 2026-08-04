@@ -2,123 +2,79 @@
 
 set -ex
 
+# Build a native macOS .app + .dmg for Transmission Remote GUI.
+#
+# Latest-Mac (Apple Silicon / macOS 26 Tahoe) notes:
+#   * Default target is aarch64 (Apple Silicon). Override with CPU=x86_64.
+#   * Requires a recent Lazarus/FPC that supports aarch64-darwin Cocoa. The
+#     Lazarus 4.x "macOS aarch64" release builds work; for macOS 26 the Lazarus
+#     development (main) LCL is recommended (fewer Cocoa layout issues).
+#     Point LAZARUS_DIR / FPC at your install (see install_deps.sh).
+#   * transgui.lpi pins optimization off (-O-): FPC 3.2.4's optimizer
+#     miscompiles a virtual-method-call sequence on aarch64-darwin and corrupts
+#     the Synapse socket object, crashing on connect. Do not re-enable -O here.
+#   * The binary MUST be (re)code-signed after it is placed in the .app, or
+#     macOS 26 SIGKILLs it ("Code Signature Invalid") when it faults in code
+#     pages at runtime. We ad-hoc sign by default; set SIGN_ID to a real
+#     "Developer ID Application: ..." identity to distribute.
+
 prog_ver="$(cat ../../VERSION.txt)"
 build="$(git rev-list --abbrev-commit --max-count=1 HEAD ../..)"
-lazarus_ver="$(lazbuild -v)"
-fpc_ver="$(fpc -i V | head -n 1)"
-exename=../../transgui
+lazarus_ver="$(lazbuild -v 2> /dev/null || true)"
+fpc_ver="$(fpc -i V 2> /dev/null | head -n 1 || true)"
 appname="Transmission Remote GUI"
 dmg_dist_file="../../Release/transgui-$prog_ver.dmg"
-dmg_temp_file="$dmg_dist_file.tmp.dmg"
 dmgfolder=./Release
 appfolder="$dmgfolder/$appname.app"
-lazdir="${1:-/Library/Lazarus/}"
-mount_device=""
-remove_dmg_temp=0
-remove_dmgfolder=0
-remove_tmp_dmg=0
 
-detach_disk_image() {
-  detach_device=$1
-  detach_attempt=1
-
-  sync
-  while ! hdiutil detach "$detach_device"; do
-    if [ "$detach_attempt" -ge 5 ]; then
-      echo "Failed to detach $detach_device after $detach_attempt attempts." >&2
-      return 1
-    fi
-
-    echo "Failed to detach $detach_device; retrying in 2 seconds." >&2
-    sleep 2
-    detach_attempt=$((detach_attempt + 1))
-  done
-}
-
-cleanup() {
-  status=$?
-  cleanup_status=0
-
-  trap '' HUP INT TERM
-  trap - 0
-  set +e
-
-  if [ -n "$mount_device" ]; then
-    detach_status=0
-    detach_disk_image "$mount_device" || detach_status=$?
-    if [ "$detach_status" -eq 0 ]; then
-      mount_device=""
-    else
-      cleanup_status=$detach_status
-      remove_tmp_dmg=0
-    fi
-  fi
-  if [ "$remove_dmg_temp" -eq 1 ]; then
-    rm -f "$dmg_temp_file" || cleanup_status=$?
-  fi
-  if [ "$remove_tmp_dmg" -eq 1 ]; then
-    rm -f tmp.dmg || cleanup_status=$?
-  fi
-  if [ "$remove_dmgfolder" -eq 1 ]; then
-    rm -rf "$dmgfolder" || cleanup_status=$?
-  fi
-  if [ -e ../../about.lfm.bak ]; then
-    mv ../../about.lfm.bak ../../about.lfm || cleanup_status=$?
-  fi
-
-  if [ "$status" -eq 0 ]; then
-    status=$cleanup_status
-  fi
-  exit "$status"
-}
+# Configurable toolchain / target (sane defaults for Apple Silicon).
+CPU="${CPU:-aarch64}"
+LAZARUS_DIR="${LAZARUS_DIR:-${1:-/Library/Lazarus/}}"
+FPC="${FPC:-/usr/local/bin/fpc}"
+SIGN_ID="${SIGN_ID:--}" # "-" = ad-hoc; or a Developer ID identity name
 
 if [ -z "${CI-}" ]; then
   ./install_deps.sh
 fi
 
-if [ ! "$lazdir" = "" ]; then
-  lazdir=LAZARUS_DIR="$lazdir"
-fi
-
-if [ -e ../../about.lfm.bak ]; then
-  echo "../../about.lfm.bak already exists; refusing to overwrite it." >&2
-  exit 1
-fi
-if [ -e "$dmg_dist_file" ] && [ ! -f "$dmg_dist_file" ]; then
-  echo "$dmg_dist_file exists and is not a regular file." >&2
-  exit 1
-fi
-if [ -e "$dmg_temp_file" ] && [ ! -f "$dmg_temp_file" ]; then
-  echo "$dmg_temp_file exists and is not a regular file." >&2
-  exit 1
-fi
-
-trap cleanup 0
-trap 'exit 1' HUP INT TERM
-
 mkdir -p ../../Release/
 sed -i.bak "s/'Version %s'/'Version %s Build $build'#13#10'Compiled by: $fpc_ver, Lazarus v$lazarus_ver'/" ../../about.lfm
 
-lazbuild -B ../../transgui.lpi --lazarusdir=/Library/Lazarus/ --compiler=/usr/local/bin/fpc --cpu=x86_64 --widgetset=cocoa
+# Build (lazbuild also builds the required local package trcomp and produces the
+# executable; the lpi carries the cocoa/-O- settings).
+lazbuild -B ../../trcomp.lpk ../../transgui.lpi \
+  --lazarusdir="$LAZARUS_DIR" --compiler="$FPC" --cpu="$CPU" --widgetset=cocoa
+rc=$?
 
-# Building Intel version
-make -j"$(sysctl -n hw.ncpu)" -C ../.. clean CPU_TARGET=x86_64 "$lazdir"
-make -j"$(sysctl -n hw.ncpu)" -C ../.. CPU_TARGET=x86_64 "$lazdir"
+# Restore about.lfm regardless of build outcome.
+mv ../../about.lfm.bak ../../about.lfm 2> /dev/null
 
-if ! [ -e $exename ]; then
-  echo "$exename does not exist"
+if [ "$rc" != 0 ]; then
+  echo "lazbuild failed (rc=$rc)"
+  exit 1
+fi
+
+# lazbuild may place the binary in the project root or the unit output dir.
+exename=""
+for cand in ../../transgui ../../units/transgui; do
+  if [ -e "$cand" ]; then
+    exename="$cand"
+    break
+  fi
+done
+if [ -z "$exename" ]; then
+  echo "built transgui binary not found"
   exit 1
 fi
 strip "$exename"
 
-remove_dmgfolder=1
 rm -rf "$appfolder"
 
 echo "Creating $appfolder..."
 mkdir -p "$appfolder/Contents/MacOS/lang"
 mkdir -p "$appfolder/Contents/Resources"
 
-mv "$exename" "$appfolder/Contents/MacOS"
+mv "$exename" "$appfolder/Contents/MacOS/transgui"
 cp ../../lang/transgui.* "$appfolder/Contents/MacOS/lang"
 
 cp ../../history.txt "$dmgfolder"
@@ -128,12 +84,17 @@ cp PkgInfo "$appfolder/Contents"
 cp transgui.icns "$appfolder/Contents/Resources"
 sed -e "s/@prog_ver@/$prog_ver/" Info.plist > "$appfolder/Contents/Info.plist"
 
+# Code-sign the finished bundle (required on Apple Silicon / macOS 26).
+codesign --force --deep --options runtime --sign "$SIGN_ID" "$appfolder"
+codesign --verify --verbose=2 "$appfolder" || {
+  echo "codesign verification failed"
+  exit 1
+}
+
 ln -s /Applications "$dmgfolder/Drag \"Transmission Remote GUI\" here!"
 
 hdiutil create -ov -anyowners -volname "transgui-v$prog_ver" -format UDRW -srcfolder ./Release -fs HFS+ "tmp.dmg"
-remove_tmp_dmg=1
 
-remove_tmp_dmg=0
 attach_status=0
 attach_output="$(hdiutil attach -readwrite -noautoopen "tmp.dmg")" || attach_status=$?
 mount_device="$(printf '%s\n' "$attach_output" | awk 'NR == 1 && $1 ~ /^\/dev\/disk[0-9]+(s[0-9]+)*$/ {print $1}')"
@@ -144,7 +105,6 @@ if [ -z "$mount_device" ]; then
   fi
   exit 1
 fi
-remove_tmp_dmg=1
 if [ "$attach_status" -ne 0 ]; then
   exit "$attach_status"
 fi
@@ -157,13 +117,12 @@ cp transgui.icns "$mount_volume/.VolumeIcon.icns"
 SetFile -c icnC "$mount_volume/.VolumeIcon.icns"
 SetFile -a C "$mount_volume"
 
-detach_disk_image "$mount_device"
-mount_device=""
-remove_dmg_temp=1
-rm -f "$dmg_temp_file"
-hdiutil convert tmp.dmg -format UDBZ -imagekey zlib-level=9 -o "$dmg_temp_file"
-mv -f "$dmg_temp_file" "$dmg_dist_file"
-remove_dmg_temp=0
+hdiutil detach "$mount_device"
+rm -f "$dmg_dist_file"
+hdiutil convert tmp.dmg -format UDBZ -imagekey zlib-level=9 -o "$dmg_dist_file"
+
+rm tmp.dmg
+rm -rf "$dmgfolder"
 
 if [ -z "${CI-}" ]; then
   open "$dmg_dist_file"
