@@ -60,6 +60,7 @@ resourcestring
   sUnknown = 'Unknown';
   sCompleted = 'Completed';
   sConnected = 'connected';
+  sCopy = 'Copy';
   sActive = 'Active';
   sInactive = 'Inactive';
   sErrorState = 'Error';
@@ -4313,23 +4314,24 @@ var
   msg: string;
 {$ifdef CALLSTACK}
   sl: TStringList;
+  fullDetails: string;
 {$endif CALLSTACK}
 begin
   ForceAppNormal;
   msg:=E.Message;
 {$ifdef CALLSTACK}
+  fullDetails:='';
   try
     sl:=TStringList.Create;
     try
       sl.Text:=GetLastExceptionCallStack;
-      Clipboard.AsText:=msg + LineEnding + sl.Text;
-      DebugLn(msg + LineEnding + sl.Text);
+      fullDetails:=msg + LineEnding + sl.Text;
+      DebugLn(fullDetails);
       if sl.Count > 20 then begin
         while sl.Count > 20 do
           sl.Delete(20);
         sl.Add('...');
       end;
-      msg:=msg + LineEnding + '---' + LineEnding + 'The error details has been copied to the clipboard.' + LineEnding + '---';
       msg:=msg + LineEnding + sl.Text;
     finally
       sl.Free;
@@ -4337,8 +4339,18 @@ begin
   except
     ; // suppress exception
   end;
+  if fullDetails <> '' then begin
+    if QuestionDlg('', TranslateString(msg, True), mtError,
+      [mrOK, mrYes, sCopy], 0) = mrYes then
+      try
+        Clipboard.AsText:=fullDetails;
+      except
+        ; // suppress exception
+      end;
+  end
+  else
 {$endif CALLSTACK}
-  MessageDlg(TranslateString(msg, True), mtError, [mbOK], 0);
+    MessageDlg(TranslateString(msg, True), mtError, [mbOK], 0);
 end;
 
 procedure TMainForm.ApplicationPropertiesIdle(Sender: TObject; var Done: Boolean);
