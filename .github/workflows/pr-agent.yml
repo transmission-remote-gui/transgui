@@ -1,0 +1,47 @@
+name: PR Agent
+
+on:
+  pull_request_target:
+    types: [opened, reopened, ready_for_review, synchronize]
+
+concurrency:
+  group: pr-agent-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    if: ${{ github.event.pull_request.user.type != 'Bot' && !github.event.pull_request.draft }}
+    environment:
+      name: ${{ contains(fromJSON('["OWNER","MEMBER","COLLABORATOR","CONTRIBUTOR"]'), github.event.pull_request.author_association) && 'pr-agent-trusted' || 'pr-agent-approval' }}
+      deployment: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Verify PR Agent approval gate
+        if: ${{ !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR","CONTRIBUTOR"]'), github.event.pull_request.author_association) }}
+        env:
+          PR_AGENT_APPROVAL_CONFIGURED: ${{ secrets.PR_AGENT_APPROVAL_CONFIGURED }}
+        run: |
+          set -euo pipefail
+          if [ -z "$PR_AGENT_APPROVAL_CONFIGURED" ]; then
+            echo "The pr-agent-approval environment is not configured." >&2
+            exit 1
+          fi
+
+      - name: Run PR Agent
+        uses: docker://pragent/pr-agent@sha256:3121a7b8e3ab497b4df09dea6a444da8f01a474496c8c2f722828512c52fd266 # 0.41.0-github_action
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          config.model: "gpt-5.6-terra"
+          config.fallback_models: '["gpt-5.6-terra"]'
+          config.reasoning_effort: "high"
+          config.restricted_mode: "true"
+          github_action_config.auto_describe: "true"
+          github_action_config.auto_review: "true"
+          github_action_config.auto_improve: "true"
+          github_action_config.pr_actions: '["opened", "reopened", "ready_for_review", "synchronize"]'
