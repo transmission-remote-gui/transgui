@@ -89,7 +89,7 @@ ShowLanguageDialog=yes
 
 #if GetEnv("CODECERT") != ""
 #define CODECERT GetEnv("CODECERT")
-SignTool=signtool sign /d "{#AppName} Setup" /du "{#AppURL}" /f "{#CODECERT}" /v $f
+SignTool=signtool sign /d "{#AppName} Setup" /du "{#AppURL}" /f "{#CODECERT}" /fd sha256 /tr "http://timestamp.digicert.com" /td sha256 /v $f
 #endif
 
 [Components]

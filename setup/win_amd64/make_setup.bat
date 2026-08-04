@@ -24,7 +24,7 @@ make -C ../.. all
 if errorlevel 1 goto err
 
 if not (%CODECERT%) == () (
-  signtool.exe sign /d "Transmission Remote GUI" /du "https://github.com/transmission-remote-gui/transgui" /f "%CODECERT%" /v ..\..\transgui.exe
+  signtool.exe sign /d "Transmission Remote GUI" /du "https://github.com/transmission-remote-gui/transgui" /f "%CODECERT%" /fd sha256 /tr "http://timestamp.digicert.com" /td sha256 /v ..\..\transgui.exe
   if errorlevel 1 goto err
 )
 
