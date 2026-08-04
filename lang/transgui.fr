@@ -388,3 +388,10 @@ Total: %s=Total : %s
 Unauthorized User=Utilisateur non autorisé
 User Menu=Menu utilisateur
 for example: *.avi *.mkv tom*jerry*.avi=par exemple : *.avi *.mkv tom*jerry*.avi
+
+Config file=Fichier de configuration
+Label grouping=Grouper par étiquettes
+Labels=Étiquettes
+Set labels=Définir les étiquettes
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Cela écrasera toutes les étiquettes existantes.~Vous pouvez définir plusieurs étiquettes séparées par des virgules ou laisser vide pour effacer les étiquettes
+Application option=Option de l'application

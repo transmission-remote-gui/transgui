@@ -388,3 +388,10 @@ Total: %s=Gesamt: %s
 Unauthorized User=Nicht autorisierter Benutzer
 User Menu=Benutzermenü
 for example: *.avi *.mkv tom*jerry*.avi=zum Beispiel: *.avi *.mkv tom*jerry*.avi
+
+Config file=Konfigurationsdatei
+Label grouping=Nach Beschriftung gruppieren
+Labels=Beschriftungen
+Set labels=Beschriftungen setzen
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Dies überschreibt alle vorhandenen Beschriftungen.~Sie können mehrere Beschriftungen durch Kommas getrennt festlegen oder leer lassen, um Beschriftungen zu entfernen
+Application option=Anwendungsoption

@@ -387,3 +387,10 @@ Right->Left (Reading Only)=由右至左（僅影響閱讀）
 Host not found=找不到遠端主機
 User Menu=使用者選單
 Unauthorized User=未授權的使用者
+
+Config file=設定檔
+Label grouping=標籤分組
+Labels=標籤
+Set labels=設定標籤
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=這將覆寫任何現有的標籤。~您可以用逗號分隔設定多個標籤，或留空以清除標籤
+Application option=應用程式選項

@@ -388,3 +388,10 @@ Unauthorized User=Nem azonosított felhasználó
 Big Toolbar=Nagy eszköztár
 Client Certificate=Kliens tanúsítvány
 Private Key=Privát kulcs
+
+Config file=Konfigurációs fájl
+Label grouping=Címkék szerinti csoportosítás
+Labels=Címkék
+Set labels=Címkék beállítása
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Ez felülírja az összes meglévő címkét.~Több címkét vesszővel elválasztva adhat meg, vagy hagyja üresen a címkék törléséhez
+Application option=Alkalmazásopció

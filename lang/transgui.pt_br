@@ -388,3 +388,10 @@ Total: %s=Total: %s
 Unauthorized User=Usuário não autorizado
 User Menu=Menu do usuário
 for example: *.avi *.mkv tom*jerry*.avi=por exemplo: *.avi *.mkv tom*jerry*.avi
+
+Config file=Arquivo de configuração
+Label grouping=Agrupar por rótulos
+Labels=Rótulos
+Set labels=Definir rótulos
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Isto irá substituir todos os rótulos existentes.~Você pode definir vários rótulos separados por vírgulas ou deixar vazio para limpar os rótulos
+Application option=Opção do aplicativo

@@ -388,3 +388,10 @@ Total: %s=Σύνολο: %s
 Unauthorized User=Μη εξουσιοδοτημένος χρήστης
 User Menu=Μενού χρήστη
 for example: *.avi *.mkv tom*jerry*.avi=για παράδειγμα: *.avi *.mkv tom*jerry*.avi
+
+Config file=Αρχείο ρυθμίσεων
+Label grouping=Ομαδοποίηση κατά ετικέτα
+Labels=Ετικέτες
+Set labels=Ορισμός ετικετών
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Αυτό θα αντικαταστήσει όλες τις υπάρχουσες ετικέτες.~Μπορείτε να ορίσετε πολλές ετικέτες διαχωρισμένες με κόμμα ή να το αφήσετε κενό για να εκκαθαρίσετε τις ετικέτες
+Application option=Επιλογή εφαρμογής

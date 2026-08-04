@@ -388,3 +388,10 @@ Total: %s=Total: %s
 Unauthorized User=Usuari no autoritzat
 User Menu=Menú d'usuari
 for example: *.avi *.mkv tom*jerry*.avi=per exemple: *.avi *.mkv tom*jerry*.avi
+
+Config file=Fitxer de configuració
+Label grouping=Agrupació per etiquetes
+Labels=Etiquetes
+Set labels=Establir etiquetes
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Això sobreescriurà qualsevol etiqueta existent.~Podeu establir diverses etiquetes separades per comes o deixar-ho buit per netejar les etiquetes
+Application option=Opció de l'aplicació

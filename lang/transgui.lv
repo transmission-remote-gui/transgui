@@ -388,3 +388,10 @@ Total: %s=Kopā: %s
 Unauthorized User=Neautorizēts lietotājs
 User Menu=Lietotāja izvēlne
 for example: *.avi *.mkv tom*jerry*.avi=piemēram: *.avi *.mkv tom*jerry*.avi
+
+Config file=Konfigurācijas fails
+Label grouping=Grupēt pēc birkām
+Labels=Birkas
+Set labels=Iestatīt birkas
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Tas pārrakstīs visas esošās birkas.~Varat iestatīt vairākas birkas, atdalot tās ar komatu, vai atstāt tukšu, lai notīrītu birkas
+Application option=Lietotnes opcija

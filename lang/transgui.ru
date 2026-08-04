@@ -388,3 +388,10 @@ Unauthorized User=Неразрешенный пользователь
 Big Toolbar=Большая панель инструментов
 Client Certificate=Сертификат клиента
 Private Key=Закрытый ключ
+
+Config file=Файл конфигурации
+Label grouping=Группировка по меткам
+Labels=Метки
+Set labels=Задать метки
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Это перезапишет все существующие метки.~Вы можете задать несколько меток через запятую или оставить пустым, чтобы очистить метки
+Application option=Параметр приложения

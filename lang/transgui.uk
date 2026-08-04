@@ -388,3 +388,10 @@ Unauthorized User=Недозволений користувач
 Big Toolbar=Велика панель інструментів
 Client Certificate=Сертифікат клієнта
 Private Key=Закритий ключ
+
+Config file=Файл конфігурації
+Label grouping=Групування за мітками
+Labels=Мітки
+Set labels=Задати мітки
+This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Це перезапише всі наявні мітки.~Ви можете задати кілька міток через кому або залишити порожнім, щоб очистити мітки
+Application option=Параметр програми
