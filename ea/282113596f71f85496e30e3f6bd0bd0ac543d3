@@ -1,0 +1,24 @@
+setup/macosx/install_deps.sh
+  s_3eb45f9704438a::t_8020087f4f3cfd 22-38,51,129,144,148,150-151,156,158-160,162-165
+  s_3eb45f9704438a::t_8b28dc0c1f3c33 16,49-50,134,149
+  s_3eb45f9704438a::t_acf157d1430094 130,138-139,157,173
+  s_3eb45f9704438a::t_1343a2d2b9a350 6-9,14-15,40,44,46-47,103,133,135-137,140-143,145-147,167,172,174
+  s_3eb45f9704438a::t_8268b6153c1f25 152-155
+  s_3eb45f9704438a::t_4784a07c0e3839 41-43,45,48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "ea282113596f71f85496e30e3f6bd0bd0ac543d3",
+  "prompts": {},
+  "sessions": {
+    "s_3eb45f9704438a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f36fe-6db1-7101-b8d4-15a498cd8869",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
