@@ -1,0 +1,22 @@
+setup/macosx/create_app_new.sh
+  s_02d8eae72626c4::t_cd7870b6909fd9 70
+  s_02d8eae72626c4::t_94e92979657a9d 15,83-84,112-113
+  s_02d8eae72626c4::t_5341782ddbd9f3 20,69,71,104-111,114-115,119
+  s_02d8eae72626c4::t_50a27654cea01a 103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "e5c16a1d4beeaede0ffbe01778109c5095c7b4cc",
+  "prompts": {},
+  "sessions": {
+    "s_02d8eae72626c4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc8f6-fd45-7cf1-bf73-0824cab60b6c",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": null
+    }
+  }
+}
