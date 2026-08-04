@@ -1529,6 +1529,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 var
   ws: TWindowState;
   i, j: integer;
+  M: TMonitor;
   R: TRect;
   SL: TStringList;
   MI, MI2: TMenuItem;
@@ -1666,7 +1667,13 @@ begin
   end;
 
   if Ini.ReadInteger('MainForm', 'State', -1) = -1 then begin
-    R:=Screen.MonitorFromRect(BoundsRect).WorkareaRect;
+    M:=Screen.PrimaryMonitor;
+    if (M = nil) and (Screen.MonitorCount > 0) then
+      M:=Screen.Monitors[0];
+    if M <> nil then
+      R:=M.WorkareaRect
+    else
+      R:=Rect(0, 0, Screen.Width, Screen.Height);
     if R.Right - R.Left < 300 then
       R:=Rect(0, 0, Screen.Width, Screen.Height);
     j:=R.Right - R.Left;
@@ -1676,7 +1683,7 @@ begin
       Width:=i;
     if Width > j then
       Width:=j;
-    Left:=(R.Right - R.Left - Width) div 2;
+    Left:=R.Left + (R.Right - R.Left - Width) div 2;
     j:=R.Bottom - R.Top;
     i:=j*3 div 4;
     j:=j*8 div 10;
@@ -1684,7 +1691,7 @@ begin
       Height:=i;
     if Height > j then
       Height:=j;
-    Top:=(R.Bottom - R.Top - Height) div 2;
+    Top:=R.Top + (R.Bottom - R.Top - Height) div 2;
   end
   else begin
     ws:=TWindowState(Ini.ReadInteger('MainForm', 'State', integer(WindowState)));
