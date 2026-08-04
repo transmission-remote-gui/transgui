@@ -4,7 +4,6 @@ set -ex
 
 prog_ver="$(cat ../../VERSION.txt)"
 build="$(git rev-list --abbrev-commit --max-count=1 HEAD ../..)"
-lazarus_ver="$(lazbuild -v)"
 fpc_ver="$(fpc -i V | head -n 1)"
 exename=../../transgui
 appname="Transmission Remote GUI"
@@ -12,11 +11,18 @@ dmg_dist_file="../../Release/transgui-$prog_ver.dmg"
 dmg_temp_file="$dmg_dist_file.tmp.dmg"
 dmgfolder=./Release
 appfolder="$dmgfolder/$appname.app"
-lazdir="${1:-/Library/Lazarus/}"
+lazarus_dir="${1:-/Library/Lazarus/}"
+lazbuild_bin="$lazarus_dir/lazbuild"
+if [ ! -x "$lazbuild_bin" ]; then
+  echo "Unable to find lazbuild at $lazbuild_bin." >&2
+  exit 1
+fi
+lazarus_ver="$("$lazbuild_bin" -v)"
 mount_device=""
 remove_dmg_temp=0
 remove_dmgfolder=0
 remove_tmp_dmg=0
+lazarus_pcp=""
 
 detach_disk_image() {
   detach_device=$1
@@ -65,6 +71,9 @@ cleanup() {
   if [ -e ../../about.lfm.bak ]; then
     mv ../../about.lfm.bak ../../about.lfm || cleanup_status=$?
   fi
+  if [ -n "$lazarus_pcp" ]; then
+    rm -rf "$lazarus_pcp" || :
+  fi
 
   if [ "$status" -eq 0 ]; then
     status=$cleanup_status
@@ -76,8 +85,8 @@ if [ -z "${CI-}" ]; then
   ./install_deps.sh
 fi
 
-if [ ! "$lazdir" = "" ]; then
-  lazdir=LAZARUS_DIR="$lazdir"
+if [ ! "$lazarus_dir" = "" ]; then
+  lazdir=LAZARUS_DIR="$lazarus_dir"
 fi
 
 if [ -e ../../about.lfm.bak ]; then
@@ -96,10 +105,23 @@ fi
 trap cleanup 0
 trap 'exit 1' HUP INT TERM
 
+lazarus_pcp="$(mktemp -d "${TMPDIR:-/tmp}/transgui-lazarus-pcp.XXXXXX")" || exit 1
+
+cleanup_lazbuild_state() {
+  rm -rf ../../units ../../lib
+  mkdir -p ../../units ../../lib "$lazarus_pcp"
+}
+
+run_lazbuild() {
+  cleanup_lazbuild_state
+  "$lazbuild_bin" -B ../../trcomp.lpk --lazarusdir="$lazarus_dir" --compiler=/usr/local/bin/fpc --cpu=x86_64 --widgetset=cocoa --pcp="$lazarus_pcp"
+  "$lazbuild_bin" -B ../../transgui.lpi --lazarusdir="$lazarus_dir" --compiler=/usr/local/bin/fpc --cpu=x86_64 --widgetset=cocoa --pcp="$lazarus_pcp"
+}
+
 mkdir -p ../../Release/
 sed -i.bak "s/'Version %s'/'Version %s Build $build'#13#10'Compiled by: $fpc_ver, Lazarus v$lazarus_ver'/" ../../about.lfm
 
-lazbuild -B ../../transgui.lpi --lazarusdir=/Library/Lazarus/ --compiler=/usr/local/bin/fpc --cpu=x86_64 --widgetset=cocoa
+run_lazbuild
 
 # Building Intel version
 make -j"$(sysctl -n hw.ncpu)" -C ../.. clean CPU_TARGET=x86_64 "$lazdir"
