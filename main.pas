@@ -870,7 +870,8 @@ const
   idxDeleted = -5;
   idxDownSpeedHistory = -6;
   idxUpSpeedHistory = -7;
-  TorrentsExtraColumns = 7;
+  idxLabelsData = -8;
+  TorrentsExtraColumns = 8;
 
   // Peers list
   idxPeerHost = 0;
@@ -1718,6 +1719,10 @@ begin
                 LocalWatchTimer.Interval:=trunc(Ini.ReadFloat('Interface','WatchInterval',1)*60000);
                 LocalWatchTimer.Enabled := true;
             end;
+  acFolderGrouping.Checked:=Ini.ReadBool('Interface', 'FolderGrouping', True);
+  acLabelGrouping.Checked:=Ini.ReadBool('Interface', 'LabelGrouping', True);
+  acTrackerGrouping.Checked:=Ini.ReadBool('Interface', 'TrackerGrouping', True);
+
   LoadColumns(gTorrents, 'TorrentsList');
   TorrentColumnsChanged;
   LoadColumns(lvFiles, 'FilesList');
@@ -1745,9 +1750,6 @@ begin
 
   bidiMode := GetBiDi;
 
-  acFolderGrouping.Checked:=Ini.ReadBool('Interface', 'FolderGrouping', True);
-  acLabelGrouping.Checked:=Ini.ReadBool('Interface', 'LabelGrouping', True);
-  acTrackerGrouping.Checked:=Ini.ReadBool('Interface', 'TrackerGrouping', True);
   FLinksFromClipboard:=Ini.ReadBool('Interface', 'LinksFromClipboard', True);
   Application.OnActivate:=@FormActivate;
   Application.OnException:=@ApplicationPropertiesException;
@@ -2065,7 +2067,7 @@ procedure TMainForm.acLabelGroupingExecute(Sender: TObject);
 begin
   acLabelGrouping.Checked:=not acLabelGrouping.Checked;
   Ini.WriteBool('Interface', 'LabelGrouping', acLabelGrouping.Checked);
-  RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtTorrents];
+  TorrentColumnsChanged;
 end;
 
 procedure TMainForm.acMenuShowExecute(Sender: TObject);
@@ -3140,6 +3142,11 @@ begin
           s:=s + TorrentFieldsMap[ID - 1];
         end;
       end;
+  if acLabelGrouping.Checked and (Pos('labels', s) = 0) then begin
+    if s <> '' then
+      s:=s + ',';
+    s:=s + 'labels';
+  end;
   RpcObj.TorrentFields:=s;
   DoRefresh(True);
 end;
@@ -5744,11 +5751,11 @@ end;
 
 procedure TMainForm.FillTorrentsList(list: TJSONArray);
 var
-  i, j, p, row, crow, id, StateImg: integer;
+  i, j, row, crow, id, StateImg: integer;
   t: TJSONObject;
   a: TJSONArray;
   f: double;
-  ExistingRow: boolean;
+  ExistingRow, NoTracker: boolean;
   s, ss: string;
 
   function GetTorrentValue(AIndex: integer; const AName: string; AType: integer): boolean;
@@ -5839,6 +5846,17 @@ var
   Paths, Labels: TStringList;
   v: variant;
   FieldExists: array of boolean;
+
+  procedure AddLabel(const ALabel: string);
+  var
+    p: integer;
+  begin
+    p:=Labels.IndexOf(ALabel);
+    if p < 0 then
+      Labels.AddObject(ALabel, TObject(1))
+    else
+      Labels.Objects[p]:=TObject(PtrInt(Labels.Objects[p]) + 1);
+  end;
 begin
   if gTorrents.Tag <> 0 then exit;
   if list = nil then begin
@@ -5879,20 +5897,7 @@ begin
   for i:=0 to FTrackers.Count - 1 do
     FTrackers.Objects[i]:=nil;
 
-  // Check fields' existence
   SetLength(FieldExists, FTorrents.ColCnt);
-  if list.Count > 0 then begin
-    t:=list[0] as TJSONObject;
-    FieldExists[idxName]:=t.IndexOfName('name') >= 0;
-    FieldExists[idxRatio]:=t.IndexOfName('uploadRatio') >= 0;
-    FieldExists[idxTracker]:=t.IndexOfName('trackers') >= 0;
-    FieldExists[idxPath]:=t.IndexOfName('downloadDir') >= 0;
-    FieldExists[idxPriority]:=t.IndexOfName('bandwidthPriority') >= 0;
-    FieldExists[idxQueuePos]:=t.IndexOfName('queuePosition') >= 0;
-    FieldExists[idxSeedingTime]:=t.IndexOfName('secondsSeeding') >= 0;
-    FieldExists[idxPrivate]:=t.IndexOfName('isPrivate') >= 0;
-    FIeldExists[idxLabels]:=t.IndexOfName('labels') >= 0;
-  end;
 
   UpSpeed:=0;
   DownSpeed:=0;
@@ -5931,6 +5936,16 @@ begin
     StateImg:=-1;
 
     t:=list[i] as TJSONObject;
+    // Check optional fields' existence for the current torrent.
+    FieldExists[idxName]:=t.IndexOfName('name') >= 0;
+    FieldExists[idxRatio]:=t.IndexOfName('uploadRatio') >= 0;
+    FieldExists[idxTracker]:=t.IndexOfName('trackers') >= 0;
+    FieldExists[idxPath]:=t.IndexOfName('downloadDir') >= 0;
+    FieldExists[idxPriority]:=t.IndexOfName('bandwidthPriority') >= 0;
+    FieldExists[idxQueuePos]:=t.IndexOfName('queuePosition') >= 0;
+    FieldExists[idxSeedingTime]:=t.IndexOfName('secondsSeeding') >= 0;
+    FieldExists[idxPrivate]:=t.IndexOfName('isPrivate') >= 0;
+    FieldExists[idxLabels]:=t.IndexOfName('labels') >= 0;
     id:=t.Integers['id'];
     ExistingRow:=FTorrents.Find(idxTorrentId, id, row);
     if not ExistingRow then
@@ -6071,22 +6086,33 @@ begin
     else
       FTorrents[idxSeedingTime, row]:=NULL;
 
+    NoTracker:=False;
     if RpcObj.RPCVersion >= 7 then begin
       if t.Arrays['trackerStats'].Count > 0 then
         s:=t.Arrays['trackerStats'].Objects[0].Strings['announce']
-      else
-        s:=sNoTracker;
+      else begin
+        s:='';
+        NoTracker:=True;
+      end;
     end
     else
-      if FieldExists[idxTracker] then
-        s:=UTF8Encode(t.Arrays['trackers'].Objects[0].Strings['announce'])
+      if FieldExists[idxTracker] then begin
+        if t.Arrays['trackers'].Count > 0 then
+          s:=UTF8Encode(t.Arrays['trackers'].Objects[0].Strings['announce'])
+        else begin
+          s:='';
+          NoTracker:=True;
+        end;
+      end
       else begin
         s:='';
         if VarIsEmpty(FTorrents[idxTracker, row]) then
           RpcObj.RequestFullInfo:=True;
       end;
 
-    if s <> '' then begin
+    if NoTracker then
+      FTorrents[idxTracker, row]:=UTF8Decode(sNoTracker)
+    else if s <> '' then begin
       j:=Pos('://', s);
       if j > 0 then
         s:=Copy(s, j + 3, MaxInt);
@@ -6138,18 +6164,25 @@ begin
 
     if FieldExists[idxLabels] then begin
       a := t.Arrays['labels'];
+      FTorrents[idxLabelsData, row] := a.AsJSON;
       s := '';
       for j:=0 to a.Count-1 do begin
         ss := UTF8Encode(widestring(a.Strings[j]));
         if j > 0 then s := s + ', ';
         s := s + ss;
-        p := Labels.IndexOf(ss);
-        if p < 0 then
-          Labels.AddObject(ss, TObject(1))
-        else
-          Labels.Objects[p]:=TObject(PtrInt(Labels.Objects[p]) + 1);
+        AddLabel(ss);
       end;
       FTorrents[idxLabels, row] := s;
+    end
+    else if acLabelGrouping.Checked and
+            not VarIsEmpty(FTorrents[idxLabelsData, row]) then begin
+      a:=GetJSON(UTF8Encode(widestring(FTorrents[idxLabelsData, row]))) as TJSONArray;
+      try
+        for j:=0 to a.Count - 1 do
+          AddLabel(UTF8Encode(widestring(a.Strings[j])));
+      finally
+        a.Free;
+      end;
     end;
 
     DownSpeed:=DownSpeed + FTorrents[idxDownSpeed, row];
@@ -6212,8 +6245,9 @@ begin
       if (PathFilter <> '') and not VarIsEmpty(FTorrents[idxPath, i]) and (UTF8Decode(PathFilter) <> FTorrents[idxPath, i]) then
         continue;
 
-      if (LabelFilter <> '') and not VarIsEmpty(FTorrents[idxLabels, i]) then begin
-        if not AnsiContainsStr(String(FTorrents[idxLabels, i]), LabelFilter) then
+      if LabelFilter <> '' then begin
+        if VarIsEmpty(FTorrents[idxLabels, i]) or VarIsNull(FTorrents[idxLabels, i]) or
+           not AnsiContainsStr(String(FTorrents[idxLabels, i]), LabelFilter) then
           continue;
       end;
 
@@ -6248,7 +6282,8 @@ begin
       if not gTorrents.Items.Find(idxTorrentId, FTorrents[idxTorrentId, i], row) then
         gTorrents.Items.InsertRow(row);
       for j:=-TorrentsExtraColumns to FTorrents.ColCnt - 1 do
-        if (j <> idxDownSpeedHistory) and (j <> idxUpSpeedHistory) then
+        if (j <> idxDownSpeedHistory) and (j <> idxUpSpeedHistory) and
+           (j <> idxLabelsData) then
           gTorrents.Items[j, row]:=FTorrents[j, i];
       gTorrents.Items[idxTag, row]:=1;
     end;
@@ -6391,6 +6426,7 @@ begin
         [RpcObj.InfoStatus, LineEnding, DownCnt, SeedCnt, LineEnding, StatusBar.Panels[1].Text, StatusBar.Panels[2].Text]);
 {$endif LCLcarbon}
   finally
+    Labels.Free;
     Paths.Free;
   end;
   DetailsUpdated;
