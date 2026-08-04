@@ -4975,6 +4975,7 @@ inherited MainForm: TMainForm
     end
   end
   object FilterTimer: TTimer[21]
+    Enabled = False
     Interval = 100
     OnTimer = FilterTimerTimer
     left = 76
