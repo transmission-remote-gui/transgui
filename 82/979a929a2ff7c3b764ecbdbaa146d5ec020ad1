@@ -1,0 +1,35 @@
+setup/macosx/create_app_new.sh
+  s_3516c96fd23f4d::t_d6100550109da9 14,25,76
+  s_02d8eae72626c4::t_5be4f63fad4b3b 89
+  s_02d8eae72626c4::t_e406f0d30ebfc3 15-16,19-20,117-118
+  s_02d8eae72626c4::t_cd7870b6909fd9 74
+  s_02d8eae72626c4::t_94e92979657a9d 88
+  s_02d8eae72626c4::t_60e048146086ef 17-18
+  s_02d8eae72626c4::t_1091dbce242cb0 119-120
+  s_02d8eae72626c4::t_61a5fc6b26bfa1 124
+  s_02d8eae72626c4::t_5341782ddbd9f3 75,108-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "82979a929a2ff7c3b764ecbdbaa146d5ec020ad1",
+  "prompts": {},
+  "sessions": {
+    "s_02d8eae72626c4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc8f6-fd45-7cf1-bf73-0824cab60b6c",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": null
+    },
+    "s_3516c96fd23f4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f909e-a2ea-71f2-8139-034b7ee2d77c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
