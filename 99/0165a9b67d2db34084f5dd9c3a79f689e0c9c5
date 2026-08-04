@@ -1,0 +1,37 @@
+setup/macosx/install_deps.sh
+  s_3eb45f9704438a::t_8020087f4f3cfd 22-38,148,157,159-166
+  s_3eb45f9704438a::t_acf157d1430094 134,142-143,158
+  s_3eb45f9704438a::t_744989f098a1b9 150
+  s_3eb45f9704438a::t_8b28dc0c1f3c33 16,50,138
+  s_3eb45f9704438a::t_4784a07c0e3839 41-43,45,48
+  s_3eb45f9704438a::t_6f1a9ece993670 167,188
+  s_3eb45f9704438a::t_8268b6153c1f25 153-156
+  s_3eb45f9704438a::t_75f4c3e712e366 106,133,189-190
+  s_3eb45f9704438a::t_f87c70e9be7bda 51
+  s_3eb45f9704438a::t_1343a2d2b9a350 6-9,14-15,40,44,46-47,104,137,139-141,144-147,149
+  s_3eb45f9704438a::t_3f8132f0b8eac1 55
+  s_3eb45f9704438a::t_5cb9689ef49a5e 49
+  s_3eb45f9704438a::t_467c914e894b21 107-108,168,173-187
+setup/macosx/create_app_new.sh
+  s_3eb45f9704438a::t_6aed743c4f6f6c 15-18
+  s_3eb45f9704438a::t_95eff8336e8162 20-23
+  s_3eb45f9704438a::t_406416a523071b 24
+  s_3eb45f9704438a::t_ac7780e71b7e29 5-6,8-11,19,128-129,138-139
+  s_3eb45f9704438a::t_c9b5d60333af9f 7,14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "990165a9b67d2db34084f5dd9c3a79f689e0c9c5",
+  "prompts": {},
+  "sessions": {
+    "s_3eb45f9704438a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f36fe-6db1-7101-b8d4-15a498cd8869",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
