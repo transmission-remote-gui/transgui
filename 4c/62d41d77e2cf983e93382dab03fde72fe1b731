@@ -1,0 +1,21 @@
+.github/workflows/pr-agent.yml
+  s_3a8f34a6071117::t_e2a82f91e785e6 20,22
+  s_3a8f34a6071117::t_987778acf7ee62 17-19
+  s_3a8f34a6071117::t_24496514ef881b 1,4-9,12-16,24-36,39-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "4c62d41d77e2cf983e93382dab03fde72fe1b731",
+  "prompts": {},
+  "sessions": {
+    "s_3a8f34a6071117": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fbed3-02bc-76a3-8bad-d54302f13856",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
