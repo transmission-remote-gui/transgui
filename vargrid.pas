@@ -763,7 +763,9 @@ begin
 {$endif LCLcarbon}
   CheckBoxClicked:=False;
   pt:=MouseToCell(Point(X,Y));
-  if ssLeft in Shift then begin
+  if (ssLeft in Shift) and
+     (pt.x >= 0) and (pt.x < ColCount) and
+     (pt.y >= 0) and (pt.y < RowCount) then begin
     SetupCell(pt.x, pt.y, [], ca);
     RR:=CellRect(pt.x, pt.y);
     Inc(RR.Left, ca.Indent);
@@ -796,14 +798,17 @@ begin
   end;
   if (ssRight in Shift) {$ifdef darwin} or (Shift*[ssLeft, ssCtrl] = [ssLeft, ssCtrl]) {$endif} then begin
     SetFocus;
-    if (pt.x >= FixedCols) and (pt.y >= FixedRows) then begin
+    if (pt.x >= FixedCols) and (pt.x < ColCount) and
+       (pt.y >= FixedRows) and (pt.y < RowCount) then begin
       if MultiSelect and (SelCount > 0) and not RowSelected[pt.y - FixedRows] then
         RemoveSelection;
       Row:=pt.y - FixedRows;
     end;
   end
   else
-    if MultiSelect and (ssLeft in Shift) and (pt.x >= FixedCols) and (pt.y >= FixedRows) then begin
+    if MultiSelect and (ssLeft in Shift) and
+       (pt.x >= FixedCols) and (pt.x < ColCount) and
+       (pt.y >= FixedRows) and (pt.y < RowCount) then begin
       if IsCtrl then begin
         if SelCount = 0 then
           RowSelected[Row]:=True;
