@@ -1,0 +1,20 @@
+vargrid.pas
+  s_e8453f9d9c224c::t_aa48f51c2999cb 801-802,809-811
+  s_e8453f9d9c224c::t_bec00ace2cf052 766-768
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "e2640496efe68d168693cef7856b6eb2ebb3352d",
+  "prompts": {},
+  "sessions": {
+    "s_e8453f9d9c224c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fce3c-dceb-7680-978a-51c5cdd8e3ec",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
