@@ -306,7 +306,9 @@ end;
 
 destructor TFileStreamUTF8.Destroy;
 begin
-  FileClose(Handle);
+  if Handle <> feInvalidHandle then
+    FileClose(Handle);
+  inherited Destroy;
 end;
 
 { TIniFileUtf8 }
@@ -323,7 +325,7 @@ begin
   FStream:=TFileStreamUTF8.Create(AFileName, m);
   inherited Create(FStream, AEscapeLineFeeds);
   FileClose(FStream.Handle);
-  THandle(pointer(@FStream.Handle)^):=0;
+  THandle(pointer(@FStream.Handle)^):=feInvalidHandle;
 end;
 
 destructor TIniFileUtf8.Destroy;
@@ -340,7 +342,7 @@ begin
     h:=FileOpenUTF8(FFileName, fmOpenWrite or fmShareDenyWrite)
   else
     h:=FileCreateUTF8(FFileName);
-  if h = THandle(-1) then
+  if h = feInvalidHandle then
     raise Exception.Create('Unable to write to INI file.' + LineEnding + SysErrorMessageUTF8(GetLastOSError));
   THandle(pointer(@FStream.Handle)^):=h;
   try
@@ -348,7 +350,7 @@ begin
     FStream.Size:=FStream.Position;
   finally
     FileClose(FStream.Handle);
-    THandle(pointer(@FStream.Handle)^):=0;
+    THandle(pointer(@FStream.Handle)^):=feInvalidHandle;
   end;
 end;
 
