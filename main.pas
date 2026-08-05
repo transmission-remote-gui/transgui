@@ -1291,7 +1291,7 @@ begin
   // Check for outdated IPC file
   if FileExistsUTF8(FIPCFileName) then begin
     h:=FileOpenUTF8(FIPCFileName, fmOpenRead or fmShareDenyNone);
-    if h <> INVALID_HANDLE_VALUE then begin
+    if h <> feInvalidHandle then begin
       i:=FileGetDate(h);
       FileClose(h);
       if (i > 0) and (Abs(Now - FileDateToDateTime(i)) > 1/MinsPerDay) then
