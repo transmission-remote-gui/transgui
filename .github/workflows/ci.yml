@@ -193,6 +193,17 @@ jobs:
 
           docker run "${docker_args[@]}" "${{ matrix.image }}" "${container_cmd[@]}"
 
+      - name: Smoke test GTK2 startup
+        if: matrix.arch == 'x86_64'
+        run: |
+          set -euo pipefail
+          docker run -e DEBIAN_FRONTEND=noninteractive --rm -v "${PWD}:/transgui" "${{ matrix.image }}" bash -c '
+            set -euo pipefail
+            apt-get update -yqq
+            apt-get install -yqq --no-install-recommends libgtk2.0-0 twm xvfb xdotool
+            exec /transgui/setup/unix/smoke_test_gtk2_startup.sh /transgui/transgui
+          '
+
       - name: Print checksums
         run: |
           set -euo pipefail
