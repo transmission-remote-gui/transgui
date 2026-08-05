@@ -20,13 +20,20 @@
 unit MacLocale;
 
 {$mode objfpc}{$H+}
+{$modeswitch objectivec1}  // for the Cocoa appearance API in PinCurrentAppearance
 
 interface
 
 uses
-  SysUtils, MacOSAll;
+  SysUtils, MacOSAll
+{$ifdef LCLCocoa}
+, CocoaAll, Cocoa_Extra // for effectiveAppearance, setAppearance and NSAppKitVersionNumber10_14
+{$endif}
+;
 
 procedure GetMacFormatSettings(var ASettings: TFormatSettings);
+
+procedure PinCurrentAppearance;
 
 implementation
 
@@ -280,6 +287,29 @@ begin
     end;
     CFRelease(loc);
   end;
+end;
+
+procedure PinCurrentAppearance;
+{$ifdef LCLCocoa}
+var
+  app: NSApplication;
+  current: NSAppearance;
+{$endif}
+begin
+{$ifdef LCLCocoa}
+  if NSApp = nil then
+    Exit;
+  // effectiveAppearance / setAppearance are AppKit 10.14+; do nothing on older
+  // systems (which have no Dark mode to follow anyway).
+  if NSAppKitVersionNumber < NSAppKitVersionNumber10_14 then
+    Exit;
+  app := NSApplication(NSApp);
+  // Resolve the appearance the system currently wants, then pin the app to that
+  // concrete instance so AppKit stops following later system changes.
+  current := app.effectiveAppearance;
+  if current <> nil then
+    app.setAppearance(current);
+{$endif}
 end;
 
 initialization
