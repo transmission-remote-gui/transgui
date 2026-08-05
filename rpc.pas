@@ -976,13 +976,15 @@ begin
         end;
         Http.Document.Position:=0;
         jp:=CreateJsonParser(Http);
+        { Clear under HttpLock before another request can reuse the shared HTTP
+          document buffer; the parser has read all response data it needs. }
+        Http.Document.Clear;
         HttpLock.Leave;
         locked:=False;
         RequestStartTime:=0;
         try
           try
             obj:=jp.Parse;
-            Http.Document.Clear;
           finally
             jp.Free;
           end;
