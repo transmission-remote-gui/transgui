@@ -77,6 +77,8 @@ type
 function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
 function FileCreateUTF8(Const FileName : string) : THandle;
 function FileCreateUTF8(Const FileName : string; Rights: Cardinal) : THandle;
+function FileCreateUTF8(Const FileName : string; ShareMode: Integer;
+  Rights: Cardinal) : THandle;
 
 function GetTimeZoneDelta: TDateTime;
 
@@ -118,21 +120,27 @@ uses
   FileUtil, LazUTF8, LazFileUtils, StdCtrls, Graphics;
 
 {$ifdef windows}
-function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
+function GetFileShareMode(Mode: Integer): DWORD;
 const
-  AccessMode: array[0..2] of Cardinal  = (
-    GENERIC_READ,
-    GENERIC_WRITE,
-    GENERIC_READ or GENERIC_WRITE);
-  ShareMode: array[0..4] of Integer = (
+  ShareMode: array[0..4] of DWORD = (
               0,
               0,
               FILE_SHARE_READ,
               FILE_SHARE_WRITE,
               FILE_SHARE_READ or FILE_SHARE_WRITE);
 begin
+  Result:=ShareMode[(Mode and $F0) shr 4];
+end;
+
+function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
+const
+  AccessMode: array[0..2] of Cardinal  = (
+    GENERIC_READ,
+    GENERIC_WRITE,
+    GENERIC_READ or GENERIC_WRITE);
+begin
   Result := CreateFileW(PWideChar(UTF8Decode(FileName)), dword(AccessMode[Mode and 3]),
-                      dword(ShareMode[(Mode and $F0) shr 4]), nil, OPEN_EXISTING,
+                      GetFileShareMode(Mode), nil, OPEN_EXISTING,
                       FILE_ATTRIBUTE_NORMAL, 0);
   //if fail api return feInvalidHandle (INVALIDE_HANDLE=feInvalidHandle=-1)
 end;
@@ -147,6 +155,14 @@ function FileCreateUTF8(Const FileName : string; Rights: Cardinal) : THandle;
 begin
   Result := CreateFileW(PWideChar(UTF8Decode(FileName)), GENERIC_READ or GENERIC_WRITE,
                       0, nil, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+end;
+
+function FileCreateUTF8(Const FileName : string; ShareMode: Integer;
+  Rights: Cardinal) : THandle;
+begin
+  Result := CreateFileW(PWideChar(UTF8Decode(FileName)), GENERIC_READ or GENERIC_WRITE,
+                      GetFileShareMode(ShareMode), nil, CREATE_ALWAYS,
+                      FILE_ATTRIBUTE_NORMAL, 0);
 end;
 
 var
@@ -246,6 +262,12 @@ end;
 function FileCreateUTF8(Const FileName : string; Rights: Cardinal) : THandle;
 begin
   Result:=FileCreate(FileName, Rights);
+end;
+
+function FileCreateUTF8(Const FileName : string; ShareMode: Integer;
+  Rights: Cardinal) : THandle;
+begin
+  Result:=SysUtils.FileCreate(FileName, ShareMode, Rights);
 end;
 
 function ParamStrUTF8(Param: Integer): utf8string;
