@@ -1,0 +1,24 @@
+rpc.pas
+  s_6342d1db464300::t_c103a67a2cbeb6 39,996
+  s_6342d1db464300::t_465c612ca2e2eb 990,994-995,1003-1004
+  s_6342d1db464300::t_03642e8e920940 59,336,543-544,546-548
+main.pas
+  s_6342d1db464300::t_03642e8e920940 739,806,1068,5312,5334-5352,7085-7123,7125-7145,7148-7151,7156,7160-7169
+  s_6342d1db464300::t_2514fb4299278a 7176-7177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f36d1c57a08ea38b23a3ebeb8d871397344d87f7",
+  "prompts": {},
+  "sessions": {
+    "s_6342d1db464300": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fdd57-34b7-7363-b02e-6fb0300ce7ce",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
