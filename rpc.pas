@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, httpsend, syncobjs, fpjson, jsonparser, ssl_openssl,
-  ZStream, jsonscanner;
+  ZStream, jsonscanner, Math;
 
 resourcestring
   sTransmissionAt = 'Transmission%s at %s:%s';
@@ -56,6 +56,8 @@ type
   TRpcThread = class(TThread)
   private
     ResultData: TJSONData;
+    StatsValid: boolean;
+    StatsErrorShown: boolean;
     FRpc: TRpc;
     FPiecesSkip: integer;
     FStaticInfoId: integer;
@@ -86,6 +88,8 @@ type
     procedure DoFillTrackersList;
     procedure DoFillStats;
     procedure DoFillSessionInfo;
+    procedure NotifyStatsError;
+    procedure StatsErrorHandler(Data: PtrInt);
     procedure NotifyCheckStatus;
     procedure CheckStatusHandler(Data: PtrInt);
     function IsTerminated: boolean;
@@ -148,7 +152,10 @@ type
     procedure Connect;
     procedure Disconnect;
 
-    function SendRequest(req: TJSONObject; ReturnArguments: boolean = True; ATimeOut: integer = -1): TJSONObject;
+    function SendRequest(req: TJSONObject; ReturnArguments: boolean = True;
+      ATimeOut: integer = -1): TJSONObject; overload;
+    function SendRequest(req: TJSONObject; ReturnArguments: boolean;
+      ATimeOut: integer; out AResponseError: string): TJSONObject; overload;
     function RequestInfo(TorrentId: integer; const Fields: array of const; const ExtraFields: array of string): TJSONObject;
     function RequestInfo(TorrentId: integer; const Fields: array of const): TJSONObject;
 
@@ -332,7 +339,12 @@ end;
 
 procedure TRpcThread.DoFillStats;
 begin
-  MainForm.FillStatistics(ResultData as TJSONObject);
+  if Terminated or (csDestroying in MainForm.ComponentState) then
+    exit;
+  if ResultData = nil then
+    StatsValid:=MainForm.FillStatistics(nil)
+  else
+    StatsValid:=MainForm.FillStatistics(ResultData as TJSONObject);
 end;
 
 procedure TRpcThread.DoFillSessionInfo;
@@ -344,6 +356,18 @@ procedure TRpcThread.NotifyCheckStatus;
 begin
   if not Terminated then
     Application.QueueAsyncCall(@CheckStatusHandler, 0);
+end;
+
+procedure TRpcThread.NotifyStatsError;
+begin
+  if not Terminated then
+    Application.QueueAsyncCall(@StatsErrorHandler, 0);
+end;
+
+procedure TRpcThread.StatsErrorHandler(Data: PtrInt);
+begin
+  if Terminated or (csDestroying in MainForm.ComponentState) then exit;
+  MainForm.CheckStatus(False, 'Invalid server response.');
 end;
 
 procedure TRpcThread.CheckStatusHandler(Data: PtrInt);
@@ -530,19 +554,36 @@ end;
 
 procedure TRpcThread.GetStats;
 var
-  req, args: TJSONObject;
+  req, response: TJSONObject;
+  idx: integer;
+  ResponseError: string;
 begin
   req:=TJSONObject.Create;
   try
     req.Add('method', 'session-stats');
-    args:=FRpc.SendRequest(req);
-    if args <> nil then
+    response:=FRpc.SendRequest(req, False, -1, ResponseError);
+    if (response <> nil) or (ResponseError <> '') then
     try
-      ResultData:=args;
-      if not Terminated then
+      StatsValid:=response <> nil;
+      if StatsValid then begin
+        idx:=response.IndexOfName('arguments');
+        StatsValid:=idx >= 0;
+        if StatsValid then
+          StatsValid:=response.Items[idx] is TJSONObject;
+      end;
+      if not Terminated then begin
+        if StatsValid then
+          ResultData:=response.Items[idx]
+        else
+          ResultData:=nil;
         Synchronize(@DoFillStats);
+        if not StatsValid and not StatsErrorShown then begin
+          StatsErrorShown:=True;
+          NotifyStatsError;
+        end;
+      end;
     finally
-      args.Free;
+      response.Free;
     end;
   finally
     req.Free;
@@ -803,13 +844,21 @@ var
   decomp : TGzipDecompressionStream;
 begin
   decomp:=TGzipDecompressionStream.create(source);
-  Result:=TMemoryStream.create;
-  repeat
-    numRead:=decomp.read(buf,sizeof(buf));
-    Result.Write(buf,numRead);
-  until numRead < sizeof(buf);
-  Result.Position:=0;
-  decomp.Free;
+  try
+    Result:=TMemoryStream.create;
+    try
+      repeat
+        numRead:=decomp.read(buf,sizeof(buf));
+        Result.Write(buf,numRead);
+      until numRead < sizeof(buf);
+      Result.Position:=0;
+    except
+      FreeAndNil(Result);
+      raise;
+    end;
+  finally
+    decomp.Free;
+  end;
 end;
 
 function CreateJsonParser(serverResp : THTTPSend): TJSONParser;
@@ -819,8 +868,11 @@ begin
   begin
     { need to fully decompress as the parser relies on a working Seek() }
     decompressed:=DecompressGzipContent(serverResp.Document);
-    Result:=TJSONParser.Create(decompressed, [joUTF8]);
-    decompressed.Free;
+    try
+      Result:=TJSONParser.Create(decompressed, [joUTF8]);
+    finally
+      decompressed.Free;
+    end;
   end
   else
   begin
@@ -828,7 +880,18 @@ begin
   end;
 end;
 
-function TRpc.SendRequest(req: TJSONObject; ReturnArguments: boolean; ATimeOut: integer): TJSONObject;
+function TRpc.SendRequest(req: TJSONObject; ReturnArguments: boolean;
+  ATimeOut: integer): TJSONObject;
+var
+  ResponseError: string;
+begin
+  Result:=SendRequest(req, ReturnArguments, ATimeOut, ResponseError);
+  if ResponseError <> '' then
+    Status:=ResponseError;
+end;
+
+function TRpc.SendRequest(req: TJSONObject; ReturnArguments: boolean;
+  ATimeOut: integer; out AResponseError: string): TJSONObject;
 
   procedure StripHtmlTags(var AText: string);
   var
@@ -853,6 +916,13 @@ function TRpc.SendRequest(req: TJSONObject; ReturnArguments: boolean; ATimeOut: 
     SetLength(AText, WritePos - 1);
   end;
 
+  procedure SetResponseError(const AMessage: string);
+  begin
+    AResponseError:=AMessage;
+    if AResponseError = '' then
+      AResponseError:='Invalid server response.';
+  end;
+
 var
   obj: TJSONData;
   res: TJSONObject;
@@ -861,6 +931,7 @@ var
   i, j, OldTimeOut, OldDataTimeOut, OldNonblockSendTimeOut, RetryCnt: integer;
   locked, r: boolean;
 begin
+  AResponseError:='';
   if FRpcPath = '' then
     FRpcPath:=DefaultRpcPath;
   Status:='';
@@ -975,30 +1046,48 @@ begin
           break;
         end;
         Http.Document.Position:=0;
-        jp:=CreateJsonParser(Http);
-        { Clear under HttpLock before another request can reuse the shared HTTP
-          document buffer; the parser has read all response data it needs. }
-        Http.Document.Clear;
-        HttpLock.Leave;
-        locked:=False;
-        RequestStartTime:=0;
+        obj:=nil;
+        jp:=nil;
         try
           try
+            ClearExceptions(False);
+            jp:=CreateJsonParser(Http);
+            { Clear under HttpLock before another request can reuse the shared
+              HTTP document buffer; the parser has read all response data it
+              needs. }
+            Http.Document.Clear;
+            HttpLock.Leave;
+            locked:=False;
+            RequestStartTime:=0;
             obj:=jp.Parse;
+            { Surface delayed floating-point errors from JSON number parsing
+              while they can still be reported as an RPC error. }
+            ClearExceptions;
           finally
             jp.Free;
           end;
         except
           on E: Exception do
             begin
-              Status:=e.Message;
+              FreeAndNil(obj);
+              ClearExceptions(False);
+              SetResponseError(e.Message);
               break;
             end;
         end;
         try
           if obj is TJSONObject then begin
             res:=obj as TJSONObject;
-            s:=res.Strings['result'];
+            j:=res.IndexOfName('result');
+            if j < 0 then begin
+              SetResponseError('Invalid server response.');
+              break;
+            end;
+            if res.Items[j].JSONType <> jtString then begin
+              SetResponseError('Invalid server response.');
+              break;
+            end;
+            s:=res.Items[j].AsString;
             if AnsiCompareText(s, 'success') <> 0 then begin
               if Trim(s) = '' then
                 s:='Unknown error.';
@@ -1006,12 +1095,15 @@ begin
             end
             else begin
               if ReturnArguments then begin
-                Result:=res.Objects['arguments'];
-                if Result = nil then
-                  Status:='Arguments object not found.'
+                j:=res.IndexOfName('arguments');
+                if j < 0 then
+                  SetResponseError('Arguments object not found.')
+                else if not (res.Items[j] is TJSONObject) then
+                  SetResponseError('Arguments object not found.')
                 else begin
+                  Result:=res.Items[j] as TJSONObject;
 //                res.Extract(Result); // lazarus 1.2.6 ok
-                  res.Extract(res.IndexOf(Result)); // fix Tample :) lazarus 1.4.0 and high!
+                  res.Extract(j); // fix Tample :) lazarus 1.4.0 and high!
                   FreeAndNil(obj);
                 end;
               end
@@ -1023,7 +1115,7 @@ begin
             break;
           end
           else begin
-            Status:='Invalid server response.';
+            SetResponseError('Invalid server response.');
             break;
           end;
         finally
