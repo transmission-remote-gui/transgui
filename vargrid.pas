@@ -96,7 +96,8 @@ type
     FOldOpt: TGridOptions;
     FNoDblClick: boolean;
     FStrEditor: TVarGridStringEditor;
-    FWheelAccumulator: Integer;
+    FVertWheelAccumulator: Integer;
+    FHorzWheelAccumulator: Integer;
 
     function GetRow: integer;
     function GetRowSelected(RowIndex: integer): boolean;
@@ -1162,29 +1163,54 @@ end;
 
 function TVarGrid.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean;
 var
-  LinesToScroll: Integer;
+  WheelVertSteps, WheelHorzSteps: Integer;
 begin
   Result:=inherited DoMouseWheel(Shift, WheelDelta, MousePos);
-  if not Result then begin
-    Inc(FWheelAccumulator, WheelDelta);
-    LinesToScroll := FWheelAccumulator div 120;
-    if LinesToScroll <> 0 then
+  if Result then
+  begin
+    FVertWheelAccumulator := 0;
+    FHorzWheelAccumulator := 0;
+    Exit;
+  end;
+
+  if ssCtrl in Shift then
+  begin
+    Inc(FHorzWheelAccumulator, WheelDelta);
+    WheelHorzSteps := FHorzWheelAccumulator div 120;
+
+    if WheelHorzSteps <> 0 then
     begin
-      Dec(FWheelAccumulator, LinesToScroll * 120);
+      Dec(FHorzWheelAccumulator, WheelHorzSteps * 120);
+      {$IF LCL_FULLVERSION < 1080000}
+      GridMouseWheel(Shift, -WheelHorzSteps);
+      {$ELSE}
+      GridMouseWheel(Shift, -WheelHorzSteps);
+      {$ENDIF}
+    end;
+  end
+  else
+  begin
+    Inc(FVertWheelAccumulator, WheelDelta);
+    WheelVertSteps := FVertWheelAccumulator div 120;
+
+    if WheelVertSteps <> 0 then
+    begin
+      Dec(FVertWheelAccumulator, WheelVertSteps * 120);
+
       if Mouse.WheelScrollLines = -1 then
       begin
         {$IF LCL_FULLVERSION < 1080000}
-        GridMouseWheel(Shift, -LinesToScroll * VisibleRowCount);
+        GridMouseWheel(Shift, -WheelVertSteps * VisibleRowCount);
         {$ELSE}
-        GridMouseWheel(Shift, LinesToScroll * VisibleRowCount);
+        GridMouseWheel(Shift, WheelVertSteps * VisibleRowCount);
         {$ENDIF}
       end
       else
       begin
         {$IF LCL_FULLVERSION < 1080000}
-        GridMouseWheel(Shift, -LinesToScroll * Mouse.WheelScrollLines);
+        GridMouseWheel(Shift, -WheelVertSteps * Mouse.WheelScrollLines);
         {$ELSE}
-        GridMouseWheel(Shift, -LinesToScroll);
+        GridMouseWheel(Shift, -WheelVertSteps);
         {$ENDIF}
       end;
     end;
@@ -1196,7 +1222,8 @@ constructor TVarGrid.Create(AOwner: TComponent);
 begin
   FRow:=-1;
   FHintCell.x:=-1;
-  FWheelAccumulator:=0;
+  FVertWheelAccumulator := 0;
+  FHorzWheelAccumulator := 0;
   inherited Create(AOwner);
   FixedRows:=1;
   FixedCols:=0;
