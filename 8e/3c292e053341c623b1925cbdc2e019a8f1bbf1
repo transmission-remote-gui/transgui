@@ -1,0 +1,109 @@
+synapse/source/lib/ssl_openssl_lib.pas
+  s_ccc764e929fd76::t_08592dee88aeee 144
+setup/macosx/create_app_new.sh
+  s_02d8eae72626c4::t_1091dbce242cb0 120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "8e3c292e053341c623b1925cbdc2e019a8f1bbf1",
+  "prompts": {},
+  "sessions": {
+    "s_02d8eae72626c4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc8f6-fd45-7cf1-bf73-0824cab60b6c",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": null
+    },
+    "s_1d8343c47a82f6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4cd3-aaed-7801-9a6b-374848b52baa",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    },
+    "s_3516c96fd23f4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f909e-a2ea-71f2-8139-034b7ee2d77c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    },
+    "s_3a8f34a6071117": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fbed3-02bc-76a3-8bad-d54302f13856",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    },
+    "s_50c2144422bfd1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4131-2bf0-7d32-ae05-7786887a8d44",
+        "model": "unknown"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    },
+    "s_5c9467569e5850": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07500d197ffe9aJIHSB9AGxwwE",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    },
+    "s_5ecd9806fc6ace": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fce0b-f5dd-7ae0-b2ad-24de5f529c55",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    },
+    "s_8c561082880c27": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f8081-dd38-7743-898c-f5c5cb3d7ece",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    },
+    "s_8d9f2bc7b0f229": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fce14-3f1d-7dc1-9c3d-bba673410440",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    },
+    "s_b7f7984a17f06e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fce14-08cd-7003-b942-e4818618c11d",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    },
+    "s_c454ea4812d6e8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5c28-72d9-7a83-8455-99228719e63a",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    },
+    "s_ccc764e929fd76": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f80e4-b79e-7f63-a560-0d369b564a23",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
