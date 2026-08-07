@@ -1181,12 +1181,9 @@ begin
     if WheelHorzSteps <> 0 then
     begin
       Dec(FHorzWheelAccumulator, WheelHorzSteps * 120);
-      {$IF LCL_FULLVERSION < 1080000}
       GridMouseWheel(Shift, -WheelHorzSteps);
-      {$ELSE}
-      GridMouseWheel(Shift, -WheelHorzSteps);
-      {$ENDIF}
     end;
+    Result := True;
   end
   else
   begin
