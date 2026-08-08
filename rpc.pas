@@ -1143,10 +1143,11 @@ function TRpc.RequestInfo(TorrentId: integer; const Fields: array of const; cons
 var
   req, args: TJSONObject;
   _fields: TJSONArray;
-  i: integer;
+  i, RequestRpcVersion: integer;
   sl: TStringList;
 begin
   Result:=nil;
+  RequestRpcVersion:=FRPCVersion;
   req:=TJSONObject.Create;
   sl:=TStringList.Create;
   try
@@ -1161,7 +1162,7 @@ begin
     sl.AddStrings(ExtraFields);
     sl.Sort;
 
-    DeleteIfRpcLessThan(sl, 'labels', FRPCVersion, 16);
+    DeleteIfRpcLessThan(sl, 'labels', RequestRpcVersion, 16);
 
     for i:=sl.Count-2 downto 0 do
       if (sl[i]=sl[i+1]) then
@@ -1169,14 +1170,13 @@ begin
     for i:=0 to sl.Count-1 do
       _fields.Add(sl[i]);
     args.Add('fields', _fields);
-    if FRPCVersion >= 16 then
+    if RequestRpcVersion >= 16 then
       args.Add('format', 'table');
 
     req.Add('arguments', args);
-    if FRPCVersion >= 16 then
-      Result:=TranslateTableToObjects(SendRequest(req))
-    else
-      Result:=SendRequest(req);
+    Result:=SendRequest(req);
+    if (RequestRpcVersion >= 16) and (Result <> nil) then
+      Result:=TranslateTableToObjects(Result);
   finally
     sl.Free;
     req.Free;
