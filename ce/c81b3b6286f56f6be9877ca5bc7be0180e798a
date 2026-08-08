@@ -1,0 +1,33 @@
+synapse/source/lib/ssl_openssl.pas
+  s_eaa557d65f7d09::t_fb1dee0699156b 1029
+download.pas
+  s_eaa557d65f7d09::t_088a5abbe870cb 99,101-106
+main.pas
+  s_eaa557d65f7d09::t_9141711bc6730b 5167,5208-5209,5213-5214
+  s_eaa557d65f7d09::t_da491eae63efa3 953
+  s_eaa557d65f7d09::t_d921fbdddb58f1 5210
+rpc.pas
+  s_eaa557d65f7d09::t_d921fbdddb58f1 1285
+  s_eaa557d65f7d09::t_fb1dee0699156b 168,173-175,177-214,217-220,1284,1286
+  s_eaa557d65f7d09::t_9141711bc6730b 143,167,176,215-216,794,796
+  s_eaa557d65f7d09::t_a61b4d2e5a636b 221,1287
+about.pas
+  s_eaa557d65f7d09::t_fb1dee0699156b 86
+  s_eaa557d65f7d09::t_77728fdd069c07 109-110,115-120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "cec81b3b6286f56f6be9877ca5bc7be0180e798a",
+  "prompts": {},
+  "sessions": {
+    "s_eaa557d65f7d09": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fe0f6-215d-7161-8a9d-aa685cf8376b",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
