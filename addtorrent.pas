@@ -1153,6 +1153,7 @@ begin
       exten:= Trim (tmp);
       tmp  := '';
     end;
+    if n > High(e) then break;
     e[n]:= exten;
     n   := n+1;
   end;
