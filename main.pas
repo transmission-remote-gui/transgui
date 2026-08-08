@@ -1064,7 +1064,7 @@ begin
     Inc(i);
     sz:=sz/1024;
   end;
-  while i <= High(SizeNames) do begin
+  while i < High(SizeNames) do begin
     if sz < 1024 then
       break;
     sz:=sz/1024;
