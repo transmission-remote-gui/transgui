@@ -83,7 +83,7 @@ procedure GoGitHub;
 
 implementation
 
-uses Main, utils, httpsend;
+uses Main, utils, httpsend, rpc;
 
 type
 
@@ -106,10 +106,18 @@ var
   CheckVersionThread: TCheckVersionThread;
 
 procedure CheckNewVersion(Async: boolean);
+var
+  SSLName, SSLUtilName: string;
 begin
   if CheckVersionThread <> nil then
     exit;
   Ini.WriteInteger('Interface', 'LastNewVersionCheck', Trunc(Now));
+  if not EnsureOpenSSLLoaded(SSLName, SSLUtilName) then begin
+    ForceAppNormal;
+    MessageDlg(SErrorCheckingVersion + LineEnding +
+      Format(sSSLLoadError, [SSLName, SSLUtilName]), mtError, [mbOK], 0);
+    exit;
+  end;
   CheckVersionThread:=TCheckVersionThread.Create(True);
   CheckVersionThread.FreeOnTerminate:=True;
   if Async then
