@@ -2892,7 +2892,9 @@ begin
           SelectTorrent(id, 2000);
 
           id:=0;
-          if (Ini.ReadBool('Interface', 'DeleteTorrentFile', False) and not IsProtocolSupported(FileName)) or (FWatchDownloading) then
+          if (Ini.ReadBool('Interface', 'DeleteTorrentFile', False) and
+              not IsProtocolSupported(FileName) and
+              (AnsiCompareText(ExtractFileExt(FileName), '.torrent') = 0)) or FWatchDownloading then
             DeleteFileUTF8(FileName);
 
           Ini.WriteInteger(IniSec, 'PeerLimit', edPeerLimit.Value);
