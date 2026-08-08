@@ -6176,7 +6176,10 @@ begin
     if FieldExists[idxQueuePos] then begin
       j:=t.Integers['queuePosition'];
       if FTorrents[idxStatus, row] = TR_STATUS_FINISHED then
-        Inc(j, FinishedQueue);
+        if j > High(Integer) - FinishedQueue then
+          j:=High(Integer)
+        else
+          Inc(j, FinishedQueue);
       FTorrents[idxQueuePos, row]:=j;
     end;
 
