@@ -5210,7 +5210,11 @@ begin
     RpcObj.Http.Sock.SSL.PFXfile:=Ini.ReadString(Sec, 'CertFile', '');
     RpcObj.Http.Sock.SSL.KeyPassword:=DecodeBase64(Ini.ReadString(Sec, 'CertPass', ''));
     if not IsSSLloaded then begin
+{$ifdef darwin}
+      MessageDlg(Format(sSSLLoadError, [FirstTriedDLLSSLName, FirstTriedDLLUtilName]), mtError, [mbOK], 0);
+{$else}
       MessageDlg(Format(sSSLLoadError, [DLLSSLName, DLLUtilName]), mtError, [mbOK], 0);
+{$endif}
       exit;
     end;
     RpcObj.Url:='https';
