@@ -1,0 +1,63 @@
+name: Apply IPC patch
+
+on:
+  push:
+    branches:
+      - agent/serialize-single-instance-ipc
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+          persist-credentials: true
+
+      - name: Reconstruct and apply patch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cat .github/ipc-patch-parts/part-*.b64 \
+            | base64 --decode > /tmp/ipc.patch
+          printf '%s  %s\n' \
+            '90358820bd573017fdde457a35d0636faf6867cc1e65f351a697e6480c08793b' \
+            /tmp/ipc.patch \
+            | sha256sum --check -
+
+          git apply --check --whitespace=error-all /tmp/ipc.patch
+          git apply --whitespace=error-all /tmp/ipc.patch
+
+          rm -rf .github/ipc-patch-parts
+          rm .github/workflows/apply-ipc-patch.yml
+
+          git diff --check
+
+          changed="$(git diff --name-only | sort)"
+          expected="$(printf '%s\n' \
+            .github/ipc-patch-parts/part-00.b64 \
+            .github/ipc-patch-parts/part-01.b64 \
+            .github/ipc-patch-parts/part-02.b64 \
+            .github/ipc-patch-parts/part-03.b64 \
+            .github/ipc-patch-parts/part-04.b64 \
+            .github/workflows/apply-ipc-patch.yml \
+            main.pas \
+            utils.pas \
+            | sort)"
+          test "$changed" = "$expected"
+
+      - name: Commit applied patch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Apply IPC patch on current master'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
