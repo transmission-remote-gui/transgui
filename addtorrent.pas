@@ -84,8 +84,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
     procedure SearchGoodExtension ();
-    function  GetTempate (ext:string; var e: array of string):integer;
-    function  IsFileTemplate(filename:string; cntE : integer; e: array of string):boolean;
+    function  IsFileTemplate(filename:string; const e: array of string):boolean;
     function  CorrectPath (path: string): string;
     procedure DeleteDirs(maxdel : Integer);
 
@@ -182,7 +181,7 @@ const
 
 implementation
 
-uses lclintf, lcltype, main, variants, Utils, rpc, lclproc;
+uses lclintf, lcltype, main, variants, Utils, rpc, lclproc, FileTemplates;
 
 const
   roChecked   = $030000;
@@ -1135,32 +1134,7 @@ begin
   UpdateSize;
 end;
 
-function  TAddTorrentForm.GetTempate (ext:string; var e: array of string):integer;
-var
-  tmp,exten : string;
-  i,n : integer;
-begin
-  tmp   := ext;
-  exten := ext;
-  n     := 0;
-  while tmp <> '' do begin
-    i := Pos (' ', tmp);
-    if (i <> 0) then begin
-      exten:= Trim (Copy (tmp, 1, i-1));
-      tmp  := Trim (Copy (tmp, i, 999));
-      end
-    else begin
-      exten:= Trim (tmp);
-      tmp  := '';
-    end;
-    if n > High(e) then break;
-    e[n]:= exten;
-    n   := n+1;
-  end;
-  GetTempate := n;
-end;
-
-function  TAddTorrentForm.IsFileTemplate(filename:string; cntE : integer; e: array of string):boolean;
+function  TAddTorrentForm.IsFileTemplate(filename:string; const e: array of string):boolean;
 var
   tmp, tmpExt, tmp_Name, sstr: string;
   i,n,lstr,j,k, total_sstr, total_templ : integer;
@@ -1178,7 +1152,7 @@ begin
     end;
   end;
 
-  for i:=0 to cntE-1 do begin
+  for i:=0 to High(e) do begin
       tmpExt     := e[i];
       tmp_Name   := tmp;
       total_sstr := 0;
@@ -1233,8 +1207,7 @@ var
   s, filename : string;
   filesize, dTotal,dTotalMax : double;
   pFD : FolderData;
-  e : array [0..50] of string;
-  n : integer;
+  e : TFileTemplates;
 begin
     dTotalMax := 0;
     jMax      :=-1;
@@ -1245,7 +1218,7 @@ begin
         s    := Trim(pFD.Ext);
         if s = '' then continue;
 
-        n      := GetTempate (AnsiLowerCase(s), e);
+        e      := ParseFileTemplates(AnsiLowerCase(s));
         dTotal := 0;
         torrMax:= lvFiles.Items.Count;
         if torrMax > 100 then torrMax := 100;
@@ -1254,7 +1227,7 @@ begin
             if not FTree.IsFolder(i) then begin
               filename := lvFiles.Items[idxFileName, i];
               filesize := double(lvFiles.Items[idxFileSize, i]);
-              if IsFileTemplate(filename, n,e) = true then
+              if IsFileTemplate(filename, e) = true then
                 dTotal := dTotal + filesize;
             end;
         end;
