@@ -51,6 +51,9 @@ type
   TFileStreamUTF8 = class(THandleStream)
   private
     FFileName: utf8string;
+    procedure SetHandleValue(AHandle: THandle);
+    procedure AttachFileHandle(AHandle: THandle);
+    procedure CloseFileHandle;
   public
     constructor Create(const AFileName: utf8string; Mode: Word);
     constructor Create(const AFileName: utf8string; Mode: Word; Rights: Cardinal);
@@ -304,10 +307,34 @@ begin
     inherited Create(lHandle);
 end;
 
+procedure TFileStreamUTF8.SetHandleValue(AHandle: THandle);
+begin
+  // THandleStream.Handle is read-only, but TIniFileUtf8 must reuse the
+  // stream instance retained by TIniFile when reopening the backing file.
+  THandle(pointer(@Handle)^):=AHandle;
+end;
+
+procedure TFileStreamUTF8.AttachFileHandle(AHandle: THandle);
+begin
+  if (Handle <> feInvalidHandle) or (AHandle = feInvalidHandle) then
+    raise EStreamError.Create('Invalid file handle state.');
+  SetHandleValue(AHandle);
+end;
+
+procedure TFileStreamUTF8.CloseFileHandle;
+var
+  h: THandle;
+begin
+  h:=Handle;
+  if h = feInvalidHandle then
+    exit;
+  SetHandleValue(feInvalidHandle);
+  FileClose(h);
+end;
+
 destructor TFileStreamUTF8.Destroy;
 begin
-  if Handle <> feInvalidHandle then
-    FileClose(Handle);
+  CloseFileHandle;
   inherited Destroy;
 end;
 
@@ -324,8 +351,7 @@ begin
     m:=fmCreate;
   FStream:=TFileStreamUTF8.Create(AFileName, m);
   inherited Create(FStream, AEscapeLineFeeds);
-  FileClose(FStream.Handle);
-  THandle(pointer(@FStream.Handle)^):=feInvalidHandle;
+  FStream.CloseFileHandle;
 end;
 
 destructor TIniFileUtf8.Destroy;
@@ -344,13 +370,16 @@ begin
     h:=FileCreateUTF8(FFileName);
   if h = feInvalidHandle then
     raise Exception.Create('Unable to write to INI file.' + LineEnding + SysErrorMessageUTF8(GetLastOSError));
-  THandle(pointer(@FStream.Handle)^):=h;
   try
+    FStream.AttachFileHandle(h);
+    h:=feInvalidHandle;
     inherited UpdateFile;
     FStream.Size:=FStream.Position;
   finally
-    FileClose(FStream.Handle);
-    THandle(pointer(@FStream.Handle)^):=feInvalidHandle;
+    if h <> feInvalidHandle then
+      FileClose(h)
+    else
+      FStream.CloseFileHandle;
   end;
 end;
 
