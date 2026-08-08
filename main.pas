@@ -736,6 +736,7 @@ type
     function DoConnect: boolean;
     procedure DoCreateOutZipStream(Sender: TObject; var AStream: TStream; AItem: TFullZipFileEntry);
     procedure DoDisconnect;
+    procedure ClearStatistics;
     procedure DoOpenFlagsZip(Sender: TObject; var AStream: TStream);
     procedure TorrentProps(PageNo: integer);
     procedure ShowConnOptions(NewConnection: boolean);
@@ -802,8 +803,8 @@ type
     procedure FillGeneralInfo(t: TJSONObject);
     procedure FillTrackersList(TrackersData: TJSONObject);
     procedure FillSessionInfo(s: TJSONObject);
-    procedure FillStatistics(s: TJSONObject);
-    procedure CheckStatus(Fatal: boolean = True);
+    function FillStatistics(s: TJSONObject): boolean;
+    procedure CheckStatus(Fatal: boolean = True; const AStatus: string = '');
     function TorrentAction(const TorrentIds: variant; const AAction: string; args: TJSONObject = nil): boolean;
     function SetFilePriority(TorrentId: integer; const Files: array of integer; const APriority: string): boolean;
     function SetCurrentFilePriority(const APriority: string): boolean;
@@ -5280,8 +5281,6 @@ begin
 end;
 
 procedure TMainForm.DoDisconnect;
-var
-  i: integer;
 begin
   TorrentsListTimer.Enabled:=False;
   FilterTimer.Enabled:=False;
@@ -5312,19 +5311,7 @@ begin
   edSearch.Color:=gTorrents.Color;
   edSearch.Text:='';
 
-  with gStats do begin
-    BeginUpdate;
-    try
-      for i:=0 to Items.Count - 1 do begin
-        Items[1, i]:=NULL;
-        Items[2, i]:=NULL;
-      end;
-    finally
-      EndUpdate;
-    end;
-    Enabled:=False;
-    Color:=gTorrents.Color;
-  end;
+  ClearStatistics;
 
   RpcObj.Disconnect;
 
@@ -5344,6 +5331,25 @@ begin
   FCurUpSpeedLimit:=-2;
   FillSpeedsMenu;
   tbConnect.Caption := Format(SConnectTo,['Transmission']);
+end;
+
+procedure TMainForm.ClearStatistics;
+var
+  i: integer;
+begin
+  with gStats do begin
+    BeginUpdate;
+    try
+      for i:=0 to Items.Count - 1 do begin
+        Items[1, i]:=NULL;
+        Items[2, i]:=NULL;
+      end;
+    finally
+      EndUpdate;
+    end;
+    Enabled:=False;
+    Color:=clBtnFace;
+  end;
 end;
 
 procedure TMainForm.ClearDetailsInfo(Skip: TAdvInfoType);
@@ -7081,46 +7087,134 @@ begin
 {$endif LCLcarbon}
 end;
 
-procedure TMainForm.FillStatistics(s: TJSONObject);
+function TMainForm.FillStatistics(s: TJSONObject): boolean;
+type
+  TStatistics = record
+    DownloadedBytes: double;
+    UploadedBytes: double;
+    FilesAdded: integer;
+    SecondsActive: integer;
+  end;
+var
+  currentStats, cumulativeStats: TStatistics;
 
-  procedure _Fill(idx: integer; s: TJSONObject);
+  function _GetNumber(stats: TJSONObject; const name: string; out value: double): boolean;
+  var
+    idx: integer;
+    d: TJSONData;
+  begin
+    Result:=False;
+    idx:=stats.IndexOfName(name);
+    if idx < 0 then
+      exit;
+    d:=stats.Items[idx];
+    if d.JSONType <> jtNumber then
+      exit;
+    try
+      value:=d.AsFloat;
+      Result:=(value >= 0) and not IsNan(value) and not IsInfinite(value);
+    except
+      Result:=False;
+    end;
+  end;
+
+  function _GetInteger(stats: TJSONObject; const name: string; out value: integer;
+    maxValue: integer = High(integer)): boolean;
+  var
+    idx: integer;
+    d: TJSONData;
+    n: double;
+  begin
+    Result:=False;
+    idx:=stats.IndexOfName(name);
+    if idx < 0 then
+      exit;
+    d:=stats.Items[idx];
+    if not (d is TJSONNumber) then
+      exit;
+    if d is TJSONFloatNumber then
+      exit;
+    Result:=_GetNumber(stats, name, n);
+    if not Result then
+      exit;
+    Result:=n <= maxValue;
+    if Result then
+      value:=Trunc(n);
+  end;
+
+  function _GetStats(const name: string; out values: TStatistics): boolean;
+  var
+    idx: integer;
+    stats: TJSONObject;
+    d: TJSONData;
+  begin
+    Result:=False;
+    idx:=s.IndexOfName(name);
+    if idx < 0 then
+      exit;
+    d:=s.Items[idx];
+    if not (d is TJSONObject) then
+      exit;
+    stats:=d as TJSONObject;
+    Result:=_GetNumber(stats, 'downloadedBytes', values.DownloadedBytes) and
+      _GetNumber(stats, 'uploadedBytes', values.UploadedBytes) and
+      _GetInteger(stats, 'filesAdded', values.FilesAdded) and
+      _GetInteger(stats, 'secondsActive', values.SecondsActive, High(integer) - 30);
+  end;
+
+  procedure _Fill(idx: integer; const values: TStatistics);
   begin
     with gStats do begin
-      Items[idx, 0]:=UTF8Decode(GetHumanSize(s.Floats['downloadedBytes']));
-      Items[idx, 1]:=UTF8Decode(GetHumanSize(s.Floats['uploadedBytes']));
-      Items[idx, 2]:=s.Integers['filesAdded'];
-      Items[idx, 3]:=UTF8Decode(SecondsToString(s.Integers['secondsActive']));
+      Items[idx, 0]:=UTF8Decode(GetHumanSize(values.DownloadedBytes));
+      Items[idx, 1]:=UTF8Decode(GetHumanSize(values.UploadedBytes));
+      Items[idx, 2]:=values.FilesAdded;
+      Items[idx, 3]:=UTF8Decode(SecondsToString(values.SecondsActive));
     end;
   end;
 
 begin
+  Result:=True;
   if RpcObj.RPCVersion < 4 then
     exit;
   if s = nil then begin
-    ClearDetailsInfo;
+    ClearStatistics;
+    DetailsUpdated;
+    Result:=False;
+    exit;
+  end;
+  if not _GetStats('current-stats', currentStats) or
+    not _GetStats('cumulative-stats', cumulativeStats) then begin
+    ClearStatistics;
+    DetailsUpdated;
+    Result:=False;
     exit;
   end;
   gStats.BeginUpdate;
   try
     gStats.Enabled:=True;
     gStats.Color:=clWindow;
-    _Fill(1, s.Objects['current-stats']);
-    _Fill(2, s.Objects['cumulative-stats']);
+    _Fill(1, currentStats);
+    _Fill(2, cumulativeStats);
   finally
     gStats.EndUpdate;
   end;
   DetailsUpdated;
 end;
 
-procedure TMainForm.CheckStatus(Fatal: boolean);
+procedure TMainForm.CheckStatus(Fatal: boolean; const AStatus: string);
 var
   s: string;
   i: integer;
 begin
   with MainForm do begin
-    s:=TranslateString(RpcObj.Status, True);
+    if AStatus = '' then begin
+      s:=TranslateString(RpcObj.Status, True);
+      if s <> '' then
+        RpcObj.Status:='';
+    end
+    else
+      s:=TranslateString(AStatus, True);
     if s <> '' then begin
-      RpcObj.Status:='';
       if Fatal then
         DoDisconnect;
       ForceAppNormal;
