@@ -1,6 +1,10 @@
+; Keep a three-part version for Windows uninstall metadata.
+; The AppVersion macro remains shortened for setup names and filenames.
+#define AppDisplayVersion GetFileVersion(SourcePath+'..\..\transgui.exe')
+#define AppDisplayVersion Copy(AppDisplayVersion, 1, RPos('.', AppDisplayVersion) - 1)
+
 #ifndef AppVersion
-  #define AppVersion GetFileVersion(SourcePath+'..\..\transgui.exe')
-  #define AppVersion Copy(AppVersion, 1, RPos('.', AppVersion) - 1)
+  #define AppVersion AppDisplayVersion
   #define tmpvar Copy(AppVersion, RPos('.', AppVersion) + 1, 3)
   #if tmpvar == "0"
     #define AppVersion Copy(AppVersion, 1, RPos('.', AppVersion) - 1)
@@ -53,6 +57,7 @@ Name: "zh_cn"; MessagesFile: "..\..\Inno Setup lang\ChineseSimplified.isl"
 [Setup]
 AppId=transgui
 AppName={#AppName}
+AppVersion={#AppDisplayVersion}
 AppVerName={#AppVerName}
 AppCopyright=Copyright (c) 2008-{#CurYear} by Yury Sidorov & Transmission Remote GUI working group
 AppPublisher={#AppPublisher}
