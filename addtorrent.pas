@@ -924,6 +924,8 @@ var
   pFD : FolderData;
 begin
     max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
+    if max < 10 then
+      max:=10;
     Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max); // PETROV
 
     try
