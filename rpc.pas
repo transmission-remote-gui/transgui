@@ -140,7 +140,7 @@ type
 
     constructor Create;
     destructor Destroy; override;
-    procedure InitSSL;
+    function InitSSL(out ASSLName, AUtilName: string): boolean;
 
     procedure Lock;
     procedure Unlock;
@@ -164,9 +164,60 @@ type
 var
   RemotePathDelimiter: char = '/';
 
+function EnsureOpenSSLLoaded(out ASSLName, AUtilName: string): boolean;
+
 implementation
 
 uses Main, ssl_openssl_lib, synafpc, blcksock;
+
+var
+  OpenSSLInitLock: TCriticalSection;
+
+function EnsureOpenSSLLoaded(out ASSLName, AUtilName: string): boolean;
+{$ifdef unix}
+{$ifndef darwin}
+  procedure CheckOpenSSL;
+  const
+  OpenSSLVersions: array[1..6] of string =
+  ('3', '1.1', '1.1.0', '1.0.2', '1.0.0', '0.9.8');
+  var
+    hLib1, hLib2: TLibHandle;
+    i: integer;
+  begin
+    for i:=Low(OpenSSLVersions) to High(OpenSSLVersions) do begin
+      hlib1:=LoadLibrary(PChar('libssl.so.' + OpenSSLVersions[i]));
+      hlib2:=LoadLibrary(PChar('libcrypto.so.' + OpenSSLVersions[i]));
+      if hLib2 <> 0 then
+        FreeLibrary(hLib2);
+      if hLib1 <> 0 then
+        FreeLibrary(hLib1);
+      if (hLib1 <> 0) and (hLib2 <> 0) then begin
+        DLLSSLName:='libssl.so.' + OpenSSLVersions[i];
+        DLLUtilName:='libcrypto.so.' + OpenSSLVersions[i];
+        break;
+      end;
+    end;
+  end;
+{$endif darwin}
+{$endif unix}
+begin
+  OpenSSLInitLock.Enter;
+  try
+    if not IsSSLloaded then begin
+{$ifdef unix}
+{$ifndef darwin}
+      CheckOpenSSL;
+{$endif darwin}
+{$endif unix}
+      InitSSLInterface;
+    end;
+    Result:=IsSSLloaded;
+    ASSLName:=DLLSSLName;
+    AUtilName:=DLLUtilName;
+  finally
+    OpenSSLInitLock.Leave;
+  end;
+end;
 
 function TranslateTableToObjects(reply: TJSONObject) : TJSONObject;
 var
@@ -740,43 +791,9 @@ begin
   inherited Destroy;
 end;
 
-procedure TRpc.InitSSL;
-{$ifdef unix}
-{$ifndef darwin}
-  procedure CheckOpenSSL;
-  const
-  OpenSSLVersions: array[1..6] of string =
-  ('3', '1.1', '1.1.0', '1.0.2', '1.0.0', '0.9.8');
-  var
-    hLib1, hLib2: TLibHandle;
-    i: integer;
-  begin
-    for i:=Low(OpenSSLVersions) to High(OpenSSLVersions) do begin
-      hlib1:=LoadLibrary(PChar('libssl.so.' + OpenSSLVersions[i]));
-      hlib2:=LoadLibrary(PChar('libcrypto.so.' + OpenSSLVersions[i]));
-      if hLib2 <> 0 then
-        FreeLibrary(hLib2);
-      if hLib1 <> 0 then
-        FreeLibrary(hLib1);
-      if (hLib1 <> 0) and (hLib2 <> 0) then begin
-        DLLSSLName:='libssl.so.' + OpenSSLVersions[i];
-        DLLUtilName:='libcrypto.so.' + OpenSSLVersions[i];
-        break;
-      end;
-    end;
-  end;
-{$endif darwin}
-{$endif unix}
+function TRpc.InitSSL(out ASSLName, AUtilName: string): boolean;
 begin
-  if IsSSLloaded then exit;
-{$ifdef unix}
-{$ifndef darwin}
-  CheckOpenSSL;
-{$endif darwin}
-{$endif unix}
-  if InitSSLInterface then
-    SSLImplementation := TSSLOpenSSL;
-  CreateHttp;
+  Result:=EnsureOpenSSLLoaded(ASSLName, AUtilName);
 end;
 
 type TGzipDecompressionStream=class(TDecompressionStream)
@@ -1263,5 +1280,9 @@ begin
   RequestStartTime:=0;
   FRpcPath:='';
 end;
+
+initialization
+  // Keep this lock alive for the lifetime of the process.
+  OpenSSLInitLock:=TCriticalSection.Create;
 
 end.

@@ -950,7 +950,7 @@ uses
   urllistenerosx,
 {$endif darwin}
   synacode, ConnOptions, clipbrd, DateUtils, TorrProps, DaemonOptions, About,
-  ToolWin, download, ColSetup, AddLink, MoveTorrent, ssl_openssl_lib, AddTracker, lcltype,
+  ToolWin, download, ColSetup, AddLink, MoveTorrent, AddTracker, lcltype,
   Options, ButtonPanel, BEncode, synautil, Math;
 
   {TMyHashMap}
@@ -1577,7 +1577,6 @@ begin
   txTorrentHeader.Font.Size:=txTransferHeader.Font.Size;
   TrayIcon.Icon.Assign(Application.Icon);
   RpcObj:=TRpc.Create;
-  RpcObj.InitSSL;
   FTorrents:=TVarList.Create(gTorrents.Columns.Count, 0);
   FTorrents.ExtraColumns:=TorrentsExtraColumns;
   gTorrents.Items.ExtraColumns:=TorrentsExtraColumns;
@@ -5165,7 +5164,7 @@ end;
 
 function TMainForm.DoConnect: boolean;
 var
-  Sec, pwd: string;
+  Sec, pwd, SSLName, SSLUtilName: string;
   i, j: integer;
 begin
   Result:=True;
@@ -5206,13 +5205,13 @@ begin
   RpcObj.Http.Sock.SSL.PFXfile:='';
   RpcObj.Http.Sock.SSL.KeyPassword:='';
   if Ini.ReadBool(Sec, 'UseSSL', False) then begin
-    RpcObj.InitSSL;
-    RpcObj.Http.Sock.SSL.PFXfile:=Ini.ReadString(Sec, 'CertFile', '');
-    RpcObj.Http.Sock.SSL.KeyPassword:=DecodeBase64(Ini.ReadString(Sec, 'CertPass', ''));
-    if not IsSSLloaded then begin
-      MessageDlg(Format(sSSLLoadError, [DLLSSLName, DLLUtilName]), mtError, [mbOK], 0);
+    if not RpcObj.InitSSL(SSLName, SSLUtilName) then begin
+      MessageDlg(Format(sSSLLoadError, [SSLName, SSLUtilName]), mtError, [mbOK], 0);
+      Result:=False;
       exit;
     end;
+    RpcObj.Http.Sock.SSL.PFXfile:=Ini.ReadString(Sec, 'CertFile', '');
+    RpcObj.Http.Sock.SSL.KeyPassword:=DecodeBase64(Ini.ReadString(Sec, 'CertPass', ''));
     RpcObj.Url:='https';
   end
   else
