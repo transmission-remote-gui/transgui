@@ -4850,6 +4850,8 @@ var
   Magnets: TStringList;
 begin
   TorrentIds:=GetSelectedTorrents;
+  if VarIsEmpty(TorrentIds) then
+    exit;
   req:=TJSONObject.Create;
   args:=TJSONObject.Create;
   Magnets:=TStringList.Create;
