@@ -1,0 +1,28 @@
+main.pas
+  s_ffe09611ca282a::t_723c32ca7f34e3 2433,2506-2507,2510-2513,2516-2519,2521-2523
+  s_7daea55c94e22f::t_406d4f969a1f4c 2525
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "2ac1ed180ee79dd7ff47b55bc1291462883e5938",
+  "prompts": {},
+  "sessions": {
+    "s_7daea55c94e22f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fe5d7-d2fb-7732-ba8e-44985d1c60e5",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    },
+    "s_ffe09611ca282a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fe806-1965-7ab0-b20a-77a49008b0f3",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
