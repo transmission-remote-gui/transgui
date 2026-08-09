@@ -25,11 +25,16 @@ runtime_home="$(mktemp -d)"
 startup_log="$runtime_home/startup.log"
 wm_log="$runtime_home/wm.log"
 xvfb_log="$runtime_home/xvfb.log"
+clipboard_log="$runtime_home/clipboard.log"
+clipboard_image="$runtime_home/clipboard.png"
 export HOME="$runtime_home"
 
 printf "%s\n" \
   "[MainForm]" \
   "FirstRun=0" \
+  "" \
+  "[Interface]" \
+  "LinksFromClipboard=1" \
   "" \
   "[Connection]" \
   "Host=127.0.0.1" \
@@ -40,6 +45,7 @@ printf "%s\n" "RandomPlacement" > "$runtime_home/.twmrc"
 
 xvfb_pid=""
 wm_pid=""
+clipboard_pid=""
 app_pid=""
 
 process_alive() {
@@ -96,6 +102,7 @@ cleanup() {
   trap - EXIT
   set +e
   stop_process "$app_pid" "transgui"
+  stop_process "$clipboard_pid" "xclip"
   stop_process "$wm_pid" "twm"
   stop_process "$xvfb_pid" "Xvfb"
   rm -rf "$runtime_home"
@@ -135,6 +142,19 @@ if ! process_alive "$wm_pid"; then
   exit 1
 fi
 
+base64 --decode > "$clipboard_image" << 'PNG'
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=
+PNG
+DISPLAY=:99 xclip -selection clipboard -target image/png -loops 0 \
+  -verbose "$clipboard_image" > "$clipboard_log" 2>&1 &
+clipboard_pid=$!
+sleep 0.5
+if ! process_alive "$clipboard_pid"; then
+  echo "xclip exited before transgui startup" >&2
+  cat "$clipboard_log" >&2
+  exit 1
+fi
+
 DISPLAY=:99 G_DEBUG=fatal-criticals LIBOVERLAY_SCROLLBAR=0 \
   "$transgui_binary" --home="$runtime_home" > "$startup_log" 2>&1 &
 app_pid=$!
@@ -169,6 +189,12 @@ fi
 sleep 4
 if ! process_alive "$app_pid"; then
   echo "transgui exited during startup" >&2
+  cat "$startup_log" >&2
+  exit 1
+fi
+if ! process_alive "$clipboard_pid"; then
+  echo "The image-only clipboard owner exited during startup" >&2
+  cat "$clipboard_log" >&2
   cat "$startup_log" >&2
   exit 1
 fi

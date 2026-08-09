@@ -698,7 +698,9 @@ type
     FFlagsPath: string;
     FAddingTorrent: integer;
     FPendingTorrents: TStringList;
+    FPendingClipboardTorrents: TStringList;
     FLinksFromClipboard: boolean;
+    FCheckingClipboardLink: boolean;
     FLastClipboardLink: string;
     FLinuxOpenDoc: integer; // no del!
     FFromNow: boolean;
@@ -1182,6 +1184,39 @@ begin
     (Pos(#13, Value) > 0);
 end;
 
+function TryReadClipboardText(out ClipboardText: string): boolean;
+begin
+  Result:=False;
+  ClipboardText:='';
+  try
+    if not Clipboard.HasFormat(CF_Text) then
+      exit;
+    ClipboardText:=Clipboard.AsText;
+    Result:=True;
+  except
+    // Clipboard backends can fail transiently; skip this activation.
+  end;
+end;
+
+function TryNormalizeClipboardTorrentLink(const ClipboardText: string;
+  out TorrentLink: string): boolean;
+const
+  TorrentExt = '.torrent';
+begin
+  Result:=False;
+  TorrentLink:=Trim(ClipboardText);
+  if (TorrentLink = '') or HasIPCRecordDelimiter(TorrentLink) then
+    exit;
+  if IsHash(TorrentLink) then
+    TorrentLink:='magnet:?xt=urn:btih:' + TorrentLink;
+  if not IsProtocolSupported(TorrentLink) then
+    exit;
+  if not (AnsiStartsText('magnet:', TorrentLink) or
+          AnsiEndsText(TorrentExt, TorrentLink)) then
+    exit;
+  Result:=True;
+end;
+
 procedure AddTorrentFile(const FileName: string);
 var
   h: System.THandle;
@@ -1599,6 +1634,7 @@ begin
   lvTrackers.AlternateColor:=FAlterColor;
   gStats.AlternateColor:=FAlterColor;
   FPendingTorrents:=TStringList.Create;
+  FPendingClipboardTorrents:=TStringList.Create;
   FFilesCapt:=tabFiles.Caption;
   FPasswords:=TStringList.Create;
 {$ifdef LCLgtk2}
@@ -1762,7 +1798,7 @@ begin
 
   bidiMode := GetBiDi;
 
-  FLinksFromClipboard:=Ini.ReadBool('Interface', 'LinksFromClipboard', True);
+  FLinksFromClipboard:=Ini.ReadBool('Interface', 'LinksFromClipboard', False);
   Application.OnActivate:=@FormActivate;
   Application.OnException:=@ApplicationPropertiesException;
 
@@ -1914,6 +1950,7 @@ begin
   FTorrentProgress.Free;
   FPathMap.Free;
   FTorrents.Free;
+  FPendingClipboardTorrents.Free;
   FPendingTorrents.Free;
   try
     Ini.UpdateFile;
@@ -2241,7 +2278,7 @@ begin
 
     cbShowAddTorrentWindow.Checked:=Ini.ReadBool('Interface', 'ShowAddTorrentWindow', True);
     cbDeleteTorrentFile.Checked:=Ini.ReadBool('Interface', 'DeleteTorrentFile', False);
-    cbLinksFromClipboard.Checked:=Ini.ReadBool('Interface', 'LinksFromClipboard', True);
+    cbLinksFromClipboard.Checked:=Ini.ReadBool('Interface', 'LinksFromClipboard', False);
     edIntfScale.Value:=ReadIntfScale(IntfScale);
     cbCheckNewVersion.Checked:=Ini.ReadBool('Interface', 'CheckNewVersion', False);
     edCheckVersionDays.Value:=Ini.ReadInteger('Interface', 'CheckNewVersionDays', 5);
@@ -2274,6 +2311,8 @@ begin
       Ini.WriteBool('Interface', 'DeleteTorrentFile', cbDeleteTorrentFile.Checked);
       Ini.WriteBool('Interface', 'LinksFromClipboard', cbLinksFromClipboard.Checked);
       FLinksFromClipboard:=cbLinksFromClipboard.Checked;
+      if not FLinksFromClipboard then
+        FPendingClipboardTorrents.Clear;
 
       Ini.WriteInteger('Interface', 'Scaling', edIntfScale.Value);
 
@@ -3953,6 +3992,8 @@ end;
 
 procedure TMainForm.LocalWatchTimerTimer(Sender: TObject);
 begin
+  if FAddingTorrent <> 0 then
+    exit;
   ReadLocalFolderWatch;
   if FPendingTorrents.Count > 0 then
     begin
@@ -8111,6 +8152,13 @@ begin
   if FAddingTorrent <> 0 then
     exit;
 
+  if not FLinksFromClipboard then
+    FPendingClipboardTorrents.Clear
+  else if not FWatchDownloading and (FPendingClipboardTorrents.Count > 0) then begin
+    FPendingTorrents.AddStrings(FPendingClipboardTorrents);
+    FPendingClipboardTorrents.Clear;
+  end;
+
   Inc(FAddingTorrent);
   try
     if FPendingTorrents.Count > 0 then begin
@@ -8140,31 +8188,32 @@ begin
 end;
 
 procedure TMainForm.CheckClipboardLink;
-const
-  strTorrentExt = '.torrent';
 var
-  s: string;
+  ClipboardText, TorrentLink: string;
 begin
+  if not FLinksFromClipboard or FCheckingClipboardLink or
+    (csDestroying in ComponentState) or
+    (FPendingClipboardTorrents = nil) then
+      exit;
+  FCheckingClipboardLink:=True;
   try
-    if not FLinksFromClipboard then
-      exit;
-    s:=Clipboard.AsText;
-    if s = FLastClipboardLink then
-      exit;
-    FLastClipboardLink:=s;
-    if isHash(s) then s := 'magnet:?xt=urn:btih:' + s;
-    if not IsProtocolSupported(s) then
-      exit;
-    if (Pos('magnet:', LazUTF8.UTF8LowerCase(s)) <> 1) and (LazUTF8.UTF8LowerCase(Copy(s, Length(s) - Length(strTorrentExt) + 1, MaxInt)) <> strTorrentExt) then
-      exit;
-    if HasIPCRecordDelimiter(s) then
-      exit;
+    try
+      if not TryReadClipboardText(ClipboardText) then
+        exit;
+      if ClipboardText = FLastClipboardLink then
+        exit;
+      if not TryNormalizeClipboardTorrentLink(ClipboardText, TorrentLink) then begin
+        FLastClipboardLink:=ClipboardText;
+        exit;
+      end;
 
-    AddTorrentFile(s);
-    Clipboard.AsText:='';
-  except
-    // Turn off this function if an error occurs
-    FLinksFromClipboard:=False;
+      FPendingClipboardTorrents.Add(TorrentLink);
+      FLastClipboardLink:=ClipboardText;
+    except
+      // Clipboard monitoring is optional; retry on a later activation.
+    end;
+  finally
+    FCheckingClipboardLink:=False;
   end;
 end;
 
