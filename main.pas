@@ -4012,6 +4012,10 @@ begin
   gTorrentsClick(nil);
   id:=RpcObj.CurTorrentId;
   if id = 0 then exit;
+  TorrentIds:=GetSelectedTorrents;
+  if VarIsEmpty(TorrentIds) then exit;
+  id:=TorrentIds[VarArrayLowBound(TorrentIds, 1)];
+  if id = 0 then exit;
   AppBusy;
   trlist:=nil;
   with TTorrPropsForm.Create(Self) do
@@ -4019,7 +4023,6 @@ begin
     Page.ActivePageIndex:=PageNo;
     gTorrents.Tag:=1;
     gTorrents.EnsureSelectionVisible;
-    TorrentIds:=GetSelectedTorrents;
     args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited', 'uploadLimit', 'uploadLimitMode', 'uploadLimited',
                                   'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit', 'seedIdleLimit', 'seedIdleMode', 'trackers']);
     if args = nil then begin
