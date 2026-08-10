@@ -1,0 +1,109 @@
+name: Windows CI
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-build:
+    name: Build / Windows / ${{ matrix.arch }}
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - x86
+          - x86_64
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 10
+          persist-credentials: false
+
+      - name: Install build dependencies
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $ProgressPreference = 'SilentlyContinue'
+
+          $lazarusArgs = @(
+            'install',
+            'lazarus',
+            '--version=2.2.6',
+            '--yes',
+            '--no-progress'
+          )
+          if ('${{ matrix.arch }}' -eq 'x86') {
+            $lazarusArgs += '--x86'
+          }
+
+          & choco @lazarusArgs
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install Lazarus: $LASTEXITCODE"
+          }
+
+          & choco install innosetup `
+            --version=5.6.1 `
+            --allow-downgrade `
+            --yes `
+            --no-progress
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install Inno Setup: $LASTEXITCODE"
+          }
+
+          & choco install inno-download-plugin `
+            --version=1.5.1 `
+            --yes `
+            --no-progress
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install Inno Download Plugin: $LASTEXITCODE"
+          }
+
+          & choco install zip `
+            --version=3.0.0.20251001 `
+            --yes `
+            --no-progress
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install zip: $LASTEXITCODE"
+          }
+
+          & choco install upx `
+            --version=5.2.0 `
+            --yes `
+            --no-progress
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install UPX: $LASTEXITCODE"
+          }
+
+      - name: Build and test Windows artifacts
+        shell: pwsh
+        run: .\.github\scripts\build-windows.ps1 -Architecture '${{ matrix.arch }}'
+
+      - name: Print SHA-256 checksums
+        shell: pwsh
+        run: |
+          Get-ChildItem Release -File |
+            Sort-Object Name |
+            ForEach-Object {
+              $hash = Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256
+              '{0}  {1}' -f $hash.Hash.ToLowerInvariant(), $_.Name
+            }
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: transgui-windows-${{ matrix.arch }}
+          path: |
+            Release/transgui-*.zip
+            Release/transgui-*-setup*.exe
+          if-no-files-found: error
