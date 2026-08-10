@@ -924,6 +924,8 @@ var
   pFD : FolderData;
 begin
     max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
+    if max < 10 then
+      max:=10;
     Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max); // PETROV
 
     try
@@ -932,20 +934,23 @@ begin
         indx:=-1;
         for i:=0 to cbDestFolder.Items.Count - 1 do begin
           pFD := cbDestFolder.Items.Objects[i] as FolderData;
+          if pFD = nil then continue;
 
           fldr := DaysBetween(SysUtils.Date,pFD.Lst);
           if SysUtils.Date > pFD.Lst then
             fldr := 0- fldr;
 
           fldr := fldr + pFD.Hit;
-          if fldr < min then begin
+          if (indx < 0) or (fldr < min) then begin
             min := fldr;
             indx:= i;
           end;
         end;
 
         if indx > -1 then
-          cbDestFolder.Items.Delete(indx);
+          cbDestFolder.Items.Delete(indx)
+        else
+          break;
       end;
     except
       MessageDlg('Error: LS-001. Please contact the developer', mtError, [mbOK], 0);

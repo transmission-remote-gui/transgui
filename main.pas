@@ -7872,10 +7872,12 @@ var
   pFD : FolderData;
 begin
     max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
+    if max < 10 then
+      max:=10;
     Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max);
 
     try
-    while (CB.Items.Count+maxdel) >= max do begin
+    while (CB.Items.Count+maxdel) > max do begin
       min := 9999999;
       indx:=-1;
       for i:=0 to CB.Items.Count - 1 do begin
@@ -7887,14 +7889,16 @@ begin
           fldr := 0- fldr;
 
         fldr := fldr + pFD.Hit;
-        if fldr < min then begin
+        if (indx < 0) or (fldr < min) then begin
           min := fldr;
           indx:= i;
         end;
       end;
 
       if indx > -1 then
-        CB.Items.Delete(indx);
+        CB.Items.Delete(indx)
+      else
+        break;
     end;
     except
       MessageDlg('Error: LS-010. Please contact the developer', mtError, [mbOK], 0);
