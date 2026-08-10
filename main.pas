@@ -2430,6 +2430,7 @@ var
     i, j: Integer;
     s, tfn, TorrentHash: string;
     TrackersList: TStringList;
+    UseAnnounceFallback: boolean;
   begin
     RpcObj.Status:='';
     s:='';
@@ -2502,17 +2503,26 @@ var
             TorrentHash:=StrToHex(SHA1(s));
           end;
           AnnData:=(TorData.ListData.FindElement('announce-list', False) as TBEncoded);
-          if AnnData <> nil then
+          UseAnnounceFallback:=(AnnData = nil) or (AnnData.Format <> befList);
+          if not UseAnnounceFallback then begin
             for i:=0 to AnnData.ListData.Count - 1 do begin
               LData:=AnnData.ListData.Items[i].Data as TBEncoded;
+              if LData.Format <> befList then begin
+                UseAnnounceFallback:=True;
+                continue;
+              end;
               for j:=0 to LData.ListData.Count - 1 do begin
                 LLData:=LData.ListData.Items[j].Data as TBEncoded;
-                TrackersList.Add(LLData.StringData);
+                if LLData.Format = befString then
+                  TrackersList.Add(LLData.StringData)
+                else
+                  UseAnnounceFallback:=True;
               end;
-            end
-          else begin
+            end;
+          end;
+          if UseAnnounceFallback and (TrackersList.Count = 0) then begin
             AnnData:=(TorData.ListData.FindElement('announce', False) as TBEncoded);
-            if AnnData <> nil then
+            if (AnnData <> nil) and (AnnData.Format = befString) then
               TrackersList.Add(AnnData.StringData);
           end;
         finally
