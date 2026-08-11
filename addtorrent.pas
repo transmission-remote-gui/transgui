@@ -182,7 +182,7 @@ const
 
 implementation
 
-uses lclintf, lcltype, main, variants, Utils, rpc, lclproc;
+uses lclintf, lcltype, main, variants, Utils, rpc, lclproc, FolderHistory;
 
 const
   roChecked   = $030000;
@@ -920,17 +920,17 @@ end;
 
 procedure TAddTorrentForm.DeleteDirs(maxdel : Integer);
 var
-  i,min,max,indx, fldr: integer;
+  i, max, indx: integer;
+  min, fldr: Int64;
   pFD : FolderData;
 begin
-    max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
-    if max < 10 then
-      max:=10;
+    max:=NormalizeFolderHistoryLimit(
+      Ini.ReadInteger('Interface', 'MaxFoldersHistory', 50));
     Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max); // PETROV
 
     try
       while (cbDestFolder.Items.Count+maxdel) > max do begin
-        min := 9999999;
+        min:=0;
         indx:=-1;
         for i:=0 to cbDestFolder.Items.Count - 1 do begin
           pFD := cbDestFolder.Items.Objects[i] as FolderData;
@@ -940,7 +940,8 @@ begin
           if SysUtils.Date > pFD.Lst then
             fldr := 0- fldr;
 
-          fldr := fldr + pFD.Hit;
+          pFD.Hit:=NormalizeFolderHistoryHit(pFD.Hit);
+          fldr:=fldr + pFD.Hit;
           if (indx < 0) or (fldr < min) then begin
             min := fldr;
             indx:= i;
@@ -982,7 +983,7 @@ begin
       cbDestFolder.Items.Objects[i]:= pFD;
     end else begin
       pFD    := cbDestFolder.Items.Objects[i] as FolderData;
-      pFD.Hit:= pFD.Hit + 1;
+      pFD.Hit:=IncrementFolderHistoryHit(pFD.Hit);
       pFD.Ext:= e;
       pFD.Txt:= s;
       pFD.Lst:= SysUtils.Date;
