@@ -5900,7 +5900,7 @@ var
       end
       else begin
         j:=Round((Now - cardinal(p[0])/SecsPerDay)/RpcObj.RefreshInterval);
-        if j = 0 then
+        if j < 1 then
           j:=1;
       end;
       p[0]:=integer(cardinal(Round(Now*SecsPerDay)));
