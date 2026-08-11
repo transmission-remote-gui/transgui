@@ -230,6 +230,7 @@ inherited MainForm: TMainForm
       TabOrder = 0
       OnClick = gTorrentsClick
       OnDblClick = gTorrentsDblClick
+      OnMouseDown = gTorrentsMouseDown
       OnMouseMove = gTorrentsMouseMove
       OnMouseUp = gTorrentsMouseUp
       OnResize = gTorrentsResize

@@ -599,6 +599,8 @@ type
     procedure acStatusBarSizesExecute(Sender: TObject);
     procedure acStopAllTorrentsExecute(Sender: TObject);
     procedure acStopTorrentExecute(Sender: TObject);
+    procedure gTorrentsMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure gTorrentsMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure gTorrentsMouseUp(Sender: TObject; Button: TMouseButton;
@@ -723,6 +725,9 @@ type
     FDetailsWait: TProgressImage;
     FDetailsWaitStart: TDateTime;
     FMainFormShown: boolean;
+    FRestoreFilesFocus: boolean;
+    FRestoreFilesFocusDeferred: boolean;
+    FFilesFocusFallback: TWinControl;
     FFilesTree: TFilesTree;
     FFilesCapt: string;
     FCalcAvg: boolean;
@@ -734,6 +739,9 @@ type
 
     procedure UpdateUI;
     procedure UpdateUIRpcVersion(RpcVersion: integer);
+    function FileListPending: boolean;
+    function FilesFocusRestorePending: boolean;
+    procedure TryRestoreFilesFocus;
     function DoConnect: boolean;
     procedure DoCreateOutZipStream(Sender: TObject; var AStream: TStream; AItem: TFullZipFileEntry);
     procedure DoDisconnect;
@@ -795,6 +803,7 @@ type
     procedure DetailsUpdated;
     function RenameTorrent(TorrentId: integer; const OldPath, NewName: string): boolean;
     procedure FilesTreeStateChanged(Sender: TObject);
+    procedure SetCurrentTorrent(TorrentId: integer; RestoreFilesFocus: boolean);
     function SelectTorrent(TorrentId, TimeOut: integer): integer;
     procedure OpenCurrentTorrent(OpenFolderOnly: boolean; UserDef: boolean=false);
   public
@@ -807,7 +816,7 @@ type
     function FillStatistics(s: TJSONObject): boolean;
     procedure CheckStatus(Fatal: boolean = True; const AStatus: string = '');
     function TorrentAction(const TorrentIds: variant; const AAction: string; args: TJSONObject = nil): boolean;
-    function SetFilePriority(TorrentId: integer; const Files: array of integer; const APriority: string): boolean;
+    function SetFilePriority(TorrentId: integer; const WantedFiles, UnwantedFiles: array of integer; const APriority: string): boolean;
     function SetCurrentFilePriority(const APriority: string): boolean;
     procedure SetTorrentPriority(APriority: integer);
     procedure ClearDetailsInfo(Skip: TAdvInfoType = aiNone);
@@ -2030,6 +2039,7 @@ end;
 
 procedure TMainForm.acCopyPathExecute(Sender: TObject);
 begin
+  if FileListPending then exit;
   if lvFiles.Items.Count > 0 then
     Clipboard.AsText:='"' + FFilesTree.GetFullPath(lvFiles.Row) + '"';
 end;
@@ -2084,7 +2094,7 @@ procedure TMainForm.acFolderGroupingExecute(Sender: TObject);
 begin
   acFolderGrouping.Checked:=not acFolderGrouping.Checked;
   Ini.WriteBool('Interface', 'FolderGrouping', acFolderGrouping.Checked);
-  RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtTorrents];
+  RpcObj.RequestRefresh([rtTorrents]);
 end;
 
 procedure TMainForm.acForceStartTorrentExecute(Sender: TObject);
@@ -2109,8 +2119,10 @@ begin
   VSplitter.Visible:=acInfoPane.Checked;
   if VSplitter.Visible then
     PageInfoChange(nil)
-  else
-    RpcObj.AdvInfo:=aiNone;
+  else begin
+    FRestoreFilesFocus:=False;
+    RpcObj.SetAdvancedInfo(aiNone, False);
+  end;
 end;
 
 procedure TMainForm.acLabelGroupingExecute(Sender: TObject);
@@ -2189,6 +2201,7 @@ begin
       if args = nil then
         CheckStatus(False)
       else begin
+        RpcObj.FileDetailsChanged;
         SaveDownloadDirs(edTorrentDir, 'LastMoveDir');
         ok:=False;
         t:=Now;
@@ -2224,7 +2237,11 @@ procedure TMainForm.acOpenContainingFolderExecute(Sender: TObject);
 begin
   if gTorrents.Items.Count = 0 then
     exit;
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   Application.ProcessMessages;
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   if lvFiles.Focused and (lvFiles.Items.Count > 0) then begin
     AppBusy;
     ExecRemoteFile(FFilesTree.GetFullPath(lvFiles.Row), not FFilesTree.IsFolder(lvFiles.Row));
@@ -2239,7 +2256,11 @@ var UserDef: boolean;
 begin
   if gTorrents.Items.Count = 0 then
     exit;
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   Application.ProcessMessages;
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   if (Sender is TMenuItem) and (TMenuItem(Sender).Tag > 999) then
     begin
         UserDef := true;
@@ -2371,7 +2392,7 @@ begin
   finally
     req.Free;
   end;
-  RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
+  RpcObj.RequestRefresh([rtSession]);
   AppNormal;
 end;
 
@@ -2910,6 +2931,7 @@ begin
               CheckStatus(False);
               exit;
             end;
+            RpcObj.FileDetailsChanged;
             args.Free;
 
 //          edSaveAs.Text := Trim(edSaveAs.Text);               // leave spaces to not rename the torrent (see below)
@@ -2930,7 +2952,9 @@ begin
               if args = nil then begin
                 // CheckStatus(False); // failed to rename torrent
                 // exit;               // we continue work (try)
-              end;
+              end
+              else
+                RpcObj.FileDetailsChanged;
               args.Free;
             end;
           finally
@@ -3351,9 +3375,9 @@ end;
 procedure TMainForm.DoRefresh(All: boolean);
 begin
   if All then
-    RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtTorrents, rtDetails]
+    RpcObj.RequestRefresh([rtTorrents, rtDetails])
   else
-    RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtDetails];
+    RpcObj.RequestRefresh([rtDetails]);
 end;
 
 procedure TMainForm.acDisconnectExecute(Sender: TObject);
@@ -3705,7 +3729,7 @@ begin
       finally
         req.Free;
       end;
-      RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
+      RpcObj.RequestRefresh([rtSession]);
       AppNormal;
     end;
   finally
@@ -3750,6 +3774,8 @@ end;
 
 procedure TMainForm.acRenameExecute(Sender: TObject);
 begin
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   if lvFiles.Focused then
     lvFiles.EditCell(idxFileName, lvFiles.Row)
   else
@@ -3778,7 +3804,11 @@ end;
 
 procedure TMainForm.acSelectAllExecute(Sender: TObject);
 begin
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   Application.ProcessMessages;
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   if lvFiles.Focused then
     lvFiles.SelectAll
   else
@@ -3787,7 +3817,11 @@ end;
 
 procedure TMainForm.acSetHighPriorityExecute(Sender: TObject);
 begin
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   Application.ProcessMessages;
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   if lvFiles.Focused then
     SetCurrentFilePriority('high')
   else
@@ -3796,7 +3830,11 @@ end;
 
 procedure TMainForm.acSetLowPriorityExecute(Sender: TObject);
 begin
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   Application.ProcessMessages;
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   if lvFiles.Focused then
     SetCurrentFilePriority('low')
   else
@@ -3805,7 +3843,11 @@ end;
 
 procedure TMainForm.acSetNormalPriorityExecute(Sender: TObject);
 begin
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   Application.ProcessMessages;
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   if lvFiles.Focused then
     SetCurrentFilePriority('normal')
   else
@@ -3885,7 +3927,11 @@ var
   g: TVarGrid;
   s: string;
 begin
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   Application.ProcessMessages;
+  TryRestoreFilesFocus;
+  if FileListPending and FilesFocusRestorePending then exit;
   if lvTrackers.Focused then
     g:=lvTrackers
   else
@@ -4000,6 +4046,12 @@ begin
         else gTorrents.Hint:='';
       end;
     end;
+end;
+
+procedure TMainForm.gTorrentsMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  FRestoreFilesFocus:=False;
 end;
 
 procedure TMainForm.gTorrentsMouseUp(Sender: TObject; Button: TMouseButton;
@@ -4316,7 +4368,7 @@ procedure TMainForm.acTrackerGroupingExecute(Sender: TObject);
 begin
   acTrackerGrouping.Checked:=not acTrackerGrouping.Checked;
   Ini.WriteBool('Interface', 'TrackerGrouping', acTrackerGrouping.Checked);
-  RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtTorrents];
+  RpcObj.RequestRefresh([rtTorrents]);
 end;
 
 procedure TMainForm.acUpdateBlocklistExecute(Sender: TObject);
@@ -4450,6 +4502,8 @@ end;
 
 procedure TMainForm.edSearchChange(Sender: TObject);
 begin
+  if edSearch.Focused then
+    FRestoreFilesFocus:=False;
   DoRefresh(True);
   if edSearch.Text=  '' then tbSearchCancel.Enabled:=false
                     else tbSearchCancel.Enabled:=true;
@@ -4464,6 +4518,9 @@ end;
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
   CheckClipboardLink;
+  if FRestoreFilesFocus then
+    FFilesFocusFallback:=Self.ActiveControl;
+  TryRestoreFilesFocus;
 end;
 
 procedure TMainForm.FormDropFiles(Sender: TObject; const FileNames: array of String);
@@ -4479,6 +4536,10 @@ procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
 var
   Keypressed: Word;
 begin
+    if (Key = VK_TAB) and FRestoreFilesFocus then begin
+      FRestoreFilesFocus:=False;
+      FRestoreFilesFocusDeferred:=False;
+    end;
     if (Shift = [ssAlt]) and not (MainForm.ActiveControl is TVarGridStringEditor) then
     begin
       Keypressed := Key;
@@ -4586,21 +4647,34 @@ var
   i: integer;
 begin
   if gTorrents.Tag <> 0 then exit;
+  if gTorrents.Items.Count > 0 then
+    i:=gTorrents.Items[idxTorrentId, gTorrents.Row]
+  else
+    i:=0;
+  SetCurrentTorrent(i, (Sender = nil) and
+                        (((PageInfo.ActivePage = tabFiles) and
+                          (Self.ActiveControl = lvFiles)) or
+                         FilesFocusRestorePending));
+end;
+
+procedure TMainForm.SetCurrentTorrent(TorrentId: integer; RestoreFilesFocus: boolean);
+begin
+  if not RestoreFilesFocus then
+    FRestoreFilesFocus:=False;
   RpcObj.Lock;
   try
-    if gTorrents.Items.Count > 0 then
-      i:=gTorrents.Items[idxTorrentId, gTorrents.Row]
-    else
-      i:=0;
-    if RpcObj.CurTorrentId = i then
+    if RpcObj.CurTorrentId = TorrentId then
       exit;
-    RpcObj.CurTorrentId:=i;
+    RpcObj.CurTorrentId:=TorrentId;
   finally
     RpcObj.Unlock;
     if acStatusBarSizes.Checked then StatusBarSizes;
   end;
 
   ClearDetailsInfo(GetPageInfoType(PageInfo.ActivePage));
+  lvFiles.Enabled:=False;
+  FFilesFocusFallback:=Self.ActiveControl;
+  FRestoreFilesFocus:=RestoreFilesFocus and (TorrentId <> 0);
 
   TorrentsListTimer.Enabled:=False;
   TorrentsListTimer.Enabled:=True;
@@ -4799,6 +4873,8 @@ end;
 
 procedure TMainForm.lvFilterClick(Sender: TObject);
 begin
+  if Sender <> nil then
+    FRestoreFilesFocus:=False;
   if VarIsNull(lvFilter.Items[0, lvFilter.Row]) then
     if (FLastFilerIndex > lvFilter.Row) or (lvFilter.Row = lvFilter.Items.Count - 1) then
       lvFilter.Row:=lvFilter.Row - 1
@@ -5061,7 +5137,7 @@ begin
         FSlowResponse.Visible:=True;
 
     if FDetailsWait.Visible then begin
-      if (FDetailsWaitStart = 0) or not (rtDetails in RpcObj.RefreshNow) then begin
+      if (FDetailsWaitStart = 0) or not RpcObj.RefreshPending(rtDetails) then begin
         FDetailsWaitStart:=0;
         FDetailsWait.Visible:=False;
         panDetailsWait.Visible:=False;
@@ -5128,15 +5204,12 @@ end;
 
 procedure TMainForm.PageInfoChange(Sender: TObject);
 begin
+  if PageInfo.ActivePage <> tabFiles then begin
+    FRestoreFilesFocus:=False;
+  end;
   if PageInfo.ActivePage.Tag <> 0 then
     FDetailsWaitStart:=Now;
-  RpcObj.Lock;
-  try
-    RpcObj.AdvInfo:=GetPageInfoType(PageInfo.ActivePage);
-    DoRefresh;
-  finally
-    RpcObj.Unlock;
-  end;
+  RpcObj.SetAdvancedInfo(GetPageInfoType(PageInfo.ActivePage), True);
 end;
 
 procedure TMainForm.tbSearchCancelClick(Sender: TObject);
@@ -5159,6 +5232,7 @@ end;
 
 procedure TMainForm.pmTorrentsPopup(Sender: TObject);
 begin
+  FRestoreFilesFocus:=False;
   UpdateUI;
 end;
 
@@ -5450,7 +5524,8 @@ begin
     t:=1;
   FDetailsWaitStart:=0;
   if Skip <> aiFiles then begin
-    FFiles.Clear;
+    FRestoreFilesFocus:=False;
+    FFilesTree.Clear;
     tabFiles.Caption:=FFilesCapt;
   end;
   if Skip <> aiPeers then
@@ -5553,8 +5628,9 @@ end;
 
 procedure TMainForm.UpdateUI;
 var
-  e: boolean;
+  e, FileActionPending: boolean;
 begin
+  TryRestoreFilesFocus;
   e:=((Screen.ActiveForm = Self) or not Visible or (WindowState = wsMinimized))
     and not gTorrents.EditorMode and not lvFiles.EditorMode;
 
@@ -5562,8 +5638,9 @@ begin
   acOptions.Enabled:=e;
   acConnOptions.Enabled:=e;
   e:=RpcObj.Connected and e;
+  FileActionPending:=FileListPending and FilesFocusRestorePending;
   acDisconnect.Enabled:=e;
-  acSelectAll.Enabled:=e;
+  acSelectAll.Enabled:=e and not FileActionPending;
   acAddTorrent.Enabled:=e;
   acAddLink.Enabled:=e;
   acDaemonOptions.Enabled:=e;
@@ -5579,10 +5656,12 @@ begin
   acMoveTorrent.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 6);
   acSetLabels.Enabled:=acVerifyTorrent.Enabled and (RpcObj.RPCVersion >= 16);
   acTorrentProps.Enabled:=acVerifyTorrent.Enabled;
-  acOpenContainingFolder.Enabled:=acTorrentProps.Enabled and (RpcObj.RPCVersion >= 4);
+  acOpenContainingFolder.Enabled:=acTorrentProps.Enabled and
+                                  (RpcObj.RPCVersion >= 4) and not FileActionPending;
   pmiPriority.Enabled:=e and (gTorrents.Items.Count > 0);
   miPriority.Enabled:=pmiPriority.Enabled;
-  acSetHighPriority.Enabled:=e and (gTorrents.Items.Count > 0) and
+  acSetHighPriority.Enabled:=e and not FileActionPending and
+                      (gTorrents.Items.Count > 0) and
                       ( ( not lvFiles.Focused and (RpcObj.RPCVersion >= 5) ) or
                         ((lvFiles.Items.Count > 0) and (PageInfo.ActivePage = tabFiles)) );
   acSetNormalPriority.Enabled:=acSetHighPriority.Enabled;
@@ -5594,10 +5673,10 @@ begin
   acQMoveDown.Enabled:=miQueue.Enabled;
   acQMoveBottom.Enabled:=miQueue.Enabled;
   acOpenFile.Enabled:=acSetHighPriority.Enabled and (lvFiles.SelCount < 2) and (RpcObj.RPCVersion >= 4);
-  acCopyPath.Enabled:=acOpenFile.Enabled;
-  acSetNotDownload.Enabled:=acSetHighPriority.Enabled;
+  acCopyPath.Enabled:=acOpenFile.Enabled and not FileListPending;
+  acSetNotDownload.Enabled:=acSetHighPriority.Enabled and not FileListPending;
   acRename.Enabled:=(RpcObj.RPCVersion >= 15) and acSetHighPriority.Enabled;
-  acSetupColumns.Enabled:=e;
+  acSetupColumns.Enabled:=e and not FileActionPending;
   acUpdateBlocklist.Enabled:=(acUpdateBlocklist.Tag <> 0) and e and (RpcObj.RPCVersion >= 5);
   acAddTracker.Enabled:=acTorrentProps.Enabled and (RpcObj.RPCVersion >= 10);
   acAdvEditTrackers.Enabled:=acAddTracker.Enabled;
@@ -5606,6 +5685,52 @@ begin
   acAltSpeed.Enabled:=e and (RpcObj.RPCVersion >= 5);
   pmiDownSpeedLimit.Enabled:=RpcObj.Connected;
   pmiUpSpeedLimit.Enabled:=RpcObj.Connected;
+end;
+
+function TMainForm.FileListPending: boolean;
+begin
+  Result:=(PageInfo.ActivePage = tabFiles) and
+          ((not lvFiles.Enabled) or
+           (FFilesTree.TorrentId <> RpcObj.CurTorrentId));
+end;
+
+function TMainForm.FilesFocusRestorePending: boolean;
+begin
+  Result:=FRestoreFilesFocus;
+  if Result and (Screen.ActiveForm = Self) and
+     (Self.ActiveControl <> FFilesFocusFallback) then begin
+    FRestoreFilesFocus:=False;
+    Result:=False;
+  end;
+end;
+
+procedure TMainForm.TryRestoreFilesFocus;
+begin
+  if not FRestoreFilesFocus then begin
+    FRestoreFilesFocusDeferred:=False;
+    exit;
+  end;
+  if Screen.ActiveForm <> Self then begin
+    FRestoreFilesFocusDeferred:=True;
+    exit;
+  end;
+  if FRestoreFilesFocusDeferred then begin
+    FRestoreFilesFocusDeferred:=False;
+    FFilesFocusFallback:=Self.ActiveControl;
+  end;
+  if not FilesFocusRestorePending then exit;
+  if edSearch.Focused then begin
+    FRestoreFilesFocus:=False;
+    exit;
+  end;
+  if (PageInfo.ActivePage <> tabFiles) or not RpcObj.Connected then begin
+    FRestoreFilesFocus:=False;
+    exit;
+  end;
+  if FileListPending or not Self.Visible or (Self.WindowState = wsMinimized) then
+    exit;
+  FRestoreFilesFocus:=False;
+  Self.ActiveControl:=lvFiles;
 end;
 
 procedure TMainForm.ShowConnOptions(NewConnection: boolean);
@@ -6705,7 +6830,7 @@ begin
     end;
 
     if RemoveLocalData then
-      RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
+      RpcObj.RequestRefresh([rtSession]);
   end;
 end;
 
@@ -6741,6 +6866,7 @@ begin
   FFilesTree.FillTree(ATorrentId, list, priorities, wanted);
   tabFiles.Caption:=Format('%s (%d)', [FFilesCapt, list.Count]);
   DetailsUpdated;
+  TryRestoreFilesFocus;
 end;
 
 procedure TMainForm.FillGeneralInfo(t: TJSONObject);
@@ -7355,14 +7481,17 @@ begin
   end;
   if not Result then
     CheckStatus(False)
-  else
+  else begin
+    if AAction = 'torrent-remove' then
+      RpcObj.FileDetailsChanged;
     DoRefresh(True);
+  end;
   AppNormal;
 end;
 
-function TMainForm.SetFilePriority(TorrentId: integer; const Files: array of integer; const APriority: string): boolean;
+function TMainForm.SetFilePriority(TorrentId: integer; const WantedFiles, UnwantedFiles: array of integer; const APriority: string): boolean;
 
-  function CreateFilesArray: TJSONArray;
+  function CreateFilesArray(const Files: array of integer): TJSONArray;
   var
     i: integer;
   begin
@@ -7381,12 +7510,12 @@ begin
     args:=TJSONObject.Create;
     if TorrentId <> 0 then
       args.Add('ids', TJSONArray.Create([TorrentId]));
-    if APriority = 'skip' then
-      args.Add('files-unwanted', CreateFilesArray)
-    else begin
-      args.Add('files-wanted', CreateFilesArray);
-      args.Add('priority-' + APriority, CreateFilesArray);
+    if Length(WantedFiles) > 0 then begin
+      args.Add('files-wanted', CreateFilesArray(WantedFiles));
+      args.Add('priority-' + APriority, CreateFilesArray(WantedFiles));
     end;
+    if Length(UnwantedFiles) > 0 then
+      args.Add('files-unwanted', CreateFilesArray(UnwantedFiles));
     req.Add('arguments', args);
     args:=RpcObj.SendRequest(req, False);
     Result:=args<> nil;
@@ -7397,18 +7526,25 @@ begin
   if not Result then
     CheckStatus(False)
   else
-    DoRefresh;
+    RpcObj.FileDetailsChanged;
   AppNormal;
 end;
 
 function TMainForm.SetCurrentFilePriority(const APriority: string): boolean;
 var
-  Files: array of integer;
-  i, j, k, level: integer;
+  Files, EmptyFiles, WantedFiles, UnwantedFiles: array of integer;
+  i, j, k, level, WantedCount, UnwantedCount: integer;
   pri: string;
 begin
   Result:= false;
-  if (gTorrents.Items.Count = 0) or (PageInfo.ActivePage <> tabFiles) then exit;
+  if (gTorrents.Items.Count = 0) or (PageInfo.ActivePage <> tabFiles) or
+     (lvFiles.Items.Count = 0) then exit;
+  if FFilesTree.TorrentId <> RpcObj.CurTorrentId then begin
+    lvFiles.Enabled:=False;
+    DoRefresh;
+    exit;
+  end;
+  if not lvFiles.Enabled then exit;
   SetLength(Files, lvFiles.Items.Count);
   pri:=APriority;
   j:=0;
@@ -7435,24 +7571,55 @@ begin
   end
   else begin
     // Priority based on checkbox state
+    SetLength(WantedFiles, FFiles.Count);
+    SetLength(UnwantedFiles, FFiles.Count);
+    WantedCount:=0;
+    UnwantedCount:=0;
     for i:=0 to FFiles.Count - 1 do
       if not FFilesTree.IsFolder(i) then begin
         k:=FFiles[idxFilePriority, i];
         if (k <> TR_PRI_SKIP) <> (FFilesTree.Checked[i] = cbChecked) then begin
-          if pri = '' then
-            if FFilesTree.Checked[i] = cbChecked then
-              pri:='normal'
-            else
-              pri:='skip';
-          Files[j]:=FFiles[idxFileId, i];
-          Inc(j);
+          if FFilesTree.Checked[i] = cbChecked then begin
+            WantedFiles[WantedCount]:=FFiles[idxFileId, i];
+            Inc(WantedCount);
+          end
+          else begin
+            UnwantedFiles[UnwantedCount]:=FFiles[idxFileId, i];
+            Inc(UnwantedCount);
+          end;
         end;
       end;
+    if (WantedCount = 0) and (UnwantedCount = 0) then exit;
+    SetLength(WantedFiles, WantedCount);
+    SetLength(UnwantedFiles, UnwantedCount);
+    Result:=SetFilePriority(RpcObj.CurTorrentId, WantedFiles, UnwantedFiles, 'normal');
+    if Result then begin
+      FFiles.BeginUpdate;
+      try
+        for i:=0 to FFiles.Count - 1 do
+          if not FFilesTree.IsFolder(i) then begin
+            k:=FFiles[idxFilePriority, i];
+            if (k <> TR_PRI_SKIP) <> (FFilesTree.Checked[i] = cbChecked) then
+              if FFilesTree.Checked[i] = cbChecked then
+                FFiles[idxFilePriority, i]:=TR_PRI_NORMAL
+              else
+                FFiles[idxFilePriority, i]:=TR_PRI_SKIP;
+          end;
+        if not FFilesTree.IsPlain then
+          FFilesTree.UpdateSummary;
+      finally
+        FFiles.EndUpdate;
+      end;
+    end;
+    exit;
   end;
 
   if j = 0 then exit;
   SetLength(Files, j);
-  Result:=SetFilePriority(RpcObj.CurTorrentId, Files, pri);
+  if pri = 'skip' then
+    Result:=SetFilePriority(RpcObj.CurTorrentId, EmptyFiles, Files, '')
+  else
+    Result:=SetFilePriority(RpcObj.CurTorrentId, Files, EmptyFiles, pri);
 end;
 
 procedure TMainForm.SetTorrentPriority(APriority: integer);
@@ -8065,7 +8232,7 @@ begin
   finally
     req.Free;
   end;
-  RpcObj.RefreshNow:=RpcObj.RefreshNow + [rtSession];
+  RpcObj.RequestRefresh([rtSession]);
   AppNormal;
 end;
 
@@ -8313,6 +8480,8 @@ begin
   args.Add('path', UTF8Decode(OldPath));
   args.Add('name', UTF8Decode(NewName));
   Result:=TorrentAction(TorrentId, 'torrent-rename-path', args);
+  if Result then
+    RpcObj.FileDetailsChanged;
 end;
 
 procedure TMainForm.FilesTreeStateChanged(Sender: TObject);
@@ -8328,6 +8497,15 @@ begin
   Result:=-1;
   if TorrentId = 0 then
     exit;
+  if gTorrents.Tag <> 0 then begin
+    Result:=gTorrents.Items.IndexOf(idxTorrentId, TorrentId);
+    if Result < 0 then
+      exit;
+    gTorrents.RemoveSelection;
+    gTorrents.Row:=Result;
+    SetCurrentTorrent(TorrentId, False);
+    exit;
+  end;
   br:=False;
   tt:=Now;
   while True do begin
@@ -8336,7 +8514,7 @@ begin
     if Result >= 0 then begin
       gTorrents.RemoveSelection;
       gTorrents.Row:=Result;
-      RpcObj.CurTorrentId:=TorrentId;
+      SetCurrentTorrent(TorrentId, False);
       if Self.Visible and (Self.WindowState <> wsMinimized) and gTorrents.Enabled then
         Self.ActiveControl:=gTorrents;
       break;

@@ -80,6 +80,7 @@ type
     FOnAfterSort: TNotifyEvent;
     FOnCellAttributes: TOnCellAttributes;
     FOnCheckBoxClick: TCellNotifyEvent;
+    FOnAfterCheckBoxClick: TNotifyEvent;
     FOnDrawCell: TOnDrawCellEvent;
     FOnEditorHide: TNotifyEvent;
     FOnEditorShow: TNotifyEvent;
@@ -240,6 +241,7 @@ type
     property OnSortColumn: TOnSortColumnEvent read FOnSortColumn write FOnSortColumn;
     property OnAfterSort: TNotifyEvent read FOnAfterSort write FOnAfterSort;
     property OnCheckBoxClick: TCellNotifyEvent read FOnCheckBoxClick write FOnCheckBoxClick;
+    property OnAfterCheckBoxClick: TNotifyEvent read FOnAfterCheckBoxClick write FOnAfterCheckBoxClick;
     property OnTreeButtonClick: TCellNotifyEvent read FOnTreeButtonClick write FOnTreeButtonClick;
     property OnQuickSearch: TOnQuickSearch read FOnQuickSearch write FOnQuickSearch;
     property OnEditorShow: TNotifyEvent read FOnEditorShow write FOnEditorShow;
@@ -1138,6 +1140,8 @@ begin
             FOnCheckBoxClick(Self, c, i, dc);
         end;
     end;
+    if Assigned(FOnAfterCheckBoxClick) then
+      FOnAfterCheckBoxClick(Self);
   end;
 end;
 
