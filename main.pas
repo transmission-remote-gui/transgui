@@ -4613,17 +4613,25 @@ begin
     AppBusy;
     try
       res:=RpcObj.RequestInfo(gTorrents.Items[idxTorrentId, gTorrents.Row], ['downloadDir']);
-      if res = nil then
+      if res = nil then begin
         CheckStatus(False);
-      with res.Arrays['torrents'].Objects[0] do
-        n:=IncludeProperTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Row]));
-      s:=MapRemoteToLocal(n);
-      if s = '' then
-        s:=n;
-      if FileExistsUTF8(s) or DirectoryExistsUTF8(s) then begin
-        // File/folder exists - open it
-        OpenCurrentTorrent(False);
         exit;
+      end;
+      try
+        if res.Arrays['torrents'].Count = 0 then
+          exit;
+        with res.Arrays['torrents'].Objects[0] do
+          n:=IncludeProperTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + UTF8Encode(widestring(gTorrents.Items[idxName, gTorrents.Row]));
+        s:=MapRemoteToLocal(n);
+        if s = '' then
+          s:=n;
+        if FileExistsUTF8(s) or DirectoryExistsUTF8(s) then begin
+          // File/folder exists - open it
+          OpenCurrentTorrent(False);
+          exit;
+        end;
+      finally
+        res.Free;
       end;
     finally
       AppNormal;
