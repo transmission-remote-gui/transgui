@@ -706,7 +706,6 @@ type
     FFromNow: boolean;
     FWatchLocalFolder: string;
     FWatchDestinationFolder: string;
-    FWatchDownloading: boolean;
     FRow: integer;
     FCol: integer;
 {$ifdef windows}
@@ -746,7 +745,7 @@ type
     procedure LoadColumns(LV: TVarGrid; const AName: string; FullInfo: boolean = True);
     function GetTorrentError(t: TJSONObject; Status: integer): string;
     function SecondsToString(j: integer): string;
-    function DoAddTorrent(const FileName: Utf8String): boolean;
+    function DoAddTorrent(const FileName: Utf8String; IsWatchTorrent: boolean): boolean;
     procedure UpdateTray;
     procedure HideApp;
     procedure ShowApp;
@@ -1002,6 +1001,8 @@ const
 
   SpeedHistorySize = 20;
 
+  PendingWatchMarker = PtrUInt(1); // Never free or dereference this sentinel.
+
 const
   SizeNames: array[1..5] of string = (sByte, sKByte, sMByte, sGByte, sTByte);
 
@@ -1048,7 +1049,7 @@ begin
       begin
             if FindFirstUTF8(FWatchLocalFolder+'*.torrent',faAnyFile,sr)=0 then
               repeat
-                    FPendingTorrents.Add(FWatchLocalFolder+sr.Name);
+                    FPendingTorrents.AddObject(FWatchLocalFolder+sr.Name, TObject(PendingWatchMarker));
               until FindNextUTF8(sr)<>0;
             FindCloseUTF8(sr);
       end;
@@ -1634,6 +1635,7 @@ begin
   lvTrackers.AlternateColor:=FAlterColor;
   gStats.AlternateColor:=FAlterColor;
   FPendingTorrents:=TStringList.Create;
+  FPendingTorrents.OwnsObjects:=False; // Object slots hold the sentinel, not instances.
   FPendingClipboardTorrents:=TStringList.Create;
   FFilesCapt:=tabFiles.Caption;
   FPasswords:=TStringList.Create;
@@ -2406,14 +2408,14 @@ begin
     if ShowModal = mrOk then
       begin
           if isHash(edLink.Text) then edLink.Text := 'magnet:?xt=urn:btih:'+ edLink.Text;
-          DoAddTorrent(edLink.Text);
+          DoAddTorrent(edLink.Text, False);
       end;
   finally
     Free;
   end;
 end;
 
-function TMainForm.DoAddTorrent(const FileName: Utf8String): boolean;
+function TMainForm.DoAddTorrent(const FileName: Utf8String; IsWatchTorrent: boolean): boolean;
 var
   torrent: string;
   WaitForm: TBaseForm;
@@ -2736,7 +2738,7 @@ begin
 
         IniSec:='AddTorrent.' + FCurConn;
         FillDownloadDirs(cbDestFolder, 'LastDownloadDir');
-        if (FWatchDownloading) and (FWatchDestinationFolder <> '') then cbDestFolder.Text:=FWatchDestinationFolder;
+        if IsWatchTorrent and (FWatchDestinationFolder <> '') then cbDestFolder.Text:=FWatchDestinationFolder;
 
         req:=TJSONObject.Create;
         try
@@ -2845,7 +2847,7 @@ begin
         AppNormal;
 
         ok:=not Ini.ReadBool('Interface', 'ShowAddTorrentWindow', True);
-        if FWatchDownloading then ok:= true;
+        if IsWatchTorrent then ok:= true;
         if ok then
           btSelectAllClick(nil)
         else begin
@@ -2942,11 +2944,18 @@ begin
           SelectTorrent(id, 2000);
 
           id:=0;
-          if (Ini.ReadBool('Interface', 'DeleteTorrentFile', False) and not IsProtocolSupported(FileName)) or (FWatchDownloading) then
+          if not IsProtocolSupported(FileName) and
+              (IsWatchTorrent or
+               (Ini.ReadBool('Interface', 'DeleteTorrentFile', False) and
+                ((AnsiCompareText(ExtractFileExt(FileName), '.torrent') = 0) or
+                 (AnsiCompareText(ExtractFileName(FileName), '.torrent') = 0)))) then
             DeleteFileUTF8(FileName);
 
           Ini.WriteInteger(IniSec, 'PeerLimit', edPeerLimit.Value);
-          SaveDownloadDirs(cbDestFolder, 'LastDownloadDir');
+          if not IsWatchTorrent then
+            SaveDownloadDirs(cbDestFolder, 'LastDownloadDir')
+          else
+            Ini.UpdateFile;
           Result:=True;
           AppNormal;
         end;
@@ -4006,10 +4015,7 @@ begin
     exit;
   ReadLocalFolderWatch;
   if FPendingTorrents.Count > 0 then
-    begin
-      FWatchDownloading := true;
-      TickTimerTimer(nil);
-    end;
+    TickTimerTimer(nil);
 end;
 
 
@@ -8147,6 +8153,7 @@ var
   s: string;
   sl: TStringList;
   WasHidden: boolean;
+  IsWatchTorrent: boolean;
 begin
   h:=FileOpenUTF8(FIPCFileName, fmOpenRead or fmShareDenyWrite);
   if h <> System.THandle(-1) then begin
@@ -8179,7 +8186,8 @@ begin
 
   if not FLinksFromClipboard then
     FPendingClipboardTorrents.Clear
-  else if not FWatchDownloading and (FPendingClipboardTorrents.Count > 0) then begin
+  else if (FPendingClipboardTorrents.Count > 0) and
+    (FPendingTorrents.IndexOfObject(TObject(PendingWatchMarker)) < 0) then begin
     FPendingTorrents.AddStrings(FPendingClipboardTorrents);
     FPendingClipboardTorrents.Clear;
   end;
@@ -8196,15 +8204,15 @@ begin
         ShowApp;
       try
         while FPendingTorrents.Count > 0 do begin
+          IsWatchTorrent:=PtrUInt(FPendingTorrents.Objects[0]) = PendingWatchMarker;
           s:=FPendingTorrents[0];
           FPendingTorrents.Delete(0);
           if s <> '' then
-            DoAddTorrent(s);
+            DoAddTorrent(s, IsWatchTorrent);
         end;
       finally
         if WasHidden then
           HideTaskbarButton;
-          FWatchDownloading := false;
       end;
     end;
   finally
