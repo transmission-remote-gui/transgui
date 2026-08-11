@@ -2,17 +2,32 @@
 
 set -ex
 
+lazarus_dir="${1:-/Applications/Lazarus/}"
+lazbuild_bin="$lazarus_dir/lazbuild"
+if [ "${lazarus_dir%/}" != "/Applications/Lazarus" ] && [ ! -x "$lazbuild_bin" ]; then
+  echo "Unable to find lazbuild at $lazbuild_bin." >&2
+  exit 1
+fi
+
 prog_ver="$(cat ../../VERSION.txt)"
 build="$(git rev-list --abbrev-commit --max-count=1 HEAD ../..)"
-fpc_ver="$(fpc -i V | head -n 1)"
+
+if [ -z "${CI-}" ]; then
+  ./install_deps.sh
+fi
+
+fpc_bin="/usr/local/bin/fpc"
+if [ ! -x "$fpc_bin" ]; then
+  echo "Unable to find fpc at $fpc_bin." >&2
+  exit 1
+fi
+fpc_ver="Free Pascal Compiler version $("$fpc_bin" -iV)"
 exename=../../transgui
 appname="Transmission Remote GUI"
 dmg_dist_file="../../Release/transgui-$prog_ver.dmg"
 dmg_temp_file="$dmg_dist_file.tmp.dmg"
 dmgfolder=./Release
 appfolder="$dmgfolder/$appname.app"
-lazarus_dir="${1:-/Library/Lazarus/}"
-lazbuild_bin="$lazarus_dir/lazbuild"
 if [ ! -x "$lazbuild_bin" ]; then
   echo "Unable to find lazbuild at $lazbuild_bin." >&2
   exit 1
@@ -81,10 +96,6 @@ cleanup() {
   exit "$status"
 }
 
-if [ -z "${CI-}" ]; then
-  ./install_deps.sh
-fi
-
 if [ ! "$lazarus_dir" = "" ]; then
   lazdir=LAZARUS_DIR="$lazarus_dir"
 fi
@@ -114,8 +125,8 @@ cleanup_lazbuild_state() {
 
 run_lazbuild() {
   cleanup_lazbuild_state
-  "$lazbuild_bin" -B ../../trcomp.lpk --lazarusdir="$lazarus_dir" --compiler=/usr/local/bin/fpc --cpu=x86_64 --widgetset=cocoa --pcp="$lazarus_pcp"
-  "$lazbuild_bin" -B ../../transgui.lpi --lazarusdir="$lazarus_dir" --compiler=/usr/local/bin/fpc --cpu=x86_64 --widgetset=cocoa --pcp="$lazarus_pcp"
+  "$lazbuild_bin" -B ../../trcomp.lpk --lazarusdir="$lazarus_dir" --compiler="$fpc_bin" --cpu=x86_64 --widgetset=cocoa --pcp="$lazarus_pcp"
+  "$lazbuild_bin" -B ../../transgui.lpi --lazarusdir="$lazarus_dir" --compiler="$fpc_bin" --cpu=x86_64 --widgetset=cocoa --pcp="$lazarus_pcp"
 }
 
 mkdir -p ../../Release/
@@ -124,8 +135,8 @@ sed -i.bak "s/'Version %s'/'Version %s Build $build'#13#10'Compiled by: $fpc_ver
 run_lazbuild
 
 # Building Intel version
-make -j"$(sysctl -n hw.ncpu)" -C ../.. clean CPU_TARGET=x86_64 "$lazdir"
-make -j"$(sysctl -n hw.ncpu)" -C ../.. CPU_TARGET=x86_64 "$lazdir"
+make -j"$(sysctl -n hw.ncpu)" -C ../.. clean CPU_TARGET=x86_64 FPC="$fpc_bin" "$lazdir"
+make -j"$(sysctl -n hw.ncpu)" -C ../.. CPU_TARGET=x86_64 FPC="$fpc_bin" "$lazdir"
 
 if ! [ -e $exename ]; then
   echo "$exename does not exist"
