@@ -219,8 +219,19 @@ begin
       InitSSLInterface;
     end;
     Result:=IsSSLloaded;
+{$ifdef darwin}
+    if not Result then begin
+      ASSLName:=FirstTriedDLLSSLName;
+      AUtilName:=FirstTriedDLLUtilName;
+    end
+    else begin
+      ASSLName:=DLLSSLName;
+      AUtilName:=DLLUtilName;
+    end;
+{$else}
     ASSLName:=DLLSSLName;
     AUtilName:=DLLUtilName;
+{$endif darwin}
   finally
     OpenSSLInitLock.Leave;
   end;
