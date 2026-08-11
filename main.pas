@@ -4087,6 +4087,10 @@ begin
       exit;
     end;
     try
+      if args.Arrays['torrents'].Count = 0 then begin
+        AppNormal;
+        exit;
+      end;
       t:=args.Arrays['torrents'].Objects[0];
 
       if gTorrents.SelCount > 1 then
@@ -8363,30 +8367,33 @@ begin
     sel:=False;
     gTorrents.RemoveSelection;
     res:=RpcObj.RequestInfo(gTorrents.Items[idxTorrentId, gTorrents.Row], ['files', 'downloadDir']);
-    if res = nil then
-      CheckStatus(False)
-    else
-      try
-        with res.Arrays['torrents'].Objects[0] do begin
-          files:=Arrays['files'];
-          if files.Count = 0 then exit;
-          if files.Count = 1 then begin
-            p:=UTF8Encode((files[0] as TJSONObject).Strings['name']);
-            sel:=OpenFolderOnly;
-          end
-          else begin
-            //sel:=OpenFolderOnly; // bag? missed?
-            s:=GetFilesCommonPath(files);
-            repeat
-              p:=s;
-              s:=ExtractFilePath(p);
-            until (s = '') or (s = p);
-          end;
-          p:=IncludeTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + p;
+    if res = nil then begin
+      CheckStatus(False);
+      exit;
+    end;
+    try
+      if res.Arrays['torrents'].Count = 0 then
+        exit;
+      with res.Arrays['torrents'].Objects[0] do begin
+        files:=Arrays['files'];
+        if files.Count = 0 then exit;
+        if files.Count = 1 then begin
+          p:=UTF8Encode((files[0] as TJSONObject).Strings['name']);
+          sel:=OpenFolderOnly;
+        end
+        else begin
+          //sel:=OpenFolderOnly; // bag? missed?
+          s:=GetFilesCommonPath(files);
+          repeat
+            p:=s;
+            s:=ExtractFilePath(p);
+          until (s = '') or (s = p);
         end;
-      finally
-        res.Free;
+        p:=IncludeTrailingPathDelimiter(UTF8Encode(Strings['downloadDir'])) + p;
       end;
+    finally
+      res.Free;
+    end;
     ExecRemoteFile(p, sel, Userdef);
   finally
     AppNormal;
