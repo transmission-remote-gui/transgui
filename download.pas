@@ -96,8 +96,14 @@ uses Main, rpc;
 
 function DownloadFile(const URL, DestFolder: string; const DestFileName, DisplayName: string): boolean;
 var
-  s: string;
+  s, SSLName, SSLUtilName: string;
 begin
+  if (CompareText(Copy(URL, 1, 6), 'https:') = 0) and
+     not EnsureOpenSSLLoaded(SSLName, SSLUtilName) then begin
+    MessageDlg(Format(sSSLLoadError, [SSLName, SSLUtilName]), mtError, [mbOK], 0);
+    Result:=False;
+    exit;
+  end;
   with TDownloadForm.Create(Application) do
   try
     s:=ExtractFileName(StringReplace(URL, '/', DirectorySeparator, [rfReplaceAll]));
