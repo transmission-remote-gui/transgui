@@ -7747,7 +7747,7 @@ var
   dd, mm, yy : string;
   nd, nm, ny : integer;
 begin
-  CB.Items.Clear;
+  ClearFolderHistoryItems(CB.Items);
 
   IniSec   := 'AddTorrent.' + FCurConn;
   j        := NormalizeFolderHistoryCount(
@@ -7918,7 +7918,7 @@ begin
       end;
 
       if indx > -1 then
-        CB.Items.Delete(indx)
+        FreeFolderHistoryItem(CB.Items, indx)
       else
         break;
     end;
