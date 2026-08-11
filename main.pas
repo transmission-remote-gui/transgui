@@ -4071,234 +4071,242 @@ begin
   trlist:=nil;
   with TTorrPropsForm.Create(Self) do
   try
-    Page.ActivePageIndex:=PageNo;
-    gTorrents.Tag:=1;
-    gTorrents.EnsureSelectionVisible;
-    args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited', 'uploadLimit', 'uploadLimitMode', 'uploadLimited',
-                                  'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit', 'seedIdleLimit', 'seedIdleMode', 'trackers']);
-    if args = nil then begin
-      CheckStatus(False);
-      exit;
-    end;
     try
-      t:=args.Arrays['torrents'].Objects[0];
-
-      if gTorrents.SelCount > 1 then
-        s:=Format(sSeveralTorrents, [gTorrents.SelCount])
-      else
-        s:=UTF8Encode(t.Strings['name']);
-
-      txName.Caption:=txName.Caption + ' ' + s;
-      Caption:=Caption + ' - ' + s;
-      if RpcObj.RPCVersion < 5 then begin
-        // RPC versions prior to v5
-        j:=t.Integers['downloadLimitMode'];
-        cbMaxDown.Checked:=j = TR_SPEEDLIMIT_SINGLE;
-        i:=t.Integers['downloadLimit'];
-        if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
-          edMaxDown.ValueEmpty:=True
-        else
-          edMaxDown.Value:=i;
-
-        j:=t.Integers['uploadLimitMode'];
-        cbMaxUp.Checked:=j = TR_SPEEDLIMIT_SINGLE;
-        i:=t.Integers['uploadLimit'];
-        if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
-          edMaxUp.ValueEmpty:=True
-        else
-          edMaxUp.Value:=i;
-        cbSeedRatio.Visible:=False;
-        edSeedRatio.Visible:=False;
-      end else begin
-        // RPC version 5
-        cbMaxDown.Checked:=t.Booleans['downloadLimited'];
-        i:=t.Integers['downloadLimit'];
-        if i < 0 then
-          edMaxDown.ValueEmpty:=True
-        else
-          edMaxDown.Value:=i;
-
-        cbMaxUp.Checked:=t.Booleans['uploadLimited'];
-        i:=t.Integers['uploadLimit'];
-        if i < 0 then
-          edMaxUp.ValueEmpty:=True
-        else
-          edMaxUp.Value:=i;
-
-        case t.Integers['seedRatioMode'] of
-          TR_RATIOLIMIT_SINGLE:
-            cbSeedRatio.State:=cbChecked;
-          TR_RATIOLIMIT_UNLIMITED:
-            cbSeedRatio.State:=cbUnchecked;
-          else
-            cbSeedRatio.State:=cbGrayed;
-        end;
-        edSeedRatio.Value:=t.Floats['seedRatioLimit'];
+      Page.ActivePageIndex:=PageNo;
+      gTorrents.Tag:=1;
+      gTorrents.EnsureSelectionVisible;
+      args:=RpcObj.RequestInfo(id, ['downloadLimit', 'downloadLimitMode', 'downloadLimited', 'uploadLimit', 'uploadLimitMode', 'uploadLimited',
+                                    'name', 'maxConnectedPeers', 'seedRatioMode', 'seedRatioLimit', 'seedIdleLimit', 'seedIdleMode', 'trackers']);
+      if args = nil then begin
+        CheckStatus(False);
+        exit;
       end;
-
-      if RpcObj.RPCVersion >= 10 then begin
-        case t.Integers['seedIdleMode'] of
-          TR_IDLELIMIT_SINGLE:
-            cbIdleSeedLimit.State:=cbChecked;
-          TR_IDLELIMIT_UNLIMITED:
-            cbIdleSeedLimit.State:=cbUnchecked;
-          else
-            cbIdleSeedLimit.State:=cbGrayed;
-        end;
-        edIdleSeedLimit.Value:=t.Integers['seedIdleLimit'];
-        cbIdleSeedLimitClick(nil);
-
-        trlist:=TStringList.Create;
-        Trackers:=t.Arrays['trackers'];
-        for i:=0 to Trackers.Count - 1 do begin
-          tr:=Trackers[i] as TJSONObject;
-            trlist.AddObject(UTF8Decode(tr.Strings['announce']), TObject(PtrUInt(tr.Integers['id'])));
-        end;
-        edTrackers.Lines.Assign(trlist);
-      end
-      else begin
-        cbIdleSeedLimit.Visible:=False;
-        edIdleSeedLimit.Visible:=False;
-        txMinutes.Visible:=False;
-        tabAdvanced.TabVisible:=False;
-      end;
-      edPeerLimit.Value:=t.Integers['maxConnectedPeers'];
-    finally
-      args.Free;
-    end;
-    cbMaxDownClick(nil);
-    cbMaxUpClick(nil);
-    cbSeedRatioClick(nil);
-    AppNormal;
-    if ShowModal = mrOk then begin
-      AppBusy;
-      Self.Update;
-      req:=TJSONObject.Create;
       try
-        req.Add('method', 'torrent-set');
-        args:=TJSONObject.Create;
-        ids:=TJSONArray.Create;
-        for i:=VarArrayLowBound(TorrentIds, 1) to VarArrayHighBound(TorrentIds, 1) do
-          ids.Add(integer(TorrentIds[i]));
-        args.Add('ids', ids);
+        if args.Arrays['torrents'].Count = 0 then
+          exit;
+        t:=args.Arrays['torrents'].Objects[0];
 
-        if RpcObj.RPCVersion < 5 then
-        begin
+        if gTorrents.SelCount > 1 then
+          s:=Format(sSeveralTorrents, [gTorrents.SelCount])
+        else
+          s:=UTF8Encode(t.Strings['name']);
+
+        txName.Caption:=txName.Caption + ' ' + s;
+        Caption:=Caption + ' - ' + s;
+        if RpcObj.RPCVersion < 5 then begin
           // RPC versions prior to v5
-          args.Add('speed-limit-down-enabled', cbMaxDown.Checked);
-          args.Add('speed-limit-up-enabled', cbMaxUp.Checked);
-          if cbMaxDown.Checked then
-            args.Add('speed-limit-down', edMaxDown.Value);
-          if cbMaxUp.Checked then
-            args.Add('speed-limit-up', edMaxUp.Value);
+          j:=t.Integers['downloadLimitMode'];
+          cbMaxDown.Checked:=j = TR_SPEEDLIMIT_SINGLE;
+          i:=t.Integers['downloadLimit'];
+          if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
+            edMaxDown.ValueEmpty:=True
+          else
+            edMaxDown.Value:=i;
+
+          j:=t.Integers['uploadLimitMode'];
+          cbMaxUp.Checked:=j = TR_SPEEDLIMIT_SINGLE;
+          i:=t.Integers['uploadLimit'];
+          if (i < 0) or (j = TR_SPEEDLIMIT_UNLIMITED) then
+            edMaxUp.ValueEmpty:=True
+          else
+            edMaxUp.Value:=i;
+          cbSeedRatio.Visible:=False;
+          edSeedRatio.Visible:=False;
         end else begin
           // RPC version 5
-          args.Add('downloadLimited', cbMaxDown.Checked);
-          args.Add('uploadLimited', cbMaxUp.Checked);
-          if cbMaxDown.Checked then
-            args.Add('downloadLimit', edMaxDown.Value);
-          if cbMaxUp.Checked then
-            args.Add('uploadLimit', edMaxUp.Value);
-          case cbSeedRatio.State of
-            cbChecked:
-              i:=TR_RATIOLIMIT_SINGLE;
-            cbUnchecked:
-              i:=TR_RATIOLIMIT_UNLIMITED;
+          cbMaxDown.Checked:=t.Booleans['downloadLimited'];
+          i:=t.Integers['downloadLimit'];
+          if i < 0 then
+            edMaxDown.ValueEmpty:=True
+          else
+            edMaxDown.Value:=i;
+
+          cbMaxUp.Checked:=t.Booleans['uploadLimited'];
+          i:=t.Integers['uploadLimit'];
+          if i < 0 then
+            edMaxUp.ValueEmpty:=True
+          else
+            edMaxUp.Value:=i;
+
+          case t.Integers['seedRatioMode'] of
+            TR_RATIOLIMIT_SINGLE:
+              cbSeedRatio.State:=cbChecked;
+            TR_RATIOLIMIT_UNLIMITED:
+              cbSeedRatio.State:=cbUnchecked;
             else
-              i:=TR_RATIOLIMIT_GLOBAL;
+              cbSeedRatio.State:=cbGrayed;
           end;
-          args.Add('seedRatioMode', i);
-          if cbSeedRatio.State = cbChecked then
-            args.Add('seedRatioLimit', edSeedRatio.Value);
+          edSeedRatio.Value:=t.Floats['seedRatioLimit'];
         end;
 
         if RpcObj.RPCVersion >= 10 then begin
-          case cbIdleSeedLimit.State of
-            cbChecked:
-              i:=TR_IDLELIMIT_SINGLE;
-            cbUnchecked:
-              i:=TR_IDLELIMIT_UNLIMITED;
+          case t.Integers['seedIdleMode'] of
+            TR_IDLELIMIT_SINGLE:
+              cbIdleSeedLimit.State:=cbChecked;
+            TR_IDLELIMIT_UNLIMITED:
+              cbIdleSeedLimit.State:=cbUnchecked;
             else
-              i:=TR_IDLELIMIT_GLOBAL;
+              cbIdleSeedLimit.State:=cbGrayed;
           end;
-          args.Add('seedIdleMode', i);
-          if cbIdleSeedLimit.State = cbChecked then
-            args.Add('seedIdleLimit', edIdleSeedLimit.Value);
+          edIdleSeedLimit.Value:=t.Integers['seedIdleLimit'];
+          cbIdleSeedLimitClick(nil);
 
-          sl:=TStringList.Create;
-          try
-            sl.Assign(edTrackers.Lines);
-            // Removing unchanged trackers
-            i:=0;
-            while i < sl.Count do begin
-              s:=Trim(sl[i]);
-              if s = '' then begin
-                sl.Delete(i);
-                continue;
-              end;
-              j:=trlist.IndexOf(s);
-              if j >= 0 then begin
-                trlist.Delete(j);
-                sl.Delete(i);
-                continue;
-              end;
-              Inc(i);
+          trlist:=TStringList.Create;
+          Trackers:=t.Arrays['trackers'];
+          for i:=0 to Trackers.Count - 1 do begin
+            tr:=Trackers[i] as TJSONObject;
+              trlist.AddObject(UTF8Decode(tr.Strings['announce']), TObject(PtrUInt(tr.Integers['id'])));
+          end;
+          edTrackers.Lines.Assign(trlist);
+        end
+        else begin
+          cbIdleSeedLimit.Visible:=False;
+          edIdleSeedLimit.Visible:=False;
+          txMinutes.Visible:=False;
+          tabAdvanced.TabVisible:=False;
+        end;
+        edPeerLimit.Value:=t.Integers['maxConnectedPeers'];
+      finally
+        args.Free;
+      end;
+      cbMaxDownClick(nil);
+      cbMaxUpClick(nil);
+      cbSeedRatioClick(nil);
+    finally
+      AppNormal;
+    end;
+    if ShowModal = mrOk then begin
+      AppBusy;
+      try
+        Self.Update;
+        req:=TJSONObject.Create;
+        try
+          req.Add('method', 'torrent-set');
+          args:=TJSONObject.Create;
+          ids:=TJSONArray.Create;
+          for i:=VarArrayLowBound(TorrentIds, 1) to VarArrayHighBound(TorrentIds, 1) do
+            ids.Add(integer(TorrentIds[i]));
+          args.Add('ids', ids);
+
+          if RpcObj.RPCVersion < 5 then
+          begin
+            // RPC versions prior to v5
+            args.Add('speed-limit-down-enabled', cbMaxDown.Checked);
+            args.Add('speed-limit-up-enabled', cbMaxUp.Checked);
+            if cbMaxDown.Checked then
+              args.Add('speed-limit-down', edMaxDown.Value);
+            if cbMaxUp.Checked then
+              args.Add('speed-limit-up', edMaxUp.Value);
+          end else begin
+            // RPC version 5
+            args.Add('downloadLimited', cbMaxDown.Checked);
+            args.Add('uploadLimited', cbMaxUp.Checked);
+            if cbMaxDown.Checked then
+              args.Add('downloadLimit', edMaxDown.Value);
+            if cbMaxUp.Checked then
+              args.Add('uploadLimit', edMaxUp.Value);
+            case cbSeedRatio.State of
+              cbChecked:
+                i:=TR_RATIOLIMIT_SINGLE;
+              cbUnchecked:
+                i:=TR_RATIOLIMIT_UNLIMITED;
+              else
+                i:=TR_RATIOLIMIT_GLOBAL;
             end;
+            args.Add('seedRatioMode', i);
+            if cbSeedRatio.State = cbChecked then
+              args.Add('seedRatioLimit', edSeedRatio.Value);
+          end;
 
-            AddT:=TJSONArray.Create;
-            EditT:=TJSONArray.Create;
-            DelT:=TJSONArray.Create;
+          if RpcObj.RPCVersion >= 10 then begin
+            case cbIdleSeedLimit.State of
+              cbChecked:
+                i:=TR_IDLELIMIT_SINGLE;
+              cbUnchecked:
+                i:=TR_IDLELIMIT_UNLIMITED;
+              else
+                i:=TR_IDLELIMIT_GLOBAL;
+            end;
+            args.Add('seedIdleMode', i);
+            if cbIdleSeedLimit.State = cbChecked then
+              args.Add('seedIdleLimit', edIdleSeedLimit.Value);
+
+            sl:=TStringList.Create;
             try
-              for i:=0 to sl.Count - 1 do begin
+              sl.Assign(edTrackers.Lines);
+              // Removing unchanged trackers
+              i:=0;
+              while i < sl.Count do begin
                 s:=Trim(sl[i]);
-                if trlist.Count > 0 then begin
-                  EditT.Add(PtrUInt(trlist.Objects[0]));
-                  EditT.Add(UTF8Decode(s));
-                  trlist.Delete(0);
-                end
-                else
-                  AddT.Add(UTF8Decode(s));
+                if s = '' then begin
+                  sl.Delete(i);
+                  continue;
+                end;
+                j:=trlist.IndexOf(s);
+                if j >= 0 then begin
+                  trlist.Delete(j);
+                  sl.Delete(i);
+                  continue;
+                end;
+                Inc(i);
               end;
 
-              for i:=0 to trlist.Count - 1 do
-                DelT.Add(PtrUInt(trlist.Objects[i]));
+              AddT:=TJSONArray.Create;
+              EditT:=TJSONArray.Create;
+              DelT:=TJSONArray.Create;
+              try
+                for i:=0 to sl.Count - 1 do begin
+                  s:=Trim(sl[i]);
+                  if trlist.Count > 0 then begin
+                    EditT.Add(PtrUInt(trlist.Objects[0]));
+                    EditT.Add(UTF8Decode(s));
+                    trlist.Delete(0);
+                  end
+                  else
+                    AddT.Add(UTF8Decode(s));
+                end;
 
-              if AddT.Count > 0 then begin
-                args.Add('trackerAdd', AddT);
-                AddT:=nil;
-              end;
-              if EditT.Count > 0 then begin
-                args.Add('trackerReplace', EditT);
-                EditT:=nil;
-              end;
-              if DelT.Count > 0 then begin
-                args.Add('trackerRemove', DelT);
-                DelT:=nil;
+                for i:=0 to trlist.Count - 1 do
+                  DelT.Add(PtrUInt(trlist.Objects[i]));
+
+                if AddT.Count > 0 then begin
+                  args.Add('trackerAdd', AddT);
+                  AddT:=nil;
+                end;
+                if EditT.Count > 0 then begin
+                  args.Add('trackerReplace', EditT);
+                  EditT:=nil;
+                end;
+                if DelT.Count > 0 then begin
+                  args.Add('trackerRemove', DelT);
+                  DelT:=nil;
+                end;
+              finally
+                DelT.Free;
+                EditT.Free;
+                AddT.Free;
               end;
             finally
-              DelT.Free;
-              EditT.Free;
-              AddT.Free;
+              sl.Free;
             end;
-          finally
-            sl.Free;
           end;
-        end;
 
-        args.Add('peer-limit', edPeerLimit.Value);
-        req.Add('arguments', args);
-        args:=nil;
-        args:=RpcObj.SendRequest(req, False);
-        if args = nil then begin
-          CheckStatus(False);
-          exit;
+          args.Add('peer-limit', edPeerLimit.Value);
+          req.Add('arguments', args);
+          args:=nil;
+          args:=RpcObj.SendRequest(req, False);
+          if args = nil then begin
+            CheckStatus(False);
+            exit;
+          end;
+          args.Free;
+        finally
+          req.Free;
         end;
-        args.Free;
+        DoRefresh;
       finally
-        req.Free;
+        AppNormal;
       end;
-      DoRefresh;
-      AppNormal;
     end;
   finally
     gTorrents.Tag:=0;
@@ -8355,11 +8363,14 @@ begin
     sel:=False;
     gTorrents.RemoveSelection;
     res:=RpcObj.RequestInfo(gTorrents.Items[idxTorrentId, gTorrents.Row], ['files', 'downloadDir']);
-    if res = nil then
-      CheckStatus(False)
-    else
-      try
-        with res.Arrays['torrents'].Objects[0] do begin
+    if res = nil then begin
+      CheckStatus(False);
+      exit;
+    end;
+    try
+      if res.Arrays['torrents'].Count = 0 then
+        exit;
+      with res.Arrays['torrents'].Objects[0] do begin
           files:=Arrays['files'];
           if files.Count = 0 then exit;
           if files.Count = 1 then begin
