@@ -98,6 +98,7 @@ type
     OrigCaption: string;
     Extension : string;
     property FilesTree: TFilesTree read FTree;
+    destructor Destroy; override;
   end;
 
   TFolderInfo = record
@@ -881,6 +882,12 @@ end;
 
 { TAddTorrentForm }
 
+destructor TAddTorrentForm.Destroy;
+begin
+  ClearFolderHistoryItems(cbDestFolder.Items);
+  inherited Destroy;
+end;
+
 procedure TAddTorrentForm.FormShow(Sender: TObject);
 begin
   AppBusy;
@@ -949,7 +956,7 @@ begin
         end;
 
         if indx > -1 then
-          cbDestFolder.Items.Delete(indx)
+          FreeFolderHistoryItem(cbDestFolder.Items, indx)
         else
           break;
       end;
@@ -1093,7 +1100,7 @@ begin
         s := CorrectPath(cbDestFolder.Text);
         i := cbDestFolder.Items.IndexOf(s);
         if i > -1 then begin
-              cbDestFolder.Items.Delete(i);
+              FreeFolderHistoryItem(cbDestFolder.Items, i);
               cbDestFolder.ItemIndex:=0;
         end;
     end;

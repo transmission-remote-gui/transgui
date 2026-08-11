@@ -58,14 +58,21 @@ type
   private
     { private declarations }
   public
+    destructor Destroy; override;
     { public declarations }
   end;
 
 implementation
 
-uses main;
+uses main, FolderHistory;
 
 { TMoveTorrentForm }
+
+destructor TMoveTorrentForm.Destroy;
+begin
+  ClearFolderHistoryItems(edTorrentDir.Items);
+  inherited Destroy;
+end;
 
 procedure TMoveTorrentForm.btOKClick(Sender: TObject);
 begin
