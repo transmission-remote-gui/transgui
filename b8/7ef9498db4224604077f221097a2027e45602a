@@ -1,0 +1,77 @@
+lang/transgui.en
+  s_3da36b50314675::t_60ee2b89b878c3 398
+lang/transgui.fi
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.cs
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.hu
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.sv
+  s_3da36b50314675::t_70ee7859377512 399
+lang/transgui.de
+  s_3da36b50314675::t_164678aa87397f 398
+lang/transgui.ru
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.ro
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.nl
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.pl
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.uk
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.lv
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.template
+  s_3da36b50314675::t_0b6f085cee4928 397
+lang/transgui.lt
+  s_3da36b50314675::t_70ee7859377512 397
+lang/transgui.es
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.it
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.zh_tw
+  s_3da36b50314675::t_164678aa87397f 397
+lang/transgui.ca
+  s_3da36b50314675::t_164678aa87397f 398
+lang/transgui.da
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.hr
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.tr
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.be
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.pt
+  s_3da36b50314675::t_164678aa87397f 398
+connoptions.pas
+  s_3da36b50314675::t_13fe80d7030e7b 46,168-169,253-256,431-437,605
+lang/transgui.no
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.ko
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.zh
+  s_3da36b50314675::t_164678aa87397f 397
+lang/transgui.el
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.pt_br
+  s_3da36b50314675::t_70ee7859377512 398
+lang/transgui.fr
+  s_3da36b50314675::t_70ee7859377512 398
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b87ef9498db4224604077f221097a2027e45602a",
+  "prompts": {},
+  "sessions": {
+    "s_3da36b50314675": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ff1ec-6449-7393-a6cd-d301d89e81e9",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
