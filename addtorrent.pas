@@ -124,7 +124,9 @@ type
     FHasDone: boolean;
     FHasPriority: boolean;
 
+    procedure ChangeChecked(ARow: integer; const AValue: TCheckBoxState; ANotifyChange: boolean);
     procedure CollapseFolder(ARow: integer);
+    procedure DoAfterCheckBoxClick(Sender: TObject);
     procedure DoCellAttributes(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; var CellAttribs: TCellAttributes);
     procedure DoCheckBoxClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);
     procedure DoDrawCell(Sender: TVarGrid; ACol, ARow, ADataCol: integer; AState: TGridDrawState; const R: TRect; var ADefaultDrawing: boolean);
@@ -156,6 +158,7 @@ type
     function UpdateSummary: TFolderInfo;
     procedure Clear;
     property Grid: TVarGrid read FGrid;
+    property TorrentId: integer read FTorrentId;
     property HasFolders: boolean read FHasFolders;
     property Checkboxes: boolean read FCheckboxes write SetCheckboxes;
     property IsPlain: boolean read FIsPlain write SetIsPlain;
@@ -202,6 +205,7 @@ begin
   FGrid:=AGrid;
   FFiles:=FGrid.Items;
   FGrid.OnCheckBoxClick:=@DoCheckBoxClick;
+  FGrid.OnAfterCheckBoxClick:=@DoAfterCheckBoxClick;
   FGrid.OnTreeButtonClick:=@DoTreeButtonClick;
   FGrid.OnCellAttributes:=@DoCellAttributes;
   FGrid.OnAfterSort:=@DoAfterSort;
@@ -567,9 +571,14 @@ end;
 procedure TFilesTree.DoCheckBoxClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);
 begin
   if Checked[ARow] = cbChecked then
-    Checked[ARow]:=cbUnchecked
+    ChangeChecked(ARow, cbUnchecked, False)
   else
-    Checked[ARow]:=cbChecked;
+    ChangeChecked(ARow, cbChecked, False);
+end;
+
+procedure TFilesTree.DoAfterCheckBoxClick(Sender: TObject);
+begin
+  DoOnStateChange;
 end;
 
 procedure TFilesTree.DoTreeButtonClick(Sender: TVarGrid; ACol, ARow, ADataCol: integer);
@@ -667,6 +676,11 @@ begin
 end;
 
 procedure TFilesTree.SetChecked(ARow: integer; const AValue: TCheckBoxState);
+begin
+  ChangeChecked(ARow, AValue, True);
+end;
+
+procedure TFilesTree.ChangeChecked(ARow: integer; const AValue: TCheckBoxState; ANotifyChange: boolean);
 var
   i, lev: integer;
   st: TCheckBoxState;
@@ -711,7 +725,8 @@ begin
       end;
     end;
   end;
-  DoOnStateChange;
+  if ANotifyChange then
+    DoOnStateChange;
 end;
 
 procedure TFilesTree.SetExpanded(ARow: integer; const AValue: boolean);
@@ -1319,4 +1334,3 @@ initialization
   {$I addtorrent.lrs}
 
 end.
-

@@ -59,6 +59,10 @@ type
     StatsValid: boolean;
     StatsErrorShown: boolean;
     FRpc: TRpc;
+    FDetailsGeneration: cardinal;
+    FFilePayloadGeneration: cardinal;
+    FDetailsTorrentId: cardinal;
+    FDetailsAdvInfo: TAdvInfoType;
     FPiecesSkip: integer;
     FStaticInfoId: integer;
     FLastPieces: string;
@@ -67,8 +71,6 @@ type
     FLastCreator: string;
     FLastDateCreated: double;
 
-    function GetAdvInfo: TAdvInfoType;
-    function GetCurTorrentId: cardinal;
     function GetRefreshInterval: TDateTime;
     function GetStatus: string;
     procedure SetStatus(const AValue: string);
@@ -101,8 +103,6 @@ type
 
     property Status: string read GetStatus write SetStatus;
     property RefreshInterval: TDateTime read GetRefreshInterval;
-    property CurTorrentId: cardinal read GetCurTorrentId;
-    property AdvInfo: TAdvInfoType read GetAdvInfo;
   end;
 
   TRpc = class
@@ -116,12 +116,22 @@ type
     XTorrentSession: string;
     FMainThreadId: TThreadID;
     FRpcPath: string;
+    FRefreshGeneration: array[TRefreshTypes] of cardinal;
+    FFilePayloadGeneration: cardinal;
+    FRefreshNow: TRefreshType;
 
+    function BeginRefresh(ARefresh: TRefreshTypes): cardinal;
+    procedure BeginDetailsRequest(out AGeneration, AFileGeneration,
+      ATorrentId: cardinal; out AAdvInfo: TAdvInfoType);
+    procedure FinishDetailsRequest(AGeneration, ATorrentId: cardinal; AAdvInfo: TAdvInfoType);
+    procedure FinishRefresh(ARefresh: TRefreshTypes; AGeneration: cardinal);
     function GetConnected: boolean;
     function GetConnecting: boolean;
     function GetInfoStatus: string;
     function GetStatus: string;
     function GetTorrentFields: string;
+    function IsFileDetailsRequestCurrent(AFileGeneration,
+      ATorrentId: cardinal): boolean;
     procedure SetInfoStatus(const AValue: string);
     procedure SetStatus(const AValue: string);
     procedure SetTorrentFields(const AValue: string);
@@ -137,7 +147,6 @@ type
     RefreshInterval: TDateTime;
     CurTorrentId: cardinal;
     AdvInfo: TAdvInfoType;
-    RefreshNow: TRefreshType;
     RequestFullInfo: boolean;
     ReconnectAllowed: boolean;
     RequestStartTime: TDateTime;
@@ -151,6 +160,11 @@ type
 
     procedure Connect;
     procedure Disconnect;
+    procedure FileDetailsChanged;
+    function RefreshPending: boolean; overload;
+    function RefreshPending(ARefresh: TRefreshTypes): boolean; overload;
+    procedure RequestRefresh(const ARefresh: TRefreshType);
+    procedure SetAdvancedInfo(AAdvInfo: TAdvInfoType; ARefresh: boolean);
 
     function SendRequest(req: TJSONObject; ReturnArguments: boolean = True;
       ATimeOut: integer = -1): TJSONObject; overload;
@@ -253,6 +267,7 @@ procedure TRpcThread.Execute;
 var
   t, tt: TDateTime;
   i: integer;
+  generation: cardinal;
   ai: TAdvInfoType;
 begin
   try
@@ -265,24 +280,27 @@ begin
     tt:=Now;
     while not Terminated do begin
       if Now - t >= RefreshInterval then begin
-        FRpc.RefreshNow:=FRpc.RefreshNow + [rtTorrents, rtDetails];
+        FRpc.RequestRefresh([rtTorrents, rtDetails]);
         t:=Now;
       end;
       if Now - tt >= RefreshInterval*5 then begin
-        Include(FRpc.RefreshNow, rtSession);
+        FRpc.RequestRefresh([rtSession]);
         tt:=Now;
       end;
 
       if Status = '' then
-        if rtTorrents in FRpc.RefreshNow then begin
+        if FRpc.RefreshPending(rtTorrents) then begin
+          generation:=FRpc.BeginRefresh(rtTorrents);
           GetTorrents;
-          Exclude(FRpc.RefreshNow, rtTorrents);
+          FRpc.FinishRefresh(rtTorrents, generation);
           t:=Now;
         end
         else
-          if rtDetails in FRpc.RefreshNow then begin
-            i:=CurTorrentId;
-            ai:=AdvInfo;
+          if FRpc.RefreshPending(rtDetails) then begin
+            FRpc.BeginDetailsRequest(FDetailsGeneration, FFilePayloadGeneration,
+              FDetailsTorrentId, FDetailsAdvInfo);
+            i:=FDetailsTorrentId;
+            ai:=FDetailsAdvInfo;
             if i <> 0 then begin
               case ai of
                 aiGeneral:
@@ -301,13 +319,13 @@ begin
                 GetStats;
             end;
 
-            if (i = CurTorrentId) and (ai = AdvInfo) then
-              Exclude(FRpc.RefreshNow, rtDetails);
+            FRpc.FinishDetailsRequest(FDetailsGeneration, FDetailsTorrentId, FDetailsAdvInfo);
           end
           else
-            if rtSession in FRpc.RefreshNow then begin
+            if FRpc.RefreshPending(rtSession) then begin
+              generation:=FRpc.BeginRefresh(rtSession);
               GetSessionInfo;
-              Exclude(FRpc.RefreshNow, rtSession);
+              FRpc.FinishRefresh(rtSession, generation);
             end;
 
       if Status <> '' then begin
@@ -315,7 +333,7 @@ begin
         Sleep(100);
       end;
 
-      if FRpc.RefreshNow = [] then
+      if not FRpc.RefreshPending then
         Sleep(50);
     end;
   except
@@ -366,6 +384,10 @@ var
   t: TJSONObject;
   dir: widestring;
 begin
+  if Terminated or (csDestroying in MainForm.ComponentState) or
+     not FRpc.IsFileDetailsRequestCurrent(FFilePayloadGeneration,
+       FDetailsTorrentId) then
+    exit;
   if ResultData = nil then begin
     MainForm.ClearDetailsInfo;
     exit;
@@ -776,26 +798,6 @@ begin
   end;
 end;
 
-function TRpcThread.GetAdvInfo: TAdvInfoType;
-begin
-  FRpc.Lock;
-  try
-    Result:=FRpc.AdvInfo;
-  finally
-    FRpc.Unlock;
-  end;
-end;
-
-function TRpcThread.GetCurTorrentId: cardinal;
-begin
-  FRpc.Lock;
-  try
-    Result:=FRpc.CurTorrentId;
-  finally
-    FRpc.Unlock;
-  end;
-end;
-
 function TRpcThread.GetRefreshInterval: TDateTime;
 begin
   FRpc.Lock;
@@ -819,7 +821,7 @@ begin
   FMainThreadId:=GetCurrentThreadId;
   FLock:=TCriticalSection.Create;
   HttpLock:=TCriticalSection.Create;
-  RefreshNow:=[];
+  FRefreshNow:=[];
   CreateHttp;
 end;
 
@@ -1330,6 +1332,130 @@ begin
   FLock.Enter;
 end;
 
+function TRpc.BeginRefresh(ARefresh: TRefreshTypes): cardinal;
+begin
+  Lock;
+  try
+    Result:=FRefreshGeneration[ARefresh];
+  finally
+    Unlock;
+  end;
+end;
+
+procedure TRpc.BeginDetailsRequest(out AGeneration, AFileGeneration,
+  ATorrentId: cardinal; out AAdvInfo: TAdvInfoType);
+begin
+  Lock;
+  try
+    AGeneration:=FRefreshGeneration[rtDetails];
+    AFileGeneration:=FFilePayloadGeneration;
+    ATorrentId:=CurTorrentId;
+    AAdvInfo:=AdvInfo;
+  finally
+    Unlock;
+  end;
+end;
+
+function TRpc.IsFileDetailsRequestCurrent(AFileGeneration,
+  ATorrentId: cardinal): boolean;
+begin
+  Lock;
+  try
+    Result:=(AFileGeneration = FFilePayloadGeneration) and
+            (ATorrentId = CurTorrentId) and (AdvInfo = aiFiles);
+  finally
+    Unlock;
+  end;
+end;
+
+procedure TRpc.FinishDetailsRequest(AGeneration, ATorrentId: cardinal; AAdvInfo: TAdvInfoType);
+begin
+  Lock;
+  try
+    if (AGeneration = FRefreshGeneration[rtDetails]) and
+       (ATorrentId = CurTorrentId) and (AAdvInfo = AdvInfo) then
+      Exclude(FRefreshNow, rtDetails)
+    else
+      Include(FRefreshNow, rtDetails);
+  finally
+    Unlock;
+  end;
+end;
+
+procedure TRpc.FinishRefresh(ARefresh: TRefreshTypes; AGeneration: cardinal);
+begin
+  Lock;
+  try
+    if AGeneration = FRefreshGeneration[ARefresh] then
+      Exclude(FRefreshNow, ARefresh)
+    else
+      Include(FRefreshNow, ARefresh);
+  finally
+    Unlock;
+  end;
+end;
+
+procedure TRpc.FileDetailsChanged;
+begin
+  Lock;
+  try
+    Inc(FFilePayloadGeneration);
+    Inc(FRefreshGeneration[rtDetails]);
+    Include(FRefreshNow, rtDetails);
+  finally
+    Unlock;
+  end;
+end;
+
+function TRpc.RefreshPending: boolean;
+begin
+  Lock;
+  try
+    Result:=FRefreshNow <> [];
+  finally
+    Unlock;
+  end;
+end;
+
+function TRpc.RefreshPending(ARefresh: TRefreshTypes): boolean;
+begin
+  Lock;
+  try
+    Result:=ARefresh in FRefreshNow;
+  finally
+    Unlock;
+  end;
+end;
+
+procedure TRpc.RequestRefresh(const ARefresh: TRefreshType);
+var
+  RefreshType: TRefreshTypes;
+begin
+  Lock;
+  try
+    for RefreshType:=Low(TRefreshTypes) to High(TRefreshTypes) do
+      if RefreshType in ARefresh then
+        Inc(FRefreshGeneration[RefreshType]);
+    FRefreshNow:=FRefreshNow + ARefresh;
+  finally
+    Unlock;
+  end;
+end;
+
+procedure TRpc.SetAdvancedInfo(AAdvInfo: TAdvInfoType; ARefresh: boolean);
+begin
+  Lock;
+  try
+    AdvInfo:=AAdvInfo;
+    if ARefresh then begin
+      Inc(FRefreshGeneration[rtDetails]);
+      Include(FRefreshNow, rtDetails);
+    end;
+  finally
+    Unlock;
+  end;
+end;
+
 procedure TRpc.Unlock;
 begin
   FLock.Leave;
@@ -1356,7 +1482,7 @@ begin
   XTorrentSession:='';
   RequestFullInfo:=True;
   ReconnectAllowed:=False;
-  RefreshNow:=[];
+  FRefreshNow:=[];
   RpcThread:=TRpcThread.Create;
   with RpcThread do begin
     FreeOnTerminate:=False;
