@@ -1,0 +1,23 @@
+connoptions.pas
+  s_3da36b50314675::t_13fe80d7030e7b 46,168-169,253-256,431-437,605
+lang/transgui.en
+  s_3da36b50314675::t_60ee2b89b878c3 398
+lang/transgui.template
+  s_3da36b50314675::t_0b6f085cee4928 397
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "91c11e130a96ca7bb0b3e5db01e9d5e045690848",
+  "prompts": {},
+  "sessions": {
+    "s_3da36b50314675": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ff1ec-6449-7393-a6cd-d301d89e81e9",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
