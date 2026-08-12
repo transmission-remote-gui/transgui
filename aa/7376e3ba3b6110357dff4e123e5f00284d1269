@@ -1,0 +1,19 @@
+synapse/source/lib/ssl_openssl_lib.pas
+  s_e94c0c2953e29e::t_2872eace9d9913 2131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "aa7376e3ba3b6110357dff4e123e5f00284d1269",
+  "prompts": {},
+  "sessions": {
+    "s_e94c0c2953e29e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f717d-6fe1-7f12-a862-552c8cf07ebf",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    }
+  }
+}
