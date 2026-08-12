@@ -962,7 +962,7 @@ uses
 {$endif darwin}
   synacode, ConnOptions, clipbrd, DateUtils, TorrProps, DaemonOptions, About,
   ToolWin, download, ColSetup, AddLink, MoveTorrent, AddTracker, lcltype,
-  Options, ButtonPanel, BEncode, synautil, Math;
+  Options, ButtonPanel, BEncode, synautil, Math, FolderHistory;
 
   {TMyHashMap}
   function TMyHashMap.DefaultHashKey(const Key: Integer): Integer;
@@ -7918,7 +7918,8 @@ begin
   CB.Items.Clear;
 
   IniSec   := 'AddTorrent.' + FCurConn;
-  j        := Ini.ReadInteger(IniSec, 'FolderCount', 0);
+  j        := NormalizeFolderHistoryCount(
+    Ini.ReadInteger(IniSec, 'FolderCount', 0));
 
   for i:=0 to j - 1 do begin
     s:=Ini.ReadString(IniSec, Format('Folder%d', [i]), '');
@@ -7935,7 +7936,8 @@ begin
       if n=0 then begin
         m      := CB.Items.Add(s);
         pFD    := FolderData.create;
-        pFD.Hit:= Ini.ReadInteger (IniSec, Format('FolHit%d', [i]), 1);
+        pFD.Hit:=NormalizeFolderHistoryHit(
+          Ini.ReadInteger(IniSec, Format('FolHit%d', [i]), 1));
         pFD.Ext:= Ini.ReadString  (IniSec, Format('FolExt%d', [i]),'');
         lastDt := Ini.ReadString  (IniSec, Format('LastDt%d', [i]),'');
         pFD.Txt:= s; // for debug
@@ -7980,7 +7982,7 @@ end;
 
 procedure TMainForm.SaveDownloadDirs(CB: TComboBox; const CurFolderParam: string);
 var
-  i: integer;
+  i, WriteIndex: integer;
   IniSec: string;
   tmp,selfolder : string;
   strdate : string;
@@ -8009,7 +8011,7 @@ begin
       end else begin
           pFD    := CB.Items.Objects[i] as FolderData;
           if pFD <> nil then begin
-            pFD.Hit:= pFD.Hit + 1;
+            pFD.Hit:=IncrementFolderHistoryHit(pFD.Hit);
             pFD.Lst:= Today;
             CB.Items.Objects[i]:= pFD;
           end;
@@ -8021,25 +8023,30 @@ begin
   end;
 
   try
-    Ini.WriteInteger(IniSec, 'FolderCount', CB.Items.Count);
+    WriteIndex:=0;
     for i:=0 to CB.Items.Count - 1 do begin
-      tmp := CorrectPath(CB.Items[i]);
-      pFD := CB.Items.Objects[i] as FolderData;
-      if pFD = nil then continue;
+      if WriteIndex >= MaxFolderHistoryItems then break;
+      tmp:=CorrectPath(CB.Items[i]);
+      pFD:=CB.Items.Objects[i] as FolderData;
+      if (tmp = '') or (pFD = nil) then continue;
 
-      Ini.WriteString (IniSec, Format('Folder%d', [i]), tmp);
-      Ini.WriteInteger(IniSec, Format('FolHit%d', [i]), pFD.Hit);
-      Ini.WriteString (IniSec, Format('FolExt%d', [i]), pFD.Ext);
+      Ini.WriteString(IniSec, Format('Folder%d', [WriteIndex]), tmp);
+      Ini.WriteInteger(IniSec, Format('FolHit%d', [WriteIndex]),
+        NormalizeFolderHistoryHit(pFD.Hit));
+      Ini.WriteString(IniSec, Format('FolExt%d', [WriteIndex]), pFD.Ext);
 
       DateTimeToString(strdate, 'dd.mm.yyyy', pFD.Lst);
-      Ini.WriteString (IniSec, Format('LastDt%d', [i]), strdate);
+      Ini.WriteString(IniSec, Format('LastDt%d', [WriteIndex]), strdate);
+      Inc(WriteIndex);
     end;
+    Ini.WriteInteger(IniSec, 'FolderCount', WriteIndex);
 
-    // clear string
-    Ini.WriteString (IniSec, Format('Folder%d', [i+1]), '' );
-    Ini.WriteInteger(IniSec, Format('FolHit%d', [i+1]), -1 );
-    Ini.WriteString (IniSec, Format('FolExt%d', [i+1]), '' );
-    Ini.WriteString (IniSec, Format('LastDt%d', [i+1]), '' );
+    for i:=WriteIndex to MaxFolderHistoryCleanupIndex do begin
+      Ini.DeleteKey(IniSec, Format('Folder%d', [i]));
+      Ini.DeleteKey(IniSec, Format('FolHit%d', [i]));
+      Ini.DeleteKey(IniSec, Format('FolExt%d', [i]));
+      Ini.DeleteKey(IniSec, Format('LastDt%d', [i]));
+    end;
   except
     MessageDlg('Error: LS-009. Please contact the developer', mtError, [mbOK], 0);
   end;
@@ -8050,17 +8057,17 @@ end;
 
 procedure TMainForm.DeleteDirs(CB: TComboBox; maxdel : Integer);
 var
-  i,min,max,indx, fldr: integer;
+  i, max, indx: integer;
+  min, fldr: Int64;
   pFD : FolderData;
 begin
-    max:=Ini.ReadInteger('Interface', 'MaxFoldersHistory',  50);
-    if max < 10 then
-      max:=10;
+    max:=NormalizeFolderHistoryLimit(
+      Ini.ReadInteger('Interface', 'MaxFoldersHistory', 50));
     Ini.WriteInteger    ('Interface', 'MaxFoldersHistory', max);
 
     try
     while (CB.Items.Count+maxdel) > max do begin
-      min := 9999999;
+      min:=0;
       indx:=-1;
       for i:=0 to CB.Items.Count - 1 do begin
         pFD := CB.Items.Objects[i] as FolderData;
@@ -8070,7 +8077,8 @@ begin
         if Today > pFD.Lst then
           fldr := 0- fldr;
 
-        fldr := fldr + pFD.Hit;
+        pFD.Hit:=NormalizeFolderHistoryHit(pFD.Hit);
+        fldr:=fldr + pFD.Hit;
         if (indx < 0) or (fldr < min) then begin
           min := fldr;
           indx:= i;
