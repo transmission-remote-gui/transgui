@@ -1,0 +1,19 @@
+connoptions.pas
+  s_3da36b50314675::t_13fe80d7030e7b 167-168,252-255,598
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "af1686bb10288e4df5741296004be6f82e6a75e6",
+  "prompts": {},
+  "sessions": {
+    "s_3da36b50314675": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ff1ec-6449-7393-a6cd-d301d89e81e9",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
