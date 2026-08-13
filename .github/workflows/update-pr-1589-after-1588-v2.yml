@@ -1,0 +1,63 @@
+name: Update PR 1589 after PR 1588 v2
+
+on:
+  push:
+    branches:
+      - agent/release-folder-history-metadata
+
+permissions:
+  contents: write
+
+jobs:
+  rewrite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Rebase, amend, and update the PR branch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cutoff_check() {
+            local hm
+            hm="$(TZ=Asia/Taipei date '+%H%M')"
+            if ((10#$hm > 830)); then
+              echo "Taipei time ${hm:0:2}:${hm:2:2} is later than the 08:30 cutoff."
+              exit 1
+            fi
+          }
+
+          cutoff_check
+          cp .github/scripts/update_pr_1589_after_1588.py /tmp/
+          expected_head="$GITHUB_SHA"
+
+          git config user.name "Peter Dave Hello"
+          git config user.email "3691490+PeterDaveHello@users.noreply.github.com"
+          git fetch origin master
+          git checkout -B rewritten origin/master
+
+          git cherry-pick --no-commit 22a80f066e35725d4a5438b802a7d533a5973777
+          python3 /tmp/update_pr_1589_after_1588.py
+
+          git diff --check
+          test "$(git diff --name-only | sort)" = "$(printf '%s\n' addtorrent.pas folderhistory.pas main.pas movetorrent.pas | sort)"
+
+          git add addtorrent.pas folderhistory.pas main.pas movetorrent.pas
+          now="$(TZ=Asia/Taipei date '+%Y-%m-%dT%H:%M:%S%z')"
+          GIT_AUTHOR_DATE="$now" GIT_COMMITTER_DATE="$now" \
+            git commit \
+              -m "Release folder history metadata with list entries" \
+              -m "Centralize ownership of FolderData objects and free them whenever history entries are removed, lists are refilled, or add and move dialogs are destroyed. Batch list notifications and guarantee releases with try/finally."
+
+          test "$(git rev-parse HEAD^)" = "$(git rev-parse origin/master)"
+          test "$(git rev-list --count origin/master..HEAD)" = "1"
+          git diff --check origin/master..HEAD
+
+          cutoff_check
+          git push \
+            --force-with-lease=refs/heads/agent/release-folder-history-metadata:"$expected_head" \
+            origin \
+            HEAD:refs/heads/agent/release-folder-history-metadata
