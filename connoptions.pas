@@ -146,7 +146,7 @@ type
 
 implementation
 
-uses Main, synacode, utils, rpc, LCLIntf;
+uses Main, synacode, utils, rpc, LCLIntf, FolderHistory;
 
 { TConnOptionsForm }
 
@@ -580,7 +580,8 @@ begin
     cbUseProxyClick(nil);
   end;
 
-  edMaxFolder.Value:= Ini.ReadInteger('Interface','MaxFoldersHistory', 50); // PETROV
+  edMaxFolder.Value:=NormalizeFolderHistoryLimit(
+    Ini.ReadInteger('Interface', 'MaxFoldersHistory', 50)); // PETROV
 
   FCurConn:=ConnName;
   FCurHost:=edHost.Text;
