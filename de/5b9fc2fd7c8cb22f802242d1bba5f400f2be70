@@ -1,0 +1,35 @@
+lang/transgui.template
+  s_3da36b50314675::t_2f954409b1278c 397
+lang/transgui.en
+  s_3da36b50314675::t_2f954409b1278c 398
+connoptions.pas
+  s_3da36b50314675::t_635c1385d6eae4 168
+  s_d48ebe16415dcb::t_1b77c7f51fe8bd 436-437,605
+  s_3da36b50314675::t_2f954409b1278c 46,432,435
+  s_3da36b50314675::t_98358a0949000b 169
+  s_3da36b50314675::t_f569cba78eb2e6 253-256,431,433-434
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "de5b9fc2fd7c8cb22f802242d1bba5f400f2be70",
+  "prompts": {},
+  "sessions": {
+    "s_3da36b50314675": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ff1ec-6449-7393-a6cd-d301d89e81e9",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    },
+    "s_d48ebe16415dcb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ff1ec-572b-7163-976a-8fb829ae1724",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
