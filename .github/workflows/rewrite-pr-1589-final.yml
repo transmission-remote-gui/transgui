@@ -1,0 +1,98 @@
+name: Rewrite PR 1589 final
+
+on:
+  push:
+    branches:
+      - agent/rewrite-pr-1589-final-run
+
+permissions:
+  contents: write
+
+jobs:
+  rewrite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Prepare rebased source
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cutoff_check() {
+            local hm
+            hm="$(TZ=Asia/Taipei date '+%H%M')"
+            if ((10#$hm > 830)); then
+              echo "Taipei time ${hm:0:2}:${hm:2:2} is later than the 08:30 cutoff."
+              exit 1
+            fi
+          }
+
+          cutoff_check
+          cp .github/scripts/rewrite_pr_1589_final.py /tmp/
+          git ls-remote origin refs/heads/agent/release-folder-history-metadata |
+            cut -f1 > /tmp/pr1589-expected-head
+          test -s /tmp/pr1589-expected-head
+
+          git config user.name "Peter Dave Hello"
+          git config user.email "3691490+PeterDaveHello@users.noreply.github.com"
+          git fetch origin master agent/release-folder-history-metadata
+          git checkout -B rewritten origin/master
+          git cherry-pick --no-commit 22a80f066e35725d4a5438b802a7d533a5973777
+          python3 /tmp/rewrite_pr_1589_final.py
+
+          expected_files="$(printf '%s\n' addtorrent.pas folderhistory.pas main.pas movetorrent.pas | sort)"
+          test "$(git diff --name-only origin/master | sort)" = "$expected_files"
+          git diff --check
+
+      - name: Build with Lazarus
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run \
+            -e DEBIAN_FRONTEND=noninteractive \
+            --rm \
+            -v "${PWD}:/transgui" \
+            debian:bookworm \
+            bash -c "cd /transgui && ./setup/unix/debian-ubuntu-install_deps.sh && lazbuild -B transgui.lpi --lazarusdir=/usr/lib/lazarus/default/"
+
+      - name: Commit and force-push PR branch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cutoff_check() {
+            local hm
+            hm="$(TZ=Asia/Taipei date '+%H%M')"
+            if ((10#$hm > 830)); then
+              echo "Taipei time ${hm:0:2}:${hm:2:2} is later than the 08:30 cutoff."
+              exit 1
+            fi
+          }
+
+          expected_files="$(printf '%s\n' addtorrent.pas folderhistory.pas main.pas movetorrent.pas | sort)"
+          git clean -fdx
+          test "$(git diff --name-only origin/master | sort)" = "$expected_files"
+          git diff --check
+
+          git add addtorrent.pas folderhistory.pas main.pas movetorrent.pas
+          now="$(TZ=Asia/Taipei date '+%Y-%m-%dT%H:%M:%S%z')"
+          GIT_AUTHOR_DATE="$now" GIT_COMMITTER_DATE="$now" \
+            git commit \
+              -m "Release folder history metadata with list entries" \
+              -m "Centralize ownership of FolderData objects and free them whenever history entries are removed, lists are refilled, or add and move dialogs are destroyed. Batch list notifications and guarantee releases with try/finally."
+
+          test "$(git rev-parse HEAD^)" = "$(git rev-parse origin/master)"
+          test "$(git rev-list --count origin/master..HEAD)" = "1"
+          test "$(git diff --name-only origin/master..HEAD | sort)" = "$expected_files"
+          git diff --check origin/master..HEAD
+
+          cutoff_check
+          expected_head="$(cat /tmp/pr1589-expected-head)"
+          git push \
+            --force-with-lease=refs/heads/agent/release-folder-history-metadata:"$expected_head" \
+            origin \
+            HEAD:refs/heads/agent/release-folder-history-metadata
+          git push origin --delete agent/rewrite-pr-1589-final-run
