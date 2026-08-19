@@ -164,6 +164,8 @@ procedure TConnOptionsForm.btRenameClick(Sender: TObject);
 begin
   if edConnection.Visible then begin
     if Trim(edConnection.Text) = '' then exit;
+    if (FCurConn = '') and not Validate then
+      exit;
     EndEdit;
     exit;
   end;
@@ -247,9 +249,11 @@ end;
 
 procedure TConnOptionsForm.btNewClick(Sender: TObject);
 begin
+  if (FCurConn <> '') or (edConnection.Visible and
+    ((Trim(edConnection.Text) <> '') or (Trim(edHost.Text) <> ''))) then
+    if not Validate then
+      exit;
   EndEdit;
-  if (FCurConn <> '') and not Validate then
-    exit;
   SaveConnSettings(FCurConn);
   LoadConnSettings('');
   BeginEdit;
