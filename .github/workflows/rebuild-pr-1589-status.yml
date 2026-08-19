@@ -1,0 +1,121 @@
+name: Rebuild PR 1589 with status
+
+on:
+  push:
+    branches:
+      - agent/rebuild-pr-1589-clean
+
+permissions:
+  contents: write
+  statuses: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild, validate, and publish the PR branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          post_status() {
+            local state="$1"
+            local description="$2"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header "Authorization: Bearer ${GH_TOKEN}" \
+              --header "Accept: application/vnd.github+json" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+              --data "$(jq -nc \
+                --arg state "$state" \
+                --arg description "$description" \
+                '{state: $state, context: "pr-1589-clean-rebuild", description: $description}')" \
+              >/dev/null
+          }
+
+          report_failure() {
+            local rc="$?"
+            if ((rc != 0)); then
+              post_status failure "Clean PR 1589 rebuild failed"
+            fi
+            exit "$rc"
+          }
+          trap report_failure EXIT
+
+          cutoff_check() {
+            local hm
+            hm="$(TZ=Asia/Taipei date '+%H%M')"
+            if ((10#$hm > 830)); then
+              echo "Taipei time ${hm:0:2}:${hm:2:2} is later than the 08:30 cutoff."
+              exit 1
+            fi
+          }
+
+          post_status pending "Clean PR 1589 rebuild in progress"
+          cutoff_check
+          cp .github/scripts/rebuild_pr_1589_clean.py /tmp/
+
+          git config user.name "Peter Dave Hello"
+          git config user.email "3691490+PeterDaveHello@users.noreply.github.com"
+          git fetch origin master agent/release-folder-history-metadata
+          expected_head="$(git rev-parse origin/agent/release-folder-history-metadata)"
+          git checkout -B rewritten origin/master
+
+          if ! git cherry-pick 22a80f066e35725d4a5438b802a7d533a5973777; then
+            conflicts="$(git diff --name-only --diff-filter=U)"
+            test "$conflicts" = "folderhistory.pas"
+            git checkout 22a80f066e35725d4a5438b802a7d533a5973777 -- folderhistory.pas
+            git add folderhistory.pas
+            GIT_EDITOR=true git cherry-pick --continue
+          fi
+
+          python3 /tmp/rebuild_pr_1589_clean.py
+          git diff --check
+          git add addtorrent.pas folderhistory.pas main.pas movetorrent.pas
+          git commit --amend --no-edit
+
+          expected_files="$(printf '%s\n' addtorrent.pas folderhistory.pas main.pas movetorrent.pas | sort)"
+          test "$(git diff --name-only origin/master..HEAD | sort)" = "$expected_files"
+          test "$(git rev-parse HEAD^)" = "$(git rev-parse origin/master)"
+          test "$(git rev-list --count origin/master..HEAD)" = "1"
+          git diff --check origin/master..HEAD
+
+          docker run \
+            -e DEBIAN_FRONTEND=noninteractive \
+            --rm \
+            -v "${PWD}:/transgui" \
+            debian:bookworm \
+            bash -c "cd /transgui && ./setup/unix/debian-ubuntu-install_deps.sh && lazbuild -B transgui.lpi --lazarusdir=/usr/lib/lazarus/default/"
+
+          git clean -fdx
+          test -z "$(git status --porcelain)"
+          test "$(git diff --name-only origin/master..HEAD | sort)" = "$expected_files"
+          git diff --check origin/master..HEAD
+
+          now="$(TZ=Asia/Taipei date '+%Y-%m-%dT%H:%M:%S%z')"
+          GIT_AUTHOR_DATE="$now" GIT_COMMITTER_DATE="$now" \
+            git commit --amend \
+              -m "Release folder history metadata with list entries" \
+              -m "Centralize ownership of FolderData objects and free them whenever history entries are removed, lists are refilled, or add and move dialogs are destroyed. Release detached metadata even when list mutation raises, while preserving a single Clear notification."
+
+          test "$(git rev-parse HEAD^)" = "$(git rev-parse origin/master)"
+          test "$(git rev-list --count origin/master..HEAD)" = "1"
+          test "$(git diff --name-only origin/master..HEAD | sort)" = "$expected_files"
+          git diff --check origin/master..HEAD
+
+          cutoff_check
+          git push \
+            --force-with-lease=refs/heads/agent/release-folder-history-metadata:"$expected_head" \
+            origin \
+            HEAD:refs/heads/agent/release-folder-history-metadata
+
+          post_status success "Clean PR 1589 branch published"
+          trap - EXIT
+          git push origin --delete agent/rebuild-pr-1589-clean
