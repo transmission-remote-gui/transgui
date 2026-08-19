@@ -27,6 +27,7 @@ jobs:
           post_status() {
             local state="$1"
             local description="$2"
+            local target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
             curl --fail-with-body --silent --show-error \
               --request POST \
               --header "Authorization: Bearer ${GH_TOKEN}" \
@@ -36,7 +37,8 @@ jobs:
               --data "$(jq -nc \
                 --arg state "$state" \
                 --arg description "$description" \
-                '{state: $state, context: "pr-1589-clean-rebuild", description: $description}')" \
+                --arg target_url "$target_url" \
+                '{state: $state, context: "pr-1589-clean-rebuild", description: $description, target_url: $target_url}')" \
               >/dev/null
           }
 
