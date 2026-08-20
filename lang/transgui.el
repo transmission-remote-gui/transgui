@@ -395,3 +395,5 @@ Labels=Ετικέτες
 Set labels=Ορισμός ετικετών
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Αυτό θα αντικαταστήσει όλες τις υπάρχουσες ετικέτες.~Μπορείτε να ορίσετε πολλές ετικέτες διαχωρισμένες με κόμμα ή να το αφήσετε κενό για να εκκαθαρίσετε τις ετικέτες
 Application option=Επιλογή εφαρμογής
+Open anyway=Άνοιγμα οπωσδήποτε
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Αυτός ο τύπος αρχείου ενδέχεται να εκτελέσει κώδικα ή να είναι επισφαλής.~~"%s"~~Ανοίξτε το μόνο αν εμπιστεύεστε αυτό το αρχείο

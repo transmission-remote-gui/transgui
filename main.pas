@@ -119,6 +119,11 @@ resourcestring
   sBlocklistUpdateComplete = 'The block list has been updated successfully.' + LineEnding + 'The list entries count: %d.';
   sSeveralTorrents = '%d torrents';
   sUnableToExecute = 'Unable to execute "%s".';
+  sUnsafeFileOpen = 'This file type may execute code or otherwise be unsafe.' +
+    LineEnding + LineEnding + '"%s"' + LineEnding + LineEnding +
+    'Open it only if you trust this file.';
+  sOpenAnyway = 'Open anyway';
+  sCancel = 'Cancel';
   sSSLLoadError = 'Unable to load OpenSSL library files: %s and %s';
   SRemoveTracker = 'Are you sure to remove tracker ''%s''?';
   SUnlimited = 'Unlimited';
@@ -1020,6 +1025,89 @@ var
 
 
   {$ifdef windows}
+type
+  TAssocIsDangerous = function(pszAssoc: LPCWSTR): WINBOOL; stdcall;
+  TFileAssociationRisk = (farAcceptedNotFlagged, farDangerous, farUnknown);
+
+var
+  AssocIsDangerousModule: HMODULE = 0;
+  AssocIsDangerousProc: TAssocIsDangerous = nil;
+  AssocIsDangerousLoadAttempted: boolean = False;
+
+function LoadAssocIsDangerous: boolean;
+var
+  Buffer: array[0..MAX_PATH] of WideChar;
+  BufferLength: UINT;
+  LibraryPath: WideString;
+begin
+  if not AssocIsDangerousLoadAttempted then begin
+    AssocIsDangerousLoadAttempted:=True;
+    BufferLength:=GetSystemDirectoryW(PWideChar(@Buffer[0]), UINT(Length(Buffer)));
+    if (BufferLength > 0) and (BufferLength < UINT(Length(Buffer))) then begin
+      SetString(LibraryPath, PWideChar(@Buffer[0]), BufferLength);
+      LibraryPath:=LibraryPath + '\shlwapi.dll';
+      AssocIsDangerousModule:=LoadLibraryW(PWideChar(LibraryPath));
+      if AssocIsDangerousModule <> 0 then begin
+        AssocIsDangerousProc:=TAssocIsDangerous(
+          GetProcAddress(AssocIsDangerousModule, 'AssocIsDangerous'));
+        if not Assigned(AssocIsDangerousProc) then begin
+          FreeLibrary(AssocIsDangerousModule);
+          AssocIsDangerousModule:=0;
+        end;
+      end;
+    end;
+  end;
+  Result:=Assigned(AssocIsDangerousProc);
+end;
+
+function GetRawFinalPathComponent(const FileName: string): string;
+var
+  i: integer;
+begin
+  i:=Length(FileName);
+  while (i > 0) and (FileName[i] <> '\') and (FileName[i] <> '/') do
+    Dec(i);
+  Result:=Copy(FileName, i + 1, MaxInt);
+end;
+
+function IsNonStandardFileNamespace(const FileName: string): boolean;
+var
+  s: string;
+begin
+  s:=StringReplace(FileName, '/', '\', [rfReplaceAll]);
+  Result:=AnsiStartsText('\\.\', s) or
+          AnsiStartsText('\??\', s) or
+          AnsiStartsText('\\??\', s) or
+          AnsiStartsText('\Device\', s) or
+          (AnsiStartsText('\\?\', s) and
+           not (AnsiStartsText('\\?\UNC\', s) or
+                ((Length(s) >= 7) and (s[5] in ['A'..'Z', 'a'..'z']) and
+                 (s[6] = ':') and (s[7] = '\'))));
+end;
+
+function GetFileAssociationRisk(const FileName: string): TFileAssociationRisk;
+var
+  FileComponent, Extension: string;
+  WideExtension: WideString;
+begin
+  Result:=farUnknown;
+  FileComponent:=GetRawFinalPathComponent(FileName);
+  if (FileComponent = '') or (Pos(':', FileComponent) <> 0) or
+     IsNonStandardFileNamespace(FileName) then
+    exit;
+  Extension:=ExtractFileExt(FileComponent);
+  if (Extension = '') or (Extension = '.') or (Trim(Extension) <> Extension) or
+     not LoadAssocIsDangerous then
+    exit;
+  WideExtension:=UTF8Decode(Extension);
+  if AssocIsDangerousProc(PWideChar(WideExtension)) then
+    Result:=farDangerous
+  else begin
+    // This trusts the OS/user association policy, not the file contents.
+    Result:=farAcceptedNotFlagged;
+  end;
+end;
+
 function WndCallback(Ahwnd: HWND; uMsg: UINT; wParam: WParam; lParam: LParam):LRESULT; stdcall;
 begin
   if (uMsg=WM_HOTKEY) and (WParam=HotKeyID) then
@@ -7727,62 +7815,242 @@ end;
 
 function TMainForm.ExecRemoteFile(const FileName: string; SelectFile: boolean; Userdef: boolean): boolean;
 
+{$ifdef mswindows}
+  function _SetExploreCommand(var Target, Params, Operation: string;
+    AllowCurrentDir: boolean = True): boolean;
+  var
+    i: integer;
+    ParentPath: string;
+  begin
+    i:=Length(Target);
+    while (i > 0) and (Target[i] <> '\') and (Target[i] <> '/') do
+      Dec(i);
+    if i > 0 then
+      ParentPath:=Copy(Target, 1, i)
+    else if AllowCurrentDir then
+      ParentPath:=IncludeTrailingPathDelimiter(GetCurrentDirUTF8)
+    else
+      ParentPath:='';
+    Result:=(ParentPath <> '') and
+            not IsNonStandardFileNamespace(ParentPath);
+    if not Result then
+      exit;
+    Target:=ParentPath;
+    Params:='';
+    Operation:='explore';
+  end;
+
+  function _SetFileManagerCommand(var Target, Params, Operation: string): boolean;
+  var
+    FileManager, FilePath: string;
+  begin
+    FileManager:=Trim(FFileManagerDefault);
+    FilePath:=Target;
+    Params:='';
+    if (FileManager <> '') and (Trim(FFileManagerDefaultParam) = '') then begin
+      Target:=FileManager;
+      Result:=True;
+      exit;
+    end;
+    try
+      Params:=Format(FFileManagerDefaultParam, [FilePath]);
+    except
+      on E: EConvertError do
+        Params:='';
+    end;
+    if (FileManager <> '') and (Pos(FilePath, Params) <> 0) then begin
+      Target:=FileManager;
+      Result:=True;
+      exit;
+    end;
+    Result:=_SetExploreCommand(Target, Params, Operation);
+  end;
+{$endif mswindows}
+
   procedure _Exec(s: string);
   var
-    p: string;
+    p, op: string;
+{$ifdef mswindows}
+    ActionResult: TModalResult;
+    DisplayPath, OriginalPath, Target: string;
+    OldCursor: TCursor;
+    AssociationRisk: TFileAssociationRisk;
+
+    function _DisplayPath(const Path: string): string;
+    var
+      HeadLength, i, TailStart: integer;
+      w: WideString;
+    begin
+      w:=UTF8Decode(Path);
+      for i:=1 to Length(w) do
+        if (Ord(w[i]) < 32) or (Ord(w[i]) = 127) or
+           (Ord(w[i]) = $0085) or
+           (Ord(w[i]) = $061C) or
+           (Ord(w[i]) = $200E) or (Ord(w[i]) = $200F) or
+           ((Ord(w[i]) >= $2028) and (Ord(w[i]) <= $202E)) or
+           ((Ord(w[i]) >= $2066) and (Ord(w[i]) <= $2069)) then
+          w[i]:=WideChar($FFFD);
+      if Length(w) > 512 then begin
+        HeadLength:=240;
+        if (Ord(w[HeadLength]) >= $D800) and
+           (Ord(w[HeadLength]) <= $DBFF) then
+          Dec(HeadLength);
+        TailStart:=Length(w) - 254;
+        if (Ord(w[TailStart]) >= $DC00) and
+           (Ord(w[TailStart]) <= $DFFF) then
+          Dec(TailStart);
+        w:=Copy(w, 1, HeadLength) + WideChar($2026) +
+           Copy(w, TailStart, MaxInt);
+      end;
+      Result:=UTF8Encode(w);
+    end;
+
+    procedure _ShowUnableToExecute(const Path: string);
+    begin
+      OldCursor:=Screen.Cursor;
+      Screen.Cursor:=crDefault;
+      try
+        MessageDlg(Format(sUnableToExecute, [_DisplayPath(Path)]), mtError, [mbOK], 0);
+      finally
+        Screen.Cursor:=OldCursor;
+      end;
+    end;
+
+    procedure _RunCommand(const Command, Params, Operation, ErrorPath: string);
+    begin
+      AppBusy;
+      try
+        Result:=OpenURL(Command, Params, Operation);
+      finally
+        AppNormal;
+      end;
+      if not Result then
+        _ShowUnableToExecute(ErrorPath);
+    end;
+{$endif mswindows}
   begin
+{$ifdef mswindows}
+    OriginalPath:=s;
+    if Pos(#0, OriginalPath) <> 0 then begin
+      _ShowUnableToExecute(OriginalPath);
+      exit;
+    end;
+    p:='';
+    op:='open';
+    if not SelectFile and not Userdef then begin
+      if DirectoryExistsUTF8(s) then begin
+        if IsNonStandardFileNamespace(s) then
+          _ShowUnableToExecute(OriginalPath)
+        else
+          _RunCommand(s, '', 'explore', OriginalPath);
+        exit;
+      end;
+      if not FileExistsUTF8(s) then begin
+        _ShowUnableToExecute(OriginalPath);
+        exit;
+      end;
+      AssociationRisk:=GetFileAssociationRisk(s);
+      if AssociationRisk = farAcceptedNotFlagged then begin
+        _RunCommand(s, '', 'open', OriginalPath);
+        exit;
+      end;
+      DisplayPath:=_DisplayPath(OriginalPath);
+      OldCursor:=Screen.Cursor;
+      Screen.Cursor:=crDefault;
+      try
+        ActionResult:=QuestionDlg(acOpenFile.Caption,
+          Format(sUnsafeFileOpen, [DisplayPath]), mtWarning,
+          [mrYes, sOpenAnyway, mrNo, acOpenContainingFolder.Caption,
+           mrCancel, sCancel, 'IsDefault', 'IsCancel'], 0);
+      finally
+        Screen.Cursor:=OldCursor;
+      end;
+      case ActionResult of
+        mrYes:
+          // This catches disappearance, but cannot bind the path to one file.
+          if FileExistsUTF8(OriginalPath) then
+            _RunCommand(OriginalPath, '', 'open', OriginalPath)
+          else
+            _ShowUnableToExecute(OriginalPath);
+        mrNo:
+          begin
+            Target:=OriginalPath;
+            if _SetExploreCommand(Target, p, op) then
+              _RunCommand(Target, p, op, OriginalPath)
+            else
+              _ShowUnableToExecute(OriginalPath);
+          end;
+        else
+          Result:=True;
+      end;
+      exit;
+    end;
+
     AppBusy;
+    try
+      if SelectFile then begin
+        if FileExistsUTF8(s) then begin
+          if Userdef then begin
+            p:=Format(FUserDefinedMenuParam, [s]);
+            s:=FUserDefinedMenuEx;
+          end else if not _SetFileManagerCommand(s, p, op) then begin
+            _ShowUnableToExecute(OriginalPath);
+            exit;
+          end;
+        end else if not _SetExploreCommand(s, p, op, False) then begin
+          _ShowUnableToExecute(OriginalPath);
+          exit;
+        end;
+      end;
+
+      if Userdef then begin
+        op:='open';
+        p:=Format(FUserDefinedMenuParam, [s]);
+        s:=FUserDefinedMenuEx;
+      end;
+      Result:=OpenURL(s, p, op);
+    finally
+      AppNormal;
+    end;
+    if not Result then
+      _ShowUnableToExecute(s);
+{$else}
+    AppBusy;
+    op:='open';
     if SelectFile then begin
       if FileExistsUTF8(s) then begin
-{$ifdef mswindows}
-if Userdef then
-              begin
-                    p:=Format(FUserDefinedMenuParam, [s]);
-                    s:=FUserDefinedMenuEx;
-              end
-              else
-              begin
-                    p:=Format(FFileManagerDefaultParam, [s]); ; // ALERT  //      p:=Format('/select,"%s"', [s]);
-                    s:=FFileManagerDefault;                               //      s:='explorer.exe';
-              end;
-{$else}
         p:='';
         s:=ExtractFilePath(s);
-{$endif mswindows}
       end else begin
         p:='';
         s:=ExtractFilePath(s);
       end;
-    end else begin
-
     end;
 
-{$ifdef mswindows}
-if Userdef then
-              begin
-                    p := Format(FUserDefinedMenuParam, [s]);
-                    s := FUserDefinedMenuEx;
-              end ;
-                    Result:=OpenURL(s, p);
-{$else}
-      if FLinuxOpenDoc = 0 then
-          Result := OpenURL(s, p)    // does not work in latest linux very well!!!! old.vers
-      else
-          Result := OpenDocument(s); // works better - new.vers
-{$endif mswindows}
+    if FLinuxOpenDoc = 0 then
+      Result:=OpenURL(s, p)    // does not work in latest linux very well!!!! old.vers
+    else
+      Result:=OpenDocument(s); // works better - new.vers
 
     AppNormal;
     if not Result then begin
       ForceAppNormal;
       MessageDlg(Format(sUnableToExecute, [s]), mtError, [mbOK], 0);
     end;
+{$endif mswindows}
   end;
 
 var
-  s,r: string;
+  s,r,n: string;
   i: integer;
 begin
   Result:= false;
+{$ifdef mswindows}
+  if Pos(#0, FileName) <> 0 then begin
+    _Exec(FileName);
+    exit;
+  end;
+{$endif mswindows}
   s:=MapRemoteToLocal(FileName);
   if s <> '' then begin
     if Userdef then
@@ -7791,9 +8059,17 @@ begin
           begin
                 r := '';
                 for i := 0 to lvFiles.Items.Count-1 do
-                  if lvFiles.RowSelected[i] then
-                    if r = '' then r := MapRemoteToLocal(FFilesTree.GetFullPath(i)) + '"'  else
-                      r := r + ' "'+ MapRemoteToLocal(FFilesTree.GetFullPath(i)) + '"';
+                  if lvFiles.RowSelected[i] then begin
+                    n:=FFilesTree.GetFullPath(i);
+{$ifdef mswindows}
+                    if Pos(#0, n) <> 0 then begin
+                      _Exec(n);
+                      exit;
+                    end;
+{$endif mswindows}
+                    if r = '' then r := MapRemoteToLocal(n) + '"'  else
+                      r := r + ' "'+ MapRemoteToLocal(n) + '"';
+                  end;
                 s := r;
           end;
         // else s := '"' + s + '"';
@@ -8697,6 +8973,13 @@ initialization
   {$I main.lrs}
 
 finalization
+{$ifdef windows}
+  AssocIsDangerousProc:=nil;
+  if AssocIsDangerousModule <> 0 then begin
+    FreeLibrary(AssocIsDangerousModule);
+    AssocIsDangerousModule:=0;
+  end;
+{$endif windows}
   try
     FreeAndNil(Ini);
   except

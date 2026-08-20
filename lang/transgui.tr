@@ -395,3 +395,5 @@ Labels=Etiketler
 Set labels=Etiketleri ayarla
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Bu, mevcut tüm etiketlerin üzerine yazacaktır.~Birden fazla etiketi virgülle ayırarak ayarlayabilir veya etiketleri temizlemek için boş bırakabilirsiniz
 Application option=Uygulama seçeneği
+Open anyway=Yine de aç
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Bu dosya türü kod çalıştırabilir veya başka şekilde güvensiz olabilir.~~"%s"~~Yalnızca bu dosyaya güveniyorsanız açın

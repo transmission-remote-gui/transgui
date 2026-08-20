@@ -395,3 +395,5 @@ Labels=Oznake
 Set labels=Postavi oznake
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Ovo će zamijeniti sve postojeće oznake.~Možete postaviti više oznaka odvojenih zarezom ili ostaviti prazno za čišćenje oznaka
 Application option=Opcija aplikacije
+Open anyway=Otvori ipak
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Ova vrsta datoteke može izvršiti kôd ili biti na drugi način nesigurna.~~"%s"~~Otvorite je samo ako vjerujete ovoj datoteci
