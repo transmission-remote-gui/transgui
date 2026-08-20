@@ -38,7 +38,7 @@ uses
   {$ifdef windows}
   windows, ShellApi,
   {$else}
-  lclintf,
+  BaseUnix, Unix, lclintf,
   {$endif windows}
   Graphics, Dialogs, ComCtrls, Menus, ActnList, LCLVersion,
   httpsend, StdCtrls, fpjson, jsonparser, ExtCtrls, rpc, syncobjs, variants, varlist, IpResolver,
@@ -680,6 +680,16 @@ type
     function CorrectPath (path: string): string; // PETROV
   private
     FStarted: boolean;
+    FIPCProcessingReady: boolean;
+    FIPCActivationPending: boolean;
+    FIPCRecoveryLoaded: boolean;
+    FIPCRecoveryErrorPending: boolean;
+    FIPCRecoveryErrorShown: boolean;
+    FIPCRecoveryErrorFileName: string;
+    FIPCAcknowledgedMainIdentity: RawByteString;
+    FIPCAcknowledgedMainData: RawByteString;
+    FIPCLastMainAcknowledgement: QWord;
+    FIPCKeepVisible: boolean;
     FTorrents: TVarList;
     FFiles: TVarList;
     FTrackers: TStringList;
@@ -724,6 +734,7 @@ type
     FSlowResponse: TProgressImage;
     FDetailsWait: TProgressImage;
     FDetailsWaitStart: TDateTime;
+    FIPCTimer: TTimer;
     FMainFormShown: boolean;
     FRestoreFilesFocus: boolean;
     FRestoreFilesFocusDeferred: boolean;
@@ -786,6 +797,8 @@ type
     procedure SetRefreshInterval;
     procedure AddTracker(EditMode: boolean);
     procedure UpdateConnections;
+    procedure IPCTimerTimer(Sender: TObject);
+    function PersistPendingIPCRequests: boolean;
     procedure DoConnectToHost(Sender: TObject);
     procedure FillSpeedsMenu;
     procedure DoSetDownloadSpeed(Sender: TObject);
@@ -823,6 +836,8 @@ type
     function SelectRemoteFolder(const CurFolder, DialogTitle: string): string;
     procedure ConnectionSettingsChanged(const ActiveConnection: string; ForceReconnect: boolean);
     procedure StatusBarSizes;
+    procedure ShowStartupQueueErrorAsync(Data: PtrInt);
+    procedure ShowRunIdentityErrorAsync(Data: PtrInt);
 private
     procedure _onException(Sender: TObject; E: Exception);
 end;
@@ -830,6 +845,10 @@ end;
 function ExcludeInvalidChar (path: string): string; // PETROV
 function GetBiDi: TBiDiMode;
 function CheckAppParams: boolean;
+function HasStartupQueueError: boolean;
+procedure ShowStartupQueueError;
+function UpdateOwnedIniFile: boolean;
+function UpdateOwnedIniFileOrReport: boolean;
 procedure LoadTranslation;
 function GetHumanSize(sz: double; RoundTo: integer = 0; const EmptyStr: string = '-'): string;
 function PriorityToStr(p: integer; var ImageIndex: integer): string;
@@ -964,6 +983,12 @@ uses
   ToolWin, download, ColSetup, AddLink, MoveTorrent, AddTracker, lcltype,
   Options, ButtonPanel, BEncode, synautil, Math, FolderHistory;
 
+{$ifdef windows}
+function ReplaceFileW(lpReplacedFileName, lpReplacementFileName,
+  lpBackupFileName: LPCWSTR; dwReplaceFlags: DWORD; lpExclude,
+  lpReserved: Pointer): BOOL; stdcall; external 'kernel32.dll';
+{$endif windows}
+
   {TMyHashMap}
   function TMyHashMap.DefaultHashKey(const Key: Integer): Integer;
   begin
@@ -1010,7 +1035,8 @@ const
 
   SpeedHistorySize = 20;
 
-  PendingWatchMarker = PtrUInt(1); // Never free or dereference this sentinel.
+  PendingWatchMarker = PtrUInt(1); // Never free or dereference these sentinels.
+  PendingIPCMarker = PtrUInt(2);
 
 const
   SizeNames: array[1..5] of string = (sByte, sKByte, sMByte, sGByte, sTByte);
@@ -1167,9 +1193,160 @@ begin
     Accept:=False;
 end;
 
+const
+  IniFileRights = 438; // 0666, restricted by the process umask on Unix
+  IPCFileRights = 384; // 0600 on Unix; IPC state is private to this user
+  PrivateFileRights = 384; // 0600 on Unix
+  IPCLockRetryDelay = 20;
+  IPCLockTimeout = 3000;
+  IPCShutdownLockTimeout = 1000;
+  IPCAcknowledgementAttempts = 50;
+  IPCAcknowledgementDelay = 200;
+  IPCQueueAcknowledgementInterval = 2000;
+  IPCSuccessorHandoffLimit = 3;
+  IPCFileMaxSize = 16 * 1024 * 1024;
+  IniFileMaxSize = 64 * 1024 * 1024;
+  RunIdentityMaxSize = 1024;
+  RunIdentityTokenSize = SizeOf(TGUID);
+{$ifdef windows}
+  MoveFileWriteThroughFlag = $00000008;
+  OpenReparsePointFlag = $00200000;
+  FileReadEAFlag = $00000008;
+  GetReparsePointControlCode = $000900A8;
+  MaximumReparseDataBufferSize = 16 * 1024;
+  ReparseTagNameSurrogate = $20000000;
+{$endif windows}
+
+type
+  TRunOwnership = (roLockUnavailable, roRunUnavailable, roNotOwned, roOwned);
+  TIPCQueueReceipt = record
+    FileIdentity: RawByteString;
+    RecordOffset: Int64;
+    RecordData: RawByteString;
+  end;
+
+{$ifndef windows}
+function c_fchmod(Handle: cint; Mode: mode_t): cint; cdecl;
+  external 'c' name 'fchmod';
+{$endif windows}
+
+function RestrictPrivateFileRights(Handle: System.THandle;
+  const FileName: string): boolean;
+{$ifndef windows}
+var
+  FileInfo, PathInfo: BaseUnix.Stat;
+{$endif windows}
+begin
+{$ifdef windows}
+  Result:=True;
+{$else}
+  Result:=(fpFStat(Handle, FileInfo) = 0) and
+    fpS_ISREG(FileInfo.st_mode) and (FileInfo.st_uid = fpGetUID) and
+    (fpLStat(PChar(LazUTF8.UTF8ToSys(FileName)), PathInfo) = 0) and
+    fpS_ISREG(PathInfo.st_mode) and (FileInfo.st_dev = PathInfo.st_dev) and
+    (FileInfo.st_ino = PathInfo.st_ino);
+  if Result then begin
+    if c_fchmod(Handle, IPCFileRights) = 0 then
+      Result:=(fpFStat(Handle, FileInfo) = 0) and
+        ((FileInfo.st_mode and $3F) = 0)
+    else
+      Result:=(FileInfo.st_mode and $3F) = 0;
+  end;
+{$endif windows}
+end;
+
+{$ifdef windows}
+function CheckPrivateIPCLeaf(const FileName: string;
+  DataHandle: System.THandle; MissingIsSafe: boolean): boolean;
+var
+  h: THandle;
+  DataInfo: BY_HANDLE_FILE_INFORMATION;
+  FileInfo: BY_HANDLE_FILE_INFORMATION;
+  OpenError: DWORD;
+  ReparseBuffer: array[0..MaximumReparseDataBufferSize - 1] of byte;
+  ReparseBytes: DWORD;
+  ReparseTag: DWORD;
+begin
+  h:=CreateFileW(PWideChar(UTF8Decode(FileName)), 0,
+    FILE_SHARE_READ or FILE_SHARE_WRITE or FILE_SHARE_DELETE, nil,
+    OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS or OpenReparsePointFlag, 0);
+  if h = INVALID_HANDLE_VALUE then begin
+    OpenError:=GetLastError;
+    Result:=MissingIsSafe and ((OpenError = ERROR_FILE_NOT_FOUND) or
+      (OpenError = ERROR_PATH_NOT_FOUND));
+    exit;
+  end;
+  try
+    Result:=GetFileInformationByHandle(h, FileInfo) and
+      ((FileInfo.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY) = 0);
+    if Result and (DataHandle <> System.THandle(feInvalidHandle)) then
+      Result:=GetFileInformationByHandle(DataHandle, DataInfo) and
+        ((DataInfo.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY) = 0) and
+        (DataInfo.dwVolumeSerialNumber = FileInfo.dwVolumeSerialNumber) and
+        (DataInfo.nFileIndexHigh = FileInfo.nFileIndexHigh) and
+        (DataInfo.nFileIndexLow = FileInfo.nFileIndexLow);
+    if Result and ((FileInfo.dwFileAttributes and
+      FILE_ATTRIBUTE_REPARSE_POINT) <> 0) then begin
+      ReparseBytes:=0;
+      Result:=DeviceIoControl(h, GetReparsePointControlCode, nil, 0,
+        @ReparseBuffer[0], SizeOf(ReparseBuffer), ReparseBytes, nil) and
+        (ReparseBytes >= SizeOf(ReparseTag));
+      if Result then begin
+        Move(ReparseBuffer[0], ReparseTag, SizeOf(ReparseTag));
+        Result:=(ReparseTag and ReparseTagNameSurrogate) = 0;
+      end;
+    end;
+  finally
+    CloseHandle(h);
+  end;
+end;
+
+function IsPrivateIPCPathSafe(const FileName: string): boolean;
+begin
+  Result:=CheckPrivateIPCLeaf(FileName, System.THandle(feInvalidHandle), True);
+end;
+
+function OpenPrivateIPCFile(const FileName: string;
+  CreateIfMissing: boolean): System.THandle;
+var
+  OpenError: DWORD;
+begin
+  Result:=System.THandle(feInvalidHandle);
+  if not IsPrivateIPCPathSafe(FileName) then
+    exit;
+  Result:=CreateFileW(PWideChar(UTF8Decode(FileName)),
+    GENERIC_READ or GENERIC_WRITE, 0, nil, OPEN_EXISTING,
+    FILE_ATTRIBUTE_NORMAL, 0);
+  if Result = System.THandle(feInvalidHandle) then begin
+    OpenError:=GetLastError;
+    if CreateIfMissing and ((OpenError = ERROR_FILE_NOT_FOUND) or
+      (OpenError = ERROR_PATH_NOT_FOUND)) then
+      Result:=CreateFileW(PWideChar(UTF8Decode(FileName)),
+        GENERIC_READ or GENERIC_WRITE, 0, nil, CREATE_NEW,
+        FILE_ATTRIBUTE_NORMAL or OpenReparsePointFlag, 0);
+  end;
+  if (Result <> System.THandle(feInvalidHandle)) and
+    not CheckPrivateIPCLeaf(FileName, Result, False) then begin
+    FileClose(Result);
+    Result:=System.THandle(feInvalidHandle);
+  end;
+end;
+{$else}
+function IsPrivateIPCPathSafe(const FileName: string): boolean;
+begin
+  Result:=True;
+end;
+{$endif windows}
+
 var
   FIPCFileName: string;
+  FIPCLockFileName: string;
   FRunFileName: string;
+  FOwnRunIdentity: RawByteString;
+  FStartupQueueError: string;
+  FStartupFileError: boolean;
+  FIPCDeleteErrorShown: boolean;
+  FRunIdentityErrorReported: boolean;
 
 function IsProtocolSupported(const url: string): boolean;
 const
@@ -1227,31 +1404,1399 @@ begin
   Result:=True;
 end;
 
-procedure AddTorrentFile(const FileName: string);
+function WriteFileAll(Handle: System.THandle; const Buffer;
+  Count: LongInt): boolean;
+var
+  p: PByte;
+  Written: LongInt;
+begin
+  Result:=False;
+  p:=@Buffer;
+  while Count > 0 do begin
+    Written:=FileWrite(Handle, p^, Count);
+    if Written <= 0 then
+      exit;
+    Inc(p, Written);
+    Dec(Count, Written);
+  end;
+  Result:=True;
+end;
+
+function ReadFileExact(Handle: System.THandle; var Buffer;
+  Count: LongInt): boolean;
+var
+  p: PByte;
+  BytesRead: LongInt;
+begin
+  Result:=False;
+  p:=@Buffer;
+  while Count > 0 do begin
+    BytesRead:=FileRead(Handle, p^, Count);
+    if BytesRead <= 0 then
+      exit;
+    Inc(p, BytesRead);
+    Dec(Count, BytesRead);
+  end;
+  Result:=True;
+end;
+
+function TryAcquireIPCLock(Timeout: QWord): System.THandle;
+{$ifndef windows}
+const
+  CloseOnExecFlag = 1;
+{$endif windows}
+var
+  Started: QWord;
+{$ifndef windows}
+  Flags: cint;
+{$endif windows}
+begin
+  Result:=System.THandle(feInvalidHandle);
+  Started:=GetTickCount64;
+  repeat
+{$ifdef windows}
+    Result:=OpenPrivateIPCFile(FIPCLockFileName, True);
+{$else}
+    Result:=utils.FileOpenUTF8(FIPCLockFileName,
+      fmOpenReadWrite or fmShareDenyNone);
+    if (Result = System.THandle(feInvalidHandle)) and
+      not FileExistsUTF8(FIPCLockFileName) then
+      Result:=utils.FileCreateUTF8(FIPCLockFileName, fmShareDenyNone,
+        IPCFileRights);
+    if Result <> System.THandle(feInvalidHandle) then begin
+      if not RestrictPrivateFileRights(Result, FIPCLockFileName) then begin
+        FileClose(Result);
+        Result:=System.THandle(feInvalidHandle);
+      end;
+    end;
+    if Result <> System.THandle(feInvalidHandle) then begin
+      Flags:=fpFcntl(Result, F_GetFd);
+      if Flags < 0 then begin
+        FileClose(Result);
+        Result:=System.THandle(feInvalidHandle);
+      end
+      else if fpFcntl(Result, F_SetFd, Flags or CloseOnExecFlag) < 0 then begin
+        FileClose(Result);
+        Result:=System.THandle(feInvalidHandle);
+      end;
+    end;
+    if Result <> System.THandle(feInvalidHandle) then begin
+      if fpFlock(Result, LOCK_EX or LOCK_NB) <> 0 then begin
+        FileClose(Result);
+        Result:=System.THandle(feInvalidHandle);
+      end;
+    end;
+{$endif windows}
+    if Result <> System.THandle(feInvalidHandle) then
+      exit;
+    if Timeout = 0 then
+      exit;
+    Sleep(IPCLockRetryDelay);
+  until GetTickCount64 - Started >= Timeout;
+end;
+
+function OpenIPCFile(CreateIfMissing: boolean): System.THandle;
+begin
+{$ifdef windows}
+  Result:=OpenPrivateIPCFile(FIPCFileName, CreateIfMissing);
+{$else}
+  Result:=utils.FileOpenUTF8(FIPCFileName,
+    fmOpenReadWrite or fmShareExclusive);
+  if (Result = System.THandle(feInvalidHandle)) and CreateIfMissing and
+    not FileExistsUTF8(FIPCFileName) then
+    Result:=utils.FileCreateUTF8(FIPCFileName, fmShareExclusive, IPCFileRights);
+{$endif windows}
+  if (Result <> System.THandle(feInvalidHandle)) and
+    not RestrictPrivateFileRights(Result, FIPCFileName) then begin
+    FileClose(Result);
+    Result:=System.THandle(feInvalidHandle);
+  end;
+end;
+
+function DeleteIPCRecoveryFile: boolean;
+var
+  FileName: string;
+begin
+  FileName:=FIPCFileName + '.recovery';
+  Result:=IsPrivateIPCPathSafe(FileName) and
+    (LazFileUtils.DeleteFileUTF8(FileName) or
+    not FileExistsUTF8(FileName));
+end;
+
+function OpenIPCRecoveryFile: System.THandle;
+var
+  FileName: string;
+begin
+  FileName:=FIPCFileName + '.recovery';
+{$ifdef windows}
+  Result:=OpenPrivateIPCFile(FileName, False);
+{$else}
+  Result:=utils.FileOpenUTF8(FileName,
+    fmOpenReadWrite or fmShareExclusive);
+{$endif windows}
+  if (Result <> System.THandle(feInvalidHandle)) and
+    not RestrictPrivateFileRights(Result, FileName) then begin
+    FileClose(Result);
+    Result:=System.THandle(feInvalidHandle);
+  end;
+end;
+
+function ReadHandleContents(Handle: System.THandle; MaxSize: Int64;
+  out Content: RawByteString): boolean;
+var
+  FileSize: Int64;
+begin
+  Result:=False;
+  Content:='';
+  FileSize:=FileSeek(Handle, Int64(0), soFromEnd);
+  if (FileSize < 0) or (FileSize > MaxSize) or
+    (FileSize > High(LongInt)) then
+    exit;
+  if FileSeek(Handle, Int64(0), soFromBeginning) <> 0 then
+    exit;
+  SetLength(Content, LongInt(FileSize));
+  if FileSize = 0 then
+    Result:=True
+  else
+    Result:=ReadFileExact(Handle, Content[1], LongInt(FileSize));
+end;
+
+function TruncateIncompleteIPCRecord(Handle: System.THandle;
+  var FileSize: Int64): boolean;
+const
+  BufferSize = 4096;
+var
+  Buffer: array[0..BufferSize - 1] of byte;
+  BufferStart, ScanPosition, NewSize: Int64;
+  BytesToRead, i: LongInt;
+begin
+  Result:=False;
+  if (FileSize < 0) or (FileSize > IPCFileMaxSize) then
+    exit;
+  if FileSize = 0 then begin
+    Result:=True;
+    exit;
+  end;
+  ScanPosition:=FileSize;
+  while ScanPosition > 0 do begin
+    BytesToRead:=BufferSize;
+    if ScanPosition < BytesToRead then
+      BytesToRead:=LongInt(ScanPosition);
+    BufferStart:=ScanPosition - BytesToRead;
+    if FileSeek(Handle, BufferStart, soFromBeginning) <> BufferStart then
+      exit;
+    if not ReadFileExact(Handle, Buffer[0], BytesToRead) then
+      exit;
+    for i:=BytesToRead - 1 downto 0 do
+      if Buffer[i] = 10 then begin
+        NewSize:=BufferStart + i + 1;
+        if (NewSize <> FileSize) and not FileTruncate(Handle, NewSize) then
+          exit;
+        FileSize:=NewSize;
+        Result:=True;
+        exit;
+      end;
+    ScanPosition:=BufferStart;
+  end;
+  Result:=FileTruncate(Handle, 0);
+  if Result then
+    FileSize:=0;
+end;
+
+procedure TrimIncompleteIPCData(var Data: RawByteString);
+var
+  CompleteLength: SizeInt;
+begin
+  CompleteLength:=Length(Data);
+  while (CompleteLength > 0) and (Data[CompleteLength] <> #10) do
+    Dec(CompleteLength);
+  SetLength(Data, CompleteLength);
+end;
+
+function ReadLimitedFileContents(const FileName: string; MaxSize: Int64;
+  out Content: RawByteString): boolean;
 var
   h: System.THandle;
-  t: TDateTime;
-  s: string;
+  FileSize: Int64;
 begin
+  Result:=False;
+  Content:='';
+  h:=utils.FileOpenUTF8(FileName, fmOpenRead or fmShareDenyNone);
+  if h = System.THandle(feInvalidHandle) then
+    exit;
+  try
+    FileSize:=FileSeek(h, Int64(0), soFromEnd);
+    if (FileSize < 0) or (FileSize > MaxSize) or
+      (FileSize > High(LongInt)) or
+      (FileSeek(h, Int64(0), soFromBeginning) <> 0) then
+      exit;
+    SetLength(Content, LongInt(FileSize));
+    if FileSize = 0 then
+      Result:=True
+    else begin
+      Result:=ReadFileExact(h, Content[1], LongInt(FileSize));
+      if not Result then
+        Content:='';
+    end;
+  finally
+    FileClose(h);
+  end;
+end;
+
+procedure ShowFileAccessError(const FileName: string);
+begin
+  MessageDlg(sErrorState + ': ' + FileName, mtError, [mbOK], 0);
+end;
+
+{$ifdef windows}
+type
+  TGetFinalPathNameByHandleW = function(hFile: THandle;
+    lpszFilePath: PWideChar; cchFilePath, dwFlags: DWORD): DWORD; stdcall;
+
+function ResolveWindowsPath(const FileName: string;
+  out ResolvedFileName: string): boolean;
+var
+  GetFinalPathName: TGetFinalPathNameByHandleW;
+  h: THandle;
+  FileInfo: BY_HANDLE_FILE_INFORMATION;
+  ReparseBuffer: array[0..MaximumReparseDataBufferSize - 1] of byte;
+  ReparseBytes: DWORD;
+  ReparseTag: DWORD;
+  LeafExists: boolean;
+  LeafIsReparse: boolean;
+  LeafIsNameSurrogate: boolean;
+  ModuleHandle: HMODULE;
+  OpenError: DWORD;
+  ComparisonFileName: string;
+  OriginalFileName: string;
+  ParentPath: string;
+  PathLength: DWORD;
+  WidePath: WideString;
+begin
+  Result:=False;
+  ModuleHandle:=GetModuleHandleW('kernel32.dll');
+  if ModuleHandle = 0 then
+    exit;
+  Pointer(GetFinalPathName):=GetProcAddress(ModuleHandle,
+    'GetFinalPathNameByHandleW');
+  if not Assigned(GetFinalPathName) then
+    exit;
+  ResolvedFileName:=LazFileUtils.ExpandFileNameUTF8(FileName);
+  OriginalFileName:=ResolvedFileName;
+  if Copy(OriginalFileName, 1, 8) = '\\?\UNC\' then
+    OriginalFileName:='\\' + Copy(OriginalFileName, 9, MaxInt)
+  else if Copy(OriginalFileName, 1, 4) = '\\?\' then
+    Delete(OriginalFileName, 1, 4);
+  LeafExists:=False;
+  LeafIsReparse:=False;
+  LeafIsNameSurrogate:=False;
+  h:=CreateFileW(PWideChar(UTF8Decode(ResolvedFileName)),
+    FILE_READ_ATTRIBUTES or FileReadEAFlag,
+    FILE_SHARE_READ or FILE_SHARE_WRITE or
+    FILE_SHARE_DELETE, nil, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS or
+    OpenReparsePointFlag, 0);
+  if h <> INVALID_HANDLE_VALUE then begin
+    try
+      if not GetFileInformationByHandle(h, FileInfo) then
+        exit;
+      LeafExists:=True;
+      LeafIsReparse:=(FileInfo.dwFileAttributes and
+        FILE_ATTRIBUTE_REPARSE_POINT) <> 0;
+      if LeafIsReparse then begin
+        ReparseBytes:=0;
+        if not DeviceIoControl(h, GetReparsePointControlCode, nil, 0,
+          @ReparseBuffer[0], SizeOf(ReparseBuffer), ReparseBytes, nil) or
+          (ReparseBytes < SizeOf(ReparseTag)) then
+          exit;
+        Move(ReparseBuffer[0], ReparseTag, SizeOf(ReparseTag));
+        LeafIsNameSurrogate:=(ReparseTag and ReparseTagNameSurrogate) <> 0;
+      end;
+    finally
+      CloseHandle(h);
+    end;
+  end else begin
+    OpenError:=GetLastError;
+    if (OpenError <> ERROR_FILE_NOT_FOUND) and
+      (OpenError <> ERROR_PATH_NOT_FOUND) then
+      exit;
+  end;
+  h:=CreateFileW(PWideChar(UTF8Decode(ResolvedFileName)),
+    FILE_READ_ATTRIBUTES, FILE_SHARE_READ or FILE_SHARE_WRITE or
+    FILE_SHARE_DELETE, nil, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
+  if h = INVALID_HANDLE_VALUE then begin
+    OpenError:=GetLastError;
+    if (OpenError <> ERROR_FILE_NOT_FOUND) and
+      (OpenError <> ERROR_PATH_NOT_FOUND) then
+      exit;
+    if LeafExists then
+      exit;
+    ParentPath:=ExtractFileDir(ResolvedFileName);
+    h:=CreateFileW(PWideChar(UTF8Decode(ParentPath)),
+      FILE_READ_ATTRIBUTES, FILE_SHARE_READ or FILE_SHARE_WRITE or
+      FILE_SHARE_DELETE, nil, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
+  end else
+    ParentPath:='';
+  if h = INVALID_HANDLE_VALUE then
+    exit;
+  try
+    SetLength(WidePath, 32768);
+    PathLength:=GetFinalPathName(h, PWideChar(WidePath), Length(WidePath), 0);
+    if (PathLength = 0) or (PathLength >= DWORD(Length(WidePath))) then
+      exit;
+    SetLength(WidePath, PathLength);
+  finally
+    CloseHandle(h);
+  end;
+  ResolvedFileName:=UTF8Encode(WidePath);
+  ComparisonFileName:=ResolvedFileName;
+  if Copy(ComparisonFileName, 1, 8) = '\\?\UNC\' then
+    ComparisonFileName:='\\' + Copy(ComparisonFileName, 9, MaxInt)
+  else if Copy(ComparisonFileName, 1, 4) = '\\?\' then
+    Delete(ComparisonFileName, 1, 4);
+  if LeafIsNameSurrogate and (LazFileUtils.CompareFilenames(
+    OriginalFileName, ComparisonFileName) = 0) then
+    exit;
+  if ParentPath <> '' then
+    ResolvedFileName:=LazFileUtils.AppendPathDelim(ResolvedFileName) +
+      ExtractFileName(FileName);
+  Result:=True;
+end;
+{$endif windows}
+
+function ResolveReplacementTarget(const FileName: string;
+  out TargetFileName: string): boolean;
+{$ifndef windows}
+const
+  UnixSymlinkMaxDepth = 40;
+var
+  Depth: integer;
+  FileInfo: BaseUnix.Stat;
+  LinkTarget: string;
+  ParentPath: string;
+{$endif windows}
+begin
+  TargetFileName:=LazFileUtils.ExpandFileNameUTF8(FileName);
+{$ifndef windows}
+  for Depth:=0 to UnixSymlinkMaxDepth do begin
+    ParentPath:=LazFileUtils.GetPhysicalFilename(
+      ExtractFilePath(TargetFileName), LazFileUtils.pfeEmpty);
+    if ParentPath = '' then begin
+      Result:=False;
+      exit;
+    end;
+    TargetFileName:=LazFileUtils.AppendPathDelim(ParentPath) +
+      ExtractFileName(TargetFileName);
+    if (fpLStat(PChar(LazUTF8.UTF8ToSys(TargetFileName)), FileInfo) <> 0) or
+      not fpS_ISLNK(FileInfo.st_mode) then begin
+      Result:=True;
+      exit;
+    end;
+    if Depth = UnixSymlinkMaxDepth then begin
+      Result:=False;
+      exit;
+    end;
+    LinkTarget:=LazUTF8.SysToUTF8(
+      fpReadLink(LazUTF8.UTF8ToSys(TargetFileName)));
+    if LinkTarget = '' then begin
+      Result:=False;
+      exit;
+    end;
+    if LazFileUtils.FilenameIsAbsolute(LinkTarget) then
+      TargetFileName:=LinkTarget
+    else
+      TargetFileName:=ExtractFilePath(TargetFileName) + LinkTarget;
+  end;
+  Result:=False;
+{$else}
+  Result:=ResolveWindowsPath(FileName, TargetFileName);
+{$endif windows}
+end;
+
+function ReplaceResolvedFileContents(const TargetFileName: string;
+  const Content: RawByteString; PreserveAttributes: boolean): boolean;
+const
+  TempNameChars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
+var
+  h: System.THandle;
+  i, j: integer;
+  TempBaseName: string;
+  TempBaseLength: integer;
+  TempFileName: string;
+  TempSeed: QWord;
+{$ifdef windows}
+  ReplaceError: DWORD;
+{$else}
+  FileInfo: BaseUnix.Stat;
+  PreserveMode: boolean;
+{$endif windows}
+begin
+  Result:=False;
+{$ifndef windows}
+  PreserveMode:=PreserveAttributes and
+    (fpStat(PChar(LazUTF8.UTF8ToSys(TargetFileName)), FileInfo) = 0);
+{$endif windows}
+{$ifdef windows}
+  TempBaseLength:=LazUTF8.UTF8Length(ExtractFileName(TargetFileName));
+{$else}
+  TempBaseLength:=Length(LazUTF8.UTF8ToSys(
+    ExtractFileName(TargetFileName)));
+{$endif windows}
+  if TempBaseLength > 32 then
+    TempBaseLength:=32;
+  if TempBaseLength = 0 then
+    exit;
+  TempSeed:=GetTickCount64 xor (QWord(GetProcessID) shl 32);
+  h:=System.THandle(feInvalidHandle);
+  for i:=1 to Length(TempNameChars) do begin
+    TempBaseName:=TempNameChars[i];
+    for j:=2 to TempBaseLength do
+      TempBaseName:=TempBaseName + TempNameChars[
+        (TempSeed + QWord(i) * 131 + QWord(j) * 17) mod
+        Length(TempNameChars) + 1];
+    TempFileName:=ExtractFilePath(TargetFileName) + TempBaseName;
+    if LazFileUtils.CompareFilenames(TempFileName, TargetFileName) = 0 then
+      continue;
+{$ifdef windows}
+    h:=CreateFileW(PWideChar(UTF8Decode(TempFileName)),
+      GENERIC_READ or GENERIC_WRITE, 0, nil, CREATE_NEW,
+      FILE_ATTRIBUTE_NORMAL, 0);
+{$else}
+    h:=fpOpen(PChar(LazUTF8.UTF8ToSys(TempFileName)),
+      O_RdWr or O_Creat or O_Excl, PrivateFileRights);
+{$endif windows}
+    if h <> System.THandle(feInvalidHandle) then
+      break;
+  end;
+  if h = System.THandle(feInvalidHandle) then
+    exit;
+  try
+    Result:=PreserveAttributes or
+      RestrictPrivateFileRights(h, TempFileName);
+    if Result then
+      Result:=(Content = '') or
+        WriteFileAll(h, Content[1], Length(Content));
+    if Result then
+      Result:=FileFlush(h);
+{$ifndef windows}
+    if Result and PreserveMode then
+      Result:=fpChmod(PChar(LazUTF8.UTF8ToSys(TempFileName)),
+        FileInfo.st_mode) = 0;
+{$endif windows}
+  finally
+    FileClose(h);
+  end;
+  if Result then begin
+{$ifdef windows}
+    Result:=ReplaceFileW(PWideChar(UTF8Decode(TargetFileName)),
+      PWideChar(UTF8Decode(TempFileName)), nil, 0, nil, nil);
+    if not Result then begin
+      ReplaceError:=GetLastError;
+      if (ReplaceError = ERROR_FILE_NOT_FOUND) or
+        (ReplaceError = ERROR_PATH_NOT_FOUND) then
+        Result:=MoveFileExW(PWideChar(UTF8Decode(TempFileName)),
+          PWideChar(UTF8Decode(TargetFileName)), MOVEFILE_REPLACE_EXISTING);
+    end;
+{$else}
+    Result:=LazFileUtils.RenameFileUTF8(TempFileName, TargetFileName);
+{$endif windows}
+  end;
+  if not Result then
+    LazFileUtils.DeleteFileUTF8(TempFileName);
+end;
+
+function ReplaceFileContents(const FileName: string;
+  const Content: RawByteString): boolean;
+var
+  TargetFileName: string;
+begin
+  Result:=ResolveReplacementTarget(FileName, TargetFileName);
+  if Result then
+    Result:=ReplaceResolvedFileContents(TargetFileName, Content, True);
+end;
+
+function ReplacePrivateFileContents(const FileName: string;
+  const Content: RawByteString; PreserveAttributes: boolean): boolean;
+{$ifndef windows}
+var
+  FileInfo: BaseUnix.Stat;
+{$endif windows}
+begin
+{$ifndef windows}
+  if fpLStat(PChar(LazUTF8.UTF8ToSys(FileName)), FileInfo) = 0 then begin
+    if not fpS_ISREG(FileInfo.st_mode) or (FileInfo.st_uid <> fpGetUID) then begin
+      Result:=False;
+      exit;
+    end;
+  end;
+{$endif windows}
+  Result:=ReplaceResolvedFileContents(FileName, Content, PreserveAttributes);
+end;
+
+function ReplacePrivateIPCFileContents(const FileName: string;
+  const Content: RawByteString): boolean;
+begin
+  Result:=IsPrivateIPCPathSafe(FileName) and
+    ReplacePrivateFileContents(FileName, Content, True);
+end;
+
+function PromoteIPCQueueToRecovery: boolean;
+var
+  h: System.THandle;
+  IPCData: RawByteString;
+  RecoveryFileName: string;
+begin
+  Result:=False;
+  h:=OpenIPCFile(False);
+  if h = System.THandle(feInvalidHandle) then
+    exit;
+  try
+    if not ReadHandleContents(h, IPCFileMaxSize, IPCData) then
+      exit;
+  finally
+    FileClose(h);
+  end;
+  RecoveryFileName:=FIPCFileName + '.recovery';
+  if not IsPrivateIPCPathSafe(FIPCFileName) or
+    not IsPrivateIPCPathSafe(RecoveryFileName) then
+    exit;
+{$ifdef windows}
+  Result:=MoveFileExW(PWideChar(UTF8Decode(FIPCFileName)),
+    PWideChar(UTF8Decode(RecoveryFileName)), MOVEFILE_REPLACE_EXISTING or
+    MoveFileWriteThroughFlag);
+{$else}
+  Result:=LazFileUtils.RenameFileUTF8(FIPCFileName, RecoveryFileName);
+{$endif windows}
+end;
+
+function ReadRunIdentity(out Identity: RawByteString;
+  out PID: SizeUInt): boolean;
+var
+  PID32: LongWord;
+  PID64: QWord;
+begin
+  PID:=0;
+  Result:=ReadLimitedFileContents(FRunFileName, RunIdentityMaxSize,
+    Identity);
+  if not Result then
+    exit;
+  case Length(Identity) of
+    SizeOf(PID32), SizeOf(PID32) + RunIdentityTokenSize:
+      begin
+        Move(Identity[1], PID32, SizeOf(PID32));
+        PID:=PID32;
+      end;
+    SizeOf(PID64), SizeOf(PID64) + RunIdentityTokenSize:
+      begin
+        Move(Identity[1], PID64, SizeOf(PID64));
+        if PID64 > QWord(High(SizeUInt)) then begin
+          Result:=False;
+          exit;
+        end;
+        PID:=SizeUInt(PID64);
+      end;
+  else
+    Result:=False;
+  end;
+end;
+
+function GetRunOwnership(Timeout: QWord): TRunOwnership;
+var
+  h: System.THandle;
+  Identity: RawByteString;
+  PID: SizeUInt;
+begin
+  Result:=roNotOwned;
+  if FOwnRunIdentity = '' then
+    exit;
+  h:=TryAcquireIPCLock(Timeout);
+  if h = System.THandle(feInvalidHandle) then begin
+    Result:=roLockUnavailable;
+    exit;
+  end;
+  try
+    if not ReadRunIdentity(Identity, PID) then
+      Result:=roRunUnavailable
+    else if Identity = FOwnRunIdentity then
+      Result:=roOwned;
+  finally
+    FileClose(h);
+  end;
+end;
+
+function AcquireOwnedIPCLock(Timeout: QWord;
+  out ErrorFileName: string): System.THandle; overload;
+var
+  Identity: RawByteString;
+  PID: SizeUInt;
+begin
+  ErrorFileName:=FIPCLockFileName;
+  Result:=TryAcquireIPCLock(Timeout);
+  if Result = System.THandle(feInvalidHandle) then
+    exit;
+  if not ReadRunIdentity(Identity, PID) then begin
+    ErrorFileName:=FRunFileName;
+    FileClose(Result);
+    Result:=System.THandle(feInvalidHandle);
+    if Ini <> nil then
+      Ini.SuspendUpdates;
+    exit;
+  end;
+  if Identity <> FOwnRunIdentity then begin
+    ErrorFileName:='';
+    FileClose(Result);
+    Result:=System.THandle(feInvalidHandle);
+    if Ini <> nil then
+      Ini.DiscardChanges;
+    FOwnRunIdentity:='';
+    Application.Terminate;
+  end;
+end;
+
+function AcquireOwnedIPCLock(Timeout: QWord): System.THandle; overload;
+var
+  ErrorFileName: string;
+begin
+  Result:=AcquireOwnedIPCLock(Timeout, ErrorFileName);
+end;
+
+function UpdateOwnedIniFile: boolean;
+var
+  LockHandle: System.THandle;
+begin
+  Result:=False;
+  if Ini = nil then
+    exit;
+  LockHandle:=AcquireOwnedIPCLock(IPCLockTimeout);
+  if LockHandle = System.THandle(feInvalidHandle) then begin
+    if FOwnRunIdentity <> '' then
+      Ini.SuspendUpdates;
+    exit;
+  end;
+  try
+    try
+      Ini.ResumeUpdates;
+      Ini.UpdateFile;
+      Result:=True;
+    except
+      Ini.SuspendUpdates;
+      raise;
+    end;
+  finally
+    FileClose(LockHandle);
+  end;
+end;
+
+function UpdateOwnedIniFileOrReport: boolean;
+begin
+  try
+    Result:=UpdateOwnedIniFile;
+  except
+    ShowFileAccessError(Ini.getFileName());
+    Result:=False;
+    exit;
+  end;
+  if not Result and (Ini <> nil) and (FOwnRunIdentity <> '') then
+    ShowFileAccessError(Ini.getFileName());
+end;
+
+function IsRunFileLink: boolean; forward;
+
+function WriteRunIdentity(const Identity: RawByteString): boolean;
+begin
+  Result:=(Identity <> '') and not IsRunFileLink and
+    ReplacePrivateFileContents(FRunFileName, Identity, False);
+end;
+
+function CreateOwnedRunFile(const FallbackIdentity: RawByteString): boolean;
+var
+  Identity: RawByteString;
+  PID: SizeUInt;
+  Token: TGUID;
+begin
+  FOwnRunIdentity:='';
+  PID:=GetProcessID;
+  Result:=CreateGUID(Token) = 0;
+  if Result then begin
+    SetLength(Identity, SizeOf(PID) + RunIdentityTokenSize);
+    Move(PID, Identity[1], SizeOf(PID));
+    Move(Token, Identity[SizeOf(PID) + 1], RunIdentityTokenSize);
+    Result:=WriteRunIdentity(Identity);
+  end;
+  if Result then
+    FOwnRunIdentity:=Identity
+  else
+  if FallbackIdentity <> '' then
+    WriteRunIdentity(FallbackIdentity)
+  else
+    LazFileUtils.DeleteFileUTF8(FRunFileName);
+end;
+
+procedure DeleteOwnedRunFile(const FallbackIdentity: RawByteString = '');
+var
+  h: System.THandle;
+  Identity: RawByteString;
+  PID: SizeUInt;
+begin
+  if FOwnRunIdentity = '' then
+    exit;
+  h:=TryAcquireIPCLock(IPCShutdownLockTimeout);
+  if h = System.THandle(feInvalidHandle) then
+    exit;
+  try
+    if not FileExistsUTF8(FRunFileName) then begin
+      FOwnRunIdentity:='';
+      exit;
+    end;
+    if not ReadRunIdentity(Identity, PID) then begin
+      if Ini <> nil then
+        Ini.DiscardChanges;
+      FOwnRunIdentity:='';
+      exit;
+    end;
+    if Identity <> FOwnRunIdentity then begin
+      if Ini <> nil then
+        Ini.DiscardChanges;
+      FOwnRunIdentity:='';
+      exit;
+    end;
+    if FallbackIdentity <> '' then begin
+      if WriteRunIdentity(FallbackIdentity) then
+        FOwnRunIdentity:='';
+    end
+    else
+    if LazFileUtils.DeleteFileUTF8(FRunFileName) or
+      not FileExistsUTF8(FRunFileName) then
+      FOwnRunIdentity:='';
+  finally
+    FileClose(h);
+  end;
+end;
+
+procedure FinalizeOwnedRunFile;
+var
+  h: System.THandle;
+  Identity: RawByteString;
+  PID: SizeUInt;
+  IniUpdateFailed: boolean;
+  IniUpdateError: string;
+begin
+  if FOwnRunIdentity = '' then
+    exit;
+  h:=TryAcquireIPCLock(IPCShutdownLockTimeout);
+  if h = System.THandle(feInvalidHandle) then begin
+    if Ini <> nil then
+      Ini.DiscardChanges;
+    exit;
+  end;
+  IniUpdateFailed:=False;
+  IniUpdateError:='';
+  try
+    if not ReadRunIdentity(Identity, PID) or
+      (Identity <> FOwnRunIdentity) then begin
+      if Ini <> nil then
+        Ini.DiscardChanges;
+      FOwnRunIdentity:='';
+      exit;
+    end;
+    if (Ini <> nil) and Ini.HasPendingChanges then
+      try
+        Ini.ResumeUpdates;
+        Ini.UpdateFile;
+      except
+        on E: Exception do begin
+          IniUpdateFailed:=True;
+          IniUpdateError:=E.Message;
+        end;
+      end;
+    if Ini <> nil then
+      Ini.DiscardChanges;
+    if LazFileUtils.DeleteFileUTF8(FRunFileName) or
+      not FileExistsUTF8(FRunFileName) then
+      FOwnRunIdentity:='';
+  finally
+    FileClose(h);
+  end;
+  if IniUpdateFailed then
+    DebugLn('Unable to update INI file during shutdown: ' + IniUpdateError);
+end;
+
+function EnsureIPCFile: boolean;
+var
+  h: System.THandle;
+begin
+  h:=OpenIPCFile(True);
+  Result:=h <> System.THandle(feInvalidHandle);
+  if Result then
+    FileClose(h)
+  else
+    Result:=FileExistsUTF8(FIPCFileName);
+end;
+
+function GetIPCFileSize(out FileSize: Int64): boolean;
+var
+  h: System.THandle;
+begin
+  Result:=False;
+  FileSize:=-1;
+  h:=OpenIPCFile(False);
+  if h = System.THandle(feInvalidHandle) then
+    exit;
+  try
+    FileSize:=FileSeek(h, Int64(0), soFromEnd);
+    Result:=(FileSize >= 0) and (FileSize <= IPCFileMaxSize);
+  finally
+    FileClose(h);
+  end;
+end;
+
+function GetFileIdentity(Handle: System.THandle;
+  out Identity: RawByteString): boolean;
+{$ifdef windows}
+var
+  FileInfo: BY_HANDLE_FILE_INFORMATION;
+{$else}
+var
+  FileInfo: BaseUnix.Stat;
+{$endif windows}
+begin
+  Identity:='';
+{$ifdef windows}
+  Result:=GetFileInformationByHandle(Handle, FileInfo);
+  if Result then begin
+    SetLength(Identity, SizeOf(FileInfo.dwVolumeSerialNumber) +
+      SizeOf(FileInfo.nFileIndexHigh) + SizeOf(FileInfo.nFileIndexLow));
+    Move(FileInfo.dwVolumeSerialNumber, Identity[1],
+      SizeOf(FileInfo.dwVolumeSerialNumber));
+    Move(FileInfo.nFileIndexHigh,
+      Identity[1 + SizeOf(FileInfo.dwVolumeSerialNumber)],
+      SizeOf(FileInfo.nFileIndexHigh));
+    Move(FileInfo.nFileIndexLow,
+      Identity[1 + SizeOf(FileInfo.dwVolumeSerialNumber) +
+      SizeOf(FileInfo.nFileIndexHigh)], SizeOf(FileInfo.nFileIndexLow));
+  end;
+{$else}
+  Result:=fpFStat(Handle, FileInfo) = 0;
+  if Result then begin
+    SetLength(Identity, SizeOf(FileInfo.st_dev) + SizeOf(FileInfo.st_ino));
+    Move(FileInfo.st_dev, Identity[1], SizeOf(FileInfo.st_dev));
+    Move(FileInfo.st_ino, Identity[1 + SizeOf(FileInfo.st_dev)],
+      SizeOf(FileInfo.st_ino));
+  end;
+{$endif windows}
+end;
+
+function IsFileLink(const FileName: string): boolean;
+{$ifdef windows}
+var
+  h: THandle;
+  FileInfo: BY_HANDLE_FILE_INFORMATION;
+  OpenError: DWORD;
+  ReparseBuffer: array[0..MaximumReparseDataBufferSize - 1] of byte;
+  ReparseBytes: DWORD;
+  ReparseTag: DWORD;
+{$else}
+var
+  FileInfo: BaseUnix.Stat;
+{$endif windows}
+begin
+{$ifdef windows}
+  Result:=False;
+  h:=CreateFileW(PWideChar(UTF8Decode(FileName)),
+    FILE_READ_ATTRIBUTES or FileReadEAFlag,
+    FILE_SHARE_READ or FILE_SHARE_WRITE or FILE_SHARE_DELETE, nil,
+    OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS or OpenReparsePointFlag, 0);
+  if h = INVALID_HANDLE_VALUE then begin
+    OpenError:=GetLastError;
+    Result:=(OpenError <> ERROR_FILE_NOT_FOUND) and
+      (OpenError <> ERROR_PATH_NOT_FOUND);
+    exit;
+  end;
+  try
+    Result:=not GetFileInformationByHandle(h, FileInfo);
+    if Result or ((FileInfo.dwFileAttributes and
+      FILE_ATTRIBUTE_REPARSE_POINT) = 0) then
+      exit;
+    Result:=True;
+    ReparseBytes:=0;
+    if DeviceIoControl(h, GetReparsePointControlCode, nil, 0,
+      @ReparseBuffer[0], SizeOf(ReparseBuffer), ReparseBytes, nil) and
+      (ReparseBytes >= SizeOf(ReparseTag)) then begin
+      Move(ReparseBuffer[0], ReparseTag, SizeOf(ReparseTag));
+      Result:=(ReparseTag and ReparseTagNameSurrogate) <> 0;
+    end;
+  finally
+    CloseHandle(h);
+  end;
+{$else}
+  Result:=(fpLStat(PChar(LazUTF8.UTF8ToSys(FileName)), FileInfo) = 0) and
+    fpS_ISLNK(FileInfo.st_mode);
+{$endif windows}
+end;
+
+function IsRunFileLink: boolean;
+begin
+  Result:=IsFileLink(FRunFileName);
+end;
+
+function GetOversizedRunFileIdentity(out Identity: RawByteString): boolean;
+var
+  h: System.THandle;
+  FileSize: Int64;
+begin
+  Result:=False;
+  Identity:='';
+  if IsRunFileLink then
+    exit;
+  h:=utils.FileOpenUTF8(FRunFileName, fmOpenRead or fmShareDenyNone);
+  if h = System.THandle(feInvalidHandle) then
+    exit;
+  try
+    FileSize:=FileSeek(h, Int64(0), soFromEnd);
+    Result:=(FileSize > RunIdentityMaxSize) and GetFileIdentity(h, Identity);
+  finally
+    FileClose(h);
+  end;
+end;
+
+function DeleteOversizedRunFile(const ExpectedIdentity: RawByteString): boolean;
+var
+  h: System.THandle;
+  FileSize: Int64;
+  CurrentIdentity: RawByteString;
+begin
+  Result:=False;
+  if IsRunFileLink then
+    exit;
+  h:=utils.FileOpenUTF8(FRunFileName, fmOpenRead or fmShareDenyNone);
+  if h = System.THandle(feInvalidHandle) then begin
+    Result:=not FileExistsUTF8(FRunFileName);
+    exit;
+  end;
+  try
+    FileSize:=FileSeek(h, Int64(0), soFromEnd);
+    if (FileSize <= RunIdentityMaxSize) or
+      not GetFileIdentity(h, CurrentIdentity) or
+      (CurrentIdentity <> ExpectedIdentity) then
+      exit;
+  finally
+    FileClose(h);
+  end;
+  if IsRunFileLink then
+    exit;
+  Result:=LazFileUtils.DeleteFileUTF8(FRunFileName) or
+    not FileExistsUTF8(FRunFileName);
+end;
+
+function CleanupStaleIPCFile(out PreservedStale, OversizedStale: boolean;
+  out StaleData, StaleFileIdentity: RawByteString): boolean;
+var
+  h: System.THandle;
+  FileDate: LongInt;
+  FileSize, OriginalFileSize: Int64;
+  RunExists, Stale: boolean;
+begin
+  Result:=True;
+  PreservedStale:=False;
+  OversizedStale:=False;
+  StaleData:='';
+  StaleFileIdentity:='';
+  Stale:=False;
+  h:=OpenIPCFile(False);
+  if h = System.THandle(feInvalidHandle) then begin
+    Result:=not FileExistsUTF8(FIPCFileName) or
+      FileExistsUTF8(FRunFileName);
+    exit;
+  end;
+  try
+    FileSize:=FileSeek(h, Int64(0), soFromEnd);
+    FileDate:=FileGetDate(h);
+    Stale:=(FileDate > 0) and
+      (Now - FileDateToDateTime(FileDate) > 1/MinsPerDay);
+    if Stale and (FileSize <= IPCFileMaxSize) and
+      FileExistsUTF8(FIPCFileName + '.recovery') then
+      Stale:=False;
+    if FileSize > IPCFileMaxSize then begin
+      Result:=Stale;
+      if Result then begin
+        RunExists:=FileExistsUTF8(FRunFileName);
+        OversizedStale:=RunExists;
+        if OversizedStale then begin
+          Result:=GetFileIdentity(h, StaleFileIdentity);
+          if not Result then
+            OversizedStale:=False;
+        end;
+      end;
+    end
+    else if Stale then begin
+      Result:=FileSize >= 0;
+      if not Result and FileExistsUTF8(FRunFileName) then begin
+        Result:=True;
+        Stale:=False;
+      end;
+      if Result and Stale then begin
+        RunExists:=FileExistsUTF8(FRunFileName);
+        if RunExists then begin
+          OriginalFileSize:=FileSize;
+          Result:=TruncateIncompleteIPCRecord(h, FileSize);
+          if Result and (FileSize <> OriginalFileSize) then
+{$ifdef windows}
+            Result:=FileSetDate(h, FileDate) = 0;
+{$else}
+            Result:=LazFileUtils.FileSetDateUTF8(FIPCFileName, FileDate) = 0;
+{$endif windows}
+          if not Result then
+            exit;
+          PreservedStale:=True;
+          Result:=ReadHandleContents(h, IPCFileMaxSize, StaleData) and
+            GetFileIdentity(h, StaleFileIdentity);
+          if not Result then begin
+            Result:=True;
+            PreservedStale:=False;
+            StaleData:='';
+            StaleFileIdentity:='';
+            Stale:=False;
+          end;
+        end;
+      end;
+    end;
+  finally
+    FileClose(h);
+  end;
+  if Stale and Result and not PreservedStale and not OversizedStale and
+    (not IsPrivateIPCPathSafe(FIPCFileName) or
+    (not LazFileUtils.DeleteFileUTF8(FIPCFileName) and
+    FileExistsUTF8(FIPCFileName))) then
+    Result:=False;
+end;
+
+function RemoveStaleIPCPrefix(const StaleData,
+  StaleFileIdentity: RawByteString; out FileSize: Int64;
+  PreserveEmpty: boolean): boolean;
+var
+  h: System.THandle;
+  IPCData, CurrentFileIdentity: RawByteString;
+  CurrentSize: Int64;
+begin
+  Result:=False;
+  FileSize:=-1;
+  h:=OpenIPCFile(False);
+  if h = System.THandle(feInvalidHandle) then begin
+    if not FileExistsUTF8(FIPCFileName) then begin
+      FileSize:=0;
+      Result:=True;
+    end;
+    exit;
+  end;
+  try
+    if not GetFileIdentity(h, CurrentFileIdentity) or
+      (CurrentFileIdentity <> StaleFileIdentity) then begin
+      FileSize:=FileSeek(h, Int64(0), soFromEnd);
+      Result:=(FileSize >= 0) and (FileSize <= IPCFileMaxSize);
+      exit;
+    end;
+    CurrentSize:=FileSeek(h, Int64(0), soFromEnd);
+    // Do not leave an uncommitted tail for legacy writers to append to.
+    if (CurrentSize < 0) or (CurrentSize > IPCFileMaxSize) or
+      not TruncateIncompleteIPCRecord(h, CurrentSize) or
+      not ReadHandleContents(h, IPCFileMaxSize, IPCData) then
+      exit;
+  finally
+    FileClose(h);
+  end;
+  if (Length(IPCData) < Length(StaleData)) or
+    ((StaleData <> '') and
+    not CompareMem(@IPCData[1], @StaleData[1], Length(StaleData))) then begin
+    FileSize:=Length(IPCData);
+    Result:=True;
+    exit;
+  end;
+  Delete(IPCData, 1, Length(StaleData));
+  if IPCData = '' then begin
+    if PreserveEmpty then begin
+      if (StaleData <> '') and
+        not ReplacePrivateIPCFileContents(FIPCFileName, IPCData) then
+        exit;
+    end
+    else if not IsPrivateIPCPathSafe(FIPCFileName) or
+      (not LazFileUtils.DeleteFileUTF8(FIPCFileName) and
+      FileExistsUTF8(FIPCFileName)) then
+      exit;
+  end
+  else if (StaleData <> '') and
+    not ReplacePrivateIPCFileContents(FIPCFileName, IPCData) then
+    exit;
+  FileSize:=Length(IPCData);
+  Result:=True;
+end;
+
+function DeleteStaleOversizedIPC(const StaleFileIdentity: RawByteString;
+  out FileSize: Int64): boolean;
+var
+  h: System.THandle;
+  CurrentFileIdentity: RawByteString;
+  FileDate: LongInt;
+  DeleteFile: boolean;
+begin
+  Result:=False;
+  FileSize:=-1;
+  DeleteFile:=False;
+  h:=OpenIPCFile(False);
+  if h = System.THandle(feInvalidHandle) then begin
+    if not FileExistsUTF8(FIPCFileName) then begin
+      FileSize:=0;
+      Result:=True;
+    end;
+    exit;
+  end;
+  try
+    if not GetFileIdentity(h, CurrentFileIdentity) then
+      exit;
+    FileSize:=FileSeek(h, Int64(0), soFromEnd);
+    if CurrentFileIdentity <> StaleFileIdentity then begin
+      Result:=(FileSize >= 0) and (FileSize <= IPCFileMaxSize);
+      exit;
+    end;
+    if (FileSize >= 0) and (FileSize <= IPCFileMaxSize) then begin
+      Result:=True;
+      exit;
+    end;
+    FileDate:=FileGetDate(h);
+    DeleteFile:=(FileSize > IPCFileMaxSize) and (FileDate > 0) and
+      (Now - FileDateToDateTime(FileDate) > 1/MinsPerDay);
+  finally
+    FileClose(h);
+  end;
+  if DeleteFile then begin
+    Result:=IsPrivateIPCPathSafe(FIPCFileName) and
+      (LazFileUtils.DeleteFileUTF8(FIPCFileName) or
+      not FileExistsUTF8(FIPCFileName));
+    if Result then
+      FileSize:=0;
+  end;
+end;
+
+function EnsureStartupActivationQueued(out FileSize: Int64;
+  out ActivationQueued: boolean): boolean;
+var
+  h: System.THandle;
+  IPCData: RawByteString;
+begin
+  Result:=False;
+  FileSize:=-1;
+  ActivationQueued:=False;
+  h:=OpenIPCFile(True);
+  if h = System.THandle(feInvalidHandle) then
+    exit;
+  try
+    FileSize:=FileSeek(h, Int64(0), soFromEnd);
+    if (FileSize < 0) or (FileSize > IPCFileMaxSize) or
+      not TruncateIncompleteIPCRecord(h, FileSize) or
+      not ReadHandleContents(h, IPCFileMaxSize, IPCData) then
+      exit;
+  finally
+    FileClose(h);
+  end;
+  if (IPCData <> '') and (IPCData[1] <> #10) then begin
+    if Length(IPCData) >= IPCFileMaxSize then begin
+      FileSize:=Length(IPCData);
+      Result:=True;
+      exit;
+    end;
+    IPCData:=#10 + IPCData;
+  end;
+  FileSize:=Length(IPCData);
+  ActivationQueued:=(IPCData = '') or (IPCData[1] = #10);
+  if ActivationQueued and
+    not ReplacePrivateIPCFileContents(FIPCFileName, IPCData) then
+    exit;
+  Result:=True;
+end;
+
+function QueueTorrentFileWithReceipt(const FileName: string;
+  out QueueReceipt: TIPCQueueReceipt; out RetrySafe: boolean): boolean;
+var
+  h, LockHandle: System.THandle;
+  Started: QWord;
+  OriginalSize: Int64;
+  FileDate: LongInt;
+  FileIdentity: RawByteString;
+  s: string;
+  IPCFileExisted, PreserveActivation: boolean;
+begin
+  Result:=False;
+  RetrySafe:=True;
+  QueueReceipt.FileIdentity:='';
+  QueueReceipt.RecordOffset:=0;
+  QueueReceipt.RecordData:='';
   if HasIPCRecordDelimiter(FileName) then
     exit;
   if not IsProtocolSupported(FileName) and not FileExistsUTF8(FileName) then
     exit;
-  t:=Now;
+  Started:=GetTickCount64;
   repeat
-    if FileExistsUTF8(FIPCFileName) then
-      h:=FileOpenUTF8(FIPCFileName, fmOpenWrite or fmShareDenyRead or fmShareDenyWrite)
-    else
-      h:=FileCreateUTF8(FIPCFileName);
-    if h <> System.THandle(-1) then begin
-      s:=FileName + LineEnding;
-      FileSeek(h, 0, soFromEnd);
-      FileWrite(h, s[1], Length(s));
-      FileClose(h);
-      break;
+    LockHandle:=TryAcquireIPCLock(0);
+    if LockHandle <> System.THandle(feInvalidHandle) then begin
+      try
+        IPCFileExisted:=FileExistsUTF8(FIPCFileName);
+        h:=OpenIPCFile(True);
+        if h <> System.THandle(feInvalidHandle) then begin
+          try
+            OriginalSize:=FileSeek(h, Int64(0), soFromEnd);
+            if OriginalSize > IPCFileMaxSize then
+              exit;
+            FileDate:=FileGetDate(h);
+            PreserveActivation:=IPCFileExisted and (OriginalSize = 0) and
+              ((FileDate <= 0) or
+              (Now - FileDateToDateTime(FileDate) <= 1/MinsPerDay));
+            if TruncateIncompleteIPCRecord(h, OriginalSize) then begin
+              if not GetFileIdentity(h, FileIdentity) then
+                exit;
+              s:=FileName + #10;
+              if PreserveActivation then
+                s:=#10 + s;
+              if Length(s) > IPCFileMaxSize - OriginalSize then
+                exit;
+              if FileSeek(h, OriginalSize, soFromBeginning) = OriginalSize then begin
+                Result:=WriteFileAll(h, s[1], Length(s));
+                if Result then
+                  Result:=FileFlush(h);
+                if not Result then begin
+                  RetrySafe:=FileTruncate(h, OriginalSize);
+                  if RetrySafe then
+                    RetrySafe:=FileFlush(h);
+                  if not RetrySafe then
+                    exit;
+                end;
+                if Result then begin
+                  QueueReceipt.FileIdentity:=FileIdentity;
+                  QueueReceipt.RecordOffset:=OriginalSize;
+                  QueueReceipt.RecordData:=s;
+                end;
+              end;
+            end;
+          finally
+            FileClose(h);
+          end;
+        end;
+      finally
+        FileClose(LockHandle);
+      end;
+      if Result then
+        exit;
     end;
-    Sleep(20);
-  until Now - t >= 3/SecsPerDay;
+    Sleep(IPCLockRetryDelay);
+  until GetTickCount64 - Started >= IPCLockTimeout;
+end;
+
+function QueueTorrentFile(const FileName: string): boolean;
+var
+  QueueReceipt: TIPCQueueReceipt;
+  RetrySafe: boolean;
+begin
+  Result:=QueueTorrentFileWithReceipt(FileName, QueueReceipt, RetrySafe);
+end;
+
+function IsIPCQueueAcknowledged(
+  const QueueReceipt: TIPCQueueReceipt): boolean;
+var
+  h: System.THandle;
+  FileSize: Int64;
+  CurrentFileIdentity: RawByteString;
+  CurrentRecord: RawByteString;
+begin
+  Result:=False;
+  h:=OpenIPCFile(False);
+  if h = System.THandle(feInvalidHandle) then begin
+    Result:=not FileExistsUTF8(FIPCFileName);
+    exit;
+  end;
+  try
+    if QueueReceipt.FileIdentity = '' then
+      exit;
+    if not GetFileIdentity(h, CurrentFileIdentity) then
+      exit;
+    if CurrentFileIdentity <> QueueReceipt.FileIdentity then begin
+      Result:=True;
+      exit;
+    end;
+    FileSize:=FileSeek(h, Int64(0), soFromEnd);
+    if FileSize < 0 then
+      exit;
+    if QueueReceipt.RecordData = '' then
+      exit;
+    if FileSize < QueueReceipt.RecordOffset +
+      Length(QueueReceipt.RecordData) then begin
+      Result:=True;
+      exit;
+    end;
+    if FileSeek(h, QueueReceipt.RecordOffset, soFromBeginning) <>
+      QueueReceipt.RecordOffset then
+      exit;
+    SetLength(CurrentRecord, Length(QueueReceipt.RecordData));
+    if not ReadFileExact(h, CurrentRecord[1], Length(CurrentRecord)) then
+      exit;
+    Result:=CurrentRecord <> QueueReceipt.RecordData;
+  finally
+    FileClose(h);
+  end;
+end;
+
+procedure AddTorrentFile(const FileName: string);
+begin
+  if HasIPCRecordDelimiter(FileName) or
+    (not IsProtocolSupported(FileName) and not FileExistsUTF8(FileName)) then
+    exit;
+  if not QueueTorrentFile(FileName) then
+    MessageDlg(Format(sUnableToExecute, [FileName]), mtError, [mbOK], 0);
+end;
+
+function HasStartupQueueError: boolean;
+begin
+  Result:=FStartupQueueError <> '';
+end;
+
+procedure ShowStartupQueueError;
+begin
+  if FStartupQueueError <> '' then begin
+    if FStartupFileError then
+      MessageDlg(sErrorState + ': ' + FStartupQueueError,
+        mtError, [mbOK], 0)
+    else
+      MessageDlg(Format(sUnableToExecute, [FStartupQueueError]),
+        mtError, [mbOK], 0);
+    FStartupQueueError:='';
+    FStartupFileError:=False;
+  end;
+end;
+
+procedure TMainForm.ShowStartupQueueErrorAsync(Data: PtrInt);
+begin
+  Inc(FAddingTorrent);
+  try
+    ShowStartupQueueError;
+  finally
+    Dec(FAddingTorrent);
+    FIPCKeepVisible:=False;
+  end;
+end;
+
+procedure TMainForm.ShowRunIdentityErrorAsync(Data: PtrInt);
+begin
+  if not FRunIdentityErrorReported or Application.Terminated then
+    exit;
+  if not FIPCProcessingReady or (FAddingTorrent <> 0) or
+    (Application.ModalLevel <> 0) then begin
+    FRunIdentityErrorReported:=False;
+    exit;
+  end;
+  Inc(FAddingTorrent);
+  try
+    ShowFileAccessError(FRunFileName);
+  finally
+    Dec(FAddingTorrent);
+    FIPCKeepVisible:=False;
+  end;
 end;
 
 procedure LoadTranslation;
@@ -1278,17 +2823,306 @@ begin
 end;
 
 function CheckAppParams: boolean;
+label
+  WaitForRunningInstance;
 var
   i: integer;
+  SuccessorHandoffCount: integer;
   s: string;
-  h: System.THandle;
-  pid: SizeUInt;
+  h, LockHandle: System.THandle;
+  PID: SizeUInt;
+  IPCSize: Int64;
+  RunIdentity, CurrentRunIdentity, FallbackRunIdentity,
+    CurrentIPCFileIdentity,
+    StaleQueueData, StaleQueueFileIdentity,
+    OversizedRunFileIdentity: RawByteString;
+  QueueReceipt, QueuedIPCReceipt: TIPCQueueReceipt;
+  QueuedActivation, RunningInstance, PreservedStaleQueue,
+    OversizedStaleQueue, RetryStartupActivation,
+    StartupActivationQueued, RetryRemovedQueueAfterUnlock,
+    FollowSuccessorAfterUnlock, AwaitingRetriedQueueAck,
+    IPCFileMissing, OversizedRunFile, QueueAcknowledged,
+    QueueRetrySafe, RefreshStaleQueueReceipt,
+    UnsafeStartupQueueFailure: boolean;
+  StartupActivationMaterialized: boolean;
+  FailedStartupArguments: array of string;
+  Ownership: TRunOwnership;
 {$ifdef linux}
   proc: TProcess;
   sr: TSearchRec;
   hLib: TLibHandle;
 {$endif linux}
+
+  procedure RecordStartupFileError(const FileName: string);
+  begin
+    if FStartupQueueError = '' then begin
+      FStartupQueueError:=FileName;
+      FStartupFileError:=True;
+    end;
+  end;
+
+  procedure RecordOwnershipError(Ownership: TRunOwnership);
+  begin
+    if Ownership = roRunUnavailable then
+      RecordStartupFileError(FRunFileName)
+    else
+      RecordStartupFileError(FIPCLockFileName);
+  end;
+
+  procedure RememberFailedStartupArgument(const Value: string);
+  var
+    Count: SizeInt;
+  begin
+    Count:=Length(FailedStartupArguments);
+    SetLength(FailedStartupArguments, Count + 1);
+    FailedStartupArguments[Count]:=Value;
+  end;
+
+  function RetryFailedStartupArguments: boolean;
+  var
+    ArgumentIndex: SizeInt;
+    QueueReceipt: TIPCQueueReceipt;
+    RetrySafe: boolean;
+  begin
+    Result:=Length(FailedStartupArguments) = 0;
+    if Result then
+      exit;
+    Result:=True;
+    FStartupQueueError:='';
+    for ArgumentIndex:=0 to High(FailedStartupArguments) do
+      if not QueueTorrentFileWithReceipt(
+        FailedStartupArguments[ArgumentIndex], QueueReceipt,
+        RetrySafe) then begin
+        Result:=False;
+        if FStartupQueueError = '' then
+          FStartupQueueError:=FailedStartupArguments[ArgumentIndex];
+        if not RetrySafe then
+          break;
+      end
+      else
+        QueuedIPCReceipt:=QueueReceipt;
+    SetLength(FailedStartupArguments, 0);
+  end;
+
+  function CaptureStartupActivationReceipt(
+    out QueueReceipt: TIPCQueueReceipt): boolean;
+  var
+    h: System.THandle;
+    FileSize: Int64;
+    Marker: AnsiChar;
+  begin
+    Result:=False;
+    QueueReceipt.FileIdentity:='';
+    QueueReceipt.RecordOffset:=0;
+    QueueReceipt.RecordData:='';
+    h:=OpenIPCFile(False);
+    if h = System.THandle(feInvalidHandle) then
+      exit;
+    try
+      FileSize:=FileSeek(h, Int64(0), soFromEnd);
+      if (FileSize < 0) or (FileSize > IPCFileMaxSize) then
+        exit;
+      if FileSize > 0 then begin
+        if (FileSeek(h, Int64(0), soFromBeginning) <> 0) or
+          not ReadFileExact(h, Marker, SizeOf(Marker)) or (Marker <> #10) then
+          exit;
+        QueueReceipt.RecordData:=#10;
+      end;
+{$ifdef windows}
+      if (FileSize = 0) and
+        (FileSetDate(h, DateTimeToFileDate(Now)) <> 0) then
+{$else}
+      if (FileSize = 0) and
+        (LazFileUtils.FileSetDateUTF8(FIPCFileName,
+          DateTimeToFileDate(Now)) <> 0) then
+{$endif windows}
+        exit;
+      Result:=GetFileIdentity(h, QueueReceipt.FileIdentity);
+    finally
+      FileClose(h);
+    end;
+  end;
+
+  function QueueStartupActivation(out Queued: boolean;
+    out QueueReceipt: TIPCQueueReceipt): boolean;
+  var
+    ActivationLockHandle: System.THandle;
+    FileSize: Int64;
+  begin
+    Queued:=False;
+    QueueReceipt.FileIdentity:='';
+    QueueReceipt.RecordOffset:=0;
+    QueueReceipt.RecordData:='';
+    ActivationLockHandle:=TryAcquireIPCLock(IPCLockTimeout);
+    Result:=ActivationLockHandle <> System.THandle(feInvalidHandle);
+    if not Result then begin
+      if FStartupQueueError = '' then begin
+        FStartupQueueError:=FIPCLockFileName;
+        FStartupFileError:=True;
+      end;
+      exit;
+    end;
+    try
+      if FileExistsUTF8(FIPCFileName) then begin
+        Result:=GetIPCFileSize(FileSize);
+        Queued:=Result and (FileSize = 0);
+      end
+      else begin
+        Result:=EnsureIPCFile;
+        if Result then begin
+          Result:=GetIPCFileSize(FileSize);
+          Queued:=Result and (FileSize = 0);
+        end;
+      end;
+      if Result and Queued and
+        not CaptureStartupActivationReceipt(QueueReceipt) then begin
+        Result:=False;
+        if FStartupQueueError = '' then begin
+          FStartupQueueError:=FIPCFileName;
+          FStartupFileError:=True;
+        end;
+      end;
+    finally
+      FileClose(ActivationLockHandle);
+    end;
+  end;
+
+  function RetryRemovedStartupQueue: boolean;
+  begin
+    Result:=False;
+    if Length(FailedStartupArguments) > 0 then begin
+      if not RetryFailedStartupArguments then
+        exit;
+      AwaitingRetriedQueueAck:=True;
+      Result:=True;
+    end
+    else if RetryStartupActivation then begin
+      if not QueueStartupActivation(StartupActivationQueued,
+        QueuedIPCReceipt) then begin
+        if FStartupQueueError = '' then begin
+          FStartupQueueError:=FIPCFileName;
+          FStartupFileError:=True;
+        end;
+        exit;
+      end;
+      RetryStartupActivation:=not StartupActivationQueued;
+      if StartupActivationQueued then
+        AwaitingRetriedQueueAck:=True;
+      Result:=True;
+    end;
+    if Result then begin
+      PreservedStaleQueue:=False;
+      OversizedStaleQueue:=False;
+      StaleQueueData:='';
+      StaleQueueFileIdentity:='';
+    end;
+  end;
+
+  function LoadApplicationSettings: boolean;
+  var
+    OldIni, NewIni: TIniFileUtf8;
+    IniFileName, SettingsLoadErrorFileName: string;
+    LockHandle, IniHandle: System.THandle;
+
+    procedure EnsureIniFileExists;
+    begin
+      if FileExistsUTF8(IniFileName) then
+        exit;
+{$ifdef windows}
+      IniHandle:=CreateFileW(PWideChar(UTF8Decode(IniFileName)),
+        GENERIC_READ or GENERIC_WRITE, 0, nil, OPEN_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL, 0);
+{$else}
+      IniHandle:=fpOpen(PChar(LazUTF8.UTF8ToSys(IniFileName)),
+        O_RdWr or O_Creat, IniFileRights);
+{$endif windows}
+      if IniHandle <> System.THandle(feInvalidHandle) then
+        FileClose(IniHandle)
+      else if not FileExistsUTF8(IniFileName) then
+        raise EFCreateError.CreateFmt('Unable to create file "%s"',
+          [IniFileName]);
+    end;
+
+    procedure RecordSettingsLoadError;
+    begin
+      if FOwnRunIdentity <> '' then
+        RecordStartupFileError(SettingsLoadErrorFileName);
+    end;
+
+  begin
+    Result:=False;
+    OldIni:=Ini;
+    IniFileName:=FHomeDir+
+      ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.ini');
+    LockHandle:=AcquireOwnedIPCLock(IPCLockTimeout,
+      SettingsLoadErrorFileName);
+    if LockHandle = System.THandle(feInvalidHandle) then begin
+      if (OldIni <> nil) and (FOwnRunIdentity <> '') then
+        OldIni.SuspendUpdates;
+      RecordSettingsLoadError;
+      exit;
+    end;
+    try
+      EnsureIniFileExists;
+    finally
+      FileClose(LockHandle);
+    end;
+    NewIni:=TIniFileUtf8.CreateExisting(IniFileName);
+    LockHandle:=AcquireOwnedIPCLock(IPCLockTimeout,
+      SettingsLoadErrorFileName);
+    if LockHandle = System.THandle(feInvalidHandle) then begin
+      NewIni.DiscardChanges;
+      NewIni.Free;
+      if (OldIni <> nil) and (FOwnRunIdentity <> '') then
+        OldIni.SuspendUpdates;
+      RecordSettingsLoadError;
+      exit;
+    end;
+    try
+      Ini:=NewIni;
+    finally
+      FileClose(LockHandle);
+    end;
+    try
+      Ini.CacheUpdates:=True;
+
+      LoadTranslation;
+
+      GetBiDi;
+
+      SizeNames[1]:=sByte;
+      SizeNames[2]:=sKByte;
+      SizeNames[3]:=sMByte;
+      SizeNames[4]:=sGByte;
+      SizeNames[5]:=sTByte;
+
+      IntfScale:=ReadIntfScale(100);
+    except
+      Ini:=OldIni;
+      NewIni.DiscardChanges;
+      NewIni.Free;
+      raise;
+    end;
+    if OldIni <> nil then
+      OldIni.DiscardChanges;
+    OldIni.Free;
+    Result:=True;
+  end;
+
 begin
+  Result:=False;
+  FallbackRunIdentity:='';
+  QueuedActivation:=False;
+  RetryStartupActivation:=False;
+  StartupActivationQueued:=False;
+  UnsafeStartupQueueFailure:=False;
+  AwaitingRetriedQueueAck:=False;
+  OversizedRunFile:=False;
+  OversizedRunFileIdentity:='';
+  QueuedIPCReceipt.FileIdentity:='';
+  QueuedIPCReceipt.RecordOffset:=0;
+  QueuedIPCReceipt.RecordData:='';
+  SuccessorHandoffCount:=0;
   Application.Title:=AppName;
 {$ifdef linux}
   IsUnity:=CompareText(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'), 'unity') = 0;
@@ -1313,93 +3147,435 @@ begin
       finally
         proc.Free;
       end;
-      Result:=False;
       exit;
     end;
   end;
 {$endif linux}
-  FHomeDir:=GetCmdSwitchValue('home');
-  if FHomeDir = '' then begin
-    if FileExistsUTF8(ChangeFileExt(ParamStrUTF8(0), '.ini')) then
-      FHomeDir:=ExtractFilePath(ParamStrUTF8(0)) // Portable mode
+  if FOwnRunIdentity = '' then begin
+    FHomeDir:=GetCmdSwitchValue('home');
+    if FHomeDir = '' then begin
+      if FileExistsUTF8(ChangeFileExt(ParamStrUTF8(0), '.ini')) then
+        FHomeDir:=ExtractFilePath(ParamStrUTF8(0)) // Portable mode
+      else
+        FHomeDir:=IncludeTrailingPathDelimiter(GetAppConfigDirUTF8(False));
+    end
     else
-      FHomeDir:=IncludeTrailingPathDelimiter(GetAppConfigDirUTF8(False));
-  end
-  else
-    FHomeDir:=IncludeTrailingPathDelimiter(FHomeDir);
-  ForceDirectoriesUTF8(FHomeDir);
-  FIPCFileName:=FHomeDir + 'ipc.txt';
-  FRunFileName:=FHomeDir + 'run';
+      FHomeDir:=IncludeTrailingPathDelimiter(FHomeDir);
+    ForceDirectoriesUTF8(FHomeDir);
+    FIPCFileName:=FHomeDir + 'ipc.txt';
+    FIPCLockFileName:=FHomeDir + 'ipc.lock';
+    FRunFileName:=FHomeDir + 'run';
+  end;
 
-  Ini:=TIniFileUtf8.Create(FHomeDir+ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), '.ini'));
-  Ini.CacheUpdates:=True;
-
-  // Check for outdated IPC file
-  if FileExistsUTF8(FIPCFileName) then begin
-    h:=FileOpenUTF8(FIPCFileName, fmOpenRead or fmShareDenyNone);
-    if h <> feInvalidHandle then begin
-      i:=FileGetDate(h);
-      FileClose(h);
-      if (i > 0) and (Abs(Now - FileDateToDateTime(i)) > 1/MinsPerDay) then
-        DeleteFileUTF8(FIPCFileName);
+  // CheckAppParams is also used to reload an imported INI file.
+  if FOwnRunIdentity <> '' then begin
+    Ownership:=GetRunOwnership(IPCLockTimeout);
+    if Ownership <> roOwned then begin
+      if Ownership = roNotOwned then begin
+        if Ini <> nil then
+          Ini.DiscardChanges;
+        FOwnRunIdentity:='';
+        Application.Terminate;
+      end
+      else begin
+        if Ini <> nil then
+          Ini.SuspendUpdates;
+        RecordOwnershipError(Ownership);
+      end;
+      exit;
     end;
+    if not LoadApplicationSettings then
+      exit;
+    Ownership:=GetRunOwnership(IPCLockTimeout);
+    if Ownership <> roOwned then begin
+      if Ownership = roNotOwned then begin
+        if Ini <> nil then
+          Ini.DiscardChanges;
+        FOwnRunIdentity:='';
+        Application.Terminate;
+      end
+      else begin
+        Ini.SuspendUpdates;
+        RecordOwnershipError(Ownership);
+      end;
+      exit;
+    end;
+    Result:=True;
+    exit;
+  end;
+
+  LockHandle:=TryAcquireIPCLock(IPCLockTimeout);
+  if LockHandle = System.THandle(feInvalidHandle) then begin
+    FStartupQueueError:=FIPCLockFileName;
+    FStartupFileError:=True;
+    exit;
+  end;
+  try
+    if IsRunFileLink then begin
+      FStartupQueueError:=FRunFileName;
+      FStartupFileError:=True;
+      exit;
+    end;
+    if not CleanupStaleIPCFile(PreservedStaleQueue, OversizedStaleQueue,
+      StaleQueueData, StaleQueueFileIdentity) then begin
+      FStartupQueueError:=FIPCFileName;
+      FStartupFileError:=True;
+      exit;
+    end;
+    if PreservedStaleQueue and (StaleQueueData = '') and
+      not CaptureStartupActivationReceipt(QueueReceipt) then begin
+      FStartupQueueError:=FIPCFileName;
+      FStartupFileError:=True;
+      exit;
+    end;
+  finally
+    FileClose(LockHandle);
   end;
 
   for i:=1 to ParamCount do begin
     s:=ParamStrUTF8(i);
     if IsProtocolSupported(s) or FileExistsUTF8(s) then
-      AddTorrentFile(s);
-  end;
-
-  if FileExistsUTF8(FRunFileName) then begin
-    // Another process is running
-    h:=FileOpenUTF8(FRunFileName, fmOpenRead or fmShareDenyNone);
-    if FileRead(h, pid, SizeOf(pid)) = SizeOf(pid) then begin
-{$ifdef mswindows}
-      AllowSetForegroundWindow(pid);
-{$endif mswindows}
-    end;
-    FileClose(h);
-
-    if not FileExistsUTF8(FIPCFileName) then
-      FileClose(FileCreateUTF8(FIPCFileName));
-    for i:=1 to 50 do
-      if not FileExistsUTF8(FIPCFileName) then begin
-        // The running process works normally. Exit application.
-        Result:=False;
-        exit;
+      if QueueTorrentFileWithReceipt(s, QueueReceipt,
+        QueueRetrySafe) then begin
+        QueuedIPCReceipt:=QueueReceipt;
+        QueuedActivation:=True;
       end
-      else
-        Sleep(200);
-    // The running process is not responding
-    DeleteFileUTF8(FRunFileName);
-    // Delete IPC file if it is empty
-    h:=FileOpenUTF8(FIPCFileName, fmOpenRead or fmShareDenyNone);
-    i:=FileSeek(h, 0, soFromEnd);
-    FileClose(h);
-    if i = 0 then
-      DeleteFileUTF8(FIPCFileName);
+      else begin
+        if QueueRetrySafe then
+          RememberFailedStartupArgument(s);
+        if FStartupQueueError = '' then
+          FStartupQueueError:=s;
+        if not QueueRetrySafe then begin
+          UnsafeStartupQueueFailure:=True;
+          SetLength(FailedStartupArguments, 0);
+          break;
+        end;
+      end;
   end;
 
-  // Create a new run file
-  h:=FileCreateUTF8(FRunFileName);
-  pid:=GetProcessID;
-  FileWrite(h, pid, SizeOf(pid));
-  FileClose(h);
+  LockHandle:=TryAcquireIPCLock(IPCLockTimeout);
+  if LockHandle = System.THandle(feInvalidHandle) then begin
+    if QueuedActivation and (FStartupQueueError = '') then
+      for i:=1 to IPCAcknowledgementAttempts do begin
+        if not FileExistsUTF8(FIPCFileName) then
+          exit;
+        LockHandle:=TryAcquireIPCLock(IPCAcknowledgementDelay);
+        if LockHandle <> System.THandle(feInvalidHandle) then begin
+          if IsIPCQueueAcknowledged(QueuedIPCReceipt) then begin
+            FileClose(LockHandle);
+            exit;
+          end;
+          break;
+        end;
+      end;
+    if (LockHandle = System.THandle(feInvalidHandle)) and
+      QueuedActivation and (FStartupQueueError = '') and
+      not FileExistsUTF8(FIPCFileName) then
+      exit;
+  end;
+  if LockHandle = System.THandle(feInvalidHandle) then begin
+    if FStartupQueueError = '' then begin
+      FStartupQueueError:=FIPCLockFileName;
+      FStartupFileError:=True;
+    end;
+    exit;
+  end;
+  try
+    if IsRunFileLink then begin
+      if FStartupQueueError = '' then begin
+        FStartupQueueError:=FRunFileName;
+        FStartupFileError:=True;
+      end;
+      exit;
+    end;
+    RunningInstance:=FileExistsUTF8(FRunFileName);
+    if RunningInstance then begin
+      if not ReadRunIdentity(RunIdentity, PID) then begin
+        PID:=0;
+        OversizedRunFile:=GetOversizedRunFileIdentity(
+          OversizedRunFileIdentity);
+      end;
+      if not UnsafeStartupQueueFailure and not EnsureIPCFile then begin
+        if FStartupQueueError = '' then begin
+          FStartupQueueError:=FIPCFileName;
+          FStartupFileError:=True;
+        end;
+        exit;
+      end;
+      if not QueuedActivation and not UnsafeStartupQueueFailure and
+        (Length(FailedStartupArguments) = 0) then begin
+        RefreshStaleQueueReceipt:=False;
+        if PreservedStaleQueue then begin
+          h:=OpenIPCFile(False);
+          if h <> System.THandle(feInvalidHandle) then begin
+            try
+              RefreshStaleQueueReceipt:=
+                GetFileIdentity(h, CurrentIPCFileIdentity) and
+                (CurrentIPCFileIdentity = StaleQueueFileIdentity);
+            finally
+              FileClose(h);
+            end;
+          end;
+        end;
+        if not EnsureStartupActivationQueued(IPCSize,
+          StartupActivationQueued) or
+          not StartupActivationQueued or
+          not CaptureStartupActivationReceipt(QueuedIPCReceipt) then begin
+          if FStartupQueueError = '' then begin
+            FStartupQueueError:=FIPCFileName;
+            FStartupFileError:=True;
+          end;
+          exit;
+        end;
+        if RefreshStaleQueueReceipt then begin
+          StaleQueueFileIdentity:=QueuedIPCReceipt.FileIdentity;
+          if (StaleQueueData <> '') and (StaleQueueData[1] <> #10) then
+            StaleQueueData:=#10 + StaleQueueData;
+        end
+        else if PreservedStaleQueue then begin
+          PreservedStaleQueue:=False;
+          StaleQueueData:='';
+          StaleQueueFileIdentity:='';
+        end;
+      end;
+      RetryStartupActivation:=not QueuedActivation and
+        not UnsafeStartupQueueFailure and
+        (Length(FailedStartupArguments) = 0) and
+        not StartupActivationQueued;
+    end
+    else begin
+      if OversizedStaleQueue then begin
+        if not DeleteStaleOversizedIPC(StaleQueueFileIdentity,
+          IPCSize) then begin
+          if FStartupQueueError = '' then begin
+            FStartupQueueError:=FIPCFileName;
+            FStartupFileError:=True;
+          end;
+          exit;
+        end;
+      end
+      else if PreservedStaleQueue then begin
+        if not RemoveStaleIPCPrefix(StaleQueueData, StaleQueueFileIdentity,
+          IPCSize, StaleQueueData = '') then begin
+          if FStartupQueueError = '' then begin
+            FStartupQueueError:=FIPCFileName;
+            FStartupFileError:=True;
+          end;
+          exit;
+        end;
+      end;
+      if not CreateOwnedRunFile('') then begin
+        if FStartupQueueError = '' then begin
+          FStartupQueueError:=FRunFileName;
+          FStartupFileError:=True;
+        end;
+        exit;
+      end;
+    end;
+  finally
+    FileClose(LockHandle);
+  end;
 
-  LoadTranslation;
+  if RunningInstance then begin
+{$ifdef mswindows}
+    if PID <> 0 then
+      AllowSetForegroundWindow(PID);
+{$endif mswindows}
+WaitForRunningInstance:
+    for i:=1 to IPCAcknowledgementAttempts do begin
+      QueueAcknowledged:=not FileExistsUTF8(FIPCFileName);
+      if not QueueAcknowledged then begin
+        LockHandle:=TryAcquireIPCLock(0);
+        if LockHandle <> System.THandle(feInvalidHandle) then begin
+          try
+            QueueAcknowledged:=IsIPCQueueAcknowledged(QueuedIPCReceipt);
+          finally
+            FileClose(LockHandle);
+          end;
+        end;
+      end;
+      if QueueAcknowledged then begin
+        if RetryRemovedStartupQueue then
+          goto WaitForRunningInstance;
+        exit;
+      end;
+      if not FileExistsUTF8(FRunFileName) then
+        break;
+      Sleep(IPCAcknowledgementDelay);
+    end;
 
-  GetBiDi;
+    RetryRemovedQueueAfterUnlock:=False;
+    FollowSuccessorAfterUnlock:=False;
+    LockHandle:=TryAcquireIPCLock(IPCLockTimeout);
+    if LockHandle = System.THandle(feInvalidHandle) then begin
+      if not FileExistsUTF8(FIPCFileName) then begin
+        if (Length(FailedStartupArguments) = 0) and
+          not RetryStartupActivation then
+          exit;
+        if FStartupQueueError = '' then begin
+          FStartupQueueError:=FIPCLockFileName;
+          FStartupFileError:=True;
+        end;
+        exit;
+      end;
+      if FStartupQueueError = '' then begin
+        FStartupQueueError:=FIPCLockFileName;
+        FStartupFileError:=True;
+      end;
+      exit;
+    end;
+    try
+      if IsRunFileLink then begin
+        if FStartupQueueError = '' then begin
+          FStartupQueueError:=FRunFileName;
+          FStartupFileError:=True;
+        end;
+        exit;
+      end;
+      IPCFileMissing:=not FileExistsUTF8(FIPCFileName);
+      QueueAcknowledged:=IsIPCQueueAcknowledged(QueuedIPCReceipt);
+      if QueueAcknowledged and
+        (Length(FailedStartupArguments) = 0) and
+        not RetryStartupActivation then
+        exit;
+      if QueueAcknowledged and
+        ((Length(FailedStartupArguments) > 0) or
+        RetryStartupActivation) then
+        RetryRemovedQueueAfterUnlock:=True;
+      CurrentRunIdentity:='';
+      if FileExistsUTF8(FRunFileName) then begin
+        if not ReadLimitedFileContents(FRunFileName, RunIdentityMaxSize,
+          CurrentRunIdentity) then begin
+          if FileExistsUTF8(FRunFileName) then begin
+            if not OversizedRunFile or
+              not DeleteOversizedRunFile(OversizedRunFileIdentity) then begin
+              if FStartupQueueError = '' then begin
+                FStartupQueueError:=FRunFileName;
+                FStartupFileError:=True;
+              end;
+              exit;
+            end;
+            CurrentRunIdentity:='';
+          end;
+        end
+        else if CurrentRunIdentity <> RunIdentity then begin
+          if CurrentRunIdentity = '' then
+            exit;
+          if (Length(FailedStartupArguments) > 0) or
+            RetryStartupActivation then
+            RetryRemovedQueueAfterUnlock:=True
+          else if AwaitingRetriedQueueAck then begin
+            if SuccessorHandoffCount >= IPCSuccessorHandoffLimit then begin
+              if FStartupQueueError = '' then begin
+                FStartupQueueError:=FRunFileName;
+                FStartupFileError:=True;
+              end;
+              exit;
+            end;
+            Inc(SuccessorHandoffCount);
+            FollowSuccessorAfterUnlock:=True;
+          end
+          else
+            exit;
+          RunIdentity:=CurrentRunIdentity;
+        end;
+      end;
+      if not RetryRemovedQueueAfterUnlock then
+        RetryRemovedQueueAfterUnlock:=IPCFileMissing and
+          (RunIdentity <> '') and (CurrentRunIdentity = RunIdentity);
+      if not RetryRemovedQueueAfterUnlock and
+        not FollowSuccessorAfterUnlock then begin
+        if IPCFileMissing then
+          IPCSize:=0
+        else if OversizedStaleQueue then begin
+          if not DeleteStaleOversizedIPC(StaleQueueFileIdentity,
+            IPCSize) then begin
+            if FStartupQueueError = '' then begin
+              FStartupQueueError:=FIPCFileName;
+              FStartupFileError:=True;
+            end;
+            exit;
+          end;
+        end
+        else if PreservedStaleQueue then begin
+          if not RemoveStaleIPCPrefix(StaleQueueData,
+            StaleQueueFileIdentity, IPCSize,
+            StartupActivationQueued) then begin
+            if FStartupQueueError = '' then begin
+              FStartupQueueError:=FIPCFileName;
+              FStartupFileError:=True;
+            end;
+            exit;
+          end;
+        end
+        else if not GetIPCFileSize(IPCSize) then begin
+          if FStartupQueueError = '' then begin
+            FStartupQueueError:=FIPCFileName;
+            FStartupFileError:=True;
+          end;
+          exit;
+        end;
+        if StartupActivationQueued or RetryStartupActivation then begin
+          if not EnsureStartupActivationQueued(IPCSize,
+            StartupActivationMaterialized) or
+            (StartupActivationMaterialized and
+            not CaptureStartupActivationReceipt(QueuedIPCReceipt)) then begin
+            if FStartupQueueError = '' then begin
+              FStartupQueueError:=FIPCFileName;
+              FStartupFileError:=True;
+            end;
+            exit;
+          end;
+          StartupActivationQueued:=StartupActivationMaterialized;
+          RetryStartupActivation:=False;
+        end;
+        FallbackRunIdentity:=CurrentRunIdentity;
+        if not CreateOwnedRunFile(FallbackRunIdentity) then begin
+          if FStartupQueueError = '' then begin
+            FStartupQueueError:=FRunFileName;
+            FStartupFileError:=True;
+          end;
+          exit;
+        end;
+      end;
+    finally
+      FileClose(LockHandle);
+    end;
+    if RetryRemovedQueueAfterUnlock then begin
+      if RetryRemovedStartupQueue then
+        goto WaitForRunningInstance;
+      exit;
+    end;
+    if FollowSuccessorAfterUnlock then
+      goto WaitForRunningInstance;
+  end;
 
-  SizeNames[1]:=sByte;
-  SizeNames[2]:=sKByte;
-  SizeNames[3]:=sMByte;
-  SizeNames[4]:=sGByte;
-  SizeNames[5]:=sTByte;
+  RetryFailedStartupArguments;
 
-  IntfScale:=ReadIntfScale(100);
-
-  Result:=True;
+  try
+    if not LoadApplicationSettings then begin
+      DeleteOwnedRunFile(FallbackRunIdentity);
+      if Ini <> nil then
+        Ini.DiscardChanges;
+      exit;
+    end;
+    Ownership:=GetRunOwnership(IPCLockTimeout);
+    if Ownership <> roOwned then begin
+      if Ini <> nil then
+        Ini.DiscardChanges;
+      if Ownership in [roLockUnavailable, roRunUnavailable] then
+        RecordOwnershipError(Ownership);
+      DeleteOwnedRunFile(FallbackRunIdentity);
+      FreeAndNil(Ini);
+      exit;
+    end;
+    Result:=True;
+  except
+    DeleteOwnedRunFile(FallbackRunIdentity);
+    if Ini <> nil then
+      Ini.DiscardChanges;
+    raise;
+  end;
 end;
 
 function PriorityToStr(p: integer; var ImageIndex: integer): string;
@@ -1919,8 +4095,12 @@ begin
                   Ini.WriteInteger('StatusBarPanels',IntToStr(i),Statusbar.Panels[i].Width);
   end;
   {$IF LCL_FULLVERSION >= 1080000}
-  PageInfo.Options := PageInfo.Options + [nboDoChangeOnSetIndex]
+  PageInfo.Options := PageInfo.Options + [nboDoChangeOnSetIndex];
   {$ENDIF}
+  FIPCTimer:=TTimer.Create(Self);
+  FIPCTimer.Enabled:=False;
+  FIPCTimer.Interval:=TickTimer.Interval;
+  FIPCTimer.OnTimer:=@IPCTimerTimer;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -1942,6 +4122,12 @@ procedure TMainForm.FormDestroy(Sender: TObject);
   end;
 
 begin
+  TickTimer.Enabled:=False;
+  if FIPCTimer <> nil then
+    FIPCTimer.Enabled:=False;
+  LocalWatchTimer.Enabled:=False;
+  FilterTimer.Enabled:=False;
+  TorrentsListTimer.Enabled:=False;
   if Application.HasOption('updatelang') then begin
     _CreateAllForms;
     SupplementTranslationFiles;
@@ -1951,7 +4137,8 @@ begin
     MakeTranslationFile;
   end;
 
-  DeleteFileUTF8(FRunFileName);
+  FinalizeOwnedRunFile;
+
   FPasswords.Free;
   FResolver.Free;
   FTrackers.Free;
@@ -1962,10 +4149,6 @@ begin
   FTorrents.Free;
   FPendingClipboardTorrents.Free;
   FPendingTorrents.Free;
-  try
-    Ini.UpdateFile;
-  except
-  end;
   {$ifdef windows}
   UnRegisterHotkey(Self.Handle,HotKeyID);
   GlobalDeleteAtom(HotKeyID);
@@ -2343,7 +4526,7 @@ begin
 
       if cbCheckNewVersion.Checked and not OldCheckVer then
         CheckNewVersion;
-      Ini.UpdateFile;
+      UpdateOwnedIniFileOrReport;
       UpdateTray;
       AppNormal;
       with ConnForm do
@@ -2358,7 +4541,7 @@ procedure TMainForm.acAddTorrentExecute(Sender: TObject);
 begin
   if not OpenTorrentDlg.Execute then exit;
   FPendingTorrents.AddStrings(OpenTorrentDlg.Files);
-  TickTimerTimer(nil);
+  CheckAddTorrents;
 end;
 
 procedure TMainForm.acAddTrackerExecute(Sender: TObject);
@@ -2978,7 +5161,7 @@ begin
           if not IsWatchTorrent then
             SaveDownloadDirs(cbDestFolder, 'LastDownloadDir')
           else
-            Ini.UpdateFile;
+            UpdateOwnedIniFileOrReport;
           Result:=True;
           AppNormal;
         end;
@@ -3123,6 +5306,11 @@ end;
 
 procedure TMainForm.BeforeCloseApp;
 begin
+  if FOwnRunIdentity = '' then begin
+    DoDisconnect;
+    Application.ProcessMessages;
+    exit;
+  end;
   if WindowState = wsNormal then begin
     Ini.WriteInteger('MainForm', 'Left', Left);
     Ini.WriteInteger('MainForm', 'Top', Top);
@@ -3158,7 +5346,7 @@ begin
     Ini.WriteInteger('Interface', 'LastRpcVersion', RpcObj.RPCVersion);
 
   try
-    Ini.UpdateFile;
+    UpdateOwnedIniFile;
   except
     Application.HandleException(nil);
   end;
@@ -3387,104 +5575,120 @@ end;
 
 procedure TMainForm.acExportExecute(Sender: TObject); // PETROV
 var
-  s,d : string;
-  FileVar1: TextFile;
-  FileVar2: TextFile;
+  s,d,ResolvedS,ResolvedD: string;
+  FileData: RawByteString;
+  LockHandle: System.THandle;
+  ReadSucceeded: boolean;
+  SameTarget: boolean;
 begin
   SaveDialog1.filename := 'transgui.ini';
   if SaveDialog1.Execute then begin
     s:=SaveDialog1.filename;
     d:=Ini.getFileName();
-
-    AssignFile(FileVar1, d );
-    AssignFile(FileVar2, s );
-
-    Reset  (FileVar1);
-    Rewrite(FileVar2);
-
-    {$I+} //use exceptions
-    try
-
-    Repeat
-      Readln (FileVar1,s);
-      Writeln(FileVar2,s);
-    Until Eof(FileVar1);
-
-    CloseFile(FileVar1);
-    CloseFile(FileVar2);
-    except
+    SameTarget:=ResolveReplacementTarget(s, ResolvedS) and
+      ResolveReplacementTarget(d, ResolvedD) and
+      (LazFileUtils.CompareFilenames(
+        LazFileUtils.ExpandFileNameUTF8(ResolvedS),
+        LazFileUtils.ExpandFileNameUTF8(ResolvedD)) = 0);
+    if SameTarget then
+      exit;
+    if not UpdateOwnedIniFileOrReport then
+      exit;
+    LockHandle:=AcquireOwnedIPCLock(IPCLockTimeout);
+    if LockHandle = System.THandle(feInvalidHandle) then begin
+      if FOwnRunIdentity <> '' then
+        ShowFileAccessError(d);
+      exit;
     end;
-    {$I-} //!use exceptions
+    try
+      ReadSucceeded:=ResolveReplacementTarget(d, ResolvedD);
+      if ReadSucceeded then
+        ReadSucceeded:=ReadLimitedFileContents(ResolvedD, IniFileMaxSize,
+          FileData);
+    finally
+      FileClose(LockHandle);
+    end;
+    if not ReadSucceeded then begin
+      ShowFileAccessError(d);
+      exit;
+    end;
+    if not ResolveReplacementTarget(s, ResolvedS) then begin
+      ShowFileAccessError(s);
+      exit;
+    end;
+    if LazFileUtils.CompareFilenames(
+      LazFileUtils.ExpandFileNameUTF8(ResolvedS),
+      LazFileUtils.ExpandFileNameUTF8(ResolvedD)) = 0 then
+      exit;
+    if not ReplaceResolvedFileContents(ResolvedS, FileData, True) then
+      ShowFileAccessError(s);
   end;
 end;
 
 procedure TMainForm.acImportExecute(Sender: TObject);
 var
-  s,d : string;
-  FileVar1: TextFile;
-  FileVar2: TextFile;
-  P,p1,p2,p3,p4: Integer;
+  s,d: string;
+  FileData: RawByteString;
+  LockHandle: System.THandle;
+  CopySucceeded: boolean;
 begin
   OpenDialog1.filename := 'transgui.ini';
   if OpenDialog1.Execute then begin
     s:=OpenDialog1.filename;
     d:=Ini.getFileName();
-    p1:=0;
-    p2:=0;
-    p3:=0;
-    p4:=0;
-    // check valid Ini-file
-    AssignFile(FileVar2, s);
-    Reset     (FileVar2);
-    {$I+} //use exceptions
-    try
-    Repeat
-      Readln (FileVar2,s);
-      P := Pos ('[Hosts]',s);
-      if P>0 then p1 := P;
-
-      P := Pos ('[MainForm]',s);
-      if P>0 then p2 := P;
-
-      P := Pos ('[TorrentsList]',s);
-      if P>0 then p3 := P;
-
-      P := Pos ('ShowCountryFlag=',s);
-      if P>0 then p4 := P;
-    Until Eof(FileVar2);
-    CloseFile(FileVar2);
-    except
+    if not ReadLimitedFileContents(s, IniFileMaxSize, FileData) then begin
+      ShowFileAccessError(s);
+      exit;
     end;
-    {$I-} //!use exceptions
-
-    if (p1=0) and (p2=0) and (p3=0) and (p4=0) then begin
+    if (Pos('[Hosts]', FileData) = 0) and
+      (Pos('[MainForm]', FileData) = 0) and
+      (Pos('[TorrentsList]', FileData) = 0) and
+      (Pos('ShowCountryFlag=', FileData) = 0) then begin
         MessageDlg('Invalid file!', mtError, [mbOK], 0);
         exit;
     end;
 
     // rewrite ini-file
-    s:=OpenDialog1.filename;
-    AssignFile(FileVar1, s );
-    AssignFile(FileVar2, d );
-
-    Reset  (FileVar1);
-    Rewrite(FileVar2);
-
-    {$I+} //use exceptions
-    try
-    Repeat
-      Readln (FileVar1,s);
-      Writeln(FileVar2,s);
-    Until Eof(FileVar1);
-    CloseFile(FileVar1);
-    CloseFile(FileVar2);
-    except
+    CopySucceeded:=False;
+    LockHandle:=AcquireOwnedIPCLock(IPCLockTimeout);
+    if LockHandle = System.THandle(feInvalidHandle) then begin
+      if FOwnRunIdentity <> '' then
+        ShowFileAccessError(d);
+      exit;
     end;
-    {$I-} //!use exceptions
+    try
+      CopySucceeded:=ReplaceFileContents(d, FileData);
+      if CopySucceeded then
+        Ini.DiscardChanges;
+    finally
+      FileClose(LockHandle);
+    end;
+    if not CopySucceeded then begin
+      ShowFileAccessError(d);
+      exit;
+    end;
 
     // Read ini now!
-    CheckAppParams ();
-    MessageDlg(sRestartRequired, mtInformation, [mbOk], 0);
+    try
+      if not CheckAppParams () then begin
+        Inc(FAddingTorrent);
+        try
+          if HasStartupQueueError then
+            ShowStartupQueueError;
+          MessageDlg(sRestartRequired, mtInformation, [mbOk], 0);
+        finally
+          Dec(FAddingTorrent);
+          FIPCKeepVisible:=False;
+        end;
+        Application.Terminate;
+        exit;
+      end;
+      if not Application.Terminated then
+        MessageDlg(sRestartRequired, mtInformation, [mbOk], 0);
+    except
+      Application.Terminate;
+      raise;
+    end;
   end;
 end;
 
@@ -4066,7 +6270,85 @@ begin
     exit;
   ReadLocalFolderWatch;
   if FPendingTorrents.Count > 0 then
-    TickTimerTimer(nil);
+    CheckAddTorrents;
+end;
+
+function TMainForm.PersistPendingIPCRequests: boolean;
+var
+  LockHandle: System.THandle;
+  RecoveryData: RawByteString;
+  ErrorFileName: string;
+  i: integer;
+  RecoveryActivation: boolean;
+
+  procedure RecordError(const FileName: string);
+  begin
+    if FileName <> '' then
+      FIPCRecoveryErrorFileName:=FileName;
+    FIPCRecoveryErrorPending:=FIPCRecoveryErrorFileName <> '';
+  end;
+
+  procedure ClearError;
+  begin
+    FIPCRecoveryErrorPending:=False;
+    FIPCRecoveryErrorShown:=False;
+    FIPCRecoveryErrorFileName:='';
+  end;
+
+begin
+  Result:=False;
+  RecoveryData:='';
+  RecoveryActivation:=FIPCActivationPending;
+  if FPendingTorrents <> nil then
+    for i:=0 to FPendingTorrents.Count - 1 do
+      if (PtrUInt(FPendingTorrents.Objects[i]) = PendingIPCMarker) and
+        (FPendingTorrents[i] <> '') then begin
+        if Int64(Length(RecoveryData)) + Length(FPendingTorrents[i]) + 1 >
+          IPCFileMaxSize then
+          exit;
+        RecoveryData:=RecoveryData + RawByteString(FPendingTorrents[i]) + #10;
+      end;
+  if (RecoveryData = '') and not RecoveryActivation and
+    not FIPCRecoveryLoaded then begin
+    Result:=True;
+    exit;
+  end;
+  LockHandle:=AcquireOwnedIPCLock(IPCLockTimeout, ErrorFileName);
+  if LockHandle = System.THandle(feInvalidHandle) then begin
+    if FOwnRunIdentity <> '' then
+      RecordError(ErrorFileName);
+    exit;
+  end;
+  try
+    if (RecoveryData = '') and not RecoveryActivation then begin
+      if FileExistsUTF8(FIPCFileName) then
+        Result:=PromoteIPCQueueToRecovery
+      else
+        Result:=DeleteIPCRecoveryFile;
+      if Result then begin
+        FIPCRecoveryLoaded:=False;
+        FIPCAcknowledgedMainIdentity:='';
+        FIPCAcknowledgedMainData:='';
+        FIPCLastMainAcknowledgement:=0;
+        ClearError;
+      end
+      else
+        RecordError(FIPCFileName + '.recovery');
+      exit;
+    end;
+    if RecoveryActivation and (RecoveryData <> '') then
+      RecoveryData:=#10 + RecoveryData;
+    if not ReplacePrivateIPCFileContents(FIPCFileName + '.recovery',
+      RecoveryData) then begin
+      RecordError(FIPCFileName + '.recovery');
+      exit;
+    end;
+    FIPCRecoveryLoaded:=True;
+    ClearError;
+    Result:=True;
+  finally
+    FileClose(LockHandle);
+  end;
 end;
 
 
@@ -4424,8 +6706,8 @@ end;
 
 procedure TMainForm.ApplicationPropertiesEndSession(Sender: TObject);
 begin
-  DeleteFileUTF8(FRunFileName);
   BeforeCloseApp;
+  FinalizeOwnedRunFile;
 end;
 
 procedure TMainForm.ApplicationPropertiesException(Sender: TObject; E: Exception);
@@ -5072,6 +7354,16 @@ type
   end;
 {$endif LCLcarbon}
 
+procedure TMainForm.IPCTimerTimer(Sender: TObject);
+begin
+  FIPCTimer.Enabled:=False;
+  try
+    CheckAddTorrents;
+  finally
+    FIPCTimer.Enabled:=not Application.Terminated;
+  end;
+end;
+
 procedure TMainForm.TickTimerTimer(Sender: TObject);
 var
   i: integer;
@@ -5081,6 +7373,7 @@ begin
     if not FStarted then begin
       Application.ProcessMessages;
       FStarted:=True;
+      FIPCTimer.Enabled:=True;
       acConnect.Execute;
       Application.ProcessMessages;
       panTransfer.ChildSizing.Layout:=cclLeftToRightThenTopToBottom;
@@ -5112,9 +7405,8 @@ begin
         if Ini.ReadBool('Interface', 'CheckNewVersion', False) then
           CheckNewVersion;
       end;
+      FIPCProcessingReady:=True;
     end;
-
-    CheckAddTorrents;
 
     if RpcObj.Connected then
       FReconnectTimeOut:=0
@@ -5412,7 +7704,7 @@ begin
           Ini.WriteString('Hosts', Format('Host%d', [j]), Caption);
           Inc(j);
         end;
-    Ini.UpdateFile;
+    UpdateOwnedIniFileOrReport;
     UpdateConnections;
   end
   else
@@ -8052,7 +10344,7 @@ begin
   end;
 
   Ini.WriteString(IniSec, CurFolderParam, selfolder); // autosorting, valid from text
-  Ini.UpdateFile;
+  UpdateOwnedIniFileOrReport;
 end;
 
 procedure TMainForm.DeleteDirs(CB: TComboBox; maxdel : Integer);
@@ -8324,74 +10616,304 @@ end;
 
 procedure TMainForm.CheckAddTorrents;
 var
-  i: integer;
-  h: System.THandle;
-  s: string;
+  h, LockHandle: System.THandle;
+  IPCData, IPCFileIdentity, RunIdentity: RawByteString;
+  IPCFileSize: Int64;
+  IPCFileDate: LongInt;
+  RunPID: SizeUInt;
+  IPCReceived, IPCActivation, DiscardOversizedIPC,
+    IPCDeleteFailed, IPCDeleteResolved, ReadingRecovery,
+    AcknowledgeOnly, AcknowledgedCacheHit: boolean;
+  s, IPCQueueFileName: string;
   sl: TStringList;
-  WasHidden: boolean;
-  IsWatchTorrent: boolean;
+  WasHidden, ActivationHandled: boolean;
+  IsWatchTorrent, IsIPCTorrent: boolean;
+  i: integer;
+
+  function OwnershipLost: boolean;
+  begin
+    Result:=Application.Terminated or (FOwnRunIdentity = '');
+  end;
+
 begin
-  h:=FileOpenUTF8(FIPCFileName, fmOpenRead or fmShareDenyWrite);
-  if h <> System.THandle(-1) then begin
-    i:=FileSeek(h, 0, soFromEnd);
-    SetLength(s, i);
-    if i > 0 then begin
-      FileSeek(h, 0, soFromBeginning);
-      SetLength(s, FileRead(h, s[1], i));
-    end;
-    FileTruncate(h, 0);
-    FileClose(h);
-    LazFileUtils.DeleteFileUTF8(FIPCFileName);
-
-    if s = '' then begin
-      ShowApp;
-      exit;
-    end;
-
-    sl:=TStringList.Create;
+  if FOwnRunIdentity = '' then
+    exit;
+  IPCData:='';
+  IPCFileIdentity:='';
+  IPCReceived:=False;
+  IPCActivation:=False;
+  DiscardOversizedIPC:=False;
+  IPCDeleteFailed:=False;
+  IPCDeleteResolved:=False;
+  ReadingRecovery:=False;
+  AcknowledgeOnly:=False;
+  AcknowledgedCacheHit:=False;
+  IPCQueueFileName:=FIPCFileName;
+  LockHandle:=TryAcquireIPCLock(0);
+  if LockHandle <> System.THandle(feInvalidHandle) then begin
     try
-      sl.Text:=s;
-      FPendingTorrents.AddStrings(sl);
+      if not ReadRunIdentity(RunIdentity, RunPID) then begin
+        if Ini <> nil then
+          Ini.SuspendUpdates;
+        if FIPCProcessingReady and (FAddingTorrent = 0) and
+          (Application.ModalLevel = 0) and
+          not FRunIdentityErrorReported then begin
+          FRunIdentityErrorReported:=True;
+          Application.QueueAsyncCall(@ShowRunIdentityErrorAsync, 0);
+        end;
+        exit;
+      end;
+      FRunIdentityErrorReported:=False;
+      if RunIdentity <> FOwnRunIdentity then begin
+        if Ini <> nil then
+          Ini.DiscardChanges;
+        FOwnRunIdentity:='';
+        Application.Terminate;
+        FileClose(LockHandle);
+        LockHandle:=System.THandle(feInvalidHandle);
+        exit;
+      end;
+      ReadingRecovery:=not FIPCRecoveryLoaded and
+        FileExistsUTF8(FIPCFileName + '.recovery');
+      if ReadingRecovery then begin
+        IPCQueueFileName:=FIPCFileName + '.recovery';
+        h:=OpenIPCRecoveryFile;
+      end
+      else begin
+        AcknowledgeOnly:=FIPCRecoveryLoaded;
+        h:=OpenIPCFile(False);
+      end;
+      if h <> System.THandle(feInvalidHandle) then begin
+        try
+          IPCReceived:=ReadHandleContents(h, IPCFileMaxSize, IPCData);
+          if IPCReceived and AcknowledgeOnly then
+            GetFileIdentity(h, IPCFileIdentity);
+          if not IPCReceived then begin
+            IPCFileSize:=FileSeek(h, Int64(0), soFromEnd);
+            IPCFileDate:=FileGetDate(h);
+            DiscardOversizedIPC:=(IPCFileSize > IPCFileMaxSize) and
+              (IPCFileDate > 0) and
+              (Now - FileDateToDateTime(IPCFileDate) > 1/MinsPerDay);
+          end;
+        finally
+          FileClose(h);
+        end;
+        if IPCReceived and not AcknowledgeOnly then begin
+          IPCActivation:=IPCData = '';
+          if not IPCActivation then begin
+            TrimIncompleteIPCData(IPCData);
+            if IPCData <> '' then
+              if IPCData[1] = #10 then begin
+                IPCActivation:=True;
+                Delete(IPCData, 1, 1);
+              end;
+          end;
+        end;
+        if ReadingRecovery then begin
+          if IPCReceived then begin
+            FIPCRecoveryLoaded:=True;
+            IPCDeleteResolved:=True;
+          end
+          else
+            IPCDeleteFailed:=True;
+        end
+        else if AcknowledgeOnly then begin
+          if IPCReceived then begin
+            AcknowledgedCacheHit:=(IPCFileIdentity <> '') and
+              (IPCFileIdentity = FIPCAcknowledgedMainIdentity) and
+              (IPCData = FIPCAcknowledgedMainData);
+            if AcknowledgedCacheHit and
+              (GetTickCount64 - FIPCLastMainAcknowledgement <
+              IPCQueueAcknowledgementInterval) then
+              IPCDeleteFailed:=False
+            else begin
+              IPCDeleteFailed:=not ReplacePrivateIPCFileContents(
+                FIPCFileName, IPCData);
+              FIPCAcknowledgedMainIdentity:='';
+              FIPCAcknowledgedMainData:='';
+              FIPCLastMainAcknowledgement:=0;
+              if not IPCDeleteFailed then begin
+                h:=OpenIPCFile(False);
+                if h <> System.THandle(feInvalidHandle) then begin
+                  try
+                    if GetFileIdentity(h, FIPCAcknowledgedMainIdentity) then begin
+                      FIPCAcknowledgedMainData:=IPCData;
+                      FIPCLastMainAcknowledgement:=GetTickCount64;
+                    end;
+                  finally
+                    FileClose(h);
+                  end;
+                end;
+              end;
+            end;
+            IPCDeleteResolved:=not IPCDeleteFailed;
+          end
+          else
+            IPCDeleteFailed:=True;
+          IPCReceived:=False;
+        end
+        else if DiscardOversizedIPC then begin
+          IPCDeleteFailed:=not IsPrivateIPCPathSafe(FIPCFileName) or
+            (not LazFileUtils.DeleteFileUTF8(FIPCFileName) and
+            FileExistsUTF8(FIPCFileName));
+          IPCDeleteResolved:=not IPCDeleteFailed;
+        end else begin
+          if IPCReceived then begin
+            IPCDeleteFailed:=not IsPrivateIPCPathSafe(FIPCFileName) or
+              not IsPrivateIPCPathSafe(FIPCFileName + '.recovery') or
+              not LazFileUtils.RenameFileUTF8(FIPCFileName,
+              FIPCFileName + '.recovery');
+            IPCDeleteResolved:=not IPCDeleteFailed;
+            if IPCDeleteFailed then
+              IPCReceived:=False;
+            if IPCDeleteResolved then begin
+              FIPCAcknowledgedMainIdentity:='';
+              FIPCAcknowledgedMainData:='';
+              FIPCLastMainAcknowledgement:=0;
+            end;
+          end;
+        end;
+      end else if ReadingRecovery then
+        IPCDeleteFailed:=True
+      else if AcknowledgeOnly then begin
+        IPCDeleteResolved:=not FileExistsUTF8(FIPCFileName);
+        IPCDeleteFailed:=not IPCDeleteResolved;
+        if IPCDeleteResolved then begin
+          FIPCAcknowledgedMainIdentity:='';
+          FIPCAcknowledgedMainData:='';
+          FIPCLastMainAcknowledgement:=0;
+        end;
+      end
+      else if not FIPCRecoveryLoaded then begin
+        IPCDeleteResolved:=not FileExistsUTF8(IPCQueueFileName);
+        IPCDeleteFailed:=not IPCDeleteResolved;
+      end;
     finally
-      sl.Free;
+      if LockHandle <> System.THandle(feInvalidHandle) then
+        FileClose(LockHandle);
     end;
   end;
 
-  if FAddingTorrent <> 0 then
+  if IPCDeleteResolved then
+    FIPCDeleteErrorShown:=False;
+
+  if IPCReceived then begin
+    FIPCRecoveryLoaded:=True;
+    if IPCActivation then
+      FIPCActivationPending:=True;
+    if IPCData <> '' then begin
+      SetLength(s, Length(IPCData));
+      Move(IPCData[1], s[1], Length(IPCData));
+      sl:=TStringList.Create;
+      try
+        sl.Text:=s;
+        for i:=0 to sl.Count - 1 do
+          if sl[i] <> '' then
+            FPendingTorrents.AddObject(sl[i], TObject(PendingIPCMarker));
+      finally
+        sl.Free;
+      end;
+    end;
+  end;
+
+  if FIPCRecoveryLoaded and not FIPCActivationPending and
+    (FPendingTorrents.IndexOfObject(TObject(PendingIPCMarker)) < 0) and
+    not PersistPendingIPCRequests then
+    DebugLn('Unable to remove an empty IPC recovery file.');
+
+  if not FIPCProcessingReady then
+    exit;
+  if FAddingTorrent <> 0 then begin
+    if FIPCActivationPending then begin
+      FIPCKeepVisible:=True;
+      ShowApp;
+      if OwnershipLost then
+        exit;
+      FIPCActivationPending:=False;
+      if not PersistPendingIPCRequests then begin
+        FIPCActivationPending:=True;
+        exit;
+      end;
+    end;
+    exit;
+  end;
+  if Application.ModalLevel <> 0 then
     exit;
 
-  if not FLinksFromClipboard then
-    FPendingClipboardTorrents.Clear
-  else if (FPendingClipboardTorrents.Count > 0) and
-    (FPendingTorrents.IndexOfObject(TObject(PendingWatchMarker)) < 0) then begin
-    FPendingTorrents.AddStrings(FPendingClipboardTorrents);
-    FPendingClipboardTorrents.Clear;
-  end;
-
+  FIPCKeepVisible:=False;
   Inc(FAddingTorrent);
   try
+    FIPCTimer.Enabled:=not Application.Terminated;
+    if IPCDeleteFailed and not FIPCDeleteErrorShown then begin
+      FIPCDeleteErrorShown:=True;
+      ShowFileAccessError(IPCQueueFileName);
+      if OwnershipLost then
+        exit;
+    end;
+    if FIPCRecoveryErrorPending and not FIPCRecoveryErrorShown then begin
+      FIPCRecoveryErrorPending:=False;
+      FIPCRecoveryErrorShown:=True;
+      ShowFileAccessError(FIPCRecoveryErrorFileName);
+      if OwnershipLost then
+        exit;
+    end;
+    ActivationHandled:=FIPCActivationPending;
+    if ActivationHandled then begin
+      ShowApp;
+      if OwnershipLost then
+        exit;
+      FIPCActivationPending:=False;
+      if not PersistPendingIPCRequests then begin
+        FIPCActivationPending:=True;
+        exit;
+      end;
+    end;
+
+    if not FLinksFromClipboard then
+      FPendingClipboardTorrents.Clear
+    else if (FPendingClipboardTorrents.Count > 0) and
+      (FPendingTorrents.IndexOfObject(TObject(PendingWatchMarker)) < 0) then begin
+      FPendingTorrents.AddStrings(FPendingClipboardTorrents);
+      FPendingClipboardTorrents.Clear;
+    end;
+
     if FPendingTorrents.Count > 0 then begin
       Application.ProcessMessages;
-      TickTimer.Enabled:=True;
+      if OwnershipLost then
+        exit;
       WasHidden:=not IsTaskbarButtonVisible;
       if WasHidden then
         Application.BringToFront
-      else
+      else if not ActivationHandled then
         ShowApp;
+      if OwnershipLost then
+        exit;
       try
         while FPendingTorrents.Count > 0 do begin
+          if OwnershipLost then
+            exit;
           IsWatchTorrent:=PtrUInt(FPendingTorrents.Objects[0]) = PendingWatchMarker;
+          IsIPCTorrent:=PtrUInt(FPendingTorrents.Objects[0]) = PendingIPCMarker;
           s:=FPendingTorrents[0];
+          // Once handling starts, do not requeue: nested event loops may lose
+          // ownership after an RPC or another user-visible side effect.
           FPendingTorrents.Delete(0);
+          if IsIPCTorrent and not PersistPendingIPCRequests then begin
+            FPendingTorrents.InsertObject(0, s, TObject(PendingIPCMarker));
+            exit;
+          end;
           if s <> '' then
             DoAddTorrent(s, IsWatchTorrent);
+          if OwnershipLost then
+            exit;
         end;
       finally
-        if WasHidden then
+        if WasHidden and not FIPCKeepVisible then
           HideTaskbarButton;
       end;
     end;
   finally
+    FIPCKeepVisible:=False;
     Dec(FAddingTorrent);
   end;
 end;
