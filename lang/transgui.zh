@@ -394,3 +394,5 @@ Labels=标签
 Set labels=设置标签
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=这将覆盖任何现有的标签。~您可以用逗号分隔设置多个标签，或留空以清除标签
 Application option=应用程序选项
+Open anyway=仍要打开
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=此文件类型可能会执行代码或存在其他安全风险。~~"%s"~~请仅在信任此文件时打开
