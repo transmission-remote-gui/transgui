@@ -1,5 +1,15 @@
 connoptions.pas
   s_3da36b50314675::t_97d3e787abf11b 167-168,252-255
+main.pas
+  s_d48ebe16415dcb::t_1c9187de45e7a3 1189
+  s_d48ebe16415dcb::t_5ed635a8c76fe6 1244
+  s_d48ebe16415dcb::t_33833b58e5c98d 1205,1208
+  s_d48ebe16415dcb::t_3777dc8612edda 1201,3474,3481,3482
+  s_d48ebe16415dcb::t_3f1e504e5ef713 3416
+  s_d48ebe16415dcb::t_beec37bbea4e03 1203
+  s_d48ebe16415dcb::t_3b8a7dbec40906 1190
+utils.pas
+  s_d48ebe16415dcb::t_6034443f11db4c 124-129
 ---
 {
   "schema_version": "authorship/3.0.0",
@@ -14,6 +24,14 @@ connoptions.pas
         "model": "gpt-5.6-sol"
       },
       "human_author": "Peter Dave Hello <hsu@peterdavehello.org>"
+    },
+    "s_d48ebe16415dcb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ff1ec-572b-7163-976a-8fb829ae1724",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
     }
   }
 }
