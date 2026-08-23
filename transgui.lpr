@@ -53,7 +53,13 @@ uses
 begin
 //Application.Scaled:=True; //travis doesnt compile
 
-  if not CheckAppParams then exit;
+  if not CheckAppParams then begin
+    if HasStartupQueueError then begin
+      Application.Initialize;
+      ShowStartupQueueError;
+    end;
+    exit;
+  end;
 
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
@@ -62,5 +68,7 @@ begin
   Application.MainFormOnTaskBar:=true;  // make taskbar button follow main form monitor
 {$endif}
 
+  if HasStartupQueueError then
+    Application.QueueAsyncCall(@MainForm.ShowStartupQueueErrorAsync, 0);
   Application.Run;
 end.
