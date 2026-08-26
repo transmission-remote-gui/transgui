@@ -723,6 +723,8 @@ type
 {$endif LCLcarbon}
     FSlowResponse: TProgressImage;
     FDetailsWait: TProgressImage;
+    FNormalImages: TImageList;
+    FBigImages: TImageList;
     FDetailsWaitStart: TDateTime;
     FMainFormShown: boolean;
     FRestoreFilesFocus: boolean;
@@ -736,6 +738,10 @@ type
     FVSplitterDragging: boolean;
     FVSplitterDragHeight: integer;
     FVSplitterDragY: integer;
+
+    function CreateScaledImages(ASize: integer): TImageList;
+    procedure BuildScaledImages;
+    procedure ApplyIconLayout;
 
     procedure UpdateUI;
     procedure UpdateUIRpcVersion(RpcVersion: integer);
@@ -1572,6 +1578,174 @@ end;
 
 { TMainForm }
 
+function TMainForm.CreateScaledImages(ASize: integer): TImageList;
+var
+  Ico: TIcon;
+  IconCount, i: integer;
+  SourceImages: TImageList;
+begin
+  IconCount:=ImageList16.Count;
+  if ImageList32.Count > IconCount then
+    IconCount:=ImageList32.Count;
+  if IconCount = 0 then
+    raise Exception.Create('Main icon lists are empty.');
+  if ASize < 1 then
+    ASize:=1;
+
+  Result:=TImageList.Create(Self);
+  try
+    Result.Scaled:=False;
+    Result.Width:=ASize;
+    Result.Height:=ASize;
+    Ico:=TIcon.Create;
+    try
+      for i:=0 to IconCount - 1 do begin
+        if (ASize > ImageList16.Width) and (i < ImageList32.Count) then
+          SourceImages:=ImageList32
+        else if i < ImageList16.Count then
+          SourceImages:=ImageList16
+        else
+          SourceImages:=ImageList32;
+        SourceImages.GetIcon(i, Ico);
+        if Result.AddIcon(Ico) <> i then
+          raise Exception.CreateFmt('Unable to add scaled icon %d.', [i]);
+      end;
+    finally
+      Ico.Free;
+    end;
+  except
+    FreeAndNil(Result);
+    raise;
+  end;
+end;
+
+procedure TMainForm.BuildScaledImages;
+var
+  BigImages, NormalImages: TImageList;
+  BigSize, NormalSize: integer;
+begin
+  if (FNormalImages <> nil) or (FBigImages <> nil) then
+    exit;
+
+  NormalSize:=ScaleInt(ImageList16.Width);
+  BigSize:=ScaleInt(ImageList32.Width);
+  if (NormalSize = ImageList16.Width) and
+     (BigSize = ImageList32.Width) then begin
+    FNormalImages:=ImageList16;
+    FBigImages:=ImageList32;
+    exit;
+  end;
+
+  BigImages:=nil;
+  NormalImages:=nil;
+  try
+    try
+      NormalImages:=CreateScaledImages(NormalSize);
+      BigImages:=CreateScaledImages(BigSize);
+      FNormalImages:=NormalImages;
+      FBigImages:=BigImages;
+      NormalImages:=nil;
+      BigImages:=nil;
+    except
+      // Preserve the original fixed-size image lists if scaling fails.
+      FNormalImages:=nil;
+      FBigImages:=nil;
+    end;
+  finally
+    NormalImages.Free;
+    BigImages.Free;
+  end;
+end;
+
+procedure TMainForm.ApplyIconLayout;
+var
+  C: TComponent;
+  i, MinRowHeight, ToolButtonSize: integer;
+  ToolbarImages: TImageList;
+begin
+  if FNormalImages <> nil then begin
+    MinRowHeight:=FNormalImages.Height + ScaleInt(4);
+
+    for i:=0 to ComponentCount - 1 do begin
+      C:=Components[i];
+      if C is TMenu then begin
+        if (TMenu(C).Images = ImageList16) or
+           (TMenu(C).Images = ImageList32) or
+           (TMenu(C).Images = FNormalImages) then begin
+          TMenu(C).Images:=FNormalImages;
+          TMenu(C).ImagesWidth:=FNormalImages.Width;
+        end;
+      end
+      else if C is TToolBar then begin
+        if (C <> MainToolBar) and
+           ((TToolBar(C).Images = ImageList16) or
+            (TToolBar(C).Images = ImageList32) or
+            (TToolBar(C).Images = FNormalImages) or
+            (TToolBar(C).Images = FBigImages)) then begin
+          TToolBar(C).Images:=FNormalImages;
+          TToolBar(C).ImagesWidth:=FNormalImages.Width;
+        end;
+      end
+      else if C is TCustomTabControl then begin
+        if (TCustomTabControl(C).Images = ImageList16) or
+           (TCustomTabControl(C).Images = ImageList32) or
+           (TCustomTabControl(C).Images = FNormalImages) then begin
+          TCustomTabControl(C).Images:=FNormalImages;
+          TCustomTabControl(C).ImagesWidth:=FNormalImages.Width;
+        end;
+      end
+      else if C is TVarGrid then begin
+        if (TVarGrid(C).Images = ImageList16) or
+           (TVarGrid(C).Images = ImageList32) or
+           (TVarGrid(C).Images = FNormalImages) then begin
+          TVarGrid(C).Images:=FNormalImages;
+          if (FNormalImages.Height > ImageList16.Height) and
+             (TVarGrid(C).DefaultRowHeight < MinRowHeight) then
+            TVarGrid(C).DefaultRowHeight:=MinRowHeight;
+        end;
+      end;
+    end;
+
+    FSlowResponse.Images:=FNormalImages;
+    FSlowResponse.Width:=ScaleInt(24);
+    FDetailsWait.Images:=FNormalImages;
+    FDetailsWait.Width:=FNormalImages.Width*2;
+    FDetailsWait.Height:=FDetailsWait.Width;
+    panDetailsWait.Width:=FDetailsWait.Width;
+    panDetailsWait.Height:=FDetailsWait.Height;
+  end;
+
+  if acBigToolbar.Checked then begin
+    if FBigImages <> nil then begin
+      ToolbarImages:=FBigImages;
+      ToolButtonSize:=Ini.ReadInteger('MainForm', 'BigToolBarHeight', 64);
+      if ToolButtonSize < ToolbarImages.Height + ScaleInt(8) then
+        ToolButtonSize:=ToolbarImages.Height + ScaleInt(8);
+    end
+    else begin
+      ToolbarImages:=ImageList32;
+      ToolButtonSize:=Ini.ReadInteger('MainForm', 'BigToolBarHeight', 64);
+    end;
+  end
+  else begin
+    if FNormalImages <> nil then begin
+      ToolbarImages:=FNormalImages;
+      ToolButtonSize:=ScaleInt(23);
+      if ToolButtonSize < ToolbarImages.Height + ScaleInt(7) then
+        ToolButtonSize:=ToolbarImages.Height + ScaleInt(7);
+    end
+    else begin
+      ToolbarImages:=ImageList16;
+      ToolButtonSize:=23;
+    end;
+  end;
+
+  MainToolBar.Images:=ToolbarImages;
+  MainToolBar.ImagesWidth:=ToolbarImages.Width;
+  MainToolBar.ButtonWidth:=ToolButtonSize;
+  MainToolBar.ButtonHeight:=ToolButtonSize;
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   ws: TWindowState;
@@ -1764,8 +1938,8 @@ begin
     acMenuShow.Execute;
   if Ini.ReadBool('MainForm', 'Toolbar', acToolbarShow.Checked) <> acToolbarShow.Checked then
     acToolbarShow.Execute;
-  if Ini.ReadBool('MainForm', 'BigToolbar', acBigToolBar.Checked)  <> acBigToolBar.Checked then
-    acBigToolbar.Execute;
+  acBigToolbar.Checked:=Ini.ReadBool('MainForm', 'BigToolbar',
+    acBigToolbar.Checked);
 
   FFromNow := Ini.ReadBool('MainForm','FromNow',false);
   FWatchLocalFolder := Ini.ReadString('Interface','WatchLocalFolder','');
@@ -1885,6 +2059,9 @@ begin
     {$endif darwin}
     Ini.WriteInteger('Interface','FileOpenDoc',FLinuxOpenDoc);
   {$endif windows}
+
+  BuildScaledImages;
+  ApplyIconLayout;
 
 //Dynamic Associations of ShortCuts to Actions/Menus
   SL := TStringList.Create;
@@ -2399,15 +2576,7 @@ end;
 procedure TMainForm.acBigToolbarExecute(Sender: TObject);
 begin
   acBigToolbar.Checked:=not acBigToolbar.Checked;
-  if acBigToolbar.Checked then begin
-    MainToolBar.ButtonWidth:= Ini.ReadInteger('MainForm','BigToolBarHeight',64);
-    MainToolBar.ButtonHeight:= MainToolBar.ButtonWidth;
-    MainToolBar.Images:= ImageList32;
-  end else begin
-    MainToolBar.ButtonWidth:= 23;
-    MainToolBar.ButtonHeight:=23;
-    MainToolBar.Images:= ImageList16;
-    end;
+  ApplyIconLayout;
   Ini.WriteBool('MainForm', 'BigToolbar', acBigToolbar.Checked);
 end;
 
