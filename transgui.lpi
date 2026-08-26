@@ -205,6 +205,11 @@
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
       <SmallerCode Value="True"/>
     </CodeGeneration>
     <Other>
