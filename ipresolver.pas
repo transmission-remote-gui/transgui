@@ -137,12 +137,17 @@ begin
     end
     else begin
       New(Result);
-      Result^.ImageIndex:=0;
-      Result^.IP:=IpAddress;
-      UniqueString(Result^.IP);
-      Result^.HostName:=IpAddress;
-      UniqueString(Result^.HostName);
-      FCache.AddObject(Result^.IP, TObject(Result));
+      try
+        Result^.ImageIndex:=0;
+        Result^.IP:=IpAddress;
+        UniqueString(Result^.IP);
+        Result^.HostName:=IpAddress;
+        UniqueString(Result^.HostName);
+        FCache.AddObject(Result^.IP, TObject(Result));
+      except
+        Dispose(Result);
+        raise;
+      end;
       IsNew:=True;
     end;
   finally
