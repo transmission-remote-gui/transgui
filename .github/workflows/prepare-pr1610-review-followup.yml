@@ -1,0 +1,133 @@
+name: Verify PR 1610 review follow-up
+
+on:
+  push:
+    branches: [work/verify-pr1610-review-followup]
+
+permissions:
+  contents: read
+
+env:
+  EXPECTED_PR_HEAD: 4fce1741f83b14f6b0abdd6cf95f644cc9c62114
+  PR_BRANCH: fix/copy-magnet-clipboard-rollback
+  AUTHOR_NAME: Peter Dave Hello
+  AUTHOR_EMAIL: 3691490+PeterDaveHello@users.noreply.github.com
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install project build dependencies
+        run: sudo bash setup/unix/debian-ubuntu-install_deps.sh
+      - name: Reproduce the partial-write regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp preparation/pr1610/payload/tests/copy_magnet_test.pas tests/copy_magnet_test.pas
+          cp preparation/pr1610/payload/tests/test_copy_magnet.py tests/test_copy_magnet.py
+          cp preparation/pr1610/payload/tests/test_copy_magnet_runner.py tests/test_copy_magnet_runner.py
+          python3 -m unittest discover -s tests -p test_copy_magnet_runner.py -v
+          if python3 tests/test_copy_magnet.py > "$RUNNER_TEMP/baseline.log" 2>&1; then
+            echo 'The old PR head unexpectedly passed the strengthened regression suite' >&2
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/baseline.log"
+          grep -F 'partial write retains committed marker: committed marker was discarded' "$RUNNER_TEMP/baseline.log"
+      - name: Apply review fixes and run focused checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 preparation/pr1610/apply.py --mode=review --repo .
+          git diff --check
+          python3 -m unittest discover -s tests -p test_copy_magnet_runner.py -v
+          python3 tests/test_copy_magnet.py
+      - name: Rebuild the complete application
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! lazbuild -B transgui.lpi > "$RUNNER_TEMP/lazbuild.log" 2>&1; then
+            tail -n 160 "$RUNNER_TEMP/lazbuild.log"
+            exit 1
+          fi
+          tail -n 20 "$RUNNER_TEMP/lazbuild.log"
+
+  publish:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install project build dependencies
+        run: sudo bash setup/unix/debian-ubuntu-install_deps.sh
+      - name: Build one clean commit on the latest master
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -R preparation/pr1610 "$RUNNER_TEMP/pr1610"
+          REMOTE_HEAD="$(git ls-remote origin "refs/heads/$PR_BRANCH" | awk '{print $1}')"
+          if [ "$REMOTE_HEAD" != "$EXPECTED_PR_HEAD" ]; then
+            echo "PR head moved from $EXPECTED_PR_HEAD to $REMOTE_HEAD; refusing to overwrite it" >&2
+            exit 1
+          fi
+          git fetch origin master:refs/remotes/origin/master
+          LATEST_MASTER="$(git rev-parse refs/remotes/origin/master)"
+          git switch --detach "$LATEST_MASTER"
+          python3 "$RUNNER_TEMP/pr1610/apply.py" --mode=master --repo . --payload "$RUNNER_TEMP/pr1610/payload"
+          git diff --check
+          python3 -m unittest discover -s tests -p test_copy_magnet_runner.py -v
+          python3 tests/test_copy_magnet.py
+          if ! lazbuild -B transgui.lpi > "$RUNNER_TEMP/lazbuild-final.log" 2>&1; then
+            tail -n 160 "$RUNNER_TEMP/lazbuild-final.log"
+            exit 1
+          fi
+          tail -n 20 "$RUNNER_TEMP/lazbuild-final.log"
+          EXPECTED_FILES='.github/workflows/copy-magnet-tests.yml
+          main.pas
+          tests/README.md
+          tests/copy_magnet_test.pas
+          tests/test_copy_magnet.py
+          tests/test_copy_magnet_runner.py'
+          ACTUAL_FILES="$(git diff --name-only | sort)"
+          if [ "$ACTUAL_FILES" != "$EXPECTED_FILES" ]; then
+            printf 'Unexpected final file set:\n%s\n' "$ACTUAL_FILES" >&2
+            exit 1
+          fi
+          git add .github/workflows/copy-magnet-tests.yml main.pas tests/README.md \
+            tests/copy_magnet_test.pas tests/test_copy_magnet.py tests/test_copy_magnet_runner.py
+          git config user.name "$AUTHOR_NAME"
+          git config user.email "$AUTHOR_EMAIL"
+          NOW_CST="$(TZ=Asia/Taipei date '+%Y-%m-%dT%H:%M:%S%z')"
+          GIT_AUTHOR_DATE="$NOW_CST" GIT_COMMITTER_DATE="$NOW_CST" \
+            git commit -m 'Restore copy-magnet clipboard tracking after failed writes' \
+              -m 'Preserve the copy-magnet marker when a clipboard backend commits text before raising, and restore it only when a recovery read cannot confirm the write. Add focused regression coverage and harden the test workflow.'
+          test "$(git rev-parse HEAD^)" = "$LATEST_MASTER"
+          test "$(git show -s --format='%an <%ae>' HEAD)" = "$AUTHOR_NAME <$AUTHOR_EMAIL>"
+          test "$(git show -s --format='%cn <%ce>' HEAD)" = "$AUTHOR_NAME <$AUTHOR_EMAIL>"
+          case "$(git show -s --format='%aI' HEAD)" in *+08:00) ;; *) echo 'Author date is not CST (+08:00)' >&2; exit 1;; esac
+          case "$(git show -s --format='%cI' HEAD)" in *+08:00) ;; *) echo 'Committer date is not CST (+08:00)' >&2; exit 1;; esac
+          REMOTE_MASTER="$(git ls-remote origin refs/heads/master | awk '{print $1}')"
+          if [ "$REMOTE_MASTER" != "$LATEST_MASTER" ]; then
+            echo "master moved to $REMOTE_MASTER during validation; refusing to push stale history" >&2
+            exit 1
+          fi
+          git show --stat --format=fuller HEAD
+      - name: Force-update the PR branch with the verified commit
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          git push --force-with-lease="refs/heads/$PR_BRANCH:$EXPECTED_PR_HEAD" \
+            origin HEAD:"refs/heads/$PR_BRANCH"
+          git push origin --delete work/verify-pr1610-review-followup
