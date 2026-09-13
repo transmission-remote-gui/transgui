@@ -1,0 +1,88 @@
+name: Verify copy-magnet clipboard rollback
+
+on:
+  push:
+    branches: [work/verify-copy-magnet-clipboard-rollback]
+
+permissions:
+  contents: read
+
+env:
+  BASE_SHA: a3503f165cfd0c1beb582cb16f6d072296de616c
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install existing project build dependencies
+        run: sudo bash setup/unix/debian-ubuntu-install_deps.sh
+      - name: Reproduce baseline and verify the repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show "$BASE_SHA:main.pas" > "$RUNNER_TEMP/main-before.pas"
+          if python3 tests/test_copy_magnet.py --source "$RUNNER_TEMP/main-before.pas" > "$RUNNER_TEMP/baseline.log" 2>&1; then
+            echo 'The regression check unexpectedly accepted the unmodified baseline' >&2
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/baseline.log"
+          grep -F 'write failure restores nonempty marker: marker was not restored' "$RUNNER_TEMP/baseline.log"
+          python3 preparation/apply_copy_magnet_fix.py
+          git diff --check
+          python3 tests/test_copy_magnet.py
+      - name: Rebuild the complete application
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! lazbuild -B transgui.lpi > "$RUNNER_TEMP/lazbuild.log" 2>&1; then
+            tail -n 120 "$RUNNER_TEMP/lazbuild.log"
+            exit 1
+          fi
+          tail -n 12 "$RUNNER_TEMP/lazbuild.log"
+
+  publish:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Publish only the validated fix and regression checks
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cp preparation/apply_copy_magnet_fix.py "$RUNNER_TEMP/apply-copy-magnet.py"
+          git switch --detach "$BASE_SHA"
+          git checkout "$GITHUB_SHA" -- tests/copy_magnet_test.pas tests/test_copy_magnet.py tests/README.md .github/workflows/copy-magnet-tests.yml
+          python3 "$RUNNER_TEMP/apply-copy-magnet.py"
+          git diff --check
+          git add main.pas
+          python3 - <<'PY'
+          import subprocess
+          expected = {'.github/workflows/copy-magnet-tests.yml', 'main.pas', 'tests/README.md', 'tests/copy_magnet_test.pas', 'tests/test_copy_magnet.py'}
+          actual = set(subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True).splitlines())
+          assert actual == expected, actual
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Restore copy-magnet clipboard tracking after failed writes'
+          gh auth setup-git
+          if git ls-remote --exit-code --heads origin refs/heads/fix/copy-magnet-clipboard-rollback; then
+            echo 'Refusing to overwrite an existing fix branch' >&2
+            exit 1
+          fi
+          git push origin HEAD:refs/heads/fix/copy-magnet-clipboard-rollback
+          git show --stat --oneline HEAD
