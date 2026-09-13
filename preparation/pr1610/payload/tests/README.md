@@ -9,11 +9,12 @@ python3 -m unittest discover -s tests -p test_copy_magnet_runner.py -v
 python3 tests/test_copy_magnet.py
 ```
 
-The runner extracts `TMainForm.MenuItem101Click`, `CheckClipboardLink`, and their
-clipboard-reading and link-normalization helpers directly from `main.pas`. It
-compiles those implementations with real FPC `Classes`, `Variants`, and `fpjson`
-units. Only external form, RPC, status, and clipboard collaborators are replaced;
-the production routines are not copied into the test source.
+The runner extracts `TMainForm.MenuItem101Click`, `CheckClipboardLink`, and the
+production clipboard-reading and link-normalization routines directly from
+`main.pas`. It compiles those implementations with real FPC `Classes`, `Variants`,
+and `fpjson` units. Only external form, RPC, status, clipboard, and hash-detection
+collaborators are replaced; the fixtures exercised here are already `magnet:` URIs,
+so hash-to-magnet conversion is deliberately outside this focused test.
 
 Extraction follows the repository's column-one top-level declaration style. It
 recognizes procedures, functions, constructors, destructors, class methods,
