@@ -82,6 +82,7 @@ type
     FDatabaseType: TGeoIPDBTypes;
     FDatabaseSegments: array of Cardinal;
     FDatabaseInfo: string;
+    FDataEnd: Int64;
     FRecordLength: Cardinal;
     function _GetCity(IPNum: Cardinal; var GeoIPCity: TGeoIPCity): TGeoIPResult;
     function _GetCountry(IPNum: Cardinal; var GeoIPCountry: TGeoIPCountry): TGeoIPResult;
@@ -89,7 +90,10 @@ type
     function _GetRegion(IPNum: Cardinal; var GeoIPRegion: TGeoIPRegion): TGeoIPResult;
     function AddrToNum(const IPAddr: string): Cardinal;
     procedure InitDBFile;
-    function SeekRecord(IPNum: Cardinal): Cardinal;
+    function ReadAt(Offset: Int64; var Buffer; Count: Integer): Boolean;
+    function ReadCString(const Buffer: array of Byte; BufferLength: Integer;
+      var Position: Integer; out Value: string): Boolean;
+    function SeekRecord(IPNum: Cardinal; out RecordValue: Cardinal): Boolean;
   public
     constructor Create(const FileName: string);
     destructor Destroy; override;
@@ -101,18 +105,18 @@ type
   end;
 
 const
-  CountryCodes:array [0..252] of string = ('--','AP','EU','AD','AE','AF','AG','AI','AL','AM','AN','AO','AQ','AR','AS','AT','AU','AW','AZ','BA','BB','BD','BE','BF','BG','BH','BI','BJ','BM','BN','BO','BR','BS','BT','BV','BW','BY','BZ','CA','CC','CD','CF','CG','CH','CI','CK','CL','CM','CN','CO','CR','CU','CV','CX','CY','CZ','DE','DJ','DK','DM','DO','DZ','EC','EE','EG','EH','ER','ES','ET','FI','FJ','FK','FM','FO','FR','FX','GA','GB','GD','GE','GF','GH','GI','GL','GM','GN','GP','GQ','GR','GS','GT','GU','GW',
+  CountryCodes:array [0..255] of string = ('--','AP','EU','AD','AE','AF','AG','AI','AL','AM','CW','AO','AQ','AR','AS','AT','AU','AW','AZ','BA','BB','BD','BE','BF','BG','BH','BI','BJ','BM','BN','BO','BR','BS','BT','BV','BW','BY','BZ','CA','CC','CD','CF','CG','CH','CI','CK','CL','CM','CN','CO','CR','CU','CV','CX','CY','CZ','DE','DJ','DK','DM','DO','DZ','EC','EE','EG','EH','ER','ES','ET','FI','FJ','FK','FM','FO','FR','SX','GA','GB','GD','GE','GF','GH','GI','GL','GM','GN','GP','GQ','GR','GS','GT','GU','GW',
                                           'GY','HK','HM','HN','HR','HT','HU','ID','IE','IL','IN','IO','IQ','IR','IS','IT','JM','JO','JP','KE','KG','KH','KI','KM','KN','KP','KR','KW','KY','KZ','LA','LB','LC','LI','LK','LR','LS','LT','LU','LV','LY','MA','MC','MD','MG','MH','MK','ML','MM','MN','MO','MP','MQ','MR','MS','MT','MU','MV','MW','MX','MY','MZ','NA','NC','NE','NF','NG','NI','NL','NO','NP','NR','NU','NZ','OM','PA','PE','PF','PG','PH','PK','PL','PM','PN','PR','PS','PT','PW','PY','QA','RE','RO','RU',
-                                          'RW','SA','SB','SC','SD','SE','SG','SH','SI','SJ','SK','SL','SM','SN','SO','SR','ST','SV','SY','SZ','TC','TD','TF','TG','TH','TJ','TK','TM','TN','TO','TL','TR','TT','TV','TW','TZ','UA','UG','UM','US','UY','UZ','VA','VC','VE','VG','VI','VN','VU','WF','WS','YE','YT','RS','ZA','ZM','ME','ZW','A1','A2','O1','AX','GG','IM','JE','BL','MF');
+                                          'RW','SA','SB','SC','SD','SE','SG','SH','SI','SJ','SK','SL','SM','SN','SO','SR','ST','SV','SY','SZ','TC','TD','TF','TG','TH','TJ','TK','TM','TN','TO','TL','TR','TT','TV','TW','TZ','UA','UG','UM','US','UY','UZ','VA','VC','VE','VG','VI','VN','VU','WF','WS','YE','YT','RS','ZA','ZM','ME','ZW','A1','A2','O1','AX','GG','IM','JE','BL','MF','BQ','SS','O1');
 
-  CountryNames:array [0..252] of string = ('N/A','Asia/Pacific Region','Europe','Andorra','United Arab Emirates','Afghanistan','Antigua and Barbuda','Anguilla','Albania','Armenia','Netherlands Antilles','Angola','Antarctica','Argentina','American Samoa','Austria','Australia','Aruba','Azerbaijan','Bosnia and Herzegovina','Barbados','Bangladesh','Belgium','Burkina Faso','Bulgaria','Bahrain','Burundi','Benin','Bermuda','Brunei Darussalam','Bolivia','Brazil','Bahamas','Bhutan','Bouvet Island','Botswana',
+  CountryNames:array [0..255] of string = ('N/A','Asia/Pacific Region','Europe','Andorra','United Arab Emirates','Afghanistan','Antigua and Barbuda','Anguilla','Albania','Armenia','Curacao','Angola','Antarctica','Argentina','American Samoa','Austria','Australia','Aruba','Azerbaijan','Bosnia and Herzegovina','Barbados','Bangladesh','Belgium','Burkina Faso','Bulgaria','Bahrain','Burundi','Benin','Bermuda','Brunei Darussalam','Bolivia','Brazil','Bahamas','Bhutan','Bouvet Island','Botswana',
                                           'Belarus','Belize','Canada','Cocos (Keeling) Islands','Congo, The Democratic Republic of the','Central African Republic','Congo','Switzerland','Cote D''Ivoire','Cook Islands','Chile','Cameroon','China','Colombia','Costa Rica','Cuba','Cape Verde','Christmas Island','Cyprus','Czech Republic','Germany','Djibouti','Denmark','Dominica','Dominican Republic','Algeria','Ecuador','Estonia','Egypt','Western Sahara','Eritrea','Spain','Ethiopia','Finland','Fiji',
-                                          'Falkland Islands (Malvinas)','Micronesia, Federated States of','Faroe Islands','France','France, Metropolitan','Gabon','United Kingdom','Grenada','Georgia','French Guiana','Ghana','Gibraltar','Greenland','Gambia','Guinea','Guadeloupe','Equatorial Guinea','Greece','South Georgia and the South Sandwich Islands','Guatemala','Guam','Guinea-Bissau','Guyana','Hong Kong','Heard Island and McDonald Islands','Honduras','Croatia','Haiti','Hungary','Indonesia','Ireland',
+                                          'Falkland Islands (Malvinas)','Micronesia, Federated States of','Faroe Islands','France','Sint Maarten (Dutch part)','Gabon','United Kingdom','Grenada','Georgia','French Guiana','Ghana','Gibraltar','Greenland','Gambia','Guinea','Guadeloupe','Equatorial Guinea','Greece','South Georgia and the South Sandwich Islands','Guatemala','Guam','Guinea-Bissau','Guyana','Hong Kong','Heard Island and McDonald Islands','Honduras','Croatia','Haiti','Hungary','Indonesia','Ireland',
                                           'Israel','India','British Indian Ocean Territory','Iraq','Iran, Islamic Republic of','Iceland','Italy','Jamaica','Jordan','Japan','Kenya','Kyrgyzstan','Cambodia','Kiribati','Comoros','Saint Kitts and Nevis','Korea, Democratic People''s Republic of','Korea, Republic of','Kuwait','Cayman Islands','Kazakstan','Lao People''s Democratic Republic','Lebanon','Saint Lucia','Liechtenstein','Sri Lanka','Liberia','Lesotho','Lithuania','Luxembourg','Latvia',
                                           'Libyan Arab Jamahiriya','Morocco','Monaco','Moldova, Republic of','Madagascar','Marshall Islands','Macedonia, the Former Yugoslav Republic of','Mali','Myanmar','Mongolia','Macao','Northern Mariana Islands','Martinique','Mauritania','Montserrat','Malta','Mauritius','Maldives','Malawi','Mexico','Malaysia','Mozambique','Namibia','New Caledonia','Niger','Norfolk Island','Nigeria','Nicaragua','Netherlands','Norway','Nepal','Nauru','Niue','New Zealand','Oman',
                                           'Panama','Peru','French Polynesia','Papua New Guinea','Philippines','Pakistan','Poland','Saint Pierre and Miquelon','Pitcairn','Puerto Rico','Palestinian Territory, Occupied','Portugal','Palau','Paraguay','Qatar','Reunion','Romania','Russian Federation','Rwanda','Saudi Arabia','Solomon Islands','Seychelles','Sudan','Sweden','Singapore','Saint Helena','Slovenia','Svalbard and Jan Mayen','Slovakia','Sierra Leone','San Marino','Senegal','Somalia','Suriname',
                                           'Sao Tome and Principe','El Salvador','Syrian Arab Republic','Swaziland','Turks and Caicos Islands','Chad','French Southern Territories','Togo','Thailand','Tajikistan','Tokelau','Turkmenistan','Tunisia','Tonga','Timor-Leste','Turkey','Trinidad and Tobago','Tuvalu','Taiwan','Tanzania, United Republic of','Ukraine','Uganda','United States Minor Outlying Islands','United States','Uruguay','Uzbekistan','Holy See (Vatican City State)',
-                                          'Saint Vincent and the Grenadines','Venezuela','Virgin Islands, British','Virgin Islands, U.S.','Vietnam','Vanuatu','Wallis and Futuna','Samoa','Yemen','Mayotte','Serbia','South Africa','Zambia','Montenegro','Zimbabwe','Anonymous Proxy','Satellite Provider','Other','Aland Islands','Guernsey','Isle of Man','Jersey','Saint Barthelemy','Saint Martin');
+                                          'Saint Vincent and the Grenadines','Venezuela','Virgin Islands, British','Virgin Islands, U.S.','Vietnam','Vanuatu','Wallis and Futuna','Samoa','Yemen','Mayotte','Serbia','South Africa','Zambia','Montenegro','Zimbabwe','Anonymous Proxy','Satellite Provider','Other','Aland Islands','Guernsey','Isle of Man','Jersey','Saint Barthelemy','Saint Martin','Bonaire, Saint Eustatius and Saba','South Sudan','Other');
 
 
 implementation
@@ -150,13 +154,52 @@ begin
   inherited Destroy;
 end;
 
+function TGeoIP.ReadAt(Offset: Int64; var Buffer; Count: Integer): Boolean;
+var
+  FileSize: Int64;
+begin
+  FileSize := FInputFile.Size;
+  Result := (Count >= 0) and (Offset >= 0) and (Offset <= FileSize) and
+    (Int64(Count) <= FileSize - Offset);
+  if not Result then
+    Exit;
+  if FInputFile.Seek(Offset, soBeginning) <> Offset then
+  begin
+    Result := False;
+    Exit;
+  end;
+  Result := FInputFile.Read(Buffer, Count) = Count;
+end;
+
+function TGeoIP.ReadCString(const Buffer: array of Byte; BufferLength: Integer;
+  var Position: Integer; out Value: string): Boolean;
+var
+  Start: Integer;
+begin
+  Result := False;
+  if (BufferLength < 0) or (BufferLength > Length(Buffer)) or
+    (Position < 0) or (Position >= BufferLength) then
+      Exit;
+  Start := Position;
+  while (Position < BufferLength) and (Buffer[Position] <> 0) do
+    Inc(Position);
+  if Position >= BufferLength then
+    Exit;
+  SetLength(Value, Position - Start);
+  if Position > Start then
+    Move(Buffer[Start], PChar(Value)^, Position - Start);
+  Inc(Position);
+  Result := True;
+end;
+
 function TGeoIP._GetCity(IPNum: Cardinal; var GeoIPCity: TGeoIPCity): TGeoIPResult;
 var
   SeekCity: Cardinal;
-  RecordPointer: Cardinal;
-  StrLen: Cardinal;
+  RecordPointer: Int64;
+  Available: Int64;
+  BytesRead: Integer;
+  Position: Integer;
   buf: array[0..FULL_RECORD_LENGTH-1] of Byte;
-  p: PChar;
   i: Integer;
   DmaAreaCombo: Integer;
 begin
@@ -165,153 +208,234 @@ begin
     Result := GEOIP_ERROR_DBTYPE;
     Exit;
   end;
-  SeekCity := SeekRecord(IPNum);
+  if not SeekRecord(IPNum, SeekCity) then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
   if SeekCity = FDatabaseSegments[0] then
   begin
     Result := GEOIP_NODATA;
     Exit;
   end;
-  RecordPointer := SeekCity + (2 * FRecordLength - 1) * FDatabaseSegments[0];
-  FInputFile.Seek(RecordPointer, soFromBeginning);
-  FInputFile.Read(buf, FULL_RECORD_LENGTH);
+  if SeekCity < FDatabaseSegments[0] then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
+  RecordPointer := Int64(SeekCity) +
+    (Int64(2) * FRecordLength - 1) * FDatabaseSegments[0];
+  if (RecordPointer < 0) or (RecordPointer >= FDataEnd) then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
+  Available := FDataEnd - RecordPointer;
+  if Available > FULL_RECORD_LENGTH then
+    BytesRead := FULL_RECORD_LENGTH
+  else
+    BytesRead := Integer(Available);
+  FillChar(buf, SizeOf(buf), 0);
+  if (BytesRead <= 0) or not ReadAt(RecordPointer, buf, BytesRead) then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
 
   // get country
+  if buf[0] > High(CountryCodes) then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
   GeoIPCity.CountryCode := CountryCodes[buf[0]];
   GeoIPCity.CountryName := CountryNames[buf[0]];
 
-  // get region
-  p := @buf[1];
-  StrLen := 0;
-  while (p[StrLen] <> #0) do
-    Inc(StrLen);
-  GeoIPCity.Region := Copy(p, 0, StrLen);
+  Position := 1;
+  if not ReadCString(buf, BytesRead, Position, GeoIPCity.Region) or
+    not ReadCString(buf, BytesRead, Position, GeoIPCity.City) or
+    not ReadCString(buf, BytesRead, Position, GeoIPCity.PostalCode) then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
 
-  // get city
-  Inc(p, StrLen + 1);
-  StrLen := 0;
-  while (p[StrLen] <> #0) do
-    Inc(StrLen);
-  GeoIPCity.City := Copy(p, 0, StrLen);
-
-  // get postal code
-  Inc(p, StrLen + 1);
-  StrLen := 0;
-  while (p[StrLen] <> #0) do
-    Inc(StrLen);
-  GeoIPCity.PostalCode := Copy(p, 0, StrLen);
+  if Position + 6 > BytesRead then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
 
   // get latitude
-  Inc(p, StrLen + 1);
   GeoIPCity.Latitude := 0.0;
   for i:=0 to 2 do
-  begin
-    GeoIPCity.Latitude := GeoIPCity.Latitude + (Integer(p[i]) shl (i*8));
-  end;
+    GeoIPCity.Latitude := GeoIPCity.Latitude +
+      (Integer(buf[Position+i]) shl (i*8));
   GeoIPCity.Latitude := GeoIPCity.Latitude/10000 - 180;
+  Inc(Position, 3);
 
   // get longitude
-  Inc(p, 3);
   GeoIPCity.Longitude := 0.0;
   for i:=0 to 2 do
-  begin
-    GeoIPCity.Longitude := GeoIPCity.Longitude + (Integer(p[i]) shl (i*8));
-  end;
+    GeoIPCity.Longitude := GeoIPCity.Longitude +
+      (Integer(buf[Position+i]) shl (i*8));
   GeoIPCity.Longitude := GeoIPCity.Longitude/10000 - 180;
+  Inc(Position, 3);
 
   // get area code and dma code for post April 2002 databases and for US locations
   GeoIPCity.DmaCode := 0;
   GeoIPCity.AreaCode := 0;
-  if FDatabaseType = GEOIP_CITY_EDITION_REV1 then
+  if (FDatabaseType = GEOIP_CITY_EDITION_REV1) and
+    (GeoIPCity.CountryCode = 'US') then
   begin
-    if GeoIPCity.CountryCode = 'US' then
+    if Position + 3 > BytesRead then
     begin
-      Inc(p, 3);
-      DmaAreaCombo := 0;
-      for i:=0 to 2 do
-      begin
-        DmaAreaCombo := DmaAreaCombo + (Integer(p[i]) shl (i*8));
-      end;
-      GeoIPCity.DmaCode := DmaAreaCombo div 1000;
-      GeoIPCity.AreaCode := DmaAreaCombo mod 1000;
+      Result := GEOIP_ERROR_IO;
+      Exit;
     end;
+    DmaAreaCombo := 0;
+    for i:=0 to 2 do
+      DmaAreaCombo := DmaAreaCombo +
+        (Integer(buf[Position+i]) shl (i*8));
+    GeoIPCity.DmaCode := DmaAreaCombo div 1000;
+    GeoIPCity.AreaCode := DmaAreaCombo mod 1000;
   end;
   Result := GEOIP_SUCCESS;
 end;
 
 function TGeoIP._GetCountry(IPNum: Cardinal; var GeoIPCountry: TGeoIPCountry): TGeoIPResult;
 var
-  ret: Cardinal;
+  RecordValue: Cardinal;
+  CountryIndex: Cardinal;
 begin
   if (FDatabaseType <> GEOIP_COUNTRY_EDITION) and (FDatabaseType <> GEOIP_PROXY_EDITION) then
   begin
     Result := GEOIP_ERROR_DBTYPE;
     Exit;
   end;
-  ret := SeekRecord(IPNum) - COUNTRY_BEGIN;
-  if ret > 0 then
+  if not SeekRecord(IPNum, RecordValue) then
   begin
-    GeoIPCountry.CountryCode := CountryCodes[ret];
-    GeoIPCountry.CountryName := CountryNames[ret];
-    Result := GEOIP_SUCCESS;
-  end
-  else
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
+  if RecordValue = COUNTRY_BEGIN then
   begin
     Result := GEOIP_NODATA;
+    Exit;
   end;
+  if RecordValue < COUNTRY_BEGIN then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
+  CountryIndex := RecordValue - COUNTRY_BEGIN;
+  if CountryIndex > High(CountryCodes) then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
+  GeoIPCountry.CountryCode := CountryCodes[CountryIndex];
+  GeoIPCountry.CountryName := CountryNames[CountryIndex];
+  Result := GEOIP_SUCCESS;
 end;
 
 function TGeoIP._GetOrg(IPNum: Cardinal; var GeoIPOrg: TGeoIPOrg): TGeoIPResult;
 var
   SeekOrg: Cardinal;
-  RecordPointer: Cardinal;
-  StrLen: Cardinal;
+  RecordPointer: Int64;
+  Available: Int64;
+  BytesRead: Integer;
+  Position: Integer;
   buf: array[0..MAX_ORG_RECORD_LENGTH-1] of Byte;
-  p: PChar;
 begin
   if (FDatabaseType <> GEOIP_ORG_EDITION) and (FDatabaseType <> GEOIP_ISP_EDITION) and (FDatabaseType <> GEOIP_ASNUM_EDITION) then
   begin
     Result := GEOIP_ERROR_DBTYPE;
     Exit;
   end;
-  SeekOrg := SeekRecord(IPNum);
+  if not SeekRecord(IPNum, SeekOrg) then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
   if SeekOrg = FDatabaseSegments[0] then
   begin
     Result := GEOIP_NODATA;
     Exit;
   end;
-  RecordPointer := SeekOrg + (2 * FRecordLength - 1) * FDatabaseSegments[0];
-  FInputFile.Seek(RecordPointer, soFromBeginning);
-  FInputFile.Read(buf, FULL_RECORD_LENGTH);
-
-  p := @buf[0];
-  StrLen := 0;
-  while (p[StrLen] <> #0) do
-    Inc(StrLen);
-  GeoIPOrg.Name := Copy(p, 0, StrLen);
+  if SeekOrg < FDatabaseSegments[0] then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
+  RecordPointer := Int64(SeekOrg) +
+    (Int64(2) * FRecordLength - 1) * FDatabaseSegments[0];
+  if (RecordPointer < 0) or (RecordPointer >= FDataEnd) then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
+  Available := FDataEnd - RecordPointer;
+  if Available > MAX_ORG_RECORD_LENGTH then
+    BytesRead := MAX_ORG_RECORD_LENGTH
+  else
+    BytesRead := Integer(Available);
+  FillChar(buf, SizeOf(buf), 0);
+  if (BytesRead <= 0) or not ReadAt(RecordPointer, buf, BytesRead) then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
+  Position := 0;
+  if not ReadCString(buf, BytesRead, Position, GeoIPOrg.Name) then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
   Result := GEOIP_SUCCESS;
 end;
 
 function TGeoIP._GetRegion(IPNum: Cardinal; var GeoIPRegion: TGeoIPRegion): TGeoIPResult;
 var
   SeekRegion: Cardinal;
+  CountryIndex: Cardinal;
 begin
   if (FDatabaseType <> GEOIP_REGION_EDITION_REV0) and (FDatabaseType <> GEOIP_REGION_EDITION_REV1) then
   begin
     Result := GEOIP_ERROR_DBTYPE;
     Exit;
   end;
-  SeekRegion := SeekRecord(IPNum);
+  if not SeekRecord(IPNum, SeekRegion) then
+  begin
+    Result := GEOIP_ERROR_IO;
+    Exit;
+  end;
   if FDatabaseType = GEOIP_REGION_EDITION_REV0 then
   begin
     // Region Edition, pre June 2003
+    if SeekRegion < STATE_BEGIN_REV0 then
+    begin
+      Result := GEOIP_ERROR_IO;
+      Exit;
+    end;
     Dec(SeekRegion, STATE_BEGIN_REV0);
     if SeekRegion >= 1000 then
     begin
+      if SeekRegion - 1000 >= 26 * 26 then
+      begin
+        Result := GEOIP_ERROR_IO;
+        Exit;
+      end;
       GeoIPRegion.CountryCode := 'US';
       GeoIPRegion.Region := Chr((SeekRegion - 1000) div 26 + 65) + Chr((SeekRegion - 1000) mod 26 + 65);
     end
     else
     begin
+      if SeekRegion > High(CountryCodes) then
+      begin
+        Result := GEOIP_ERROR_IO;
+        Exit;
+      end;
       GeoIPRegion.CountryCode := CountryCodes[SeekRegion];
       GeoIPRegion.Region := '';
     end;
@@ -319,6 +443,11 @@ begin
   else if FDatabaseType = GEOIP_REGION_EDITION_REV1 then
   begin
     // Region Edition, post June 2003
+    if SeekRegion < STATE_BEGIN_REV1 then
+    begin
+      Result := GEOIP_ERROR_IO;
+      Exit;
+    end;
     Dec(SeekRegion, STATE_BEGIN_REV1);
     if SeekRegion < US_OFFSET then
     begin
@@ -341,7 +470,13 @@ begin
     else
     begin
       // Not US or Canada
-      GeoIPRegion.CountryCode := CountryCodes[(SeekRegion - WORLD_OFFSET) div FIPS_RANGE];
+      CountryIndex := (SeekRegion - WORLD_OFFSET) div FIPS_RANGE;
+      if CountryIndex > High(CountryCodes) then
+      begin
+        Result := GEOIP_ERROR_IO;
+        Exit;
+      end;
+      GeoIPRegion.CountryCode := CountryCodes[CountryIndex];
       GeoIPRegion.Region := '';
     end;
   end;
@@ -396,35 +531,64 @@ var
   i: Integer;
   delim: array[0..2] of Byte;
   HasStructureInfo: Boolean;
+  ScanOffset: Int64;
+  InfoEnd: Int64;
+  InfoLength: Integer;
 begin
   FDatabaseInfo := '';
+  if FInputFile.Size < 3 then
+  begin
+    Result := FDatabaseInfo;
+    Exit;
+  end;
+
   HasStructureInfo := False;
-  FInputFile.Seek(-3, soFromEnd);
+  ScanOffset := FInputFile.Size - 3;
   for i:=0 to STRUCTURE_INFO_MAX_SIZE-1 do
   begin
-    FInputFile.Read(delim, 3);
+    if not ReadAt(ScanOffset, delim, 3) then
+      Break;
     if (delim[0] = 255) and (delim[1] = 255) and (delim[2] = 255) then
     begin
       HasStructureInfo := True;
       Break;
     end;
-    FInputFile.Seek(-4, soFromCurrent);
+    if ScanOffset = 0 then
+      Break;
+    Dec(ScanOffset);
   end;
+
   if HasStructureInfo then
-    FInputFile.Seek(-3, soFromCurrent)
+    InfoEnd := ScanOffset
   else
-    // no structure info, must be pre Sep 2002 database, go back to end
-    FInputFile.Seek(-3, soFromEnd);
+    InfoEnd := FInputFile.Size;
+  if InfoEnd < 3 then
+  begin
+    Result := FDatabaseInfo;
+    Exit;
+  end;
+
+  ScanOffset := InfoEnd - 3;
   for i:=0 to DATABASE_INFO_MAX_SIZE-1 do
   begin
-    FInputFile.Read(delim, 3);
+    if not ReadAt(ScanOffset, delim, 3) then
+      Break;
     if (delim[0] = 0) and (delim[1] = 0) and (delim[2] = 0) then
     begin
-      SetLength(FDatabaseInfo, i);
-      FInputFile.Read(PChar(FDatabaseInfo)^, i);
+      if InfoEnd - (ScanOffset + 3) > High(Integer) then
+        Break;
+      InfoLength := Integer(InfoEnd - (ScanOffset + 3));
+      if (InfoLength < 0) or (InfoLength > DATABASE_INFO_MAX_SIZE) then
+        Break;
+      SetLength(FDatabaseInfo, InfoLength);
+      if (InfoLength > 0) and
+        not ReadAt(ScanOffset + 3, PChar(FDatabaseInfo)^, InfoLength) then
+          FDatabaseInfo := '';
       Break;
     end;
-    FInputFile.Seek(-4, soFromCurrent);
+    if ScanOffset = 0 then
+      Break;
+    Dec(ScanOffset);
   end;
   Result := FDatabaseInfo;
 end;
@@ -460,32 +624,55 @@ var
   i,j: Integer;
   delim: array[0..2] of Byte;
   buf: array[0..SEGMENT_RECORD_LENGTH-1] of Byte;
+  DatabaseTypeValue: Byte;
+  MarkerOffset: Int64;
+  TreeSize: Int64;
 begin
   // default to GeoIP Country Edition
   FDatabaseType := GEOIP_COUNTRY_EDITION;
   FRecordLength := STANDARD_RECORD_LENGTH;
-  FInputFile.Seek(-3, soFromEnd);
+  FDataEnd := FInputFile.Size;
+  SetLength(FDatabaseSegments, 1);
+  FDatabaseSegments[0] := COUNTRY_BEGIN;
+  if FDataEnd < 3 then
+  begin
+    SetLength(FDatabaseSegments, 0);
+    Exit;
+  end;
+
+  MarkerOffset := FDataEnd - 3;
   for i:=0 to STRUCTURE_INFO_MAX_SIZE-1 do
   begin
-    FInputFile.Read(delim, 3);
+    if not ReadAt(MarkerOffset, delim, 3) then
+    begin
+      SetLength(FDatabaseSegments, 0);
+      Exit;
+    end;
     if (delim[0] = 255) and (delim[1] = 255) and (delim[2] = 255) then
     begin
-      FInputFile.Read(FDatabaseType, 1);
-      if Byte(FDatabaseType) >= 106 then
+      FDataEnd := MarkerOffset;
+      if not ReadAt(MarkerOffset + 3, DatabaseTypeValue, 1) then
       begin
-        // Backward compatibility with databases from April 2003 and earlier
-        Dec(FDatabaseType, 105);
+        SetLength(FDatabaseSegments, 0);
+        Exit;
       end;
+      if DatabaseTypeValue >= 106 then
+        Dec(DatabaseTypeValue, 105);
+      if (DatabaseTypeValue < Ord(Low(TGeoIPDBTypes))) or
+        (DatabaseTypeValue > Ord(High(TGeoIPDBTypes))) then
+      begin
+        SetLength(FDatabaseSegments, 0);
+        Exit;
+      end;
+      FDatabaseType := TGeoIPDBTypes(DatabaseTypeValue);
       if FDatabaseType = GEOIP_REGION_EDITION_REV0 then
       begin
         // Region Edition, pre June 2003
-        SetLength(FDatabaseSegments, 1);
         FDatabaseSegments[0] := STATE_BEGIN_REV0;
       end
       else if FDatabaseType = GEOIP_REGION_EDITION_REV1 then
       begin
         // Region Edition, post June 2003
-        SetLength(FDatabaseSegments, 1);
         FDatabaseSegments[0] := STATE_BEGIN_REV1;
       end
       else if (FDatabaseType = GEOIP_CITY_EDITION_REV0) or
@@ -495,46 +682,65 @@ begin
               (FDatabaseType = GEOIP_ASNUM_EDITION) then
       begin
         // City/Org Editions have two segments, read offset of second segment
-        SetLength(FDatabaseSegments, 1);
         FDatabaseSegments[0] := 0;
-        FInputFile.Read(buf, SEGMENT_RECORD_LENGTH);
-        for j:=0 to SEGMENT_RECORD_LENGTH-1 do
+        if not ReadAt(MarkerOffset + 4, buf, SEGMENT_RECORD_LENGTH) then
         begin
-          Inc(FDatabaseSegments[0], Integer(buf[j]) shl (j*8));
+          SetLength(FDatabaseSegments, 0);
+          Exit;
+        end;
+        for j:=0 to SEGMENT_RECORD_LENGTH-1 do
+          Inc(FDatabaseSegments[0], Cardinal(buf[j]) shl (j*8));
+        if FDatabaseSegments[0] = 0 then
+        begin
+          SetLength(FDatabaseSegments, 0);
+          Exit;
         end;
         if (FDatabaseType = GEOIP_ORG_EDITION) or
           (FDatabaseType = GEOIP_ISP_EDITION) then
             FRecordLength := ORG_RECORD_LENGTH;
+        TreeSize := Int64(2) * FRecordLength * FDatabaseSegments[0];
+        if (TreeSize <= 0) or (TreeSize > FDataEnd) then
+        begin
+          SetLength(FDatabaseSegments, 0);
+          Exit;
+        end;
       end;
-      Break;
-    end
-    else
-    begin
-      FInputFile.Seek(-4, soFromCurrent);
+      Exit;
     end;
-  end;
-  if (FDatabaseType = GEOIP_COUNTRY_EDITION) or
-    (FDatabaseType = GEOIP_PROXY_EDITION) then
-  begin
-    SetLength(FDatabaseSegments, 1);
-    FDatabaseSegments[0] := COUNTRY_BEGIN;
+    if MarkerOffset = 0 then
+      Break;
+    Dec(MarkerOffset);
   end;
 end;
 
-function TGeoIP.SeekRecord(IPNum: Cardinal): Cardinal;
+function TGeoIP.SeekRecord(IPNum: Cardinal; out RecordValue: Cardinal): Boolean;
 var
-  depth: Cardinal;
+  depth: Integer;
   offset: Cardinal;
   i,j: Cardinal;
   x: array[0..1] of Cardinal;
   y: Cardinal;
+  BranchValue: Cardinal;
+  FileOffset: Int64;
   buf: array[0..2*MAX_RECORD_LENGTH-1] of Byte;
 begin
+  Result := False;
+  RecordValue := 0;
+  if (Length(FDatabaseSegments) = 0) or (FDatabaseSegments[0] = 0) or
+    (FRecordLength < STANDARD_RECORD_LENGTH) or
+    (FRecordLength > MAX_RECORD_LENGTH) then
+      Exit;
+
   offset := 0;
   for depth:=31 downto 0 do
   begin
-    FInputFile.Seek(2 * FRecordLength * offset, soFromBeginning);
-    FInputFile.Read(buf, 2 * FRecordLength);
+    FileOffset := Int64(2) * FRecordLength * offset;
+    if (FileOffset < 0) or (FileOffset > FDataEnd) then
+      Exit;
+    if Int64(2) * FRecordLength > FDataEnd - FileOffset then
+      Exit;
+    if not ReadAt(FileOffset, buf, 2 * FRecordLength) then
+      Exit;
     for i:=0 to 1 do
     begin
       x[i] := 0;
@@ -544,32 +750,18 @@ begin
         x[i] := x[i] + (y shl (j*8));
       end;
     end;
-    if (IPNum and (1 shl depth)) <> 0 then
-    begin
-      if x[1] >= FDatabaseSegments[0] then
-      begin
-        Result := x[1];
-        Exit;
-      end
-      else
-      begin
-        Offset := x[1];
-      end;
-    end
+    if (IPNum and (Cardinal(1) shl depth)) <> 0 then
+      BranchValue := x[1]
     else
+      BranchValue := x[0];
+    if BranchValue >= FDatabaseSegments[0] then
     begin
-      if x[0] >= FDatabaseSegments[0] then
-      begin
-        Result := x[0];
-        Exit;
-      end
-      else
-      begin
-        Offset := x[0];
-      end;
+      RecordValue := BranchValue;
+      Result := True;
+      Exit;
     end;
+    offset := BranchValue;
   end;
-  Result := 0;
 end;
 
 end.

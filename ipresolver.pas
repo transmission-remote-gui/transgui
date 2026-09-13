@@ -79,7 +79,7 @@ type
 
 implementation
 
-uses synsock;
+uses synsock, LazFileUtils;
 
 { TIpResolver }
 
@@ -250,9 +250,14 @@ begin
     if FGeoIp <> nil then
     try
       GeoIpResult:=FGeoIp.GetCountry(IpAddress, GeoCountry);
+      if GeoIpResult = GEOIP_ERROR_IO then begin
+        FreeAndNil(FGeoIp);
+        DeleteFileUTF8(FGeoIpCounryDB);
+        GeoIpFailed:=True;
+      end;
     except
       FreeAndNil(FGeoIp);
-      DeleteFile(FGeoIpCounryDB);
+      DeleteFileUTF8(FGeoIpCounryDB);
       GeoIpFailed:=True;
     end;
 
