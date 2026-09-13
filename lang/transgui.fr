@@ -395,3 +395,5 @@ Labels=Étiquettes
 Set labels=Définir les étiquettes
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Cela écrasera toutes les étiquettes existantes.~Vous pouvez définir plusieurs étiquettes séparées par des virgules ou laisser vide pour effacer les étiquettes
 Application option=Option de l'application
+Open anyway=Ouvrir quand même
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Ce type de fichier peut exécuter du code ou présenter un autre risque de sécurité.~~"%s"~~Ouvrez-le uniquement si vous faites confiance à ce fichier

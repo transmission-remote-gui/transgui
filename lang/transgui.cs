@@ -395,3 +395,5 @@ Labels=Štítky
 Set labels=Nastavit štítky
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Tím se přepíší všechny existující štítky.~Můžete nastavit více štítků oddělených čárkou, nebo je nechat prázdné pro vymazání štítků
 Application option=Možnost aplikace
+Open anyway=Přesto otevřít
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Tento typ souboru může spustit kód nebo být jinak nebezpečný.~~"%s"~~Otevřete jej pouze, pokud tomuto souboru důvěřujete

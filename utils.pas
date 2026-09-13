@@ -90,7 +90,8 @@ function IsTaskbarButtonVisible: boolean;
 procedure CenterOnParent(C: TControl);
 procedure EnableControls(AEnable: boolean; const AControls: array of TControl);
 
-function OpenURL(const URL: string; const Params: string = ''): boolean;
+function OpenURL(const URL: string; const Params: string = '';
+  const Operation: string = 'open'): boolean;
 
 function CompareFilePath(const p1, p2: string): integer;
 
@@ -509,19 +510,20 @@ begin
 end;
 {$endif darwin}
 
-function OpenURL(const URL, Params: string): boolean;
+function OpenURL(const URL, Params, Operation: string): boolean;
 {$ifdef mswindows}
 var
-  s, p: widestring;
+  s, p, o: widestring;
 {$endif mswindows}
 begin
 {$ifdef mswindows}
   s:=UTF8Decode(URL);
   p:=UTF8Decode(Params);
+  o:=UTF8Decode(Operation);
   if Win32Platform = VER_PLATFORM_WIN32_NT then
-    Result:=ShellExecuteW(0, 'open', PWideChar(s), PWideChar(p), nil, SW_SHOWNORMAL) > 32
+    Result:=ShellExecuteW(0, PWideChar(o), PWideChar(s), PWideChar(p), nil, SW_SHOWNORMAL) > 32
   else
-    Result:=ShellExecuteA(0, 'open', PChar(ansistring(s)), PChar(ansistring(p)), nil, SW_SHOWNORMAL) > 32;
+    Result:=ShellExecuteA(0, PChar(ansistring(o)), PChar(ansistring(s)), PChar(ansistring(p)), nil, SW_SHOWNORMAL) > 32;
 {$endif mswindows}
 
 {$ifdef darwin}

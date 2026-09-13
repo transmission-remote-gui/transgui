@@ -395,3 +395,5 @@ Labels=Etichete
 Set labels=Setați etichetele
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Aceasta va suprascrie toate etichetele existente.~Puteți seta mai multe etichete separate prin virgulă sau lăsați gol pentru a goli etichetele
 Application option=Opțiune aplicație
+Open anyway=Deschide oricum
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Acest tip de fișier poate executa cod sau poate fi altfel nesigur.~~"%s"~~Deschideți-l numai dacă aveți încredere în acest fișier

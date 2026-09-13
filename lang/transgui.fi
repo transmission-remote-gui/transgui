@@ -395,3 +395,5 @@ Labels=Tunnisteet
 Set labels=Aseta tunnisteet
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Tämä korvaa kaikki olemassa olevat tunnisteet.~Voit asettaa useita tunnisteita pilkulla erotettuina tai jättää tyhjäksi tyhjentääksesi tunnisteet
 Application option=Sovellusasetus
+Open anyway=Avaa joka tapauksessa
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Tämä tiedostotyyppi voi suorittaa koodia tai muuten olla turvaton.~~"%s"~~Avaa se vain, jos luotat tähän tiedostoon

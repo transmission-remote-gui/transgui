@@ -395,3 +395,5 @@ Labels=Etiquetas
 Set labels=Establecer etiquetas
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Esto sobrescribirá cualquier etiqueta existente.~Puede establecer varias etiquetas separadas por comas o dejarlo vacío para borrar las etiquetas
 Application option=Opción de la aplicación
+Open anyway=Abrir de todos modos
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Este tipo de archivo puede ejecutar código o ser inseguro de otro modo.~~"%s"~~Ábralo solo si confía en este archivo

@@ -395,3 +395,5 @@ Labels=Birkas
 Set labels=Iestatīt birkas
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Tas pārrakstīs visas esošās birkas.~Varat iestatīt vairākas birkas, atdalot tās ar komatu, vai atstāt tukšu, lai notīrītu birkas
 Application option=Lietotnes opcija
+Open anyway=Tomēr atvērt
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Šis faila tips var izpildīt kodu vai citādi būt nedrošs.~~"%s"~~Atveriet to tikai tad, ja uzticaties šim failam

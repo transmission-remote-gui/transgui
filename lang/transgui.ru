@@ -395,3 +395,5 @@ Labels=Метки
 Set labels=Задать метки
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Это перезапишет все существующие метки.~Вы можете задать несколько меток через запятую или оставить пустым, чтобы очистить метки
 Application option=Параметр приложения
+Open anyway=Всё равно открыть
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Этот тип файла может выполнять код или иным образом быть небезопасным.~~"%s"~~Открывайте его, только если вы доверяете этому файлу
