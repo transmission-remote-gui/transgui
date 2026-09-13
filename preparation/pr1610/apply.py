@@ -15,7 +15,13 @@ def patch_main(source: bytes, mode: str) -> bytes:
     if mode == "review":
         old_decl = b"  ClipboardText, PreviousClipboardLink: string;\n"
         new_decl = b"  ClipboardText, PreviousClipboardLink, ActualClipboardText: string;\n"
-        old_body = b"""    except
+        old_body = b"""    ClipboardText:=Magnets.Text;
+    PreviousClipboardLink:=FLastClipboardLink;
+    // Suppress detection of our own links during the clipboard write.
+    FLastClipboardLink:=ClipboardText;
+    try
+      Clipboard.AsText:=ClipboardText;
+    except
       FLastClipboardLink:=PreviousClipboardLink;
       raise;
     end;
