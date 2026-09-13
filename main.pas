@@ -5155,8 +5155,8 @@ end;
 
 procedure TMainForm.MenuItem101Click(Sender: TObject);
 var
-  req, args, tt: TJSONObject;
-  ids, t: TJSONArray;
+  req, requestArgs, args, tt: TJSONObject;
+  ids, fields, t: TJSONArray;
   i: Integer;
   TorrentIds: Variant;
   Magnets: TStringList;
@@ -5165,16 +5165,25 @@ begin
   if VarIsEmpty(TorrentIds) then
     exit;
   req:=TJSONObject.Create;
-  args:=TJSONObject.Create;
-  Magnets:=TStringList.Create;
+  requestArgs:=nil;
+  args:=nil;
+  ids:=nil;
+  fields:=nil;
+  Magnets:=nil;
   try
+    requestArgs:=TJSONObject.Create;
+    Magnets:=TStringList.Create;
     req.Add('method', 'torrent-get');
     ids:=TJSONArray.Create;
     for i:=VarArrayLowBound(TorrentIds, 1) to VarArrayHighBound(TorrentIds, 1) do
       ids.Add(integer(TorrentIds[i]));
-    args.Add('ids', ids);
-    args.Add('fields', TJSONArray.Create(['magnetLink']));
-    req.Add('arguments', args);
+    requestArgs.Add('ids', ids);
+    ids:=nil;
+    fields:=TJSONArray.Create(['magnetLink']);
+    requestArgs.Add('fields', fields);
+    fields:=nil;
+    req.Add('arguments', requestArgs);
+    requestArgs:=nil;
     args:=RpcObj.SendRequest(req);
     if args = nil then begin
       CheckStatus(False);
@@ -5190,6 +5199,9 @@ begin
     Clipboard.AsText := Magnets.Text;
   finally
     req.Free;
+    requestArgs.Free;
+    ids.Free;
+    fields.Free;
     args.Free;
     Magnets.Free;
   end;
