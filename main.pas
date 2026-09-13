@@ -5160,6 +5160,7 @@ var
   i: Integer;
   TorrentIds: Variant;
   Magnets: TStringList;
+  MagnetLink: TJSONString;
 begin
   TorrentIds:=GetSelectedTorrents;
   if VarIsEmpty(TorrentIds) then
@@ -5189,11 +5190,22 @@ begin
       CheckStatus(False);
       exit;
     end;
-    t:=args.Arrays['torrents'];
+    if not args.Find('torrents', t) then begin
+      CheckStatus(False, 'Invalid server response.');
+      exit;
+    end;
     for i:= 0 to t.Count-1 do
       begin
+        if not (t.Items[i] is TJSONObject) then begin
+          CheckStatus(False, 'Invalid server response.');
+          exit;
+        end;
         tt:=t.Objects[i] as TJSONObject;
-        Magnets.add(tt.Strings['magnetLink']);
+        if not tt.Find('magnetLink', MagnetLink) then begin
+          CheckStatus(False, 'Invalid server response.');
+          exit;
+        end;
+        Magnets.add(MagnetLink.AsString);
       end;
     FLastClipboardLink := Magnets.Text;   // To Avoid TransGUI detect again this existing links
     Clipboard.AsText := Magnets.Text;
