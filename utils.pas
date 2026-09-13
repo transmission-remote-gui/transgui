@@ -66,11 +66,19 @@ type
 
   TIniFileUtf8 = class(TIniFile)
   private
+    FDiscardChanges: boolean;
+    FUpdatesSuspended: boolean;
     FStream: TFileStreamUTF8;
     FFileName: string;
   public
     constructor Create(const AFileName: string; AEscapeLineFeeds : Boolean = False); override;
+    constructor CreateExisting(const AFileName: string;
+      AEscapeLineFeeds: Boolean = False);
     destructor Destroy; override;
+    procedure DiscardChanges;
+    function HasPendingChanges: boolean;
+    procedure ResumeUpdates;
+    procedure SuspendUpdates;
     procedure UpdateFile; override;
     function getFileName() : string;
   end;
@@ -80,6 +88,8 @@ type
 function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
 function FileCreateUTF8(Const FileName : string) : THandle;
 function FileCreateUTF8(Const FileName : string; Rights: Cardinal) : THandle;
+function FileCreateUTF8(Const FileName : string; ShareMode: Integer;
+  Rights: Cardinal) : THandle;
 
 function GetTimeZoneDelta: TDateTime;
 
@@ -121,21 +131,27 @@ uses
   FileUtil, LazUTF8, LazFileUtils, StdCtrls, Graphics;
 
 {$ifdef windows}
-function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
+function GetFileShareMode(Mode: Integer): DWORD;
 const
-  AccessMode: array[0..2] of Cardinal  = (
-    GENERIC_READ,
-    GENERIC_WRITE,
-    GENERIC_READ or GENERIC_WRITE);
-  ShareMode: array[0..4] of Integer = (
+  ShareMode: array[0..4] of DWORD = (
               0,
               0,
               FILE_SHARE_READ,
               FILE_SHARE_WRITE,
               FILE_SHARE_READ or FILE_SHARE_WRITE);
 begin
+  Result:=ShareMode[(Mode and $F0) shr 4];
+end;
+
+function FileOpenUTF8(Const FileName : string; Mode : Integer) : THandle;
+const
+  AccessMode: array[0..2] of Cardinal  = (
+    GENERIC_READ,
+    GENERIC_WRITE,
+    GENERIC_READ or GENERIC_WRITE);
+begin
   Result := CreateFileW(PWideChar(UTF8Decode(FileName)), dword(AccessMode[Mode and 3]),
-                      dword(ShareMode[(Mode and $F0) shr 4]), nil, OPEN_EXISTING,
+                      GetFileShareMode(Mode), nil, OPEN_EXISTING,
                       FILE_ATTRIBUTE_NORMAL, 0);
   //if fail api return feInvalidHandle (INVALIDE_HANDLE=feInvalidHandle=-1)
 end;
@@ -150,6 +166,14 @@ function FileCreateUTF8(Const FileName : string; Rights: Cardinal) : THandle;
 begin
   Result := CreateFileW(PWideChar(UTF8Decode(FileName)), GENERIC_READ or GENERIC_WRITE,
                       0, nil, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+end;
+
+function FileCreateUTF8(Const FileName : string; ShareMode: Integer;
+  Rights: Cardinal) : THandle;
+begin
+  Result := CreateFileW(PWideChar(UTF8Decode(FileName)), GENERIC_READ or GENERIC_WRITE,
+                      GetFileShareMode(ShareMode), nil, CREATE_ALWAYS,
+                      FILE_ATTRIBUTE_NORMAL, 0);
 end;
 
 var
@@ -251,6 +275,12 @@ begin
   Result:=FileCreate(FileName, Rights);
 end;
 
+function FileCreateUTF8(Const FileName : string; ShareMode: Integer;
+  Rights: Cardinal) : THandle;
+begin
+  Result:=SysUtils.FileCreate(FileName, ShareMode or fmOpenReadWrite, Rights);
+end;
+
 function ParamStrUTF8(Param: Integer): utf8string;
 begin
   Result:=LazUTF8.ParamStrUTF8(Param);
@@ -350,7 +380,23 @@ begin
   else
     m:=fmCreate;
   FStream:=TFileStreamUTF8.Create(AFileName, m);
-  inherited Create(FStream, AEscapeLineFeeds);
+  if AEscapeLineFeeds then
+    inherited Create(FStream, [ifoEscapeLineFeeds])
+  else
+    inherited Create(FStream, []);
+  FStream.CloseFileHandle;
+end;
+
+constructor TIniFileUtf8.CreateExisting(const AFileName: string;
+  AEscapeLineFeeds: Boolean);
+begin
+  FFileName:=AFileName;
+  FStream:=TFileStreamUTF8.Create(AFileName,
+    fmOpenRead or fmShareDenyNone);
+  if AEscapeLineFeeds then
+    inherited Create(FStream, [ifoEscapeLineFeeds])
+  else
+    inherited Create(FStream, []);
   FStream.CloseFileHandle;
 end;
 
@@ -360,10 +406,32 @@ begin
   FStream.Free;
 end;
 
+procedure TIniFileUtf8.DiscardChanges;
+begin
+  FDiscardChanges:=True;
+end;
+
+function TIniFileUtf8.HasPendingChanges: boolean;
+begin
+  Result:=Dirty;
+end;
+
+procedure TIniFileUtf8.ResumeUpdates;
+begin
+  FUpdatesSuspended:=False;
+end;
+
+procedure TIniFileUtf8.SuspendUpdates;
+begin
+  FUpdatesSuspended:=True;
+end;
+
 procedure TIniFileUtf8.UpdateFile;
 var
   h: THANDLE;
 begin
+  if FDiscardChanges or FUpdatesSuspended then
+    exit;
   if FileExistsUTF8(FFileName) then
     h:=FileOpenUTF8(FFileName, fmOpenWrite or fmShareDenyWrite)
   else
@@ -720,4 +788,3 @@ finalization
 {$endif windows}
 
 end.
-
