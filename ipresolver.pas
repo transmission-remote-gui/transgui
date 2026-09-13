@@ -177,6 +177,7 @@ begin
   FResolveEvent:=TEvent.Create(nil, True, False, '');
   FCache:=TStringList.Create;
   FCache.CaseSensitive:=True;
+  FCache.UseLocale:=False;
   FCache.Duplicates:=dupIgnore;
   FCache.Sorted:=True;
   FResolveIp:=TStringList.Create;
