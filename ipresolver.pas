@@ -55,6 +55,7 @@ type
   TIpResolver = class(TThread)
   private
     FLock: TCriticalSection;
+    FGeoIpLock: TCriticalSection;
     FResolveEvent: TEvent;
     // Objects[] stores PHostEntry pointers. TStringList does not own them;
     // Destroy disposes each cached entry exactly once.
@@ -70,6 +71,9 @@ type
   public
     constructor Create(const GeoIpCounryDB: string; AOptions: TResolverOptions); reintroduce;
     destructor Destroy; override;
+    // Country initialization is serialized for concurrent Resolve calls.
+    // HostName can still be updated asynchronously by the resolver thread.
+    // Callers must ensure no Resolve call overlaps object destruction.
     function Resolve(const IpAddress: string): PHostEntry;
   end;
 
@@ -174,6 +178,7 @@ constructor TIpResolver.Create(const GeoIpCounryDB: string; AOptions: TResolverO
 begin
   FOptions:=AOptions;
   FLock:=TCriticalSection.Create;
+  FGeoIpLock:=TCriticalSection.Create;
   FResolveEvent:=TEvent.Create(nil, True, False, '');
   FCache:=TStringList.Create;
   FCache.CaseSensitive:=True;
@@ -203,8 +208,9 @@ begin
   end;
   FResolveIp.Free;
   FResolveEvent.Free;
-  FLock.Free;
   FGeoIp.Free;
+  FGeoIpLock.Free;
+  FLock.Free;
   for i:=0 to FCache.Count - 1 do
     Dispose(PHostEntry(FCache.Objects[i]));
   FCache.Free;
@@ -214,27 +220,43 @@ end;
 function TIpResolver.Resolve(const IpAddress: string): PHostEntry;
 var
   GeoCountry: TGeoIPCountry;
+  GeoIpResult: TGeoIPResult;
+  GeoIpFailed: boolean;
   IsNew: boolean;
+  LockGeoIp: boolean;
 begin
-  Result:=GetOrCreateEntry(IpAddress, IsNew);
-  if not IsNew then
-    exit;
-
-  if roResolveIP in FOptions then begin
-    FLock.Enter;
-    try
-      if FResolveIp.IndexOf(IpAddress) < 0 then begin
-        FResolveIp.Add(IpAddress);
-        FResolveEvent.SetEvent;
-      end;
-    finally
-      FLock.Leave;
-    end;
-  end;
-
-  if FGeoIp <> nil then
+  GeoIpResult:=GEOIP_NODATA;
+  GeoIpFailed:=False;
+  LockGeoIp:=roResolveCountry in FOptions;
+  if LockGeoIp then
+    FGeoIpLock.Enter;
   try
-    if FGeoIp.GetCountry(IpAddress, GeoCountry) = GEOIP_SUCCESS then begin
+    Result:=GetOrCreateEntry(IpAddress, IsNew);
+    if not IsNew then
+      exit;
+
+    if roResolveIP in FOptions then begin
+      FLock.Enter;
+      try
+        if FResolveIp.IndexOf(IpAddress) < 0 then begin
+          FResolveIp.Add(IpAddress);
+          FResolveEvent.SetEvent;
+        end;
+      finally
+        FLock.Leave;
+      end;
+    end;
+
+    if FGeoIp <> nil then
+    try
+      GeoIpResult:=FGeoIp.GetCountry(IpAddress, GeoCountry);
+    except
+      FreeAndNil(FGeoIp);
+      DeleteFile(FGeoIpCounryDB);
+      GeoIpFailed:=True;
+    end;
+
+    if (not GeoIpFailed) and (GeoIpResult = GEOIP_SUCCESS) then begin
       FLock.Enter;
       try
         Result^.CountryName:=GeoCountry.CountryName;
@@ -245,11 +267,13 @@ begin
         FLock.Leave;
       end;
     end;
-  except
-    FreeAndNil(FGeoIp);
-    DeleteFile(FGeoIpCounryDB);
-    Result:=nil;
+  finally
+    if LockGeoIp then
+      FGeoIpLock.Leave;
   end;
+
+  if GeoIpFailed then
+    Result:=nil;
 end;
 
 end.
