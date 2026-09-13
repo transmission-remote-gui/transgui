@@ -18,6 +18,7 @@ type
   TOutcome = (ocCopy, ocInvalid, ocNil, ocNoSelection, ocClipboardFailure, ocRpcFailure);
 
   TMainForm = class(TComponent)
+  public
     FLastClipboardLink: string;
     FLinksFromClipboard: Boolean;
     FCheckingClipboardLink: Boolean;
@@ -32,6 +33,7 @@ type
   end;
 
   TTestRpc = class
+  public
     Response: string;
     Calls: Integer;
     Fail: Boolean;
@@ -58,6 +60,12 @@ var
   RpcObj: TTestRpc;
   Clipboard: TTestClipboard;
   TestsRun: Integer;
+
+function IsHash(Hash: String): boolean;
+begin
+  // Hash normalization is outside this focused test; all monitored fixtures are magnet URIs.
+  Result:=False;
+end;
 
 function TMainForm.GetSelectedTorrents: Variant;
 begin
