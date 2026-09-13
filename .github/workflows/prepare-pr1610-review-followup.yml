@@ -97,13 +97,13 @@ jobs:
           tests/copy_magnet_test.pas
           tests/test_copy_magnet.py
           tests/test_copy_magnet_runner.py'
-          ACTUAL_FILES="$(git diff --name-only | sort)"
+          git add .github/workflows/copy-magnet-tests.yml main.pas tests/README.md \
+            tests/copy_magnet_test.pas tests/test_copy_magnet.py tests/test_copy_magnet_runner.py
+          ACTUAL_FILES="$(git diff --cached --name-only | sort)"
           if [ "$ACTUAL_FILES" != "$EXPECTED_FILES" ]; then
             printf 'Unexpected final file set:\n%s\n' "$ACTUAL_FILES" >&2
             exit 1
           fi
-          git add .github/workflows/copy-magnet-tests.yml main.pas tests/README.md \
-            tests/copy_magnet_test.pas tests/test_copy_magnet.py tests/test_copy_magnet_runner.py
           git config user.name "$AUTHOR_NAME"
           git config user.email "$AUTHOR_EMAIL"
           NOW_CST="$(TZ=Asia/Taipei date '+%Y-%m-%dT%H:%M:%S%z')"
