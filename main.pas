@@ -5161,6 +5161,7 @@ var
   TorrentIds: Variant;
   Magnets: TStringList;
   MagnetLink: TJSONString;
+  ClipboardText, PreviousClipboardLink: string;
 begin
   TorrentIds:=GetSelectedTorrents;
   if VarIsEmpty(TorrentIds) then
@@ -5207,8 +5208,16 @@ begin
         end;
         Magnets.add(MagnetLink.AsString);
       end;
-    FLastClipboardLink := Magnets.Text;   // To Avoid TransGUI detect again this existing links
-    Clipboard.AsText := Magnets.Text;
+    ClipboardText:=Magnets.Text;
+    PreviousClipboardLink:=FLastClipboardLink;
+    // Suppress detection of our own links during the clipboard write.
+    FLastClipboardLink:=ClipboardText;
+    try
+      Clipboard.AsText:=ClipboardText;
+    except
+      FLastClipboardLink:=PreviousClipboardLink;
+      raise;
+    end;
   finally
     req.Free;
     requestArgs.Free;
