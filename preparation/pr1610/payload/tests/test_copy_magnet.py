@@ -56,7 +56,7 @@ def main() -> int:
         parser.error("Free Pascal was not found; install FPC with its FCL units")
     source = args.source.read_text(encoding="utf-8")
     names = (
-        "IsHash", "IsProtocolSupported", "HasIPCRecordDelimiter", "TryReadClipboardText",
+        "IsProtocolSupported", "HasIPCRecordDelimiter", "TryReadClipboardText",
         "TryNormalizeClipboardTorrentLink", "TMainForm.MenuItem101Click",
         "TMainForm.CheckClipboardLink",
     )
