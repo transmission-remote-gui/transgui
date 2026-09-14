@@ -56,6 +56,14 @@ begin
   if not CheckAppParams then exit;
 
   Application.Initialize;
+
+{$ifdef darwin}
+  // Pin the macOS appearance (light/dark) to its launch state. Stopgap
+  // until live appearance tracking is implemented; see MacLocale and
+  // `macos-light-dark-mode-problem.md` for details.
+  PinCurrentAppearance;
+{$endif}
+
   Application.CreateForm(TMainForm, MainForm);
   
 {$ifdef windows}
