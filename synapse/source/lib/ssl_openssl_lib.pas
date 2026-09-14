@@ -2128,7 +2128,7 @@ begin
 {$IFNDEF CIL}
       FreeLibrary(SSLUtilHandle);
 {$ENDIF}
-      SSLLibHandle := 0;
+      SSLUtilHandle := 0;
     end;
 
 {$IFNDEF CIL}
