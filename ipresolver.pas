@@ -31,6 +31,7 @@
 unit IpResolver;
 
 {$mode objfpc}{$H+}
+{$modeswitch advancedrecords}
 
 interface
 
@@ -40,11 +41,18 @@ uses
 type
   PHostEntry = ^THostEntry;
   THostEntry = record
+  private
+    FSharedState: Pointer;
+    function GetImageIndex: integer;
+    procedure SetImageIndex(AValue: integer);
+  public
     IP: string;
     HostName: string;
     CountryName: string;
     CountryCode: string;
-    ImageIndex: integer;
+    // UI-owned metadata is shared by all snapshots for the same IP and is
+    // synchronized internally, so existing callers can keep using this property.
+    property ImageIndex: integer read GetImageIndex write SetImageIndex;
   end;
 
   TResolverOption = (roResolveIP, roResolveCountry);
@@ -57,9 +65,11 @@ type
     FLock: TCriticalSection;
     FGeoIpLock: TCriticalSection;
     FResolveEvent: TEvent;
-    // Objects[] stores PHostEntry pointers. TStringList does not own them;
-    // Destroy disposes each cached entry exactly once.
+    // Objects[] stores private cache-entry pointers. Published PHostEntry
+    // snapshots stay valid until Destroy, even after a newer snapshot replaces
+    // them in the cache.
     FCache: TStringList;
+    FRetiredEntries: TList;
     FResolveIp: TStringList;
     FGeoIp: TGeoIP;
     FOptions: TResolverOptions;
@@ -67,12 +77,13 @@ type
   protected
     procedure Execute; override;
     function GetOrCreateEntry(const IpAddress: string; out IsNew: boolean): PHostEntry;
-    function FindEntry(const IpAddress: string): PHostEntry;
   public
     constructor Create(const GeoIpCounryDB: string; AOptions: TResolverOptions); reintroduce;
     destructor Destroy; override;
     // Country initialization is serialized for concurrent Resolve calls.
-    // HostName can still be updated asynchronously by the resolver thread.
+    // Reverse-DNS results are published as replacement snapshots; the resolver
+    // never mutates resolver-owned string fields of a PHostEntry after returning
+    // it to a caller. ImageIndex remains safely shared through its property.
     // Callers must ensure no Resolve call overlaps object destruction.
     function Resolve(const IpAddress: string): PHostEntry;
   end;
@@ -81,12 +92,59 @@ implementation
 
 uses synsock;
 
+type
+  PHostCacheEntry = ^THostCacheEntry;
+  THostCacheEntry = record
+    ResolverLock: TCriticalSection;
+    CurrentEntry: PHostEntry;
+    ImageIndex: integer;
+    PendingHostName: string;
+    HasPendingHostName: boolean;
+  end;
+
+{ THostEntry }
+
+function THostEntry.GetImageIndex: integer;
+var
+  CacheEntry: PHostCacheEntry;
+begin
+  CacheEntry:=PHostCacheEntry(FSharedState);
+  if CacheEntry = nil then begin
+    Result:=0;
+    exit;
+  end;
+
+  CacheEntry^.ResolverLock.Enter;
+  try
+    Result:=CacheEntry^.ImageIndex;
+  finally
+    CacheEntry^.ResolverLock.Leave;
+  end;
+end;
+
+procedure THostEntry.SetImageIndex(AValue: integer);
+var
+  CacheEntry: PHostCacheEntry;
+begin
+  CacheEntry:=PHostCacheEntry(FSharedState);
+  if CacheEntry = nil then
+    exit;
+
+  CacheEntry^.ResolverLock.Enter;
+  try
+    CacheEntry^.ImageIndex:=AValue;
+  finally
+    CacheEntry^.ResolverLock.Leave;
+  end;
+end;
+
 { TIpResolver }
 
 procedure TIpResolver.Execute;
 var
   ip, s: string;
-  c: PHostEntry;
+  i: integer;
+  CacheEntry: PHostCacheEntry;
 begin
   try
     while not Terminated do begin
@@ -111,11 +169,14 @@ begin
 
           if roResolveIP in FOptions then begin
             s:=synsock.ResolveIPToName(ip, AF_INET, IPPROTO_IP, 0);
-            c:=FindEntry(ip);
             FLock.Enter;
             try
-              c^.HostName:=s;
-              UniqueString(c^.HostName);
+              if FCache.Find(ip, i) then begin
+                CacheEntry:=PHostCacheEntry(FCache.Objects[i]);
+                CacheEntry^.PendingHostName:=s;
+                UniqueString(CacheEntry^.PendingHostName);
+                CacheEntry^.HasPendingHostName:=True;
+              end;
             finally
               FLock.Leave;
             end;
@@ -132,26 +193,68 @@ end;
 function TIpResolver.GetOrCreateEntry(const IpAddress: string; out IsNew: boolean): PHostEntry;
 var
   i: integer;
+  CacheEntry: PHostCacheEntry;
+  NewEntry, OldEntry: PHostEntry;
 begin
   FLock.Enter;
   try
     if FCache.Find(IpAddress, i) then begin
-      Result:=PHostEntry(FCache.Objects[i]);
+      CacheEntry:=PHostCacheEntry(FCache.Objects[i]);
       IsNew:=False;
+
+      if CacheEntry^.HasPendingHostName then begin
+        OldEntry:=CacheEntry^.CurrentEntry;
+        New(NewEntry);
+        try
+          // Build the replacement completely before publishing it. UI-owned
+          // ImageIndex state lives in CacheEntry, so no caller update can be
+          // lost while this snapshot is being prepared.
+          NewEntry^.FSharedState:=CacheEntry;
+          NewEntry^.IP:=OldEntry^.IP;
+          UniqueString(NewEntry^.IP);
+          NewEntry^.HostName:=CacheEntry^.PendingHostName;
+          UniqueString(NewEntry^.HostName);
+          NewEntry^.CountryName:=OldEntry^.CountryName;
+          UniqueString(NewEntry^.CountryName);
+          NewEntry^.CountryCode:=OldEntry^.CountryCode;
+          UniqueString(NewEntry^.CountryCode);
+
+          // Reverse DNS is queued only when an entry is first created, so at
+          // most one retired resolver snapshot is retained per cached IP.
+          FRetiredEntries.Add(OldEntry);
+        except
+          Dispose(NewEntry);
+          raise;
+        end;
+
+        CacheEntry^.CurrentEntry:=NewEntry;
+        CacheEntry^.PendingHostName:='';
+        CacheEntry^.HasPendingHostName:=False;
+      end;
+
+      Result:=CacheEntry^.CurrentEntry;
     end
     else begin
-      New(Result);
+      New(CacheEntry);
+      CacheEntry^.ResolverLock:=FLock;
+      CacheEntry^.CurrentEntry:=nil;
+      CacheEntry^.ImageIndex:=0;
+      CacheEntry^.HasPendingHostName:=False;
       try
-        Result^.ImageIndex:=0;
-        Result^.IP:=IpAddress;
-        UniqueString(Result^.IP);
-        Result^.HostName:=IpAddress;
-        UniqueString(Result^.HostName);
-        FCache.AddObject(Result^.IP, TObject(Result));
+        New(CacheEntry^.CurrentEntry);
+        CacheEntry^.CurrentEntry^.FSharedState:=CacheEntry;
+        CacheEntry^.CurrentEntry^.IP:=IpAddress;
+        UniqueString(CacheEntry^.CurrentEntry^.IP);
+        CacheEntry^.CurrentEntry^.HostName:=IpAddress;
+        UniqueString(CacheEntry^.CurrentEntry^.HostName);
+        FCache.AddObject(CacheEntry^.CurrentEntry^.IP, TObject(CacheEntry));
       except
-        Dispose(Result);
+        if CacheEntry^.CurrentEntry <> nil then
+          Dispose(CacheEntry^.CurrentEntry);
+        Dispose(CacheEntry);
         raise;
       end;
+      Result:=CacheEntry^.CurrentEntry;
       IsNew:=True;
     end;
   finally
@@ -159,23 +262,11 @@ begin
   end;
 end;
 
-function TIpResolver.FindEntry(const IpAddress: string): PHostEntry;
-var
-  i: integer;
-begin
-  FLock.Enter;
-  try
-    if FCache.Find(IpAddress, i) then
-      Result:=PHostEntry(FCache.Objects[i])
-    else
-      Result:=nil;
-  finally
-    FLock.Leave;
-  end;
-end;
-
 constructor TIpResolver.Create(const GeoIpCounryDB: string; AOptions: TResolverOptions);
 begin
+  // Keep the worker suspended until every field used by Execute is ready. This
+  // also makes constructor unwinding safe if any allocation below fails.
+  inherited Create(True);
   FOptions:=AOptions;
   FLock:=TCriticalSection.Create;
   FGeoIpLock:=TCriticalSection.Create;
@@ -185,35 +276,61 @@ begin
   FCache.UseLocale:=False;
   FCache.Duplicates:=dupIgnore;
   FCache.Sorted:=True;
+  FRetiredEntries:=TList.Create;
   FResolveIp:=TStringList.Create;
   FGeoIpCounryDB:=GeoIpCounryDB;
   if (roResolveCountry in FOptions) and (FGeoIpCounryDB <> '') then
     FGeoIp:=TGeoIP.Create(GeoIpCounryDB);
-  inherited Create(not (roResolveIP in FOptions));
+  if roResolveIP in FOptions then
+    Start;
 end;
 
 destructor TIpResolver.Destroy;
 var
   i: integer;
+  CacheEntry: PHostCacheEntry;
 begin
-  FLock.Enter;
-  try
+  if FLock <> nil then begin
+    FLock.Enter;
+    try
+      Terminate;
+    finally
+      FLock.Leave;
+    end;
+  end
+  else
     Terminate;
-  finally
-    FLock.Leave;
-  end;
+
   if not Suspended then begin
-    FResolveEvent.SetEvent;
+    if FResolveEvent <> nil then
+      FResolveEvent.SetEvent;
     WaitFor;
   end;
   FResolveIp.Free;
   FResolveEvent.Free;
   FGeoIp.Free;
   FGeoIpLock.Free;
-  FLock.Free;
-  for i:=0 to FCache.Count - 1 do
-    Dispose(PHostEntry(FCache.Objects[i]));
+
+  // Dispose every snapshot before its private cache state. Callers must already
+  // have stopped using entries before Destroy begins.
+  if FCache <> nil then
+    for i:=0 to FCache.Count - 1 do begin
+      CacheEntry:=PHostCacheEntry(FCache.Objects[i]);
+      Dispose(CacheEntry^.CurrentEntry);
+    end;
+  if FRetiredEntries <> nil then begin
+    for i:=0 to FRetiredEntries.Count - 1 do
+      Dispose(PHostEntry(FRetiredEntries[i]));
+    FRetiredEntries.Free;
+  end;
+
+  if FCache <> nil then
+    for i:=0 to FCache.Count - 1 do begin
+      CacheEntry:=PHostCacheEntry(FCache.Objects[i]);
+      Dispose(CacheEntry);
+    end;
   FCache.Free;
+  FLock.Free;
   inherited Destroy;
 end;
 
@@ -257,6 +374,7 @@ begin
     end;
 
     if (not GeoIpFailed) and (GeoIpResult = GEOIP_SUCCESS) then begin
+      // This is a newly created snapshot that has not escaped Resolve yet.
       FLock.Enter;
       try
         Result^.CountryName:=GeoCountry.CountryName;
