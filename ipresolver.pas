@@ -90,7 +90,7 @@ type
 
 implementation
 
-uses synsock;
+uses synsock, LazFileUtils;
 
 type
   PHostCacheEntry = ^THostCacheEntry;
@@ -339,6 +339,7 @@ var
   GeoCountry: TGeoIPCountry;
   GeoIpResult: TGeoIPResult;
   GeoIpFailed: boolean;
+  DeleteGeoIp: boolean;
   IsNew: boolean;
   LockGeoIp: boolean;
 begin
@@ -367,9 +368,20 @@ begin
     if FGeoIp <> nil then
     try
       GeoIpResult:=FGeoIp.GetCountry(IpAddress, GeoCountry);
+      if GeoIpResult = GEOIP_ERROR_IO then begin
+        DeleteGeoIp:=FGeoIp.DatabaseCorrupt;
+        FreeAndNil(FGeoIp);
+        if DeleteGeoIp then
+          DeleteFileUTF8(FGeoIpCounryDB);
+        GeoIpFailed:=True;
+      end;
     except
+      DeleteGeoIp:=False;
+      if FGeoIp <> nil then
+        DeleteGeoIp:=FGeoIp.DatabaseCorrupt;
       FreeAndNil(FGeoIp);
-      DeleteFile(FGeoIpCounryDB);
+      if DeleteGeoIp then
+        DeleteFileUTF8(FGeoIpCounryDB);
       GeoIpFailed:=True;
     end;
 
