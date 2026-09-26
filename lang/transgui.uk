@@ -395,3 +395,5 @@ Labels=Мітки
 Set labels=Задати мітки
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Це перезапише всі наявні мітки.~Ви можете задати кілька міток через кому або залишити порожнім, щоб очистити мітки
 Application option=Параметр програми
+Open anyway=Все одно відкрити
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Цей тип файлу може виконувати код або інакше бути небезпечним.~~"%s"~~Відкривайте його, лише якщо довіряєте цьому файлу

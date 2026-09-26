@@ -395,3 +395,5 @@ Labels=Etiketter
 Set labels=Angiv etiketter
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Dette overskriver alle eksisterende etiketter.~Du kan angive flere etiketter adskilt af komma eller lade det være tomt for at rydde etiketter
 Application option=Programindstilling
+Open anyway=Åbn alligevel
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Denne filtype kan udføre kode eller på anden vis være usikker.~~"%s"~~Åbn den kun hvis du stoler på denne fil

@@ -395,3 +395,5 @@ Labels=Мэткі
 Set labels=Задаць мэткі
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Гэта заменіць усе наяўныя мэткі.~Вы можаце задаць некалькі мэтак праз коску або пакінуць пустым, каб ачысьціць мэткі
 Application option=Опцыя праграмы
+Open anyway=Усё роўна адчыніць
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=Гэты тып файла можа выконваць код ці інакш быць небяспечным.~~"%s"~~Адчыняйце яго толькі калі давяраеце гэтаму файлу

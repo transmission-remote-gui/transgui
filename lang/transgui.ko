@@ -395,3 +395,5 @@ Labels=라벨
 Set labels=라벨 설정
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=기존 라벨을 모두 덮어씁니다.~쉼표로 구분하여 여러 라벨을 설정하거나, 라벨을 지우려면 비워 두세요
 Application option=어플리케이션 옵션
+Open anyway=그래도 열기
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=이 파일 형식은 코드를 실행하거나 그 밖의 방법으로 안전하지 않을 수 있습니다.~~"%s"~~이 파일을 신뢰할 때만 여세요

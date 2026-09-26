@@ -395,3 +395,5 @@ Labels=Labels
 Set labels=Set labels
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels
 Application option=Application option
+Open anyway=Open anyway
+This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file=This file type may execute code or otherwise be unsafe.~~"%s"~~Open it only if you trust this file
