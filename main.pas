@@ -701,6 +701,10 @@ type
     FAddingTorrent: integer;
     FPendingTorrents: TStringList;
     FPendingClipboardTorrents: TStringList;
+    FClipboardStateUnconfirmed: boolean;
+    FClipboardWriteInProgress: boolean;
+    FClipboardWriteText: string;
+    FClipboardWritePreviousLink: string;
     FLinksFromClipboard: boolean;
     FCheckingClipboardLink: boolean;
     FLastClipboardLink: string;
@@ -5161,6 +5165,7 @@ var
   TorrentIds: Variant;
   Magnets: TStringList;
   MagnetLink: TJSONString;
+  ClipboardText, PreviousClipboardLink, ActualClipboardText: string;
 begin
   TorrentIds:=GetSelectedTorrents;
   if VarIsEmpty(TorrentIds) then
@@ -5207,8 +5212,52 @@ begin
         end;
         Magnets.add(MagnetLink.AsString);
       end;
-    FLastClipboardLink := Magnets.Text;   // To Avoid TransGUI detect again this existing links
-    Clipboard.AsText := Magnets.Text;
+    ClipboardText:=Magnets.Text;
+    PreviousClipboardLink:=FLastClipboardLink;
+    FClipboardWriteInProgress:=True;
+    FClipboardWriteText:=ClipboardText;
+    FClipboardWritePreviousLink:=PreviousClipboardLink;
+    // Suppress detection of our own links during the clipboard write.
+    FLastClipboardLink:=ClipboardText;
+    try
+      try
+        Clipboard.AsText:=ClipboardText;
+      finally
+        FClipboardWriteInProgress:=False;
+        FClipboardWriteText:='';
+        FClipboardWritePreviousLink:='';
+      end;
+      // Reconcile only when a clipboard callback changed the marker while the
+      // setter ran. The current clipboard decides whether our write is still
+      // authoritative; otherwise keep the callback marker for normal handling.
+      if FLastClipboardLink <> ClipboardText then begin
+        if TryReadClipboardText(ActualClipboardText) then begin
+          if ActualClipboardText = ClipboardText then
+            FLastClipboardLink:=ClipboardText;
+          FClipboardStateUnconfirmed:=False;
+        end
+        else
+          FClipboardStateUnconfirmed:=True;
+      end
+      else
+        FClipboardStateUnconfirmed:=False;
+    except
+      if TryReadClipboardText(ActualClipboardText) then begin
+        if FClipboardStateUnconfirmed then
+          FLastClipboardLink:=ActualClipboardText
+        else if ActualClipboardText = ClipboardText then
+          FLastClipboardLink:=ActualClipboardText
+        else if FLastClipboardLink = ClipboardText then
+          FLastClipboardLink:=PreviousClipboardLink;
+        FClipboardStateUnconfirmed:=False;
+      end
+      else begin
+        if FLastClipboardLink = ClipboardText then
+          FLastClipboardLink:=PreviousClipboardLink;
+        FClipboardStateUnconfirmed:=True;
+      end;
+      raise;
+    end;
   finally
     req.Free;
     requestArgs.Free;
@@ -8601,6 +8650,15 @@ begin
     try
       if not TryReadClipboardText(ClipboardText) then
         exit;
+      if FClipboardWriteInProgress and
+         ((ClipboardText = FClipboardWriteText) or
+          (ClipboardText = FClipboardWritePreviousLink)) then
+        exit;
+      if FClipboardStateUnconfirmed then begin
+        FClipboardStateUnconfirmed:=False;
+        FLastClipboardLink:=ClipboardText;
+        exit;
+      end;
       if ClipboardText = FLastClipboardLink then
         exit;
       if not TryNormalizeClipboardTorrentLink(ClipboardText, TorrentLink) then begin
