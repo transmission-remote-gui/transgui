@@ -110,11 +110,20 @@ const
   DLLUtilName = 'libcrypto-1_1.dll';
   {$ENDIF}
 {$ELSE}
+  {$IFDEF DARWIN}
+const
+  DarwinDefaultDLLSSLName = 'libssl.3.dylib';
+  DarwinDefaultDLLUtilName = 'libcrypto.3.dylib';
+  {$ENDIF}
 var
   {$IFNDEF MSWINDOWS}
     {$IFDEF DARWIN}
-    DLLSSLName: string = 'libssl.dylib';
-    DLLUtilName: string = 'libcrypto.dylib';
+    DLLSSLName: string = DarwinDefaultDLLSSLName;
+    DLLUtilName: string = DarwinDefaultDLLUtilName;
+    FirstTriedDLLSSLName: string = DarwinDefaultDLLSSLName;
+    FirstTriedDLLUtilName: string = DarwinDefaultDLLUtilName;
+    LastTriedDLLSSLName: string = DarwinDefaultDLLSSLName;
+    LastTriedDLLUtilName: string = DarwinDefaultDLLUtilName;
     {$ELSE}
      {$IFDEF OS2}
       {$IFDEF OS2GCC}
@@ -1874,10 +1883,107 @@ begin
 {$ENDIF}
 end;
 
+{$IFDEF DARWIN}
+function TryLoadOpenSSLPair(const UtilName, LibName: string): Boolean;
+var
+  LibHandle, UtilHandle: TLibHandle;
+begin
+  Result := False;
+  if FirstTriedDLLUtilName = '' then
+  begin
+    FirstTriedDLLUtilName := UtilName;
+    FirstTriedDLLSSLName := LibName;
+  end;
+  LastTriedDLLUtilName := UtilName;
+  LastTriedDLLSSLName := LibName;
+  LibHandle := 0;
+  UtilHandle := LoadLib(UtilName);
+  try
+    if UtilHandle = 0 then
+      Exit;
+    LibHandle := LoadLib(LibName);
+    if LibHandle = 0 then
+      Exit;
+    SSLUtilHandle := UtilHandle;
+    SSLLibHandle := LibHandle;
+    SSLUtilFile := UtilName;
+    SSLLibFile := LibName;
+    UtilHandle := 0;
+    LibHandle := 0;
+    Result := True;
+  finally
+    if LibHandle <> 0 then
+      FreeLibrary(LibHandle);
+    if UtilHandle <> 0 then
+      FreeLibrary(UtilHandle);
+  end;
+end;
+
+function TryLoadOpenSSLFrom(const LibDir, Version: string): Boolean;
+var
+  Path: string;
+begin
+  Path := IncludeTrailingPathDelimiter(LibDir);
+  Result := TryLoadOpenSSLPair(
+    Path + 'libcrypto.' + Version + '.dylib',
+    Path + 'libssl.' + Version + '.dylib');
+end;
+
+function LoadDarwinOpenSSL: Boolean;
+begin
+  FirstTriedDLLUtilName := '';
+  FirstTriedDLLSSLName := '';
+  if (DLLUtilName <> DarwinDefaultDLLUtilName) or
+    (DLLSSLName <> DarwinDefaultDLLSSLName) then
+  begin
+    Result := TryLoadOpenSSLPair(DLLUtilName, DLLSSLName);
+    Exit;
+  end;
+{$IFDEF CPUAARCH64}
+  Result := TryLoadOpenSSLFrom('/opt/homebrew/opt/openssl@3/lib', '3');
+  if Result then
+    Exit;
+  Result := TryLoadOpenSSLFrom('/usr/local/opt/openssl@3/lib', '3');
+{$ELSE}
+  Result := TryLoadOpenSSLFrom('/usr/local/opt/openssl@3/lib', '3');
+  if Result then
+    Exit;
+  Result := TryLoadOpenSSLFrom('/opt/homebrew/opt/openssl@3/lib', '3');
+{$ENDIF}
+  if Result then
+    Exit;
+  Result := TryLoadOpenSSLFrom('/opt/local/libexec/openssl3/lib', '3');
+  if Result then
+    Exit;
+  Result := TryLoadOpenSSLFrom('/opt/local/lib', '3');
+  if Result then
+    Exit;
+{$IFDEF CPUAARCH64}
+  Result := TryLoadOpenSSLFrom('/opt/homebrew/opt/openssl@1.1/lib', '1.1');
+  if Result then
+    Exit;
+  Result := TryLoadOpenSSLFrom('/usr/local/opt/openssl@1.1/lib', '1.1');
+{$ELSE}
+  Result := TryLoadOpenSSLFrom('/usr/local/opt/openssl@1.1/lib', '1.1');
+  if Result then
+    Exit;
+  Result := TryLoadOpenSSLFrom('/opt/homebrew/opt/openssl@1.1/lib', '1.1');
+{$ENDIF}
+  if Result then
+    Exit;
+  Result := TryLoadOpenSSLFrom('/opt/local/libexec/openssl11/lib', '1.1');
+  if Result then
+    Exit;
+  Result := TryLoadOpenSSLFrom('/opt/local/lib', '1.1');
+end;
+{$ENDIF}
+
 function InitSSLInterface: Boolean;
+{$IFNDEF DARWIN}
 var
   s: string;
   x: integer;
+{$ENDIF}
 begin
   {pf}
   if SSLLoaded then
@@ -1894,6 +2000,9 @@ begin
       SSLLibHandle := 1;
       SSLUtilHandle := 1;
 {$ELSE}
+  {$IFDEF DARWIN}
+      LoadDarwinOpenSSL;
+  {$ELSE}
       SSLUtilHandle := LoadLib(DLLUtilName);
       SSLLibHandle := LoadLib(DLLSSLName);
   {$IFDEF MSWINDOWS}
@@ -1919,6 +2028,7 @@ begin
       if (SSLUtilHandle = 0) then
         SSLUtilHandle := LoadLib(DLLUtilName2);
     {$ENDIF}
+  {$ENDIF}
   {$ENDIF}
 {$ENDIF}
       if (SSLLibHandle <> 0) and (SSLUtilHandle <> 0) then
@@ -2045,6 +2155,7 @@ begin
         OPENSSLaddallalgorithms;
         RandScreen;
 {$ELSE}
+  {$IFNDEF DARWIN}
         SetLength(s, 1024);
         x := GetModuleFilename(SSLLibHandle,PChar(s),Length(s));
         SetLength(s, x);
@@ -2053,6 +2164,7 @@ begin
         x := GetModuleFilename(SSLUtilHandle,PChar(s),Length(s));
         SetLength(s, x);
         SSLUtilFile := s;
+  {$ENDIF}
         //init library
         if assigned(_SslLibraryInit) then
           _SslLibraryInit;
@@ -2128,7 +2240,7 @@ begin
 {$IFNDEF CIL}
       FreeLibrary(SSLUtilHandle);
 {$ENDIF}
-      SSLLibHandle := 0;
+      SSLUtilHandle := 0;
     end;
 
 {$IFNDEF CIL}
