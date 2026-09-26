@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, httpsend, syncobjs, fpjson, jsonparser, ssl_openssl,
-  ZStream, jsonscanner, Math;
+  ZStream, jsonscanner, Math, rpctable;
 
 resourcestring
   sTransmissionAt = 'Transmission%s at %s:%s';
@@ -241,24 +241,8 @@ begin
 end;
 
 function TranslateTableToObjects(reply: TJSONObject) : TJSONObject;
-var
-  array_tor, fields, out_torrents : TJSONArray;
-  object_tor : TJSONObject;
-  i, j : integer;
 begin
-  fields:=reply.Arrays['torrents'].Arrays[0];
-  out_torrents:=TJSONArray.Create;
-  for i:=1 to reply.Arrays['torrents'].Count - 1 do
-  begin
-    array_tor:=reply.Arrays['torrents'].Arrays[i];
-    object_tor:=TJSONObject.Create;
-    for j:=0 to fields.Count - 1 do
-      object_tor.Add(fields.Items[j].AsString, array_tor.Items[j].Clone);
-
-    out_torrents.Add(object_tor);
-  end;
-  Result:=TJSONObject.Create(['torrents', out_torrents]);
-  reply.Free;
+  Result:=rpctable.TranslateTableToObjects(reply);
 end;
 
 { TRpcThread }
@@ -1194,8 +1178,11 @@ begin
 
     req.Add('arguments', args);
     Result:=SendRequest(req);
-    if (RequestRpcVersion >= 16) and (Result <> nil) then
+    if (RequestRpcVersion >= 16) and (Result <> nil) then begin
       Result:=TranslateTableToObjects(Result);
+      if Result = nil then
+        Status:='Invalid server response.';
+    end;
   finally
     sl.Free;
     req.Free;
