@@ -395,3 +395,6 @@ Labels=Метки
 Set labels=Задать метки
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Это перезапишет все существующие метки.~Вы можете задать несколько меток через запятую или оставить пустым, чтобы очистить метки
 Application option=Параметр приложения
+Hide %s=Скрыть %s
+Open %s=Открыть %s
+Quit %s=Выйти из %s

@@ -394,3 +394,6 @@ Labels=標籤
 Set labels=設定標籤
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=這將覆寫任何現有的標籤。~您可以用逗號分隔設定多個標籤，或留空以清除標籤
 Application option=應用程式選項
+Hide %s=Hide %s
+Open %s=Open %s
+Quit %s=Quit %s

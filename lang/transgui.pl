@@ -395,3 +395,6 @@ Labels=Etykiety
 Set labels=Ustaw etykiety
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=To spowoduje nadpisanie wszystkich istniejących etykiet.~Możesz ustawić wiele etykiet oddzielonych przecinkami lub pozostawić puste, aby wyczyścić etykiety
 Application option=Opcja aplikacji
+Hide %s=Hide %s
+Open %s=Open %s
+Quit %s=Quit %s

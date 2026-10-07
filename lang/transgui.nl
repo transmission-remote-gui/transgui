@@ -395,3 +395,6 @@ Labels=Labels
 Set labels=Labels instellen
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Dit overschrijft alle bestaande labels.~U kunt meerdere labels instellen gescheiden door een komma of leeg laten om labels te wissen
 Application option=Applicatieoptie
+Hide %s=Hide %s
+Open %s=Open %s
+Quit %s=Quit %s

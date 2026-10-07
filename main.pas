@@ -71,6 +71,9 @@ resourcestring
   sTorrentVerification = 'Torrent verification may take a long time.' + LineEnding + 'Are you sure to start verification of torrent ''%s''?';
   sTorrentsVerification = 'Torrents verification may take a long time.' + LineEnding + 'Are you sure to start verification of %d torrents?';
   sReconnect = 'Reconnect in %d seconds.';
+  sOpenApp = 'Open %s';
+  sHideApp = 'Hide %s';
+  sQuitApp = 'Quit %s';
   sDisconnected = 'Disconnected';
   sConnectingToDaemon = 'Connecting to daemon...';
   sLanguagePathFile = 'Language pathfile';
@@ -766,6 +769,10 @@ type
     procedure DownloadFinished(const TorrentName: string);
     function GetFlagImage(const CountryCode: string): integer;
     procedure BeforeCloseApp;
+    procedure SaveFormState;
+{$ifdef darwin}
+    procedure DarwinAppActivate;
+{$endif darwin}
     function GetGeoIpDatabase: string;
     function GetFlagsArchive: string;
     function DownloadGeoIpDatabase(AUpdate: boolean): boolean;
@@ -964,7 +971,7 @@ uses
   process, dynlibs,
 {$endif linux}
 {$ifdef darwin}
-  urllistenerosx,
+  urllistenerosx, macosxtrayicon,
 {$endif darwin}
   synacode, ConnOptions, clipbrd, DateUtils, TorrProps, DaemonOptions, About,
   ToolWin, download, ColSetup, AddLink, MoveTorrent, AddTracker, lcltype,
@@ -1795,7 +1802,16 @@ begin
   Caption:=Application.Title;
   txTransferHeader.Font.Size:=Font.Size + 2;
   txTorrentHeader.Font.Size:=txTransferHeader.Font.Size;
+{$ifdef darwin}
+  if not LoadMenuBarIcon(TrayIcon.Icon) then
+    TrayIcon.Icon.Assign(Application.Icon);
+  MakeTemplateIcon(TrayIcon.Icon);
+  acShowApp.Caption:=Format(sOpenApp, [AppName]);
+  acHideApp.Caption:=Format(sHideApp, [AppName]);
+  acExit.Caption:=Format(sQuitApp, [AppName]);
+{$else darwin}
   TrayIcon.Icon.Assign(Application.Icon);
+{$endif darwin}
   RpcObj:=TRpc.Create;
   FTorrents:=TVarList.Create(gTorrents.Columns.Count, 0);
   FTorrents.ExtraColumns:=TorrentsExtraColumns;
@@ -1984,6 +2000,9 @@ begin
 
   FLinksFromClipboard:=Ini.ReadBool('Interface', 'LinksFromClipboard', False);
   Application.OnActivate:=@FormActivate;
+{$ifdef darwin}
+  RegisterAppActivateHandler(@DarwinAppActivate);
+{$endif darwin}
   Application.OnException:=@ApplicationPropertiesException;
 
   {$ifdef windows}
@@ -2096,8 +2115,11 @@ begin
                   Ini.WriteInteger('StatusBarPanels',IntToStr(i),Statusbar.Panels[i].Width);
   end;
   {$IF LCL_FULLVERSION >= 1080000}
-  PageInfo.Options := PageInfo.Options + [nboDoChangeOnSetIndex]
+  PageInfo.Options := PageInfo.Options + [nboDoChangeOnSetIndex];
   {$ENDIF}
+{$ifdef darwin}
+  NotifyAppReady;
+{$endif darwin}
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -3171,14 +3193,15 @@ begin
     (Ini.ReadBool('Interface', 'TrayIconAlways', True)  or
     ((WindowState = wsMinimized) and Ini.ReadBool('Interface', 'TrayMinimize', True) ) or
     (not Self.Visible and Ini.ReadBool('Interface', 'TrayClose', False) )
+    {$ifdef darwin} or (not Self.Visible) {$endif} // keep the icon while the window is hidden
     );
 {$endif CPUARM}
 
 {$ifdef darwin}
-  acShowApp.Visible:=False;
-  acHideApp.Visible:=False;
-  miTSep1.Visible:=False;
-{$else}
+  acShowApp.Visible:=not Visible or (WindowState = wsMinimized);
+  acHideApp.Visible:=Visible and (WindowState <> wsMinimized);
+  miTSep1.Visible:=True;
+{$else darwin}
   acHideApp.Visible:=Visible and (WindowState <> wsMinimized);
 {$endif darwin}
   SetRefreshInterval;
@@ -3210,6 +3233,16 @@ begin
         BringToFront;
   UpdateTray;
 end;
+
+{$ifdef darwin}
+procedure TMainForm.DarwinAppActivate;
+begin
+  // The application can be activated from the Dock while its window is
+  // hidden in the menu bar - restore the window in this case.
+  if not Visible or (WindowState = wsMinimized) then
+    ShowApp;
+end;
+{$endif darwin}
 
 procedure TMainForm.DownloadFinished(const TorrentName: string);
 begin
@@ -3290,7 +3323,7 @@ begin
   end;
 end;
 
-procedure TMainForm.BeforeCloseApp;
+procedure TMainForm.SaveFormState;
 begin
   if WindowState = wsNormal then begin
     Ini.WriteInteger('MainForm', 'Left', Left);
@@ -3331,6 +3364,11 @@ begin
   except
     Application.HandleException(nil);
   end;
+end;
+
+procedure TMainForm.BeforeCloseApp;
+begin
+  SaveFormState;
 
   DoDisconnect;
   Application.ProcessMessages;
@@ -5368,6 +5406,16 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+{$ifdef darwin}
+  // Closing the window hides the application to the menu bar instead of
+  // terminating it, so it keeps running in the background as usual for
+  // a macOS menu bar application. The daemon connection is kept alive.
+  CloseAction:=caHide;
+  SaveFormState;
+  HideApp;
+  exit;
+{$endif darwin}
+
 {$ifdef CPUARM}
 //  CloseAction:=caMinimize;
   BeforeCloseApp;

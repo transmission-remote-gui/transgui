@@ -395,3 +395,6 @@ Labels=Мэткі
 Set labels=Задаць мэткі
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Гэта заменіць усе наяўныя мэткі.~Вы можаце задаць некалькі мэтак праз коску або пакінуць пустым, каб ачысьціць мэткі
 Application option=Опцыя праграмы
+Hide %s=Hide %s
+Open %s=Open %s
+Quit %s=Quit %s

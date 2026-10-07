@@ -159,7 +159,21 @@ cp ../../README.md "$dmgfolder"
 
 cp PkgInfo "$appfolder/Contents"
 cp transgui.icns "$appfolder/Contents/Resources"
+cp menubar.png "$appfolder/Contents/Resources"
 sed -e "s/@prog_ver@/$prog_ver/" Info.plist > "$appfolder/Contents/Info.plist"
+
+# Ad-hoc sign the bundle so macOS (Sequoia 15+ / Tahoe 26) attributes the app's
+# network access to it and shows the Local Network privacy prompt.
+# We deliberately do NOT enable the hardened runtime (--options runtime): an
+# ad-hoc signature with hardened runtime can be SIGKILLed on macOS 26 for
+# network use unless a com.apple.security.network.client entitlement is present.
+xattr -cr "$appfolder"
+if [ -f transgui.entitlements ]; then
+  codesign --force --deep --sign - --entitlements transgui.entitlements "$appfolder"
+else
+  codesign --force --deep --sign - "$appfolder"
+fi
+codesign --verify --verbose=2 "$appfolder" || true
 
 ln -s /Applications "$dmgfolder/Drag \"Transmission Remote GUI\" here!"
 
@@ -186,9 +200,12 @@ if [ -z "$mount_volume" ]; then
   echo "Failed to determine the mounted disk image volume." >&2
   exit 1
 fi
-cp transgui.icns "$mount_volume/.VolumeIcon.icns"
-SetFile -c icnC "$mount_volume/.VolumeIcon.icns"
-SetFile -a C "$mount_volume"
+# SetFile was removed in Xcode 13+; apply the volume icon only if available
+if command -v SetFile >/dev/null 2>&1; then
+  cp transgui.icns "$mount_volume/.VolumeIcon.icns"
+  SetFile -c icnC "$mount_volume/.VolumeIcon.icns"
+  SetFile -a C "$mount_volume"
+fi
 
 detach_disk_image "$mount_device"
 mount_device=""

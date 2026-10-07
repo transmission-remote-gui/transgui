@@ -395,3 +395,6 @@ Labels=Oznake
 Set labels=Postavi oznake
 This will overwrite any existing labels.~You can set multiple labels separated by a comma or leave empty to clear labels=Ovo će zamijeniti sve postojeće oznake.~Možete postaviti više oznaka odvojenih zarezom ili ostaviti prazno za čišćenje oznaka
 Application option=Opcija aplikacije
+Hide %s=Hide %s
+Open %s=Open %s
+Quit %s=Quit %s
